@@ -18,6 +18,8 @@ class FE {
   set className(v){ this._cls=new Set(String(v).split(/\s+/).filter(Boolean)); }
   get className(){ return [...this._cls].join(" "); }
   appendChild(c){ this.children.push(c); return c; }
+  setAttribute(k,v){ this._attrs=this._attrs||{}; this._attrs[k]=v; }
+  getAttribute(k){ return (this._attrs||{})[k]; }
   remove(){}
   querySelector(sel){ if(!this._q[sel]) this._q[sel]=new FE("q"); return this._q[sel]; }
 }

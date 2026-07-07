@@ -46,6 +46,7 @@
   .miner.swing #pickArm{animation:swing .18s ease-out;}
   #pickArm{transform-origin:63px 76px;}
   @keyframes swing{0%{transform:rotate(0)}45%{transform:rotate(-52deg)}100%{transform:rotate(0)}}
+  .pet{position:absolute;left:31%;bottom:20px;animation:bob 2s ease-in-out infinite;}
   .rock{position:absolute;right:7%;bottom:24px;filter:drop-shadow(0 5px 7px #000a);}
   .rock.boss svg{transform:scale(1.16);transform-origin:bottom center;}
   .rock.boss{--gemc:#ff5544;}
@@ -296,23 +297,24 @@
         <g id="pickArm">
           <rect x="60" y="14" width="6" height="64" rx="3" fill="#8a5a33"/>
           <rect x="60" y="14" width="2.5" height="64" rx="1" fill="#a06c3f"/>
-          <path d="M40 22 Q63 6 86 22 L82 31 Q63 18 44 31 Z" fill="#aeb8c6"/>
-          <path d="M40 22 Q63 6 86 22 L84 25 Q63 11 42 25 Z" fill="#d5dde8"/>
+          <path id="dwPickA" d="M40 22 Q63 6 86 22 L82 31 Q63 18 44 31 Z" fill="#aeb8c6"/>
+          <path id="dwPickB" d="M40 22 Q63 6 86 22 L84 25 Q63 11 42 25 Z" fill="#d5dde8"/>
           <rect x="57" y="16" width="12" height="8" rx="2" fill="#6e7a8a"/>
-          <circle cx="63" cy="42" r="5.5" fill="#e8b08a"/>
-          <circle cx="63" cy="74" r="6.5" fill="#e8b08a"/>
+          <circle id="dwHand1" cx="63" cy="42" r="5.5" fill="#e8b08a"/>
+          <circle id="dwHand2" cx="63" cy="74" r="6.5" fill="#e8b08a"/>
         </g>
-        <path d="M32 80 Q52 68 72 80 L74 110 Q52 120 30 110 Z" fill="#6b4a2c"/>
-        <path d="M32 80 Q52 68 72 80 L73 92 Q52 84 31 92 Z" fill="#7d583a"/>
+        <g id="dwPack" visibility="hidden"><rect x="16" y="80" width="17" height="24" rx="6" fill="#8f96a3"/><rect x="18" y="85" width="13" height="4" rx="2" fill="rgba(0,0,0,0.28)"/><rect x="21" y="76" width="7" height="6" rx="3" fill="rgba(0,0,0,0.2)"/></g>
+        <path id="dwTunic" d="M32 80 Q52 68 72 80 L74 110 Q52 120 30 110 Z" fill="#6b4a2c"/>
+        <path id="dwTunicHi" d="M32 80 Q52 68 72 80 L73 92 Q52 84 31 92 Z" fill="#7d583a"/>
         <path d="M36 104 Q52 111 68 104" stroke="rgba(0,0,0,0.25)" stroke-width="1.5" fill="none"/>
-        <ellipse cx="67" cy="79" rx="8" ry="6" fill="#7d583a"/>
+        <ellipse id="dwSleeve" cx="67" cy="79" rx="8" ry="6" fill="#7d583a"/>
         <rect x="30" y="97" width="44" height="8" rx="3" fill="#3d2a18"/>
         <circle cx="52" cy="101" r="4.5" fill="#e8b93c"/>
         <circle cx="52" cy="101" r="2" fill="#f7dd8a"/>
-        <rect x="36" y="110" width="14" height="11" rx="4" fill="#463222"/>
-        <rect x="54" y="110" width="14" height="11" rx="4" fill="#463222"/>
-        <rect x="36" y="110" width="14" height="4" rx="2" fill="#5a4230"/>
-        <rect x="54" y="110" width="14" height="4" rx="2" fill="#5a4230"/>
+        <rect id="dwBootL" x="36" y="110" width="14" height="11" rx="4" fill="#463222"/>
+        <rect id="dwBootR" x="54" y="110" width="14" height="11" rx="4" fill="#463222"/>
+        <rect id="dwBootLh" x="36" y="110" width="14" height="4" rx="2" fill="#5a4230"/>
+        <rect id="dwBootRh" x="54" y="110" width="14" height="4" rx="2" fill="#5a4230"/>
         <circle cx="52" cy="52" r="16" fill="#e8b08a"/>
         <path d="M35 50 Q37 79 52 82 Q67 79 69 50 Q60 63 52 63 Q44 63 35 50 Z" fill="#c8632a"/>
         <path d="M38 56 Q41 74 50 79" stroke="#b5541f" stroke-width="2" fill="none"/>
@@ -323,13 +325,28 @@
         <circle cx="60" cy="55" r="4.5" fill="#e39b72"/>
         <circle cx="61.5" cy="53.5" r="1.4" fill="#f2b894"/>
         <circle cx="57" cy="50" r="2.2" fill="#26221e"/>
-        <path d="M34 46 Q34 27 52 27 Q70 27 70 46 Z" fill="#e8b93c"/>
-        <path d="M34 46 Q34 27 52 27 L52 46 Z" fill="#d1a531"/>
-        <rect x="33" y="41" width="38" height="5" rx="2.5" fill="#b8860b"/>
+        <path id="dwHelm" d="M34 46 Q34 27 52 27 Q70 27 70 46 Z" fill="#e8b93c"/>
+        <path id="dwHelmSh" d="M34 46 Q34 27 52 27 L52 46 Z" fill="#d1a531"/>
+        <rect id="dwBand" x="33" y="41" width="38" height="5" rx="2.5" fill="#b8860b"/>
         <circle cx="40" cy="36" r="1.3" fill="#8a6a12"/>
         <circle cx="52" cy="33" r="1.3" fill="#8a6a12"/>
         <circle cx="64" cy="36" r="1.3" fill="#8a6a12"/>
-        <circle cx="52" cy="30" r="5" fill="#fff2b0" filter="url(#mglow)"/>
+        <circle id="dwLamp" cx="52" cy="30" r="5" fill="#fff2b0" filter="url(#mglow)"/>
+      </svg>
+    </div>
+    <div class="pet" id="petBox" style="display:none">
+      <svg viewBox="0 0 40 30" width="46" height="35">
+        <ellipse cx="20" cy="27" rx="14" ry="3" fill="rgba(0,0,0,0.25)"/>
+        <ellipse cx="18" cy="19" rx="11" ry="7" fill="#c98d4f"/>
+        <circle cx="29" cy="13" r="6" fill="#c98d4f"/>
+        <path d="M26 8 L28 3 L31 8 Z" fill="#a5713a"/>
+        <path d="M31 8 L34 4 L35 9 Z" fill="#a5713a"/>
+        <circle cx="31" cy="12" r="1.3" fill="#26221e"/>
+        <circle cx="34.5" cy="14.5" r="1.6" fill="#3a2c1c"/>
+        <path d="M8 17 Q3 12 6 8" stroke="#c98d4f" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <rect x="11" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
+        <rect x="21" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
+        <rect id="petCollar" x="24" y="16" width="9" height="3" rx="1.5" fill="#5fd068"/>
       </svg>
     </div>
     <div class="rock" id="rock">
@@ -881,6 +898,32 @@ function buildUpgrades(){
     box.appendChild(d);
   });
 }
+const RAR_HEX=["#8f96a3","#5fd068","#5aa7e8","#b97ae8","#e87a7a","#e8b93c","#7ae8dc","#ff9d5c"];
+function shadeHex(h,t){ const n=parseInt(h.slice(1),16);
+  const f=c=>Math.max(0,Math.round(c*(1+t)));
+  const r=Math.min(255,f(n>>16)),g=Math.min(255,f((n>>8)&255)),b=Math.min(255,f(n&255));
+  return "#"+((r<<16|g<<8|b)>>>0).toString(16).padStart(6,"0"); }
+function setFill(id,c){ const el=document.getElementById(id); if(el&&el.setAttribute) el.setAttribute("fill",c); }
+function updateDwarf(){
+  const g=S.gear, C=k=>g[k]?RAR_HEX[g[k].r]:null;
+  const pick=C("pick")||"#aeb8c6";
+  setFill("dwPickA",pick); setFill("dwPickB",shadeHex(pick,.35));
+  const helm=C("helm")||"#e8b93c";
+  setFill("dwHelm",helm); setFill("dwHelmSh",shadeHex(helm,-.14)); setFill("dwBand",shadeHex(helm,-.32));
+  const robe=C("robe")?shadeHex(C("robe"),-.3):"#6b4a2c";
+  setFill("dwTunic",robe); setFill("dwTunicHi",shadeHex(robe,.22)); setFill("dwSleeve",shadeHex(robe,.22));
+  const boot=C("boots")?shadeHex(C("boots"),-.35):"#463222";
+  setFill("dwBootL",boot); setFill("dwBootR",boot);
+  setFill("dwBootLh",shadeHex(boot,.28)); setFill("dwBootRh",shadeHex(boot,.28));
+  const hand=C("glove")||"#e8b08a";
+  setFill("dwHand1",hand); setFill("dwHand2",hand);
+  setFill("dwLamp",C("lamp")?shadeHex(C("lamp"),.4):"#fff2b0");
+  const pk=document.getElementById("dwPack");
+  if(pk&&pk.setAttribute) pk.setAttribute("visibility",g.pack?"visible":"hidden");
+  if(g.pack){ const r=document.getElementById("dwPack"); if(r&&r.children&&r.children[0]&&r.children[0].setAttribute) r.children[0].setAttribute("fill",RAR_HEX[g.pack.r]); }
+  $("petBox").style.display=g.pet?"block":"none";
+  if(g.pet) setFill("petCollar",RAR_HEX[g.pet.r]);
+}
 function renderGear(){
   const g=$("gearGrid"); g.innerHTML="";
   SLOTS.forEach(sl=>{
@@ -897,6 +940,7 @@ function renderGear(){
     d.innerHTML=`<div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
     g.appendChild(d);
   });
+  updateDwarf();
 }
 function render(){
   $("gold").textContent=fmt(S.gold);

@@ -58,7 +58,7 @@ T("гача крутится, pity растёт", S.geoRolls===rolls0+30);
 T("геолог нанят", !!S.geo, S.geo?("r"+S.geo.r):"");
 const lvl0=S.lvls.atk; __ids.u_atk._q["button"].onclick();
 T("кнопка апгрейда ATK работает", S.lvls.atk===lvl0+1);
-S.lvls.luck=200;
+S.lvls.luck=200; S.gear={};   // без кирки: pickBonus=0
 T("находка ≤50% без кирки (LUCK кап 45)", findChance()<=50 && findChance()===43);
 S.gear.pick={s:"pick",r:7,m:1,i:1};
 T("кап находки 50% с Cosmic-киркой", findChance()===50);
