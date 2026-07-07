@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.13 «Копай глубже»</title>
+<title>ORE DEEP — v0.14 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -385,6 +385,19 @@
 
 <div id="toast"></div>
 
+<div id="offOverlay" class="modal">
+  <div class="box" style="text-align:center">
+    <div style="font-size:34px;margin-bottom:8px">⛏️</div>
+    <h3>Гора работала за тебя</h3>
+    <div class="sub" id="offTime"></div>
+    <div style="font-size:14px;color:var(--gold);margin:10px 0" id="offGold"></div>
+    <div class="btnrow">
+      <button class="buy" onclick="claimOffline(1)">Забрать</button>
+      <button class="gold" onclick="claimOffline(2)">×2 за рекламу</button>
+    </div>
+  </div>
+</div>
+
 <div id="overlay">
   <div class="big">😮‍💨</div>
   <h2 id="ovTitle">ПЕРЕКУР В ЧЕРТОГАХ</h2>
@@ -666,7 +679,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6),
+  return { gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -995,7 +1008,7 @@ $("resetBtn").onclick=()=>{
 };
 
 /* ---------- save/load ---------- */
-function save(){ try{ localStorage.setItem("oredeep_v3",JSON.stringify(S)); }catch(e){} }
+function save(){ try{ S.lastSeen=Date.now(); localStorage.setItem("oredeep_v3",JSON.stringify(S)); }catch(e){} }
 function load(){
   try{
     const raw=localStorage.getItem("oredeep_v3");
@@ -1121,8 +1134,30 @@ document.addEventListener("pointerdown",()=>{
   if(musicOn){ audioStart(); if(AC&&AC.state==="suspended") AC.resume(); }
 });
 
+/* ---------- офлайн-доход (кап 8ч, экран возврата) ---------- */
+const OFFLINE_CAP_H=8;
+let offlinePending=0;
+function checkOffline(){
+  if(!S.lastSeen) return;
+  const sec=Math.min(OFFLINE_CAP_H*3600, (Date.now()-S.lastSeen)/1000);
+  if(sec<120) return;                                   // <2 минут не считаем
+  offlinePending=Math.floor(idlePerSec()*sec);
+  if(offlinePending<1) return;
+  const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60);
+  $("offTime").textContent="Тебя не было "+(h?h+" ч ":"")+m+" мин"+(sec>=OFFLINE_CAP_H*3600?" (кап "+OFFLINE_CAP_H+" ч)":"");
+  $("offGold").textContent="+"+fmt(offlinePending)+" 🪙";
+  $("offOverlay").style.display="flex";
+  Platform.logEvent("offline_return",{sec:Math.round(sec)});
+}
+function claimOffline(mult){
+  const grant=()=>{ S.gold+=offlinePending*mult; offlinePending=0;
+    $("offOverlay").style.display="none"; save(); };
+  if(mult>1) Platform.showRewarded(ok=>{ if(ok) grant(); });
+  else grant();
+}
+
 /* ---------- старт ---------- */
-load(); buildUpgrades(); renderGear(); newRock(); render();
+load(); buildUpgrades(); renderGear(); newRock(); render(); checkOffline();
 $("musicBtn").textContent=musicOn?"🔊":"🔇";
 $("musicBtn").onclick=toggleMusic;
 $("speedBtn").onclick=()=>{

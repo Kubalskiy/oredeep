@@ -144,6 +144,20 @@ T("карточка показывает имя нанятого", __ids.geoName
 S.geo={t:0,r:1}; render();
 T("старый сейв без имени не ломает карточку", __ids.geoName.innerHTML.includes(GEO_TYPES[0].names[0]));
 
+console.log("\n[15] Офлайн-доход");
+localStorage.removeItem("oredeep_v3"); load(); S.gold=0;
+S.lastSeen=Date.now()-3600*1000;   // час назад
+checkOffline();
+T("начислено ~час идла, ждёт клейма", offlinePending>=idlePerSec()*3590 && offlinePending<=idlePerSec()*3610, "pending="+offlinePending);
+T("оверлей возврата показан", __ids.offOverlay.style.display==="flex");
+{ const g0=S.gold, p=offlinePending; claimOffline(2);
+T("клейм x2 (стаб рекламы) зачислен точно", S.gold===g0+p*2 && offlinePending===0); }
+S.lastSeen=Date.now()-999*3600*1000; checkOffline();
+T("кап 8 часов работает", offlinePending<=idlePerSec()*8*3600+5, "pending="+offlinePending);
+claimOffline(1);
+S.lastSeen=Date.now()-30*1000; offlinePending=0; checkOffline();
+T("меньше 2 минут — не начисляем", offlinePending===0);
+
 console.log("\n[14] Капы: на потолке кнопка не тратит золото");
 localStorage.removeItem("oredeep_v3"); load(); S.gold=1e12;
 S.lvls.crit=100; S.gear={}; S.geo=null;   // CRIT: 5+100 => кап 60
