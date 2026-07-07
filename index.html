@@ -215,6 +215,18 @@
   #overlay h2{margin:14px 0 10px;}
   #overlay p{line-height:2.1;}
   #overlay .big{margin-bottom:4px;}
+
+  /* ---------- LAYOUT FIT: длинные значения не рвут сетку ---------- */
+  .stat{min-width:0;overflow:hidden;}
+  .stat .v{font-size:9px;white-space:nowrap;}
+  .statimg{width:20px;height:20px;}
+  .slot{min-width:0;}
+  .slot .sv{line-height:1.7;}
+  .slot .svv{font-size:7px;margin-top:2px;white-space:nowrap;}
+  .upg .u{min-width:0;overflow:hidden;}
+  .upg .u .v,.upg .u .c{white-space:nowrap;}
+  .card{min-width:0;overflow:hidden;}
+  .card .n{word-break:break-word;}
 </style>
 </head>
 <body>
@@ -592,7 +604,7 @@ const UPGRADES=[
   {id:"crit",  k:"CRIT",    step:1,  base:50, g:1.6,  fmt:v=>Math.round(v)+"%"},
   {id:"luck",  k:"LUCK",    step:1,  base:50, g:1.55, fmt:v=>Math.round(v)+"%"},
   {id:"mining",k:"MINING",  step:2,  base:45, g:1.5,  fmt:v=>Math.round(v)},
-  {id:"stone", k:"STONE",   step:10, base:30, g:1.4,  fmt:v=>Math.round(v)+"%"}
+  {id:"stone", k:"STONE",   step:10, base:30, g:1.4,  fmt:v=>(v>=1000?fmt(v):Math.round(v))+"%"}
 ];
 const upCost=u=>Math.round(u.base*Math.pow(u.g,S.lvls[u.id]));
 const statCapped=id=>STAT_CAPS[id]!==undefined && stat(id)>=STAT_CAPS[id];
@@ -879,7 +891,7 @@ function renderGear(){
     if(item){
       const firstStat=Object.keys(sl.st)[0];
       const v=itemStat(item,firstStat);
-      sv=`<span class="r${item.r}">${RAR_NAMES[item.r].slice(0,4)}</span> +${v>=100?fmt(v):v.toFixed(1)}`;
+      sv=`<div><span class="r${item.r}">${RAR_NAMES[item.r].slice(0,4)}</span></div><div class="svv">+${v>=100?fmt(v):v.toFixed(1)}</div>`;
     }
     const icon=(sl.id==="pick"&&item)?`<img src="${PICK_ICONS[item.r]}" class="oreimg" style="width:30px;height:30px;margin:0">`:sl.ic;
     d.innerHTML=`<div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
@@ -902,7 +914,7 @@ function render(){
   $("sMin").textContent=Math.round(stat("mining"));
   $("sCrit").textContent=Math.round(stat("crit"))+"%";
   $("sLuck").textContent=Math.round(stat("luck"))+"%";
-  $("sStone").textContent=Math.round(stat("stone"))+"%";
+  { const st=stat("stone"); $("sStone").textContent=(st>=1000?fmt(st):Math.round(st))+"%"; }
   $("findChance").textContent=Math.round(findChance());
   $("speedBtn").textContent="×"+(S.speed||1)+" СКОРОСТЬ";
   $("bagLvl").textContent=S.bag;
