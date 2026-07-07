@@ -118,7 +118,7 @@
       <div class="gold">🪙 <span id="gold">0</span></div>
       <div class="gps">+<span id="gps">0</span>/с</div>
     </div>
-    <div class="right">ORE DEEP<br><b>прототип v0.2</b></div>
+    <div class="right">ORE DEEP<br><b>прототип v0.3</b></div>
   </div>
 
   <div class="minebar">
@@ -223,7 +223,7 @@
 <script>
 "use strict";
 /* =========================================================
-   ORE DEEP — прототип v0.2: ядро оригинала (сумка + дроп
+   ORE DEEP — прототип v0.3: ядро оригинала (сумка + дроп
    шмоток по таблице §6.3, 8 слотов, гача геологов с pity
    §7.2) + слой редких камней от кирки (§6bis).
    Коэффициенты CALIB — плейтест, в GDD помечены «≈».
@@ -464,10 +464,31 @@ function exhausted(){ dead=true; $("overlay").style.display="flex"; }
 function closeOverlay(){ $("overlay").style.display="none"; dead=false; newRock(); }
 
 /* ---------- дроп деталей ---------- */
+/* скалярная «сила» детали: все статы слота масштабируются одним
+   множителем, поэтому сравнение корректно по одному числу */
+function itemPower(it){ return RAR_POW[it.r]*(1+it.i/60)*it.m; }
 function dropGear(){
   const slot=SLOTS[Math.floor(Math.random()*SLOTS.length)];
-  pendingDrop=makeItem(slot.id);
-  showDropModal();
+  const it=makeItem(slot.id);
+  const old=S.gear[slot.id];
+  /* однозначно лучше: слот пуст, или сила выше И редкость не ниже
+     (редкость кирки влияет на шанс находки — молча понижать нельзя) */
+  const strictlyBetter = !old || (itemPower(it)>itemPower(old) && it.r>=old.r);
+  if(strictlyBetter){
+    let extra="надето автоматически";
+    if(old){
+      const p=sellPrice(old);
+      S.gold+=p;
+      extra="надето · старое продано +"+fmt(p)+" 🪙";
+    }
+    S.gear[slot.id]=it;
+    S.energy=Math.min(S.energy,stat("energy"));
+    showToast(slot.ic,RAR_NAMES[it.r],"r"+it.r,slot.n,extra);
+    renderGear();
+  } else {
+    pendingDrop=it;
+    showDropModal();
+  }
 }
 function itemDesc(item){
   if(!item) return "<span style='color:var(--dim)'>пусто</span>";
@@ -484,7 +505,7 @@ function itemDesc(item){
 function showDropModal(){
   const slot=SLOTS.find(s=>s.id===pendingDrop.s);
   $("dropTitle").textContent="Дроп из сумки: "+slot.n+"!";
-  $("dropSub").textContent="BAG LVL "+S.bag+" · редкость по таблице сумки";
+  $("dropSub").textContent="Не однозначно лучше надетого — решай сам. BAG LVL "+S.bag;
   $("dropNew").innerHTML=itemDesc(pendingDrop);
   $("dropOld").innerHTML=itemDesc(S.gear[pendingDrop.s]);
   $("dropSell").textContent="Продать +"+fmt(sellPrice(pendingDrop))+" 🪙";
