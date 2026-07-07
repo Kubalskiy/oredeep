@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ORE DEEP — прототип</title>
+<style>
+  :root{
+    --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
+    --gold:#e8b93c; --green:#5fd068; --red:#e05555; --blue:#5aa7e8;
+    --txt:#e8e6df; --dim:#8a93a3;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,sans-serif; height:100%; overflow-x:hidden;}
+  #app{max-width:430px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+
+  .hud{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel);}
+  .hud .gold{font-weight:800;font-size:20px;color:var(--gold);}
+  .hud .gps{font-size:12px;color:var(--green);}
+  .hud .right{text-align:right;font-size:12px;color:var(--dim);}
+  .hud .right b{color:var(--txt);font-size:14px;}
+
+  .minebar{display:flex;justify-content:space-around;padding:6px 0;background:#161a22;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
+  .minebar b{display:block;color:var(--txt);font-size:13px;letter-spacing:0;}
+  .minebar .mid b{color:var(--blue);}
+
+  .scene{position:relative;height:230px;background:linear-gradient(180deg,#20242e 0%,#171a21 100%);overflow:hidden;}
+  .miner{position:absolute;left:12%;bottom:24px;font-size:54px;transform-origin:70% 80%;}
+  .miner.swing{animation:swing .18s ease-out;}
+  @keyframes swing{0%{transform:rotate(0)}45%{transform:rotate(-28deg)}100%{transform:rotate(0)}}
+  .rock{position:absolute;right:10%;bottom:28px;font-size:62px;filter:drop-shadow(0 4px 6px #0008);}
+  .rock.hitfx{animation:shake .12s;}
+  @keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
+  .chip{position:absolute;font-size:16px;pointer-events:none;animation:fly .7s ease-out forwards;}
+  @keyframes fly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.5)}}
+  .dmgnum{position:absolute;font-weight:800;font-size:15px;color:#ffd76a;text-shadow:0 1px 2px #000;pointer-events:none;animation:rise .8s ease-out forwards;}
+  .dmgnum.crit{color:#ff8a4a;font-size:19px;}
+  @keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
+
+  .rockname{position:absolute;top:8px;left:0;right:0;text-align:center;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;}
+  .rockname b{color:var(--txt);}
+  .bosslabel{color:#ff8a4a !important;}
+  .bars{position:absolute;top:30px;left:14px;right:14px;}
+  .bar{height:14px;border-radius:7px;background:#0f1218;margin-bottom:6px;overflow:hidden;border:1px solid var(--line);position:relative;}
+  .bar .fill{height:100%;border-radius:7px;transition:width .15s;}
+  .bar.hp .fill{background:linear-gradient(90deg,#c0392b,#e67e22);}
+  .bar.en .fill{background:linear-gradient(90deg,#27ae60,#7ee081);}
+  .bar span{position:absolute;inset:0;text-align:center;font-size:10px;line-height:14px;color:#fff;text-shadow:0 1px 1px #000;}
+
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);background:#0f1218;padding:8px 6px;gap:2px;}
+  .stat{text-align:center;}
+  .stat .k{font-size:9px;color:var(--dim);text-transform:uppercase;}
+  .stat .v{font-size:13px;font-weight:700;}
+
+  .row{display:flex;gap:8px;padding:10px 12px 0;}
+  .card{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;}
+  .card .t{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
+  .card .n{font-weight:800;font-size:14px;margin:3px 0;}
+  .card .d{font-size:11px;color:var(--dim);}
+  button{font-family:inherit;border:0;border-radius:10px;padding:9px 6px;font-weight:700;font-size:12px;
+    background:var(--panel2);color:var(--txt);width:100%;cursor:pointer;}
+  button:active{transform:scale(.97);}
+  button.buy{background:linear-gradient(180deg,#2f6b39,#25522d);}
+  button:disabled{background:#252a33 !important;color:#5b6472;}
+  button.gold{background:linear-gradient(180deg,#8a6d1d,#6b5416);}
+  button.red{background:linear-gradient(180deg,#7a2f2f,#5e2222);}
+
+  /* gear grid */
+  .gearwrap{padding:10px 12px 0;}
+  .gearttl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+  .gear{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .slot{background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:6px 3px;text-align:center;min-height:72px;}
+  .slot .ic{font-size:22px;}
+  .slot .sn{font-size:9px;color:var(--dim);}
+  .slot .sv{font-size:10px;font-weight:700;}
+  .slot.empty .ic{opacity:.25;}
+  .br0{border-color:#4a5261}.br1{border-color:#5fd068}.br2{border-color:#5aa7e8}.br3{border-color:#b97ae8}
+  .br4{border-color:#e87a7a}.br5{border-color:#e8b93c}.br6{border-color:#7ae8dc}.br7{border-color:#ff9d5c}
+  .r0{color:#b9c0cc}.r1{color:#5fd068}.r2{color:#5aa7e8}.r3{color:#b97ae8}.r4{color:#e87a7a}.r5{color:#e8b93c}.r6{color:#7ae8dc}.r7{color:#ff9d5c}
+
+  .upg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 12px;}
+  .upg .u{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;}
+  .upg .u .k{font-size:10px;color:var(--dim);}
+  .upg .u .v{font-size:13px;font-weight:800;margin:2px 0;}
+  .upg .u .c{font-size:10px;color:var(--gold);margin-bottom:5px;}
+  .toolbar{display:flex;gap:8px;padding:0 12px 14px;}
+
+  #toast{position:fixed;left:50%;top:15%;transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
+    border-radius:14px;padding:12px 20px;text-align:center;z-index:50;display:none;box-shadow:0 8px 30px #000a;min-width:230px;}
+  #toast .big{font-size:30px;}
+  #toast .r{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;}
+  #toast .nm{font-size:15px;font-weight:700;margin:2px 0;}
+  #toast .vl{color:var(--gold);font-size:12px;}
+
+  #overlay{position:fixed;inset:0;background:#000c;z-index:70;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px;}
+  #overlay .big{font-size:52px;}
+  #overlay h2{color:var(--red);margin:8px 0;}
+  #overlay p{color:var(--dim);font-size:13px;max-width:280px;}
+
+  .modal{position:fixed;inset:0;background:#000b;z-index:60;display:none;align-items:flex-end;justify-content:center;}
+  .modal .box{background:var(--panel);width:100%;max-width:430px;max-height:80%;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;}
+  .modal h3{margin:0 0 4px;color:var(--gold);}
+  .modal .sub{font-size:11px;color:var(--dim);margin-bottom:10px;}
+  .col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--line);font-size:13px;}
+  .col-item .cnt{color:var(--dim);font-size:12px;}
+  .found{color:var(--txt);} .notfound{color:#4a5261;}
+  .cmp{display:flex;gap:10px;margin:10px 0;}
+  .cmp .side{flex:1;background:var(--panel2);border-radius:10px;padding:10px;text-align:center;font-size:12px;}
+  .cmp .side .ttl{font-size:10px;color:var(--dim);text-transform:uppercase;margin-bottom:4px;}
+  .btnrow{display:flex;gap:8px;margin-top:10px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hud">
+    <div>
+      <div class="gold">🪙 <span id="gold">0</span></div>
+      <div class="gps">+<span id="gps">0</span>/с</div>
+    </div>
+    <div class="right">ORE DEEP<br><b>прототип v0.2</b></div>
+  </div>
+
+  <div class="minebar">
+    <div>ШАХТЁР<br><b id="minerRank">НОВИЧОК</b></div>
+    <div class="mid">ШАХТА<br><b id="mineLabel">1-1</b></div>
+    <div>ЭТАП<br><b id="stageLabel">1</b></div>
+  </div>
+
+  <div class="scene" id="scene">
+    <div class="rockname">жила: <b id="rockName">Валун</b></div>
+    <div class="bars">
+      <div class="bar hp"><div class="fill" id="hpFill" style="width:100%"></div><span id="hpTxt"></span></div>
+      <div class="bar en"><div class="fill" id="enFill" style="width:100%"></div><span id="enTxt"></span></div>
+    </div>
+    <div class="miner" id="miner">⛏️</div>
+    <div class="rock" id="rock">🪨</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
+    <div class="stat"><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
+    <div class="stat"><div class="k">Mining</div><div class="v" id="sMin"></div></div>
+    <div class="stat"><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
+    <div class="stat"><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
+    <div class="stat"><div class="k">Stone</div><div class="v" id="sStone"></div></div>
+  </div>
+
+  <div class="gearwrap">
+    <div class="gearttl">Снаряжение шахтёра · дроп из жил по редкости сумки</div>
+    <div class="gear" id="gearGrid"></div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <div class="t">Сумка находок</div>
+      <div class="n">BAG LVL <span id="bagLvl">1</span></div>
+      <div class="d">шанс дропа детали: <span id="dropCh">30</span>%<br>уровень сдвигает редкости</div>
+      <button class="gold" id="bagBtn" style="margin-top:6px"></button>
+    </div>
+    <div class="card">
+      <div class="t">Геолог-наставник</div>
+      <div class="n" id="geoName">— не нанят —</div>
+      <div class="d" id="geoDesc">гача с pity: чем больше<br>роллов, тем выше шанс</div>
+      <button class="gold" id="geoBtn" style="margin-top:6px"></button>
+      <div class="d" style="margin-top:4px">роллов: <span id="geoRolls">0</span></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <div class="t">Находки камней</div>
+      <div class="n"><span id="findChance">8</span>%</div>
+      <div class="d">шанс редкого камня, растёт от кирки</div>
+    </div>
+    <div class="card">
+      <div class="t">Коллекция шахты</div>
+      <div class="n" id="colCount">0/8</div>
+      <button id="colBtn" style="margin-top:6px">Открыть 💎</button>
+    </div>
+  </div>
+
+  <div class="upg" id="upgrades"></div>
+
+  <div class="toolbar">
+    <button id="resetBtn" class="red">↺ Сброс прогресса</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<div id="overlay">
+  <div class="big">😮‍💨</div>
+  <h2>ИСТОЩЕНИЕ</h2>
+  <p>Энергия кончилась раньше, чем разбита порода. Жила восстановилась — этап заново. Прокачай снаряжение!</p>
+  <button style="max-width:200px;margin-top:14px" onclick="closeOverlay()">Продолжить</button>
+</div>
+
+<div class="modal" id="dropModal">
+  <div class="box">
+    <h3 id="dropTitle">Дроп!</h3>
+    <div class="sub" id="dropSub"></div>
+    <div class="cmp">
+      <div class="side"><div class="ttl">Новое</div><div id="dropNew"></div></div>
+      <div class="side"><div class="ttl">Надето</div><div id="dropOld"></div></div>
+    </div>
+    <div class="btnrow">
+      <button class="buy" id="dropEquip">Надеть</button>
+      <button class="gold" id="dropSell"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="colModal">
+  <div class="box">
+    <h3 id="colTitle"></h3>
+    <div class="sub">Собери все камни шахты. Дубликаты конвертируются в золото.</div>
+    <div id="colList"></div>
+    <button style="margin-top:12px" onclick="document.getElementById('colModal').style.display='none'">Закрыть</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================
+   ORE DEEP — прототип v0.2: ядро оригинала (сумка + дроп
+   шмоток по таблице §6.3, 8 слотов, гача геологов с pity
+   §7.2) + слой редких камней от кирки (§6bis).
+   Коэффициенты CALIB — плейтест, в GDD помечены «≈».
+   ========================================================= */
+
+/* ---------- кривая породы (GDD §2.2, §4) ---------- */
+const ANCHOR_IDX  = [1, 2000, 20000, 50000];
+const ANCHOR_HP   = [225, 200000, 2000000, 10000000];
+const ANCHOR_ABR  = [45, 20000, 200000, 1000000];
+const ANCHOR_HARD = [11, 5000, 50000, 250000];
+const ANCHOR_RESP = [1.0, 1.2, 2.0, 2.0];
+const EASE_K = 1.35;                       // CALIB
+const lerp = (a,b,u)=>a+(b-a)*u;
+const growthLerp = (a,b,t)=>lerp(a,b,Math.pow(t,EASE_K));
+function anchored(arr, idx){
+  if(idx<=ANCHOR_IDX[0]) return arr[0];
+  const n=ANCHOR_IDX.length;
+  if(idx>=ANCHOR_IDX[n-1]) return arr[n-1];
+  let i=0; while(ANCHOR_IDX[i+1]<idx) i++;
+  const t=(idx-ANCHOR_IDX[i])/(ANCHOR_IDX[i+1]-ANCHOR_IDX[i]);
+  return growthLerp(arr[i],arr[i+1],t);
+}
+function rockStatsAt(idx, isBoss){
+  const m = isBoss?1.5:1;
+  return { hp:anchored(ANCHOR_HP,idx)*m, abr:anchored(ANCHOR_ABR,idx),
+           hard:anchored(ANCHOR_HARD,idx), resp:anchored(ANCHOR_RESP,idx) };
+}
+const DMG_HARD_K=0.5, DRAIN_K=0.08, CRIT_MULT=2.2;   // CALIB демпферы
+
+/* ---------- редкости (GDD §6.1) ---------- */
+const RAR_NAMES=["Common","Rare","Epic","Legendary","Exotic","Mythic","Ascended","Cosmic"];
+const RAR_POW  =[1,2.2,4.8,10,22,48,110,250];        // сила деталей ×2.2/ступень — 1:1
+const RAR_MULT =[1,3,9,27,80,220,600,1500];          // ценность камней ×3/ступень
+
+/* ---------- сумка: таблица редкостей §6.3, 14 якорей, 1:1 ---------- */
+const BAG_LVLS=[1,2,3,4,5,10,15,20,25,30,35,40,45,50];
+const BAG_W=[
+  [100,0,0,0,0,0,0,0],
+  [99,1,0,0,0,0,0,0],
+  [97,3,0,0,0,0,0,0],
+  [95,4.9,0.1,0,0,0,0,0],
+  [90,9.8,0.2,0,0,0,0,0],
+  [70,28.9,1,0.1,0,0,0,0],
+  [50,46.4,3,0.5,0.1,0,0,0],
+  [30,63.4,5,1,0.5,0.1,0,0],
+  [10,75.4,10,3,1,0.5,0.1,0],
+  [0,70.4,20,5,3,1,0.5,0.1],
+  [0,50.5,30,10,5,3,1,0.5],
+  [0,26,35,20,10,5,3,1],
+  [0,2,30,30,20,10,5,3],
+  [0,0,15,30,20,20,10,5]
+];
+function bagWeights(lvl){
+  lvl=Math.max(1,Math.min(50,lvl));
+  let i=0; while(i<BAG_LVLS.length-1 && BAG_LVLS[i+1]<lvl) i++;
+  if(BAG_LVLS[i]===lvl||i===BAG_LVLS.length-1) return BAG_W[Math.min(i,BAG_W.length-1)].slice();
+  const t=(lvl-BAG_LVLS[i])/(BAG_LVLS[i+1]-BAG_LVLS[i]);
+  const w=BAG_W[i].map((v,j)=>lerp(v,BAG_W[i+1][j],t));
+  const s=w.reduce((a,b)=>a+b,0);
+  return w.map(v=>v/s*100);
+}
+function rollRarity(w){
+  const sum=w.reduce((a,b)=>a+b,0);
+  let r=Math.random()*sum;
+  for(let i=0;i<w.length;i++){ r-=w[i]; if(r<=0) return i; }
+  return 0;
+}
+
+/* ---------- 8 слотов снаряжения (GDD §6.2) ---------- */
+const SLOTS=[
+  {id:"pick",  n:"Кирка",    ic:"⛏️", st:{atk:8},           extra:"находка"},
+  {id:"helm",  n:"Каска",    ic:"⛑️", st:{energy:30,tough:2}},
+  {id:"pet",   n:"Питомец",  ic:"🐕", st:{luck:1.5,mining:3}},
+  {id:"robe",  n:"Роба",     ic:"🦺", st:{tough:2.5}},
+  {id:"pack",  n:"Рюкзак",   ic:"🎒", st:{stone:14}},
+  {id:"boots", n:"Ботинки",  ic:"🥾", st:{spd:0.35}},
+  {id:"glove", n:"Перчатки", ic:"🧤", st:{crit:1.6}},
+  {id:"lamp",  n:"Фонарь",   ic:"🏮", st:{mining:2,luck:1}}
+];
+const STAT_CAPS={crit:60,luck:45,mining:80,spd:14};    // CALIB: вероятностные капы
+/* стат детали = base_слота × RAR_POW × (1+stageScale) × roll[0.85..1.15] — §6.3 */
+function itemStat(item, statId){
+  const base=SLOTS.find(s=>s.id===item.s).st[statId]||0;
+  return base*RAR_POW[item.r]*(1+item.i/60)*item.m;    // CALIB stageScale=idx/60
+}
+function makeItem(slotId){
+  return { s:slotId, r:rollRarity(bagWeights(S.bag)), m:0.85+Math.random()*0.3, i:S.stageIdx };
+}
+function sellPrice(item){ return Math.round(veinReward()*(0.5+item.r*1.5)); }
+
+const DROP_CHANCE=35;                                   // CALIB, босс: 100%
+const bagCost=()=> Math.round(veinReward()*(4+S.bag));  // растёт с прогрессом и уровнем
+
+/* ---------- гача геологов с pity (GDD §7.2, якоря 1:1) ---------- */
+const GEO_PITY_X=[0,25,50,100,250];
+const GEO_PITY_W=[[80,20,0,0],[65,30,5,0],[50,35,13,2],[40,35,20,5],[15,20,45,20]];
+function geoWeights(rolls){
+  const x=Math.max(0,Math.min(250,rolls));
+  let i=0; while(i<GEO_PITY_X.length-1 && GEO_PITY_X[i+1]<x) i++;
+  if(i===GEO_PITY_X.length-1) return GEO_PITY_W[i].slice();
+  const t=(x-GEO_PITY_X[i])/(GEO_PITY_X[i+1]-GEO_PITY_X[i]);
+  return GEO_PITY_W[i].map((v,j)=>lerp(v,GEO_PITY_W[i+1][j],t));
+}
+/* сила ×3/ступень (§7.2): бонус к случайному стату */
+const GEO_TYPES=[
+  {stat:"atk",   n:"Рудознатец",  pct:[12,36,108,324]},
+  {stat:"energy",n:"Врач забоя",  pct:[15,45,135,405]},
+  {stat:"stone", n:"Маркшейдер",  pct:[10,30,90,270]}
+];
+const GEO_RAR=["Common","Rare","Epic","Legendary"];
+const geoCost=()=> Math.round(veinReward()*8);          // CALIB
+
+/* ---------- шахты, пулы камней (§6bis) ---------- */
+const MINES=[
+  {n:"Угольная штольня", rock:"🪨", stones:["Уголь","Медь","Кварц","Золото","Топаз","Сапфир","Алмаз","Осколок ядра"]},
+  {n:"Железный пласт",   rock:"⛰️", stones:["Гравий","Железо","Аметист","Изумруд","Рубин","Мифрил","Чёрный алмаз","Метеорит"]},
+  {n:"Лавовая жила",     rock:"🌋", stones:["Обсидиан","Сера","Гранат","Огненный опал","Платина","Лавовый сапфир","Адамантий","Сердце вулкана"]},
+  {n:"Хрустальная пещера",rock:"🧊", stones:["Кальцит","Флюорит","Хрусталь","Изумруд-гигант","Танзанит","Лунный камень","Звёздный алмаз","Кристалл ядра"]},
+  {n:"Глубинный разлом", rock:"🗿", stones:["Сланец","Никель","Серебро","Самородок","Иридий","Мифрил","Адамантий","Звёздный металл"]}
+];
+const ROCK_NAMES=["Валун","Пласт","Жила","Друза"];
+const STAGES_PER_MINE=5;
+const RANKS=["НОВИЧОК","СТАРАТЕЛЬ","ПРОХОДЧИК","ЗАБОЙЩИК","МАСТЕР","ГОРНЫЙ ЛОРД"];
+
+/* ---------- игрок (GDD §3, базы 1:1) ---------- */
+const BASE={atk:10, spd:4.5, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0};
+const UPGRADES=[
+  {id:"atk",   k:"ATK",     step:3,  base:25, g:1.35, fmt:v=>fmt(v)},
+  {id:"energy",k:"Энергия", step:20, base:20, g:1.32, fmt:v=>fmt(v)},
+  {id:"spd",   k:"SPD",     step:0.3,base:40, g:1.5,  fmt:v=>v.toFixed(1)},
+  {id:"tough", k:"Прочн.",  step:2,  base:35, g:1.45, fmt:v=>fmt(v)},
+  {id:"crit",  k:"CRIT",    step:1,  base:50, g:1.6,  fmt:v=>Math.round(v)+"%"},
+  {id:"luck",  k:"LUCK",    step:1,  base:50, g:1.55, fmt:v=>Math.round(v)+"%"},
+  {id:"mining",k:"MINING",  step:2,  base:45, g:1.5,  fmt:v=>Math.round(v)},
+  {id:"stone", k:"STONE",   step:10, base:30, g:1.4,  fmt:v=>Math.round(v)+"%"}
+];
+const upCost=u=>Math.round(u.base*Math.pow(u.g,S.lvls[u.id]));
+
+/* свёртка статов §2.7: base + upgrades + gear, затем ×geologist */
+function gearSum(statId){
+  let s=0;
+  for(const k in S.gear){ if(S.gear[k]) s+=itemStat(S.gear[k],statId); }
+  return s;
+}
+function stat(id){
+  const u=UPGRADES.find(x=>x.id===id);
+  let v=BASE[id]+(u?u.step*S.lvls[id]:0)+gearSum(id);
+  if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+GEO_TYPES[S.geo.t].pct[S.geo.r]/100);
+  if(id==="spd") v=Math.max(1.0,Math.min(STAT_CAPS.spd,v));
+  if(STAT_CAPS[id] && id!=="spd") v=Math.min(STAT_CAPS[id],v);
+  return v;
+}
+
+/* ---------- экономика: привязана к кривой породы ---------- */
+const REWARD_K=12;
+function veinReward(){
+  const hp=anchored(ANCHOR_HP,S.stageIdx);
+  return Math.max(5, hp/REWARD_K*(stat("stone")/100));
+}
+const idlePerSec=()=>Math.max(1,Math.round(veinReward()/25));
+
+/* ---------- слой находок камней (§6bis) ---------- */
+function pickBonusFind(){ return S.gear.pick ? S.gear.pick.r*4 : 0; }
+function findChance(){
+  return Math.min(50, 8 + pickBonusFind() + stat("luck")-BASE.luck);
+}
+function stoneWeights(){
+  const shift=S.gear.pick ? S.gear.pick.r*3 : 0;        // тир кирки сдвигает таблицу
+  return bagWeights(Math.min(50,S.bag+shift));
+}
+const FIND_TARGET=0.15;                                  // вклад находок ~15% (GDD: 10–20%)
+function stoneValue(ri){
+  const w=stoneWeights();
+  const avg=w.reduce((a,wi,i)=>a+wi*RAR_MULT[i],0)/100;
+  const chance=findChance()/100;
+  const v=veinReward()*FIND_TARGET*RAR_MULT[ri]/(chance*avg);
+  return Math.round(Math.max(veinReward()*0.15,v));
+}
+function onFind(){
+  const ri=rollRarity(stoneWeights());
+  const mineKey=S.mine%MINES.length;
+  const name=MINES[mineKey].stones[ri];
+  const val=stoneValue(ri);
+  S.col[mineKey]=S.col[mineKey]||{};
+  const had=S.col[mineKey][ri]||0;
+  S.col[mineKey][ri]=had+1;
+  let extra;
+  if(had>0){ S.gold+=val; extra="дубликат → +"+fmt(val)+" 🪙"; }
+  else extra="новый камень в коллекции!";
+  showToast("💎",RAR_NAMES[ri],"r"+ri,name,extra);
+}
+
+/* ---------- состояние ---------- */
+let S=null;
+function freshState(){
+  return { gold:0, stageIdx:1, mine:0, stage:1, bag:1,
+    lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
+    gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
+}
+
+/* ---------- боевой тик (§5) ---------- */
+let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null;
+function newRock(){
+  const isBoss=S.stage===STAGES_PER_MINE;
+  rock=rockStatsAt(S.stageIdx,isBoss);
+  rock.isBoss=isBoss;
+  S.rockHP=rock.hp;
+  S.energy=stat("energy");
+  $("rockName").textContent=isBoss?"МАТЕРИНСКАЯ ЖИЛА (босс)":ROCK_NAMES[S.stageIdx%ROCK_NAMES.length];
+  $("rockName").classList.toggle("bosslabel",isBoss);
+  $("rock").textContent=isBoss?"💎":MINES[S.mine%MINES.length].rock;
+}
+function minerHit(){
+  let dmg=Math.max(stat("atk")*0.15, stat("atk")-rock.hard*DMG_HARD_K);
+  let crit=false;
+  if(Math.random()*100<stat("crit")){ dmg*=CRIT_MULT; crit=true; }
+  if(Math.random()*100<stat("mining")) dmg*=2;
+  S.rockHP-=dmg;
+  fxSwing(); fxDamage(dmg,crit);
+  if(S.rockHP<=0) breakVein();
+}
+function rockRespond(){
+  if(Math.random()*100<stat("luck")) return;
+  const drain=Math.max(1, rock.abr*DRAIN_K-stat("tough"));
+  S.energy-=drain;
+  if(S.energy<=0) exhausted();
+}
+function breakVein(){
+  S.gold+=veinReward()*(rock.isBoss?1.5:1);              // ролл 1 — всегда
+  if(Math.random()*100<findChance()) onFind();           // ролл 2 — камень
+  const dropRoll=rock.isBoss?100:DROP_CHANCE;            // ролл 3 — деталь из сумки
+  if(Math.random()*100<dropRoll) dropGear();
+  S.stageIdx++; S.stage++;
+  if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; toastMine(); }
+  newRock(); save();
+}
+function exhausted(){ dead=true; $("overlay").style.display="flex"; }
+function closeOverlay(){ $("overlay").style.display="none"; dead=false; newRock(); }
+
+/* ---------- дроп деталей ---------- */
+function dropGear(){
+  const slot=SLOTS[Math.floor(Math.random()*SLOTS.length)];
+  pendingDrop=makeItem(slot.id);
+  showDropModal();
+}
+function itemDesc(item){
+  if(!item) return "<span style='color:var(--dim)'>пусто</span>";
+  const slot=SLOTS.find(s=>s.id===item.s);
+  let rows=`<b class="r${item.r}">${RAR_NAMES[item.r]}</b><br>${slot.ic} ${slot.n}<br>`;
+  for(const st in slot.st){
+    const v=itemStat(item,st);
+    const nm={atk:"ATK",energy:"Энергия",tough:"Прочн.",luck:"LUCK",mining:"MINING",stone:"STONE",spd:"SPD",crit:"CRIT"}[st];
+    rows+=nm+" +"+(v>=100?fmt(v):v.toFixed(1))+(["luck","crit","stone"].includes(st)?"%":"")+"<br>";
+  }
+  if(item.s==="pick") rows+="находка +"+(item.r*4)+"%<br>";
+  return rows;
+}
+function showDropModal(){
+  const slot=SLOTS.find(s=>s.id===pendingDrop.s);
+  $("dropTitle").textContent="Дроп из сумки: "+slot.n+"!";
+  $("dropSub").textContent="BAG LVL "+S.bag+" · редкость по таблице сумки";
+  $("dropNew").innerHTML=itemDesc(pendingDrop);
+  $("dropOld").innerHTML=itemDesc(S.gear[pendingDrop.s]);
+  $("dropSell").textContent="Продать +"+fmt(sellPrice(pendingDrop))+" 🪙";
+  $("dropModal").style.display="flex";
+}
+$("dropEquip").onclick=()=>{
+  const old=S.gear[pendingDrop.s];
+  if(old) S.gold+=sellPrice(old);                        // старое — автопродажа
+  S.gear[pendingDrop.s]=pendingDrop;
+  pendingDrop=null;
+  $("dropModal").style.display="none";
+  S.energy=Math.min(S.energy,stat("energy"));
+  save(); renderGear();
+};
+$("dropSell").onclick=()=>{
+  S.gold+=sellPrice(pendingDrop);
+  pendingDrop=null;
+  $("dropModal").style.display="none"; save();
+};
+
+/* ---------- гача геолога ---------- */
+$("geoBtn").onclick=()=>{
+  const c=geoCost();
+  if(S.gold<c) return;
+  S.gold-=c;
+  const r=rollRarity(geoWeights(S.geoRolls));
+  S.geoRolls++;
+  const t=Math.floor(Math.random()*GEO_TYPES.length);
+  const power=(x)=>x?GEO_TYPES[x.t].pct[x.r]*Math.pow(3,x.r):0;   // грубая сила
+  const cand={t,r};
+  if(!S.geo || (r>S.geo.r) || (r===S.geo.r && GEO_TYPES[t].pct[r]>GEO_TYPES[S.geo.t].pct[S.geo.r])){
+    S.geo=cand;
+    showToast("👷",GEO_RAR[r],"r"+r,GEO_TYPES[t].n,"нанят! +"+GEO_TYPES[t].pct[r]+"% "+GEO_TYPES[t].stat.toUpperCase());
+  } else {
+    const refund=Math.round(c*0.4);
+    S.gold+=refund;
+    showToast("👷",GEO_RAR[r],"r"+r,GEO_TYPES[t].n,"слабее текущего → +"+fmt(refund)+" 🪙");
+  }
+  save();
+};
+
+/* ---------- сумка ---------- */
+$("bagBtn").onclick=()=>{
+  const c=bagCost();
+  if(S.bag>=50||S.gold<c) return;
+  S.gold-=c; S.bag++;
+  save();
+};
+
+/* ---------- цикл ---------- */
+let last=performance.now(), idleAcc=0;
+function loop(now){
+  const dt=Math.min(0.1,(now-last)/1000); last=now;
+  const paused=dead||!!pendingDrop;
+  if(!paused){
+    hitTimer+=dt; respTimer+=dt;
+    const hitInt=1/stat("spd"), respInt=1/rock.resp;
+    while(hitTimer>=hitInt&&S.rockHP>0){ hitTimer-=hitInt; minerHit(); }
+    while(respTimer>=respInt&&!dead&&S.rockHP>0){ respTimer-=respInt; rockRespond(); }
+  }
+  idleAcc+=dt;
+  if(idleAcc>=1){ S.gold+=idlePerSec()*Math.floor(idleAcc); idleAcc%=1; }
+  render();
+  requestAnimationFrame(loop);
+}
+
+/* ---------- UI ---------- */
+function $(id){ return document.getElementById(id); }
+const SUFFIX=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
+function fmt(n){
+  n=Math.floor(n);
+  if(!isFinite(n)) return "∞";
+  if(n<1000) return String(n);
+  const tier=Math.floor(Math.log10(n)/3);
+  if(tier>=SUFFIX.length) return n.toExponential(2).replace("e+","e");
+  return (n/Math.pow(10,tier*3)).toFixed(2)+SUFFIX[tier];
+}
+function buildUpgrades(){
+  const box=$("upgrades"); box.innerHTML="";
+  UPGRADES.forEach(u=>{
+    const d=document.createElement("div"); d.className="u"; d.id="u_"+u.id;
+    d.innerHTML=`<div class="k">${u.k}</div><div class="v"></div><div class="c"></div><button class="buy">+</button>`;
+    d.querySelector("button").onclick=()=>{
+      const c=upCost(u);
+      if(S.gold>=c){ S.gold-=c; S.lvls[u.id]++; if(u.id==="energy") S.energy=Math.min(S.energy+u.step,stat("energy")); save(); }
+    };
+    box.appendChild(d);
+  });
+}
+function renderGear(){
+  const g=$("gearGrid"); g.innerHTML="";
+  SLOTS.forEach(sl=>{
+    const item=S.gear[sl.id];
+    const d=document.createElement("div");
+    d.className="slot "+(item?("br"+item.r):"empty");
+    let sv="—";
+    if(item){
+      const firstStat=Object.keys(sl.st)[0];
+      const v=itemStat(item,firstStat);
+      sv=`<span class="r${item.r}">${RAR_NAMES[item.r].slice(0,4)}</span> +${v>=100?fmt(v):v.toFixed(1)}`;
+    }
+    d.innerHTML=`<div class="ic">${sl.ic}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
+    g.appendChild(d);
+  });
+}
+function render(){
+  $("gold").textContent=fmt(S.gold);
+  $("gps").textContent=fmt(idlePerSec());
+  $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
+  $("stageLabel").textContent=fmt(S.stageIdx);
+  $("minerRank").textContent=RANKS[Math.min(RANKS.length-1,S.mine)];
+  $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
+  $("hpTxt").textContent="порода "+fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
+  $("enFill").style.width=Math.max(0,S.energy/stat("energy")*100)+"%";
+  $("enTxt").textContent="энергия "+fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy"));
+  $("sAtk").textContent=fmt(stat("atk"));
+  $("sSpd").textContent=stat("spd").toFixed(1);
+  $("sMin").textContent=Math.round(stat("mining"));
+  $("sCrit").textContent=Math.round(stat("crit"))+"%";
+  $("sLuck").textContent=Math.round(stat("luck"))+"%";
+  $("sStone").textContent=Math.round(stat("stone"))+"%";
+  $("findChance").textContent=Math.round(findChance());
+  $("bagLvl").textContent=S.bag;
+  $("dropCh").textContent=DROP_CHANCE;
+  const bb=$("bagBtn");
+  if(S.bag<50){ bb.textContent="LVL "+(S.bag+1)+": "+fmt(bagCost())+" 🪙"; bb.disabled=S.gold<bagCost(); }
+  else { bb.textContent="MAX"; bb.disabled=true; }
+  if(S.geo){
+    const g=GEO_TYPES[S.geo.t];
+    $("geoName").innerHTML=`<span class="r${S.geo.r}">${g.n}</span>`;
+    $("geoDesc").innerHTML=GEO_RAR[S.geo.r]+" · +"+g.pct[S.geo.r]+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat]);
+  }
+  $("geoBtn").textContent="Нанять: "+fmt(geoCost())+" 🪙";
+  $("geoBtn").disabled=S.gold<geoCost();
+  $("geoRolls").textContent=S.geoRolls;
+  const mineKey=S.mine%MINES.length;
+  $("colCount").textContent=Object.keys(S.col[mineKey]||{}).length+"/8";
+  UPGRADES.forEach(u=>{
+    const d=$("u_"+u.id);
+    d.querySelector(".v").textContent=u.fmt(stat(u.id));
+    d.querySelector(".c").textContent=fmt(upCost(u))+" 🪙";
+    d.querySelector("button").disabled=S.gold<upCost(u);
+  });
+}
+
+/* эффекты */
+function fxSwing(){
+  const m=$("miner"); m.classList.remove("swing"); void m.offsetWidth; m.classList.add("swing");
+  const r=$("rock"); r.classList.remove("hitfx"); void r.offsetWidth; r.classList.add("hitfx");
+  if(Math.random()<0.4){
+    const c=document.createElement("div"); c.className="chip"; c.textContent="✨";
+    c.style.right=(10+Math.random()*8)+"%"; c.style.bottom="66px";
+    c.style.setProperty("--dx",(Math.random()*80-40)+"px");
+    c.style.setProperty("--dy",(-30-Math.random()*50)+"px");
+    $("scene").appendChild(c); setTimeout(()=>c.remove(),700);
+  }
+}
+function fxDamage(dmg,crit){
+  const d=document.createElement("div");
+  d.className="dmgnum"+(crit?" crit":"");
+  d.textContent=(crit?"КРИТ ":"")+fmt(dmg);
+  d.style.right=(8+Math.random()*14)+"%"; d.style.bottom=(86+Math.random()*30)+"px";
+  $("scene").appendChild(d); setTimeout(()=>d.remove(),800);
+}
+let toastT=null;
+function showToast(icon,rar,rcls,name,extra){
+  const t=$("toast");
+  t.innerHTML=`<div class="big">${icon}</div><div class="r ${rcls}">${rar}</div>
+    <div class="nm">${name}</div><div class="vl">${extra}</div>`;
+  t.style.display="block";
+  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display="none",2200);
+}
+function toastMine(){
+  const m=MINES[S.mine%MINES.length];
+  showToast("⛏️","Новая шахта!","",m.n,"новый пул камней · жилы богаче");
+}
+$("colBtn").onclick=()=>{
+  const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
+  $("colTitle").textContent="Коллекция: "+m.n;
+  $("colList").innerHTML=m.stones.map((s,i)=>{
+    const c=col[i]||0;
+    return `<div class="col-item"><span class="${c?"found":"notfound"}"><b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"не найден"}</span></div>`;
+  }).join("");
+  $("colModal").style.display="flex";
+};
+$("resetBtn").onclick=()=>{
+  if(confirm("Сбросить весь прогресс?")){ localStorage.removeItem("oredeep_v3"); S=freshState(); newRock(); save(); renderGear(); }
+};
+
+/* ---------- save/load ---------- */
+function save(){ try{ localStorage.setItem("oredeep_v3",JSON.stringify(S)); }catch(e){} }
+function load(){
+  try{
+    const raw=localStorage.getItem("oredeep_v3");
+    if(raw){ S=Object.assign(freshState(),JSON.parse(raw)); return; }
+  }catch(e){}
+  S=freshState();
+}
+
+/* ---------- старт ---------- */
+load(); buildUpgrades(); renderGear(); newRock(); render();
+requestAnimationFrame(loop);
+setInterval(save,5000);
+</script>
+</body>
+</html>
