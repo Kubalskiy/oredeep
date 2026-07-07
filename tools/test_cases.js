@@ -174,6 +174,25 @@ T("миграция v1→v2: ftue выключен для старых, стри
   S.v===2 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[17] Прогрессия кирок");
+localStorage.removeItem("oredeep_v3"); load(); S.gear={}; S.bag=1;
+let named=true;
+for(let i=0;i<30;i++){
+  const it=makeItem("pick");
+  if(!it.n || !PICK_NAMES[it.r].includes(it.n)) named=false;
+}
+T("кирка при дропе получает имя своего тира", named);
+S.pickLog={}; S.bag=50;
+for(let i=0;i<200;i++) dropGear();
+T("журнал владения пополняется", Object.keys(S.pickLog).length>=1, Object.keys(S.pickLog).join(","));
+openPickGallery();
+T("галерея открывается и рисует 16 кирок", __ids.pickModal.style.display==="flex" && (__ids.pickList.innerHTML.match(/oreimg/g)||[]).length===16);
+// миграция: старая кирка без имени
+localStorage.setItem("oredeep_v3", JSON.stringify({gold:1,gear:{pick:{s:"pick",r:3,m:1,i:5}}}));
+load();
+T("миграция даёт имя старой кирке", S.gear.pick.n===PICK_NAMES[3][0] && S.pickLog[S.gear.pick.n]===true);
+localStorage.removeItem("oredeep_v3"); load();
+
 console.log("\n[15] Офлайн-доход");
 localStorage.removeItem("oredeep_v3"); load(); S.gold=0;
 S.lastSeen=Date.now()-3600*1000;   // час назад
