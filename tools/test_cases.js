@@ -151,10 +151,10 @@ S.col={0:{0:1,1:1,2:1}};   // 3 уникальных камня
 T("+2% STONE за каждый уникальный камень", stat("stone")===stone0+6, stat("stone")+" vs "+(stone0+6));
 const atk0=stat("atk");
 S.col={0:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1}};   // полный сет чертога 1
-T("сет чертога 1 активен: +15% ATK", Math.abs(stat("atk")-atk0*1.15)<1e-9, stat("atk")+" vs "+(atk0*1.15));
+T("сет чертога 1: массивный ×2 ATK", Math.abs(stat("atk")-atk0*2)<1e-9, stat("atk")+" vs "+(atk0*2));
 const luck0=(S.col={},stat("luck"));
 S.col={3:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1}};   // сет чертога 4: +5 LUCK flat
-T("сет чертога 4: +5% LUCK (flat)", stat("luck")===luck0+5, "luck="+stat("luck"));
+T("сет чертога 4: +15% LUCK (с капом 45)", stat("luck")===Math.min(45,luck0+15), "luck="+stat("luck"));
 S.col={};
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");

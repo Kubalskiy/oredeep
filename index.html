@@ -410,8 +410,8 @@ function onFind(){
   let extra;
   if(had>0){ S.gold+=val; extra="дубликат → скупщику +"+fmt(val)+" 🪙"; }
   else if(setDone(mineKey)){
-    extra="СЕТ СОБРАН! Навсегда: "+SET_BONUS[mineKey].label;
-    sayQuip("Полный сет! Гора запомнит это.",4);
+    extra="СЕТ СОБРАН! НАВСЕГДА: "+SET_BONUS[mineKey].label;
+    sayQuip("ПОЛНЫЙ СЕТ! Чуете? Гора запела!",5);
     jingleSet();
   }
   else { extra="в коллекцию! +2% STONE навсегда"; jingleFind(); }
@@ -423,11 +423,11 @@ function onFind(){
    каждый уникальный камень: +2 п.п. STONE (навсегда)
    полный сет чертога: именной бонус чертога */
 const SET_BONUS=[
-  {stat:"atk",   pct:15, label:"+15% ATK"},
-  {stat:"energy",pct:15, label:"+15% Энергии"},
-  {stat:"stone", pct:20, label:"+20% STONE"},
-  {stat:"luck",  flat:5, label:"+5% LUCK"},
-  {stat:"atk",   pct:25, label:"+25% ATK"}
+  {stat:"atk",   pct:100, label:"×2 ATK — «Гнев Горы»"},
+  {stat:"energy",pct:100, label:"×2 Энергия — «Дыхание Глубин»"},
+  {stat:"stone", pct:150, label:"×2.5 STONE — «Жар Горна»"},
+  {stat:"luck",  flat:15, label:"+15% LUCK — «Свет Хрусталя»"},
+  {stat:"atk",   pct:200, label:"×3 ATK — «ЕГО благословение»"}
 ];
 function uniqueStones(){ let n=0; for(const k in S.col) n+=Object.keys(S.col[k]).length; return n; }
 function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
@@ -658,7 +658,8 @@ function render(){
   $("geoBtn").disabled=S.gold<geoCost();
   $("geoRolls").textContent=S.geoRolls;
   const mineKey=S.mine%MINES.length;
-  $("colCount").textContent=Object.keys(S.col[mineKey]||{}).length+"/8"+(setDone(mineKey)?" ✓":"");
+  { const got=Object.keys(S.col[mineKey]||{}).length;
+  $("colCount").textContent=got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":"")); }
   UPGRADES.forEach(u=>{
     const d=$("u_"+u.id);
     d.querySelector(".v").textContent=u.fmt(stat(u.id));
