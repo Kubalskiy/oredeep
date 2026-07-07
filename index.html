@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — прототип v0.7 «Копай глубже»</title>
+<title>ORE DEEP — прототип v0.8 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -39,6 +39,8 @@
   .dmgnum.crit{color:#ff8a4a;font-size:19px;}
   @keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
 
+  #speedBtn{position:absolute;right:10px;bottom:10px;width:auto;padding:6px 14px;z-index:6;
+    background:#1b2029cc;border:1px solid var(--gold);color:var(--gold);font-size:12px;}
   .bubble{position:absolute;left:5%;bottom:118px;max-width:190px;background:#f4efe2;color:#232323;
     font-size:11px;font-weight:600;padding:7px 11px;border-radius:12px 12px 12px 3px;opacity:0;
     transition:opacity .35s;pointer-events:none;z-index:5;box-shadow:0 3px 10px #0007;}
@@ -142,6 +144,7 @@
     <div class="bubble" id="bubble"></div>
     <div class="miner" id="miner">⛏️</div>
     <div class="rock" id="rock">🪨</div>
+    <button id="speedBtn">×1 СКОРОСТЬ</button>
   </div>
 
   <div class="stats">
@@ -449,7 +452,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { gold:0, stageIdx:1, mine:0, stage:1, bag:1,
+  return { gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -589,7 +592,8 @@ $("bagBtn").onclick=()=>{
 /* ---------- цикл ---------- */
 let last=performance.now(), idleAcc=0;
 function loop(now){
-  const dt=Math.min(0.1,(now-last)/1000); last=now;
+  const rawDt=Math.min(0.1,(now-last)/1000); last=now;
+  const dt=rawDt*(S.speed||1);
   const paused=dead;
   if(!paused){
     hitTimer+=dt; respTimer+=dt;
@@ -599,8 +603,8 @@ function loop(now){
   }
   idleAcc+=dt;
   if(idleAcc>=1){ S.gold+=idlePerSec()*Math.floor(idleAcc); idleAcc%=1; }
-  if(quipHide>0){ quipHide-=dt; if(quipHide<=0) $("bubble").classList.remove("show"); }
-  else if(!dead){ quipNext-=dt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
+  if(quipHide>0){ quipHide-=rawDt; if(quipHide<=0) $("bubble").classList.remove("show"); }
+  else if(!dead){ quipNext-=rawDt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
   render();
   requestAnimationFrame(loop);
 }
@@ -661,6 +665,7 @@ function render(){
   $("sLuck").textContent=Math.round(stat("luck"))+"%";
   $("sStone").textContent=Math.round(stat("stone"))+"%";
   $("findChance").textContent=Math.round(findChance());
+  $("speedBtn").textContent="×"+(S.speed||1)+" СКОРОСТЬ";
   $("bagLvl").textContent=S.bag;
   $("dropCh").textContent=DROP_CHANCE;
   const bb=$("bagBtn");
@@ -864,6 +869,11 @@ document.addEventListener("pointerdown",()=>{
 load(); buildUpgrades(); renderGear(); newRock(); render();
 $("musicBtn").textContent=musicOn?"🔊":"🔇";
 $("musicBtn").onclick=toggleMusic;
+$("speedBtn").onclick=()=>{
+  S.speed=(S.speed||1)>=3?1:(S.speed||1)+1;
+  sayQuip(S.speed===1?"Спокойный темп. Медитируем.":(S.speed===2?"Двойной темп! Борода развевается!":"ТРОЙНОЙ! Держите шлем!"),3);
+  save();
+};
 requestAnimationFrame(loop);
 setInterval(save,5000);
 </script>

@@ -144,6 +144,14 @@ T("карточка показывает имя нанятого", __ids.geoName
 S.geo={t:0,r:1}; render();
 T("старый сейв без имени не ломает карточку", __ids.geoName.innerHTML.includes(GEO_TYPES[0].names[0]));
 
+console.log("\n[12] Скорость x1/x2/x3");
+S.speed=1;
+__ids.speedBtn.onclick(); T("x1 -> x2", S.speed===2);
+__ids.speedBtn.onclick(); T("x2 -> x3", S.speed===3);
+__ids.speedBtn.onclick(); T("x3 -> x1 (цикл)", S.speed===1);
+render();
+T("кнопка показывает текущую скорость", __ids.speedBtn.textContent.includes("×1"));
+
 console.log("\n[11] Коллекции: пассив и сет-бонусы");
 S.col={}; S.geo=null; S.gear={};
 const stone0=stat("stone");
