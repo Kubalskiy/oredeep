@@ -336,7 +336,21 @@ const MINES=[
   {n:"Хрустальные Чертоги",      rock:"🧊", stones:["Кальцит-самозванец","Флюорит светящийся","Хрусталь пиршественный","Изумруд-гигант","Танзанит редкий гость","Лунный камень (не с Луны)","Звёздный алмаз","Кристалл Глубин"]},
   {n:"Бездна «Не буди Его»",     rock:"🗿", stones:["Сланец «зачем ты здесь»","Никель тревожный","Серебро столовое","Самородок «МАМА, Я НАШЁЛ»","Иридий шёпотный","Мифрил истинный","Адамантий Бездны","ЕГО чешуйка"]}
 ];
-const ROCK_NAMES=["Булыжник-терпила","Пласт-упрямец","Жила-жадина","Друза-воображала"];
+/* имена жил и боссов — свои у каждого чертога */
+const ROCK_POOLS=[
+  ["Булыжник-терпила","Пласт-упрямец","Валун Обыкновенный","Камень-с-характером"],
+  ["Эхо-глыба","Гулкий пласт","Жила-жадина","Резонирующий валун"],
+  ["Обожжённый пласт","Шлако-глыба","Жила с перчинкой","Лавовый упрямец"],
+  ["Друза-воображала","Хрустальный пласт","Гранёная глыба","Жила-недотрога"],
+  ["Молчаливый монолит","Тёмный пласт","Жила «не смотри»","Глыба-из-снов"]
+];
+const BOSS_POOLS=[
+  ["Дедушка Валун","Хрящ Неповоротливый","Старший Булыжник"],
+  ["Эхо-Голем","Гулкий Монолит","Хор Обвала"],
+  ["Магма-Дед","Шлаковый Тан","Недожаренный Голем"],
+  ["Хрустальный Сноб","Граф Друза","Зеркальный Верзила"],
+  ["ОНО (младшее)","Шёпот-в-Стене","ЕГО мизинец"]
+];
 const STAGES_PER_MINE=5;
 const RANKS=["БЕЗБОРОДЫЙ","ПОЧТИ ГНОМ","РУДОКОП","ТАН ЗАБОЯ","БОРОДА-ЛЕГЕНДА","ПОДГОРНЫЙ КОРОЛЬ"];
 
@@ -463,7 +477,7 @@ const KO_SCREENS=[
   ["БОРОДА ЗАПЫЛИЛАСЬ","Энергия кончилась раньше породы. Эль, отдых, апгрейды — и снова в забой."]
 ];
 let quipHide=0, quipNext=6;
-function sayQuip(t,dur){ const b=$("bubble"); b.textContent=t; b.classList.add("show");
+function sayQuip(t,dur){ const b=$("bubble"); b.textContent="Борин: "+t; b.classList.add("show");
   quipHide=dur||3; quipNext=9+Math.random()*8; }
 
 /* ---------- боевой тик (§5) ---------- */
@@ -474,7 +488,10 @@ function newRock(){
   rock.isBoss=isBoss;
   S.rockHP=rock.hp;
   S.energy=stat("energy");
-  $("rockName").textContent=isBoss?"ДРЕВНЯЯ ЖИЛА (босс). ТИХО!":ROCK_NAMES[S.stageIdx%ROCK_NAMES.length];
+  const mk=S.mine%MINES.length, cycle=Math.floor(S.mine/MINES.length);
+  $("rockName").textContent=isBoss
+    ? BOSS_POOLS[mk][cycle%BOSS_POOLS[mk].length]+" (босс)"
+    : ROCK_POOLS[mk][S.stageIdx%ROCK_POOLS[mk].length];
   if(isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
   $("rockName").classList.toggle("bosslabel",isBoss);
   $("rock").textContent=isBoss?"💎":MINES[S.mine%MINES.length].rock;
