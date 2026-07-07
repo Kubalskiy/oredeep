@@ -144,6 +144,13 @@ T("карточка показывает имя нанятого", __ids.geoName
 S.geo={t:0,r:1}; render();
 T("старый сейв без имени не ломает карточку", __ids.geoName.innerHTML.includes(GEO_TYPES[0].names[0]));
 
+console.log("\n[13] Именные уровни сундука");
+T("bagName(1) = Дырявый мешок", bagName(1)==="Дырявый мешок");
+T("bagName(17) = Гномий сундучок", bagName(17)==="Гномий сундучок");
+T("bagName(50) = СУНДУК СУНДУКОВ", bagName(50)==="СУНДУК СУНДУКОВ");
+T("nextBagName(15) → Окованный сундук на 20", nextBagName(15)[0]===20);
+T("nextBagName(50) = null (предел)", nextBagName(50)===null);
+
 console.log("\n[12] Скорость x1/x2/x3");
 S.speed=1;
 __ids.speedBtn.onclick(); T("x1 -> x2", S.speed===2);
