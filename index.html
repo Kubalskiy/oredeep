@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — прототип v0.4 «Копай глубже»</title>
+<title>ORE DEEP — прототип v0.5 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -201,21 +201,6 @@
   <button style="max-width:220px;margin-top:14px" onclick="closeOverlay()">Ещё разок, за Гору!</button>
 </div>
 
-<div class="modal" id="dropModal">
-  <div class="box">
-    <h3 id="dropTitle">Дроп!</h3>
-    <div class="sub" id="dropSub"></div>
-    <div class="cmp">
-      <div class="side"><div class="ttl">Новое</div><div id="dropNew"></div></div>
-      <div class="side"><div class="ttl">Надето</div><div id="dropOld"></div></div>
-    </div>
-    <div class="btnrow">
-      <button class="buy" id="dropEquip">Надеть</button>
-      <button class="gold" id="dropSell"></button>
-    </div>
-  </div>
-</div>
-
 <div class="modal" id="colModal">
   <div class="box">
     <h3 id="colTitle"></h3>
@@ -334,9 +319,9 @@ function geoWeights(rolls){
 }
 /* сила ×3/ступень (§7.2): бонус к случайному стату */
 const GEO_TYPES=[
-  {stat:"atk",   n:"Дед Дубощит",     pct:[12,36,108,324]},
-  {stat:"energy",n:"Знахарка Хильда", pct:[15,45,135,405]},
-  {stat:"stone", n:"Счетовод Глоди",  pct:[10,30,90,270]}
+  {stat:"atk",   names:["Дед Дубощит","Тан Крушибор","Мастер Кувалд","Бабка Гром"],      pct:[12,36,108,324]},
+  {stat:"energy",names:["Знахарка Хильда","Пивовар Бодри","Тётка Отвара","Лекарь Мхов"], pct:[15,45,135,405]},
+  {stat:"stone", names:["Счетовод Глоди","Скупщик Нори","Барыга Втори","Казначей Молчун"],pct:[10,30,90,270]}
 ];
 const GEO_RAR=["Common","Rare","Epic","Legendary"];
 const geoCost=()=> Math.round(veinReward()*8);          // CALIB
@@ -377,6 +362,11 @@ function stat(id){
   const u=UPGRADES.find(x=>x.id===id);
   let v=BASE[id]+(u?u.step*S.lvls[id]:0)+gearSum(id);
   if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+GEO_TYPES[S.geo.t].pct[S.geo.r]/100);
+  if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
+  for(let k=0;k<SET_BONUS.length;k++){                  // сет-бонусы чертогов
+    if(SET_BONUS[k].stat===id && setDone(k))
+      v = SET_BONUS[k].flat ? v+SET_BONUS[k].flat : v*(1+SET_BONUS[k].pct/100);
+  }
   if(id==="spd") v=Math.max(1.0,Math.min(STAT_CAPS.spd,v));
   if(STAT_CAPS[id] && id!=="spd") v=Math.min(STAT_CAPS[id],v);
   return v;
@@ -417,10 +407,27 @@ function onFind(){
   S.col[mineKey][ri]=had+1;
   let extra;
   if(had>0){ S.gold+=val; extra="дубликат → скупщику +"+fmt(val)+" 🪙"; }
-  else extra="в коллекцию! Клан гордится.";
+  else if(setDone(mineKey)){
+    extra="СЕТ СОБРАН! Навсегда: "+SET_BONUS[mineKey].label;
+    sayQuip("Полный сет! Гора запомнит это.",4);
+  }
+  else extra="в коллекцию! +2% STONE навсегда";
   sayQuip(FIND_QUIPS[Math.floor(Math.random()*FIND_QUIPS.length)]);
   showToast("💎",RAR_NAMES[ri],"r"+ri,name,extra);
 }
+
+/* ---------- коллекции: пассивные бонусы (§11) ----------
+   каждый уникальный камень: +2 п.п. STONE (навсегда)
+   полный сет чертога: именной бонус чертога */
+const SET_BONUS=[
+  {stat:"atk",   pct:15, label:"+15% ATK"},
+  {stat:"energy",pct:15, label:"+15% Энергии"},
+  {stat:"stone", pct:20, label:"+20% STONE"},
+  {stat:"luck",  flat:5, label:"+5% LUCK"},
+  {stat:"atk",   pct:25, label:"+25% ATK"}
+];
+function uniqueStones(){ let n=0; for(const k in S.col) n+=Object.keys(S.col[k]).length; return n; }
+function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 
 /* ---------- состояние ---------- */
 let S=null;
@@ -524,45 +531,11 @@ function dropGear(){
     showToast(slot.ic,RAR_NAMES[it.r],"r"+it.r,slot.n,extra);
     renderGear();
   } else {
-    pendingDrop=it;
-    showDropModal();
+    const p=sellPrice(it);
+    S.gold+=p;
+    showToast(slot.ic,RAR_NAMES[it.r],"r"+it.r,slot.n,"слабее надетого — скупщику +"+fmt(p)+" 🪙");
   }
 }
-function itemDesc(item){
-  if(!item) return "<span style='color:var(--dim)'>пусто</span>";
-  const slot=SLOTS.find(s=>s.id===item.s);
-  let rows=`<b class="r${item.r}">${RAR_NAMES[item.r]}</b><br>${slot.ic} ${slot.n}<br>`;
-  for(const st in slot.st){
-    const v=itemStat(item,st);
-    const nm={atk:"ATK",energy:"Энергия",tough:"Прочн.",luck:"LUCK",mining:"MINING",stone:"STONE",spd:"SPD",crit:"CRIT"}[st];
-    rows+=nm+" +"+(v>=100?fmt(v):v.toFixed(1))+(["luck","crit","stone"].includes(st)?"%":"")+"<br>";
-  }
-  if(item.s==="pick") rows+="находка +"+(item.r*4)+"%<br>";
-  return rows;
-}
-function showDropModal(){
-  const slot=SLOTS.find(s=>s.id===pendingDrop.s);
-  $("dropTitle").textContent="Из сундука выпало: "+slot.n+"!";
-  $("dropSub").textContent="Не однозначно лучше надетого. Решай, тут все бородатые. BAG LVL "+S.bag;
-  $("dropNew").innerHTML=itemDesc(pendingDrop);
-  $("dropOld").innerHTML=itemDesc(S.gear[pendingDrop.s]);
-  $("dropSell").textContent="Скупщику за "+fmt(sellPrice(pendingDrop))+" 🪙";
-  $("dropModal").style.display="flex";
-}
-$("dropEquip").onclick=()=>{
-  const old=S.gear[pendingDrop.s];
-  if(old) S.gold+=sellPrice(old);                        // старое — автопродажа
-  S.gear[pendingDrop.s]=pendingDrop;
-  pendingDrop=null;
-  $("dropModal").style.display="none";
-  S.energy=Math.min(S.energy,stat("energy"));
-  save(); renderGear();
-};
-$("dropSell").onclick=()=>{
-  S.gold+=sellPrice(pendingDrop);
-  pendingDrop=null;
-  $("dropModal").style.display="none"; save();
-};
 
 /* ---------- гача геолога ---------- */
 $("geoBtn").onclick=()=>{
@@ -572,15 +545,14 @@ $("geoBtn").onclick=()=>{
   const r=rollRarity(geoWeights(S.geoRolls));
   S.geoRolls++;
   const t=Math.floor(Math.random()*GEO_TYPES.length);
-  const power=(x)=>x?GEO_TYPES[x.t].pct[x.r]*Math.pow(3,x.r):0;   // грубая сила
-  const cand={t,r};
+  const name=GEO_TYPES[t].names[Math.floor(Math.random()*GEO_TYPES[t].names.length)];
   if(!S.geo || (r>S.geo.r) || (r===S.geo.r && GEO_TYPES[t].pct[r]>GEO_TYPES[S.geo.t].pct[S.geo.r])){
-    S.geo=cand;
-    showToast("👷",GEO_RAR[r],"r"+r,GEO_TYPES[t].n,"нанят! +"+GEO_TYPES[t].pct[r]+"% "+GEO_TYPES[t].stat.toUpperCase());
+    S.geo={t,r,n:name};
+    showToast("👷",GEO_RAR[r],"r"+r,name,"нанят! +"+GEO_TYPES[t].pct[r]+"% "+GEO_TYPES[t].stat.toUpperCase());
   } else {
     const refund=Math.round(c*0.4);
     S.gold+=refund;
-    showToast("👷",GEO_RAR[r],"r"+r,GEO_TYPES[t].n,"слабее — отправлен варить эль +"+fmt(refund)+" 🪙");
+    showToast("👷",GEO_RAR[r],"r"+r,name,"слабее — отправлен варить эль +"+fmt(refund)+" 🪙");
   }
   save();
 };
@@ -597,7 +569,7 @@ $("bagBtn").onclick=()=>{
 let last=performance.now(), idleAcc=0;
 function loop(now){
   const dt=Math.min(0.1,(now-last)/1000); last=now;
-  const paused=dead||!!pendingDrop;
+  const paused=dead;
   if(!paused){
     hitTimer+=dt; respTimer+=dt;
     const hitInt=1/stat("spd"), respInt=1/rock.resp;
@@ -675,14 +647,14 @@ function render(){
   else { bb.textContent="MAX"; bb.disabled=true; }
   if(S.geo){
     const g=GEO_TYPES[S.geo.t];
-    $("geoName").innerHTML=`<span class="r${S.geo.r}">${g.n}</span>`;
+    $("geoName").innerHTML=`<span class="r${S.geo.r}">${S.geo.n||g.names[0]}</span>`;
     $("geoDesc").innerHTML=GEO_RAR[S.geo.r]+" · +"+g.pct[S.geo.r]+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat]);
   }
   $("geoBtn").textContent="Нанять: "+fmt(geoCost())+" 🪙";
   $("geoBtn").disabled=S.gold<geoCost();
   $("geoRolls").textContent=S.geoRolls;
   const mineKey=S.mine%MINES.length;
-  $("colCount").textContent=Object.keys(S.col[mineKey]||{}).length+"/8";
+  $("colCount").textContent=Object.keys(S.col[mineKey]||{}).length+"/8"+(setDone(mineKey)?" ✓":"");
   UPGRADES.forEach(u=>{
     const d=$("u_"+u.id);
     d.querySelector(".v").textContent=u.fmt(stat(u.id));
@@ -726,7 +698,10 @@ function toastMine(){
 $("colBtn").onclick=()=>{
   const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
   $("colTitle").textContent="Коллекция: "+m.n;
-  $("colList").innerHTML=m.stones.map((s,i)=>{
+  const got=Object.keys(col).length;
+  const bonusLine=`<div class="col-item"><span>Пассив: +2% STONE за камень</span><span class="cnt">сейчас +${2*uniqueStones()}%</span></div>`
+    +`<div class="col-item"><span>Сет чертога (8/8): <b>${SET_BONUS[mineKey].label}</b></span><span class="cnt">${setDone(mineKey)?"АКТИВЕН ✓":got+"/8"}</span></div>`;
+  $("colList").innerHTML=bonusLine+m.stones.map((s,i)=>{
     const c=col[i]||0;
     return `<div class="col-item"><span class="${c?"found":"notfound"}"><b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"не найден"}</span></div>`;
   }).join("");

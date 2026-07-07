@@ -112,25 +112,50 @@ T("сумка и гача без золота заблокированы", __ids
 { const g0=S.gold, l0=S.lvls.atk; __ids.u_atk._q["button"].onclick();
   T("клик по заблокированной кнопке ничего не делает", S.gold===g0 && S.lvls.atk===l0); }
 
-console.log("\n[9] Авто-надевание однозначно лучшего дропа");
-S.gold=0; S.gear={}; pendingDrop=null;
+console.log("\n[9] Авто-экипировка и авто-продажа (без модалок)");
+S.gold=0; S.gear={};
 dropGear();
-T("пустой слот: надето автоматически, модалки нет", pendingDrop===null && Object.keys(S.gear).length===1);
-S.gear={pick:{s:"pick",r:0,m:0.85,i:1}}; S.bag=50;
-let autoUp=false, badModal=false;
-for(let i=0;i<400 && !autoUp;i++){
-  const before=S.gear.pick;
+T("пустой слот: надето автоматически", pendingDrop===null && Object.keys(S.gear).length===1);
+S.gear={pick:{s:"pick",r:7,m:1.15,i:99999}}; S.bag=1; S.gold=0;
+let flowOk=true;
+for(let i=0;i<60;i++){
   dropGear();
-  if(pendingDrop){
-    const it=pendingDrop, old=S.gear[it.s];
-    if(!old || (itemPower(it)>itemPower(old) && it.r>=old.r)) badModal=true;
-    __ids.dropSell.onclick();
-  }
-  if(S.gear.pick!==before && S.gear.pick.r>0) autoUp=true;
+  if(pendingDrop!==null) flowOk=false;
+  if(S.gear.pick.r<7) flowOk=false;
 }
-T("строго лучшая кирка надета автоматически", autoUp);
-T("модалка не показывается для однозначно лучших дропов", !badModal);
-T("худшее продано при авто-надевании — золото начислено", S.gold>0);
+T("слабый шмот продаётся сам, кирка не тронута, модалок нет", flowOk);
+T("золото от скупщика начислено", S.gold>0);
+S.gear={pick:{s:"pick",r:0,m:0.85,i:1}}; S.bag=50;
+let autoUp=false;
+for(let i=0;i<400 && !autoUp;i++){
+  dropGear();
+  if(pendingDrop!==null) flowOk=false;
+  if(S.gear.pick.r>0) autoUp=true;
+}
+T("строго лучшая кирка надета автоматически", autoUp && flowOk);
+
+console.log("\n[10] Старейшины: пул имён");
+S.gold=1e12; S.geo=null; S.geoRolls=0;
+for(let i=0;i<40;i++) __ids.geoBtn.onclick();
+T("старейшина нанят, у него есть имя", !!S.geo && typeof S.geo.n==="string" && S.geo.n.length>2, S.geo?S.geo.n:"");
+T("имя из пула его типа", GEO_TYPES[S.geo.t].names.includes(S.geo.n));
+render();
+T("карточка показывает имя нанятого", __ids.geoName.innerHTML.includes(S.geo.n));
+S.geo={t:0,r:1}; render();
+T("старый сейв без имени не ломает карточку", __ids.geoName.innerHTML.includes(GEO_TYPES[0].names[0]));
+
+console.log("\n[11] Коллекции: пассив и сет-бонусы");
+S.col={}; S.geo=null; S.gear={};
+const stone0=stat("stone");
+S.col={0:{0:1,1:1,2:1}};   // 3 уникальных камня
+T("+2% STONE за каждый уникальный камень", stat("stone")===stone0+6, stat("stone")+" vs "+(stone0+6));
+const atk0=stat("atk");
+S.col={0:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1}};   // полный сет чертога 1
+T("сет чертога 1 активен: +15% ATK", Math.abs(stat("atk")-atk0*1.15)<1e-9, stat("atk")+" vs "+(atk0*1.15));
+const luck0=(S.col={},stat("luck"));
+S.col={3:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1}};   // сет чертога 4: +5 LUCK flat
+T("сет чертога 4: +5% LUCK (flat)", stat("luck")===luck0+5, "luck="+stat("luck"));
+S.col={};
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
