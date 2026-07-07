@@ -505,6 +505,7 @@ const UPGRADES=[
   {id:"stone", k:"STONE",   step:10, base:30, g:1.4,  fmt:v=>Math.round(v)+"%"}
 ];
 const upCost=u=>Math.round(u.base*Math.pow(u.g,S.lvls[u.id]));
+const statCapped=id=>STAT_CAPS[id]!==undefined && stat(id)>=STAT_CAPS[id];
 
 /* свёртка статов §2.7: base + upgrades + gear, затем ×geologist */
 function gearSum(statId){
@@ -767,6 +768,7 @@ function buildUpgrades(){
     const d=document.createElement("div"); d.className="u"; d.id="u_"+u.id;
     d.innerHTML=`<div class="k">${u.k}</div><div class="v"></div><div class="c"></div><button class="buy">+</button>`;
     d.querySelector("button").onclick=()=>{
+      if(statCapped(u.id)) return;                       // кап: не тратить впустую
       const c=upCost(u);
       if(S.gold>=c){ S.gold-=c; S.lvls[u.id]++; if(u.id==="energy") S.energy=Math.min(S.energy+u.step,stat("energy")); save(); }
     };
@@ -829,9 +831,11 @@ function render(){
   $("colCount").textContent=got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":"")); }
   UPGRADES.forEach(u=>{
     const d=$("u_"+u.id);
+    const capped=statCapped(u.id);
     d.querySelector(".v").textContent=u.fmt(stat(u.id));
-    d.querySelector(".c").textContent=fmt(upCost(u))+" 🪙";
-    d.querySelector("button").disabled=S.gold<upCost(u);
+    d.querySelector(".c").textContent=capped?"MAX":(fmt(upCost(u))+" 🪙");
+    d.querySelector("button").disabled=capped||S.gold<upCost(u);
+    d.querySelector("button").textContent=capped?"✓":"+";
   });
 }
 

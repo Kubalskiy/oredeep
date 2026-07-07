@@ -144,6 +144,25 @@ T("карточка показывает имя нанятого", __ids.geoName
 S.geo={t:0,r:1}; render();
 T("старый сейв без имени не ломает карточку", __ids.geoName.innerHTML.includes(GEO_TYPES[0].names[0]));
 
+console.log("\n[14] Капы: на потолке кнопка не тратит золото");
+localStorage.removeItem("oredeep_v3"); load(); S.gold=1e12;
+S.lvls.crit=100; S.gear={}; S.geo=null;   // CRIT: 5+100 => кап 60
+T("CRIT на капе 60", stat("crit")===60);
+render();
+T("кнопка CRIT заблокирована и показывает MAX",
+  __ids.u_crit._q["button"].disabled && __ids.u_crit._q[".c"].textContent==="MAX");
+{ const g0=S.gold, l0=S.lvls.crit;
+  __ids.u_crit._q["button"].onclick();
+  T("клик на капе: золото не списано, уровень не растёт", S.gold===g0 && S.lvls.crit===l0); }
+S.lvls.spd=50; T("SPD закапан на 14", stat("spd")===14);
+render();
+T("SPD: MAX и блок", __ids.u_spd._q["button"].disabled);
+S.lvls.atk=5; render();
+T("ATK без капа: кнопка активна при деньгах", !__ids.u_atk._q["button"].disabled);
+{ const g0=S.gold, c=upCost(UPGRADES[0]);
+  __ids.u_atk._q["button"].onclick();
+  T("ATK покупается: списание и уровень", S.gold===g0-c && S.lvls.atk===6); }
+
 console.log("\n[13] Именные уровни сундука");
 T("bagName(1) = Дырявый мешок", bagName(1)==="Дырявый мешок");
 T("bagName(17) = Гномий сундучок", bagName(17)==="Гномий сундучок");
