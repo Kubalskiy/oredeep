@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — прототип v0.6 «Копай глубже»</title>
+<title>ORE DEEP — прототип v0.7 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -744,40 +744,45 @@ function load(){
 }
 
 /* ---------- музыка подгорных чертогов (WebAudio, без файлов) ---------- */
-let AC=null, MG=null, musicOn=(localStorage.getItem("oredeep_music")!=="off");
-let nextBeat=0, beatN=0, musicTimer=null;
-const BPM=76, SPB=60/BPM;
-const SCALE=[146.83,174.61,196,220,261.63,293.66];   // ре-минорная пентатоника, D3+
+let AC=null, MG=null, DL=null, musicOn=(localStorage.getItem("oredeep_music")!=="off");
+let nextBeat=0, beatN=0, musicTimer=null, chordIdx=0, arpStep=0;
+const BPM=60, SPB=60/BPM;
+const SCALE=[146.83,174.61,196,220,261.63,293.66];
+/* круг медитации: Dm — C — B♭ — Gm */
+const CHORDS=[[146.83,174.61,220],[130.81,164.81,196],[116.54,146.83,174.61],[98,116.54,146.83]];
 
 function audioStart(){
   if(AC||!musicOn) return;
   try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
-  MG=AC.createGain(); MG.gain.value=0.22; MG.connect(AC.destination);
-  const drone=(f,type,g)=>{                            // гул Горы
+  MG=AC.createGain(); MG.gain.value=0.2; MG.connect(AC.destination);
+  DL=AC.createDelay(1.5); DL.delayTime.value=0.75;     // транс-эхо (dotted)
+  const fb=AC.createGain(); fb.gain.value=0.45;
+  DL.connect(fb); fb.connect(DL); DL.connect(MG);
+  const drone=(f,type,g)=>{                            // гул Горы, мягкий
     const o=AC.createOscillator(),gn=AC.createGain(),fl=AC.createBiquadFilter();
     o.type=type; o.frequency.value=f;
-    fl.type="lowpass"; fl.frequency.value=220;
+    fl.type="lowpass"; fl.frequency.value=160;
     gn.gain.value=g; o.connect(fl); fl.connect(gn); gn.connect(MG); o.start();
     const lfo=AC.createOscillator(), lg=AC.createGain();
-    lfo.frequency.value=0.06+Math.random()*0.05; lg.gain.value=g*0.4;
+    lfo.frequency.value=0.04+Math.random()*0.04; lg.gain.value=g*0.5;
     lfo.connect(lg); lg.connect(gn.gain); lfo.start();
   };
-  drone(36.71,"sine",0.10);      // D1
-  drone(73.42,"sawtooth",0.045); // D2
-  drone(110,"triangle",0.06);    // A2
+  drone(36.71,"sine",0.09);
+  drone(73.42,"sawtooth",0.028);
+  drone(110,"triangle",0.04);
   nextBeat=AC.currentTime+0.1; beatN=0;
-  musicTimer=setInterval(musicSchedule,90);
+  musicTimer=setInterval(musicSchedule,120);
 }
-function thump(t,vel){                                 // барабан глубин
+function thump(t,vel){                                 // пульс-сердцебиение
   const o=AC.createOscillator(),g=AC.createGain();
   o.type="sine";
-  o.frequency.setValueAtTime(90,t);
-  o.frequency.exponentialRampToValueAtTime(38,t+0.25);
+  o.frequency.setValueAtTime(75,t);
+  o.frequency.exponentialRampToValueAtTime(36,t+0.3);
   g.gain.setValueAtTime(vel,t);
-  g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
-  o.connect(g); g.connect(MG); o.start(t); o.stop(t+0.45);
+  g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+  o.connect(g); g.connect(MG); o.start(t); o.stop(t+0.55);
 }
-function anvil(t,f,vel,dur){                           // звон кирки/наковальни
+function anvil(t,f,vel,dur){                           // звон/мерцание
   [1,2.76,5.4].forEach((m,i)=>{
     const o=AC.createOscillator(),g=AC.createGain();
     o.type="sine"; o.frequency.value=f*m;
@@ -786,7 +791,7 @@ function anvil(t,f,vel,dur){                           // звон кирки/н
     o.connect(g); g.connect(MG); o.start(t); o.stop(t+dur+0.05);
   });
 }
-function horn(t,f,dur,vel){                            // хор гномов
+function horn(t,f,dur,vel){                            // хор (для джинглов)
   [-4,0,4].forEach(det=>{
     const o=AC.createOscillator(),g=AC.createGain();
     o.type="triangle"; o.frequency.value=f; o.detune.value=det;
@@ -796,23 +801,45 @@ function horn(t,f,dur,vel){                            // хор гномов
     o.connect(g); g.connect(MG); o.start(t); o.stop(t+dur+0.05);
   });
 }
+function pad(t,freqs,dur){                             // дышащий аккорд-пад
+  freqs.forEach(f=>{
+    [0,6].forEach(det=>{
+      const o=AC.createOscillator(),g=AC.createGain(),fl=AC.createBiquadFilter();
+      o.type="triangle"; o.frequency.value=f; o.detune.value=det;
+      fl.type="lowpass";
+      fl.frequency.setValueAtTime(280,t);
+      fl.frequency.linearRampToValueAtTime(900,t+dur*0.5);
+      fl.frequency.linearRampToValueAtTime(280,t+dur);
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.linearRampToValueAtTime(0.04,t+dur*0.35);
+      g.gain.linearRampToValueAtTime(0.0001,t+dur);
+      o.connect(fl); fl.connect(g); g.connect(MG);
+      o.start(t); o.stop(t+dur+0.1);
+    });
+  });
+}
+function arpNote(t,f){                                 // гипнотический перебор → эхо
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type="sine"; o.frequency.value=f;
+  g.gain.setValueAtTime(0.05,t);
+  g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+  o.connect(g); g.connect(MG); g.connect(DL);
+  o.start(t); o.stop(t+0.3);
+}
 function musicSchedule(){
   if(!AC||!musicOn) return;
-  while(nextBeat<AC.currentTime+0.35){
-    const t=nextBeat, b=beatN%8;
-    if(b===0||b===3) thump(t,0.5);
-    if(b===5&&Math.random()<0.5) thump(t,0.22);
-    if(Math.random()<0.07) anvil(t,600+Math.random()*500,0.05,0.8);   // далёкая кирка
-    if(beatN%32===16){                                 // фраза хора каждые 4 такта
-      let tt=t, idx=Math.floor(Math.random()*3);
-      const len=4+Math.floor(Math.random()*3);
-      for(let i=0;i<len;i++){
-        const dur=SPB*(Math.random()<0.3?2:1);
-        horn(tt,SCALE[idx],dur*0.95,0.10);
-        idx=Math.max(0,Math.min(SCALE.length-1,idx+Math.floor(Math.random()*3)-1));
-        tt+=dur;
-      }
+  while(nextBeat<AC.currentTime+0.5){
+    const t=nextBeat;
+    if(beatN%16===0){ pad(t,CHORDS[chordIdx%CHORDS.length],17); chordIdx++; }
+    if(beatN%2===0) thump(t,0.10);
+    const ch=CHORDS[(chordIdx+CHORDS.length-1)%CHORDS.length];
+    const tones=[...ch.map(f=>f*2),...ch.map(f=>f*4)];
+    const seq=[0,2,4,1,3,5,4,2];
+    for(let i=0;i<4;i++){
+      arpNote(t+i*SPB/4, tones[seq[arpStep%seq.length]%tones.length]);
+      arpStep++;
     }
+    if(Math.random()<0.05) anvil(t,1400+Math.random()*800,0.02,2.5);
     nextBeat+=SPB; beatN++;
   }
 }
