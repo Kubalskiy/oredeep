@@ -1,0 +1,11 @@
+{
+  "appId": "com.oredeep.game",
+  "appName": "ORE DEEP",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

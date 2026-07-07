@@ -2,8 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — прототип v0.10 «Копай глубже»</title>
+<title>ORE DEEP — v0.12 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -134,11 +137,37 @@
   .modal .sub{font-size:11px;color:var(--dim);margin-bottom:10px;}
   .col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--line);font-size:13px;}
   .col-item .cnt{color:var(--dim);font-size:12px;}
+  .oreimg{width:26px;height:26px;image-rendering:pixelated;vertical-align:middle;margin-right:6px;}
+  .oreimg.big{width:44px;height:44px;}
   .found{color:var(--txt);} .notfound{color:#4a5261;}
   .cmp{display:flex;gap:10px;margin:10px 0;}
   .cmp .side{flex:1;background:var(--panel2);border-radius:10px;padding:10px;text-align:center;font-size:12px;}
   .cmp .side .ttl{font-size:10px;color:var(--dim);text-transform:uppercase;margin-bottom:4px;}
   .btnrow{display:flex;gap:8px;margin-top:10px;}
+
+  /* ---------- PIXEL SKIN ---------- */
+  body,button{font-family:'Press Start 2P','Courier New',monospace;}
+  .statimg{width:22px;height:22px;image-rendering:pixelated;display:block;margin:0 auto 2px;}
+  button,.card,.slot,.upg .u,.bar,.minebar,#toast,.bubble,.modal .box,#speedBtn{border-radius:4px !important;}
+  .card,.slot,.upg .u{border-width:2px;}
+  .bar{height:16px;border-width:2px;}
+  .bar span{font-size:8px;line-height:13px;}
+  .hud .gold{font-size:14px;} .hud .gps{font-size:8px;} .hud .right{font-size:8px;line-height:1.7;}
+  .hud .right b{font-size:9px;}
+  .minebar{font-size:8px;} .minebar b{font-size:10px;margin-top:2px;}
+  .rockname{font-size:8px;}
+  .stat .k{font-size:6px;} .stat .v{font-size:10px;}
+  .gearttl{font-size:7px;} .slot .sn{font-size:6px;margin-top:2px;} .slot .sv{font-size:7px;}
+  .card .t{font-size:7px;} .card .n{font-size:10px;line-height:1.5;} .card .d{font-size:7px;line-height:1.8;}
+  button{font-size:9px;line-height:1.5;}
+  .upg .u .k{font-size:6px;} .upg .u .v{font-size:10px;} .upg .u .c{font-size:7px;}
+  .bubble{font-size:8px;line-height:1.6;}
+  .dmgnum{font-size:10px;} .dmgnum.crit{font-size:12px;}
+  #toast .r{font-size:9px;} #toast .nm{font-size:10px;line-height:1.5;} #toast .vl{font-size:8px;line-height:1.6;}
+  .modal h3{font-size:11px;line-height:1.5;} .modal .sub{font-size:7px;line-height:1.8;}
+  .col-item{font-size:8px;line-height:1.6;} .col-item .cnt{font-size:7px;}
+  #overlay h2{font-size:13px;} #overlay p{font-size:8px;line-height:1.9;}
+  #speedBtn{font-size:8px;}
 </style>
 </head>
 <body>
@@ -276,12 +305,12 @@
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
-    <div class="stat"><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
-    <div class="stat"><div class="k">Mining</div><div class="v" id="sMin"></div></div>
-    <div class="stat"><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
-    <div class="stat"><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
-    <div class="stat"><div class="k">Stone</div><div class="v" id="sStone"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAdElEQVR4nGNgIBMwInNExGT+I/PfvHrCyIADsCBrKgvRRJHsWsPwH5dmJnQBaQlRBmkJUYJOZUEXePriNUFNtLURFmDofsXQiAyQA6trDQOKAUwwU2GKcDkVPcTJDhy4xgMXHhKlAQbgHkZPNdgAvpREewAAKKsooD3mqhMAAAAASUVORK5CYII=" alt=""><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABHklEQVR4nO2UsUrDUBSGv0jHDg61U8BZRETpU3RKCTiE9g18IlelQ+DS+xqCKCLiC2SqHRzENQ7mlHtzb26KSbf+U7jn3u/8nP8QOKhStMul0Tgu62ebdRF8GywKMElvrPPFPCOdJcFGgxBUrTQA9w9Lpy61x7tbis8vlk9xacK9jgX6/PoBwPvbi1U/v7gC4PryDIB0ljiOj9qgIckdtdJODlYXE1p3qVUOQDYZ8nM6tdz7nEd1qDlPgcFfOKNxXGaTIfHJcTXX722wi3lmwa3wBCpAc24+6GZdRFrl2xEIHDxboVXuBNEENZubDcAIr+reuvhNqr9vhYTchuSsWx/QILgLtNVxF3nBXd16wX1AGx33oca/m3z/d6/3pl+bK8sX9TWzBwAAAABJRU5ErkJggg==" alt=""><div class="k">Mining</div><div class="v" id="sMin"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAlklEQVR4nGNgwAFExGT+45LDqVBETOb//+tx/9HFkNUzwRhvXj1hxGWLiJjM/zevnjAStPn/9bj/D0JDMWxFBozIGhgYGBheH3RieFj3Ha5AvomTQdR+H9xVKBpFxGT+vz7oxMDAwADX1Pf1MkMRty5cMwMDA4Oo/T64ZrJtJNuPGJqQNSPz0dUyIWvC5RR8UYXT9mEAANdAWxJm6EJAAAAAAElFTkSuQmCC" alt=""><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAvklEQVR4nKWQvQ2DMBSEPxAjWK4YIBIVbaSIPlKWyACpPQJTZIlMgCKldeUNqBA7vFRGz4ZQkKuss+7dDxxEER/G1tL0LQDD/bXw3fMmAMF55mlc+EqLuvMFgGC9zNNYGFtL5OghOCSKK20/fN6rSFscQAkwT2MRnE8+jK0lOaDiJx3znhp5v0SoRdpdc1pc/nLKHZq+TeIn4yyr4ldcPlIVrweH0K/domCr5wrG1vK4niRfVqPcvXAEe25/4Qv6iln+XowdZAAAAABJRU5ErkJggg==" alt=""><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAjElEQVR4nGNgIBMwoguIiMn8Rxd78+oJhjoWdE1OHiFwvqqaJsPMSc1wOWQDGLFpUlXTZGBgYGC4fes6AwMDA8O+HWswbGXEpgmmARmga2aCMZ48vINiCyHAhMyBaUYH2MSZGBggoXbr+gW4ImSFuAxD8bCImMx/NU0DDEW3rl/AHjjomtHFsMXjSAAAbHZC43qoeTUAAAAASUVORK5CYII=" alt=""><div class="k">Stone</div><div class="v" id="sStone"></div></div>
   </div>
 
   <div class="gearwrap">
@@ -351,6 +380,15 @@
    §7.2) + слой редких камней от кирки (§6bis).
    Коэффициенты CALIB — плейтест, в GDD помечены «≈».
    ========================================================= */
+
+/* ---------- Platform: мост к нативным интеграциям (Capacitor) ----------
+   Web-стабы. В приложении подменяются плагинами:
+   AdMob (rewarded), Firebase Analytics, Play Billing / RevenueCat. */
+const Platform={
+  logEvent:(name,params)=>{ try{ console.log("[analytics]",name,params||{}); }catch(e){} },
+  showRewarded:(cb)=>{ cb(true); },
+  buy:(productId)=>Promise.resolve({ok:false,stub:true})
+};
 
 /* ---------- кривая породы (GDD §2.2, §4) ---------- */
 const ANCHOR_IDX  = [1, 2000, 20000, 50000];
@@ -436,6 +474,11 @@ function makeItem(slotId){
   return { s:slotId, r:rollRarity(bagWeights(S.bag)), m:0.85+Math.random()*0.3, i:S.stageIdx };
 }
 function sellPrice(item){ return Math.round(veinReward()*(0.5+item.r*1.5)); }
+
+/* иконки камней и кирок — собственный генератор tools/gen_pixel_art.py (CC0) */
+const ORE_ICONS=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA+klEQVR4nKWTIQ7CQBBF/5J6DKlqgqFN6kgwYFEcAIlH9BjcAMcdOACqqikYSFFNCoZkVanBkxRBdrO7M2D65XT/nzezW6CjBFcc+EHL1ZtakvNWQRnniyUxh1GM3XZDgoRpNo1hFAMAblVpBaWHPQ0wzZwxWa9wuZY4ns4kpMfNappn0wn5Pl8s9bhi4AdtFI8RDEdcFtr364vq9a3xdtsNmloKliBZr3Rn4fUts0uoA+Tj/hP5nzy3kGcp8iwlXd1FEgJFwSG7VIoWMK4xise66C7UXKQyV2WBppaCjOB2sPW0zJpAUQCASeKqKgsAP56yG8SJ+5k66wOhfG2xfo18pwAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA9ElEQVR4nKWToQ6CUBSGfxxBuyOBFmGjOauNZGXzSXwFA81g8x14AIo8giPBdqWgJLRrw+Du3b3cgwZOYge+7/7nAMDAMqjm1LJbqv9sau15pcHBYLPVYNfzcTruNZEhwzLoej4A4MoKRZQmsS6QYQoMozWSxxmvw1iTjKhZZXiye2v3g81WjGtOLbv1/CUJAwCLczDkcG4rZbw0+V6TCcJoLU52bisF7h4iBHVV9kb+VWa3QUXmqeRFkoK6KuFABalUPC0gvUZ5kfZ8oQD32QXAdx8cZkWGZ1MbpOBfcVgk4BIA+CViRQag51PuiqiifqbB9QH5ZXF9gxnP5gAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABAUlEQVR4nKWTLQ7CQBCF35KGE5AamlABm9RxBlQxKA5SiQaDrkNj0YCBM+AaSgUkW9NUIwgJCNjN/kwxPLez/d68mbbAn2JUseMHL6peV8J53ihIcBRPHXjAI6zShWPEdFgHBzwCAFzyzDA67jeugQ5T4CSZY3u+47lbOiYtalYd9sYz534UT9W4rOMHLx4NEfT6lBeu7S4AIHyUxnirdIG6EoxMMEnmqnP4KA3YTqgMxK1ojPxLnl0oDmukBzhd7UWSBuJWIOwRXaxUMi2gvUYeDVXRXqi+SAnn2Ql1JZgzgt3hE/NzFt+zhFUCmQIA9CS28uwEoOFTto0oUT/T33oDUIBz9QETTbYAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA+0lEQVR4nKWTvw7BUBTGfxWPgEQ0sdCkm2cweQCJB/AS5lrMNoPJapZONjNbk7I0uSLBbGXgNvfPYfFNvef2953v3PbCnwqkYq0RPqX6/aq8962CBvuDoQd3o5jFfOoZBSZsgt0oBuCYZ5bRNl37BiYsgckoodg9WKqZZ1KRZjXhcTjx9vuDYTlutdYIn1HcE2GAzX4Fe7jUz9Z42/T9LCZIRknZ+VI/W7DbpDRQxelr5F+qugUpsk5lHqRooIoTtP0ubiqdFozPaB5k2O5YQPPWAt6pNJxnB+5XFXgjuB0AFJ91gQWXCXQKADOJqzw7AF9+ZddIknSZ/tYLGjN1vGm7HdQAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA+0lEQVR4nKWTLQ7CQBCFvwIKTVFNMFBSh+ECJCQcgIRbcAlugCPBYTkAqg6FaF1DwZCsAjQWRLPN/gwYntrM9nvzZtrCnwqkYqcbvaX68668562CBiezuQcP4oTNeuUZBSZsgoM4AeBSFpZRetj7BiYsgdvFlNfxyFK9PJOGNKsJr6O2dz+ZzetxW51u9I6TkQgD7LIMsoxTOLTGSw/VWUywXUzrzqdwaMFuk9pA3a5fI/9Syy1IkXUqc5GigbpdoWeDUiqdFozXaC4y6vUtYPw4A9U+NFwWOc+7CrwR3A4AimZ1cOA6gU4BYCZxVRY58OVTdo0kST/T3/oAnntzLwZjM4QAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA9UlEQVR4nGNgoBAwYhMUEZP5j038zasnGOpRBGAanTxCMDSrqmkyzJzUjGEQI7JmZI2qapoMDAwMDLdvXUcxaN+ONZgGIGvGpnFOlTLDt4crGfKWmmAYwoTNr8iaJ0WfwZB38giBe5dFREzmv5qmAVbNDAwMDIu3vWBgYJjIcPq9D4r39u2AsFmwuQDZycgasVkC98KTh3dwOhkfwHABNiejuwqnARBXYDoZ4iplNHUQAI9G5ICUkVdBMcBUcAsDAwMDw+n3PnDNt65fYHjz6gkjVgMIAZhmuAtghjAwMDDgM+jW9QsMDAw4kjK6QdgAtsxEMQAAzHhzxeau/J8AAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA/klEQVR4nKWTLQ7CQBCFvxIsrkE1wUCTChLOgOIAeC6AxiBxSFKDxiA4AKoODQmiSakhqSI1hAQLgm6zPwOGp7rT/d682W3hT3lS0W8HL6le3gpnv1FQ4HA0duBeGLFeLRwjT4d1sBdGAFyy1DBK9jvXQIclcBLPOTzv5LPYMWlIs+pwdzl13g9H43rcpt8OXmE0EGGA42bLEWidS2O8ZP95FhNM4nnduXUuDdhuUhsU1/xr5F9q2gUpskqlH6RoUFxzAqGLnUqlBe0a9YMMOl0DePR9qFIpOEtPlLfCc0awOwBQre/VUsF1ApUCQE9iK0tPwJdP2TaSJP1Mf+sNf9J19TuXkM4AAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA7ElEQVR4nKWTPwqCYBiHH8MjSJPgkoJbS0NTUIsHCDpEx+gGbXWDoL0WBafWhkBQl8BJvEMNoXyf32sN/SZ59fn5vP6BP2NJQ2fsvqR5U1fG9dqgBZfR2oD9IOSw3xlFlgqroB+EABR5phUl17NZoMISeNrO4HFhkzpGyUjaVYMXjXF+Ga27dW1n7L6CcCrCAMe0gLQgZq6tl1w/x7ZkoCqroHSTboXqWQ4qf4thICn3rQYLqmdJ7JnKfavWFpTXqD5I15towIobADHzDs6zO01dWWLBr7RwZ9CWAHwryrM7MPAp94ukSD/T33kDHqxvjClThEcAAAAASUVORK5CYII="];
+const PICK_ICONS=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABHklEQVR4nO2UsUrDUBSGv0jHDg61U8BZRETpU3RKCTiE9g18IlelQ+DS+xqCKCLiC2SqHRzENQ7mlHtzb26KSbf+U7jn3u/8nP8QOKhStMul0Tgu62ebdRF8GywKMElvrPPFPCOdJcFGgxBUrTQA9w9Lpy61x7tbis8vlk9xacK9jgX6/PoBwPvbi1U/v7gC4PryDIB0ljiOj9qgIckdtdJODlYXE1p3qVUOQDYZ8nM6tdz7nEd1qDlPgcFfOKNxXGaTIfHJcTXX722wi3lmwa3wBCpAc24+6GZdRFrl2xEIHDxboVXuBNEENZubDcAIr+reuvhNqr9vhYTchuSsWx/QILgLtNVxF3nBXd16wX1AGx33oca/m3z/d6/3pl+bK8sX9TWzBwAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABKElEQVR4nO2UoU4DQRCGv5LKCsT11JH0AQhJk/oKRHkAVC1BVtSCPkkqKi+1VTwABlHfpMmlD0DCqbYCgV9EmWP3bnev4Q7Hrza7O9/8OzNZ+Ne3WqdcCsJIFfcOu8wb6z0U4NXjpbF/f3vHpD/1JnKCgzBS880MgOR5UQKL3h+eyPYfLNefBtwKFujL/vUYvHozzi+GPQBuutcATPrTkuOzKqhPcme+mZX6YGTRoUWXabwFYDzosB31DPc25zlYoHo9BQbH5gRhpMaDDlH3PK+rNFbqLvC27kqgAtTrZoMedlkrjVEACQujqQZYoMVGuKB68jRGJfy8NgdL9qrBd6kYXwnxufWpNG5NQL3gOtBKx3VkBdd1awU3AXU6bkLO303Wv53rP9MXM7nLipq+0noAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABJUlEQVR4nO2UIU/DQBiGny5Ty8TEmFk9SZHsNyzL1HTF3Pz0/QD00HUV0yiy8BtAILoEXxBjYoJgD0Fvuetdr4QWx6ua++6e7833fin8q1Dwk0vDUSjLZ8dD7n3rLSrg1fLGOF/FC9azyNuo64NudnsAku2dVVe1t9sp+fuJ7WModbjTsYLev3wC8Pr0YNTH11MA5pc9ANazyHLcqYP6pO5sdnsrB6OLDi27zFIBQDzp8xwJw73LeVCG6vNUMPgOZzgKZTzpE14Mirl+nINdxQsDboSnoAqoz80FPR7yIEuFBEg0ODi2IkuFFUQVVG+epUIm2ptzeEX32sWvUvl9LcTn1idr3dqAesFNoLWOm8gJburWCW4DWum4DVX+3dT3b/f6z/QFEYrMIRDOXVEAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABN0lEQVR4nO2UIU/DQBTHfyUzjAkSxlQTFKZ6goQmuOm5JVPrB+AL9APwBZpgiyIBRZC4JiWZQNdMkVSVCgTBFrFdc+1drwstjr+63Lv7vX/ee3fwr52sfQ6NJ3ZR38uz1HjXGBTA66ubyv5iNcf1HGOigQkahwkAD3dPSlzEnh9npB+f3L/ZhQzXOhbQ99dvANabl0r84nwGwNnlEADXcxTHB21Qk8SZOEyUPlSyyNC6yyDyAVhOR5wc+RX3OueDOlSup4DBtjnC1eHwdlfXLwDWm21D4zDB9Zwiz1Kr0jwBFUC5buOJXSynI+zT4xKaZ6kVRH5ZgsVqXrKUqQgiX2lEE1ROLicATY11g28CN91vfXn7QutSxq0PqBHcBdrquIu04K5uteA+oI2O+1Dj7ybWv3H7p/oBfuDQkXyFP7MAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABJ0lEQVR4nO2UIU/DQBiGnxIMUIEYU1VLJnE1ZAJHgpsuWdKp+Ql+wH4AvmLpFBqNm1hm+AdLqqrGBIJgh2Bfc3e7uxI63F7V3Hf3fE/vroVjdgl+M6nVjrbm2GZdetd6iwJ8ur3RxvtpSmc48jY68UGLPKPIMwAG0wcGk7OqLrXH+4gkDvfeymos0K/FAoDX1Uqr33W7AJz3egB0hqN6YxPqi8wp8sxvrEJNy/F8CUASh8QX15q9zTwwoS+z2R4Mfg6n1Y62SRwSXV1Svn/w/PZZHWw/TTX4qWolUAGq+2aDbtZlMJ4vqy0QOIAGFqh5EC6o2lxtAMrh7brXXnxXzPW1EJ+tL84PpAnUC24CrTVuEiu4qa0VfAio0/gQcf7d5Pmv9/rf8g2x5sdjBvS0/gAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABLElEQVR4nO2UsUrDQBjHfxEnCSKldgoIfYYDO3UsuHUyEOgDFCc7mDcQuriVvoHQzdkxk4PPEBAy1SIi4lqH+KXJ5XIpTbv5n8J9d7/vd3dJ4D9/cbaZ1O54a31stUysa61FAT7cnBbGh/6Ybn9qbXRkg8ZRSByFAIxu7xldq6wutbsrj0C5pV0ZjQX687YA4Pnlo1Af9FoAnFz4AHT703pjHWqLzImj0G6ch+qWk9kXAIFyUZcbn0GvZTR3dOjTYl6CQXo57Y63DpSLd35G8v7J4+t3drFDf1yAH+etBCrA/LmZoKtl4kxmcgTzDA5QAAtUv4gqaL552mCz2+yw0u5l6LbR19dCbLa2VH4gTaBWcBNorXGTGMFNbY3gfUArjfeRyr+bPO/6Xh8sv9XDxuOvdFybAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABMElEQVR4nO2UoU7DUBSGvxLU0mSIUVVZHqBJUVNMLMF1tqZ7iAWJmOYhqEHMgEYwA46kD7DKqjEBCcEWAae0t713Cx2OXzX3v/c7f8/pLfzrW9YumwaOW6hrm3VuPGs0BXh2dVlbn4YTYs83FjowQZMsJclSABahw+L0sfTFuzh3iQK78VatiQX69PEGwOr+oeafjEcADHt9AGLP355YhZoke5IsbSQ+1EHVlMvZHIAosFlVjfGIYa9PkqXEnl9IckuFXt/dNmDwNZyB4xZRYOMeH5G/vHLz/F4OdhpOgJ+21BILVIDVvrVBN+vcWs7mZQsE3miFQNVB6KDV4tUCtVYIoO3DN4F157fevF2hqrQXpAvUCO4C3Zq4i1rBXdO2gvcB1Sbeh7R/N3n+Tdo/1SdFwM7TYC/z1AAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABJElEQVR4nO2ULU/DQByHnxJkBWJdEBcMSASiHwEzcZqkmWoyg0KxT4DoZ1gyRUiqT/AlEAgksmqdQOCL6K70bndXQofjpy738vyfe2nhP7tEP5k0mYrG7ttuquDa4KAGrm8ujH45X5DIZbDQUQhaq4JaFS3s4Q55e9aN67H7mSBL471dOY01lLdnANRrZRpfibZxOQMgkcthYxsazG5OrYqwcR9qW+blOwBZGnN9fmraO8wjG6oeV3swaC9nMhVNlsaI5ISq/uDp5bO7WDlfGPDjvpWGamD/3FzQ7aaK8pL25bDq4AAGWEPti/BB+8XzkmbN9247sK4+9PB9sdcPQkK2oXg/kDHQIHgMdNB4TJzgsbZO8CGgXuNDxPt30+3fvus/yxchscRJrfyDegAAAABJRU5ErkJggg=="];
+
 
 /* именные тиры сундука по уровню */
 const BAG_NAMES=[[1,"Дырявый мешок"],[5,"Заплатанный мешок"],[10,"Сумка старателя"],
@@ -564,12 +607,13 @@ function onFind(){
   if(had>0){ S.gold+=val; extra="дубликат → скупщику +"+fmt(val)+" 🪙"; }
   else if(setDone(mineKey)){
     extra="СЕТ СОБРАН! НАВСЕГДА: "+SET_BONUS[mineKey].label;
+    Platform.logEvent("set_complete",{mine:mineKey});
     sayQuip("ПОЛНЫЙ СЕТ! Чуете? Гора запела!",5);
     jingleSet();
   }
   else { extra="в коллекцию! +2% STONE навсегда"; jingleFind(); }
   sayQuip(FIND_QUIPS[Math.floor(Math.random()*FIND_QUIPS.length)]);
-  showToast("💎",RAR_NAMES[ri],"r"+ri,name,extra);
+  showToast(`<img src="${ORE_ICONS[ri]}" class="oreimg big">`,RAR_NAMES[ri],"r"+ri,name,extra);
 }
 
 /* ---------- коллекции: пассивные бонусы (§11) ----------
@@ -657,12 +701,14 @@ function breakVein(){
   const dropRoll=rock.isBoss?100:DROP_CHANCE;            // ролл 3 — деталь из сумки
   if(Math.random()*100<dropRoll) dropGear();
   S.stageIdx++; S.stage++;
-  if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; toastMine(); }
+  if(rock.isBoss) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
+  if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
   newRock(); save();
 }
 function exhausted(){
   dead=true;
   jingleKO();
+  Platform.logEvent("exhaust",{stage:S.stageIdx});
   const ko=KO_SCREENS[Math.floor(Math.random()*KO_SCREENS.length)];
   $("ovTitle").textContent=ko[0]; $("ovText").textContent=ko[1];
   $("overlay").style.display="flex";
@@ -724,6 +770,7 @@ $("bagBtn").onclick=()=>{
   if(S.bag>=50||S.gold<c) return;
   const oldName=bagName(S.bag);
   S.gold-=c; S.bag++;
+  Platform.logEvent("bag_upgrade",{level:S.bag});
   if(bagName(S.bag)!==oldName){
     showToast("🧰","Новый сундук!","",bagName(S.bag),"редкости дропа сдвинулись вверх");
     sayQuip("Ого, «"+bagName(S.bag)+"»! Дед бы одобрил.",4);
@@ -787,7 +834,8 @@ function renderGear(){
       const v=itemStat(item,firstStat);
       sv=`<span class="r${item.r}">${RAR_NAMES[item.r].slice(0,4)}</span> +${v>=100?fmt(v):v.toFixed(1)}`;
     }
-    d.innerHTML=`<div class="ic">${sl.ic}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
+    const icon=(sl.id==="pick"&&item)?`<img src="${PICK_ICONS[item.r]}" class="oreimg" style="width:30px;height:30px;margin:0">`:sl.ic;
+    d.innerHTML=`<div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
     g.appendChild(d);
   });
 }
@@ -881,7 +929,8 @@ $("colBtn").onclick=()=>{
     +`<div class="col-item"><span>Сет чертога (8/8): <b>${SET_BONUS[mineKey].label}</b></span><span class="cnt">${setDone(mineKey)?"АКТИВЕН ✓":got+"/8"}</span></div>`;
   $("colList").innerHTML=bonusLine+m.stones.map((s,i)=>{
     const c=col[i]||0;
-    return `<div class="col-item"><span class="${c?"found":"notfound"}"><b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"не найден"}</span></div>`;
+    const ic=c?`<img src="${ORE_ICONS[i]}" class="oreimg">`:`<span style="display:inline-block;width:26px;height:26px;margin-right:6px;text-align:center;opacity:.4">?</span>`;
+    return `<div class="col-item"><span class="${c?"found":"notfound"}">${ic}<b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"не найден"}</span></div>`;
   }).join("");
   $("colModal").style.display="flex";
 };
@@ -1021,7 +1070,10 @@ load(); buildUpgrades(); renderGear(); newRock(); render();
 $("musicBtn").textContent=musicOn?"🔊":"🔇";
 $("musicBtn").onclick=toggleMusic;
 $("speedBtn").onclick=()=>{
-  S.speed=(S.speed||1)>=3?1:(S.speed||1)+1;
+  const next=(S.speed||1)>=3?1:(S.speed||1)+1;
+  if(next>1){ Platform.showRewarded(ok=>{ if(!ok) return; }); }
+  Platform.logEvent("speed_toggle",{speed:next});
+  S.speed=next;
   sayQuip(S.speed===1?"Спокойный темп. Медитируем.":(S.speed===2?"Двойной темп! Борода развевается!":"ТРОЙНОЙ! Держите шлем!"),3);
   save();
 };
