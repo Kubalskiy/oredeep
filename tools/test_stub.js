@@ -34,4 +34,6 @@ const performance={ now:()=>__vclock };
 let __rafCb=null;
 const requestAnimationFrame=cb=>{ __rafCb=cb; };
 const confirm=()=>true;
+const navigator={};
+const Image=class{set src(v){ if(this.onload) setTimeout(this.onload,0); }};
 const setInterval=(f,t)=>0; // no-op: автосейв в тесте не нужен

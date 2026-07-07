@@ -58,3 +58,9 @@ Web-стабы уже проложены по коду, при сборке по
 `npm run art` — регенерирует пиксель-арт (`art/*.png`, затем base64 в
 `index.html`). Вся графика собственная (генератор `tools/gen_pixel_art.py`),
 лицензионно чистая для коммерческого использования.
+
+### Сторовые ассеты
+
+`resources/icon.png` (512) и `resources/splash.png` (1080×1920) —
+сгенерированы из спрайтов игры. Для нарезки под все плотности:
+`npm install @capacitor/assets -D && npx capacitor-assets generate`.

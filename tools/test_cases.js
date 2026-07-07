@@ -144,6 +144,36 @@ T("карточка показывает имя нанятого", __ids.geoName
 S.geo={t:0,r:1}; render();
 T("старый сейв без имени не ломает карточку", __ids.geoName.innerHTML.includes(GEO_TYPES[0].names[0]));
 
+console.log("\n[16] Фаза 1: глубина, стрик, онбординг, миграции");
+// вехи глубины
+localStorage.removeItem("oredeep_v3"); load();
+S.stageIdx=10; checkDepthMark(9);
+T("веха 30 м срабатывает на пересечении", __ids.toast.innerHTML.includes("30"));
+// стрик: первый день
+S.streak={n:0,last:""}; const g0=S.gold; checkStreak();
+T("стрик день 1, награда выдана", S.streak.n===1 && S.gold>g0);
+// повторный вызов в тот же день — ничего
+const n1=S.streak.n, g1=S.gold; checkStreak();
+T("в тот же день стрик не двигается", S.streak.n===n1 && S.gold===g1);
+// вчера → +1
+S.streak.last=yesterdayStr(); checkStreak();
+T("вчера→сегодня: стрик +1", S.streak.n===2);
+// разрыв → сброс на 1
+S.streak={n:9,last:"2000-1-1"}; checkStreak();
+T("разрыв: стрик сброшен на 1", S.streak.n===1);
+// онбординг: первые жилы всегда с дропом, 2-я жила — камень
+localStorage.removeItem("oredeep_v3"); load(); S.gear={}; S.col={}; newRock();
+S.stageIdx=1; S.stage=1; breakVein();
+T("жила 1: гарантированный дроп детали", Object.keys(S.gear).length===1);
+breakVein();   // вторая жила (stageIdx=2)
+T("жила 2: камень скриптован", uniqueStones()>=1);
+// миграция старого сейва
+localStorage.setItem("oredeep_v3", JSON.stringify({gold:5,stageIdx:7,bag:3}));
+load();
+T("миграция v1→v2: ftue выключен для старых, стрик создан",
+  S.v===2 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3);
+localStorage.removeItem("oredeep_v3"); load();
+
 console.log("\n[15] Офлайн-доход");
 localStorage.removeItem("oredeep_v3"); load(); S.gold=0;
 S.lastSeen=Date.now()-3600*1000;   // час назад
