@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — прототип</title>
+<title>ORE DEEP — прототип v0.4 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -38,6 +38,10 @@
   .dmgnum.crit{color:#ff8a4a;font-size:19px;}
   @keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
 
+  .bubble{position:absolute;left:5%;bottom:118px;max-width:190px;background:#f4efe2;color:#232323;
+    font-size:11px;font-weight:600;padding:7px 11px;border-radius:12px 12px 12px 3px;opacity:0;
+    transition:opacity .35s;pointer-events:none;z-index:5;box-shadow:0 3px 10px #0007;}
+  .bubble.show{opacity:1;}
   .rockname{position:absolute;top:8px;left:0;right:0;text-align:center;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;}
   .rockname b{color:var(--txt);}
   .bosslabel{color:#ff8a4a !important;}
@@ -118,12 +122,12 @@
       <div class="gold">🪙 <span id="gold">0</span></div>
       <div class="gps">+<span id="gps">0</span>/с</div>
     </div>
-    <div class="right">ORE DEEP<br><b>прототип v0.3</b></div>
+    <div class="right">ORE DEEP<br><b>копай глубже. ещё.</b></div>
   </div>
 
   <div class="minebar">
-    <div>ШАХТЁР<br><b id="minerRank">НОВИЧОК</b></div>
-    <div class="mid">ШАХТА<br><b id="mineLabel">1-1</b></div>
+    <div>ГНОМ<br><b id="minerRank">БЕЗБОРОДЫЙ</b></div>
+    <div class="mid">ЧЕРТОГ<br><b id="mineLabel">1-1</b></div>
     <div>ЭТАП<br><b id="stageLabel">1</b></div>
   </div>
 
@@ -133,6 +137,7 @@
       <div class="bar hp"><div class="fill" id="hpFill" style="width:100%"></div><span id="hpTxt"></span></div>
       <div class="bar en"><div class="fill" id="enFill" style="width:100%"></div><span id="enTxt"></span></div>
     </div>
+    <div class="bubble" id="bubble"></div>
     <div class="miner" id="miner">⛏️</div>
     <div class="rock" id="rock">🪨</div>
   </div>
@@ -147,21 +152,21 @@
   </div>
 
   <div class="gearwrap">
-    <div class="gearttl">Снаряжение шахтёра · дроп из жил по редкости сумки</div>
+    <div class="gearttl">Снаряжение гнома · что выпало, то надето (если лучше)</div>
     <div class="gear" id="gearGrid"></div>
   </div>
 
   <div class="row">
     <div class="card">
-      <div class="t">Сумка находок</div>
+      <div class="t">Сундук находок</div>
       <div class="n">BAG LVL <span id="bagLvl">1</span></div>
-      <div class="d">шанс дропа детали: <span id="dropCh">30</span>%<br>уровень сдвигает редкости</div>
+      <div class="d">шанс дропа: <span id="dropCh">35</span>%<br>выше уровень — щедрее Гора</div>
       <button class="gold" id="bagBtn" style="margin-top:6px"></button>
     </div>
     <div class="card">
-      <div class="t">Геолог-наставник</div>
-      <div class="n" id="geoName">— не нанят —</div>
-      <div class="d" id="geoDesc">гача с pity: чем больше<br>роллов, тем выше шанс</div>
+      <div class="t">Старейшина клана</div>
+      <div class="n" id="geoName">— вакансия в клане —</div>
+      <div class="d" id="geoDesc">гача с жалостью Горы:<br>не везёт — повезёт сильнее</div>
       <button class="gold" id="geoBtn" style="margin-top:6px"></button>
       <div class="d" style="margin-top:4px">роллов: <span id="geoRolls">0</span></div>
     </div>
@@ -169,12 +174,12 @@
 
   <div class="row">
     <div class="card">
-      <div class="t">Находки камней</div>
+      <div class="t">Камень мечты</div>
       <div class="n"><span id="findChance">8</span>%</div>
-      <div class="d">шанс редкого камня, растёт от кирки</div>
+      <div class="d">шанс находки — кирка решает</div>
     </div>
     <div class="card">
-      <div class="t">Коллекция шахты</div>
+      <div class="t">Коллекция чертога</div>
       <div class="n" id="colCount">0/8</div>
       <button id="colBtn" style="margin-top:6px">Открыть 💎</button>
     </div>
@@ -183,7 +188,7 @@
   <div class="upg" id="upgrades"></div>
 
   <div class="toolbar">
-    <button id="resetBtn" class="red">↺ Сброс прогресса</button>
+    <button id="resetBtn" class="red">↺ Всё сначала (клянусь бородой)</button>
   </div>
 </div>
 
@@ -191,9 +196,9 @@
 
 <div id="overlay">
   <div class="big">😮‍💨</div>
-  <h2>ИСТОЩЕНИЕ</h2>
-  <p>Энергия кончилась раньше, чем разбита порода. Жила восстановилась — этап заново. Прокачай снаряжение!</p>
-  <button style="max-width:200px;margin-top:14px" onclick="closeOverlay()">Продолжить</button>
+  <h2 id="ovTitle">ПЕРЕКУР В ЧЕРТОГАХ</h2>
+  <p id="ovText">Гном прилёг подумать о вечном.</p>
+  <button style="max-width:220px;margin-top:14px" onclick="closeOverlay()">Ещё разок, за Гору!</button>
 </div>
 
 <div class="modal" id="dropModal">
@@ -214,7 +219,7 @@
 <div class="modal" id="colModal">
   <div class="box">
     <h3 id="colTitle"></h3>
-    <div class="sub">Собери все камни шахты. Дубликаты конвертируются в золото.</div>
+    <div class="sub">Собери сет чертога — камни сами себя не соберут. Дубликаты уходят скупщику автоматически.</div>
     <div id="colList"></div>
     <button style="margin-top:12px" onclick="document.getElementById('colModal').style.display='none'">Закрыть</button>
   </div>
@@ -329,24 +334,24 @@ function geoWeights(rolls){
 }
 /* сила ×3/ступень (§7.2): бонус к случайному стату */
 const GEO_TYPES=[
-  {stat:"atk",   n:"Рудознатец",  pct:[12,36,108,324]},
-  {stat:"energy",n:"Врач забоя",  pct:[15,45,135,405]},
-  {stat:"stone", n:"Маркшейдер",  pct:[10,30,90,270]}
+  {stat:"atk",   n:"Дед Дубощит",     pct:[12,36,108,324]},
+  {stat:"energy",n:"Знахарка Хильда", pct:[15,45,135,405]},
+  {stat:"stone", n:"Счетовод Глоди",  pct:[10,30,90,270]}
 ];
 const GEO_RAR=["Common","Rare","Epic","Legendary"];
 const geoCost=()=> Math.round(veinReward()*8);          // CALIB
 
 /* ---------- шахты, пулы камней (§6bis) ---------- */
 const MINES=[
-  {n:"Угольная штольня", rock:"🪨", stones:["Уголь","Медь","Кварц","Золото","Топаз","Сапфир","Алмаз","Осколок ядра"]},
-  {n:"Железный пласт",   rock:"⛰️", stones:["Гравий","Железо","Аметист","Изумруд","Рубин","Мифрил","Чёрный алмаз","Метеорит"]},
-  {n:"Лавовая жила",     rock:"🌋", stones:["Обсидиан","Сера","Гранат","Огненный опал","Платина","Лавовый сапфир","Адамантий","Сердце вулкана"]},
-  {n:"Хрустальная пещера",rock:"🧊", stones:["Кальцит","Флюорит","Хрусталь","Изумруд-гигант","Танзанит","Лунный камень","Звёздный алмаз","Кристалл ядра"]},
-  {n:"Глубинный разлом", rock:"🗿", stones:["Сланец","Никель","Серебро","Самородок","Иридий","Мифрил","Адамантий","Звёздный металл"]}
+  {n:"Штольня «Борода новичка»", rock:"🪨", stones:["Уголёк-сирота","Медь «на пуговицы»","Кварц «почти алмаз»","Гномье золото (настоящее)","Топаз из бороды прадеда","Сапфир-сноб","Алмаз Тана","Слеза Горы"]},
+  {n:"Чертоги Эхо-Дум",          rock:"⛰️", stones:["Гравий эхо-качества","Железо для топоров","Аметист-интроверт","Изумруд завистливый","Рубин «глаз дракона (нет)»","Мифрил (тссс!)","Чёрный алмаз","Осколок Первой Песни"]},
+  {n:"Кузня Подгорного Огня",    rock:"🌋", stones:["Обсидиан подгоревший","Сера «ну и духан»","Гранат бабушкин","Огненный опал","Платина калёная","Лавовый сапфир","Адамант кузнечный","Сердце Горна"]},
+  {n:"Хрустальные Чертоги",      rock:"🧊", stones:["Кальцит-самозванец","Флюорит светящийся","Хрусталь пиршественный","Изумруд-гигант","Танзанит редкий гость","Лунный камень (не с Луны)","Звёздный алмаз","Кристалл Глубин"]},
+  {n:"Бездна «Не буди Его»",     rock:"🗿", stones:["Сланец «зачем ты здесь»","Никель тревожный","Серебро столовое","Самородок «МАМА, Я НАШЁЛ»","Иридий шёпотный","Мифрил истинный","Адамантий Бездны","ЕГО чешуйка"]}
 ];
-const ROCK_NAMES=["Валун","Пласт","Жила","Друза"];
+const ROCK_NAMES=["Булыжник-терпила","Пласт-упрямец","Жила-жадина","Друза-воображала"];
 const STAGES_PER_MINE=5;
-const RANKS=["НОВИЧОК","СТАРАТЕЛЬ","ПРОХОДЧИК","ЗАБОЙЩИК","МАСТЕР","ГОРНЫЙ ЛОРД"];
+const RANKS=["БЕЗБОРОДЫЙ","ПОЧТИ ГНОМ","РУДОКОП","ТАН ЗАБОЯ","БОРОДА-ЛЕГЕНДА","ПОДГОРНЫЙ КОРОЛЬ"];
 
 /* ---------- игрок (GDD §3, базы 1:1) ---------- */
 const BASE={atk:10, spd:4.5, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0};
@@ -411,8 +416,9 @@ function onFind(){
   const had=S.col[mineKey][ri]||0;
   S.col[mineKey][ri]=had+1;
   let extra;
-  if(had>0){ S.gold+=val; extra="дубликат → +"+fmt(val)+" 🪙"; }
-  else extra="новый камень в коллекции!";
+  if(had>0){ S.gold+=val; extra="дубликат → скупщику +"+fmt(val)+" 🪙"; }
+  else extra="в коллекцию! Клан гордится.";
+  sayQuip(FIND_QUIPS[Math.floor(Math.random()*FIND_QUIPS.length)]);
   showToast("💎",RAR_NAMES[ri],"r"+ri,name,extra);
 }
 
@@ -424,6 +430,32 @@ function freshState(){
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
 
+/* ---------- реплики гнома Борина ---------- */
+const IDLE_QUIPS=[
+  "Так глубоко даже налоговая не доберётся.",
+  "Борода в пыли — день удался.",
+  "Дед копал. Отец копал. А я что, рыжий?.. Ладно. Рыжий. Копаю.",
+  "Эльфы бы тут не выжили. Без обид.",
+  "Слышишь стук? Это я. Не пугайся.",
+  "Главное правило шахты: не буди ЭТО.",
+  "Кто выпил мой эль?! Ладно. Сначала жила.",
+  "Кардио? У гномов это называется «вторник».",
+  "Не смотри в бездну. Копай её.",
+  "Мифрил сам себя не найдёт.",
+  "Тук-тук. — Кто там? — Богатство!",
+  "Шлем жмёт. Значит, голова растёт. Мудрею."
+];
+const FIND_QUIPS=["Блестит! Клянусь бородой!","В сундук. Быстро. Молча.","Дед бы прослезился.","Это не камень. Это пенсия."];
+const BOSS_QUIPS=["Тише… ОНО слышит кирку.","Большой камень — большая слава.","За бороду деда!"];
+const KO_SCREENS=[
+  ["ПЕРЕКУР В ЧЕРТОГАХ","Гном прилёг подумать о вечном. Порода делает вид, что так и было."],
+  ["ТЫ НЕ ПРОКОПАЕШЬ!","Жила встала стеной, как седой волшебник на мосту. Прокачайся — и мост твой."],
+  ["БОРОДА ЗАПЫЛИЛАСЬ","Энергия кончилась раньше породы. Эль, отдых, апгрейды — и снова в забой."]
+];
+let quipHide=0, quipNext=6;
+function sayQuip(t,dur){ const b=$("bubble"); b.textContent=t; b.classList.add("show");
+  quipHide=dur||3; quipNext=9+Math.random()*8; }
+
 /* ---------- боевой тик (§5) ---------- */
 let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null;
 function newRock(){
@@ -432,7 +464,8 @@ function newRock(){
   rock.isBoss=isBoss;
   S.rockHP=rock.hp;
   S.energy=stat("energy");
-  $("rockName").textContent=isBoss?"МАТЕРИНСКАЯ ЖИЛА (босс)":ROCK_NAMES[S.stageIdx%ROCK_NAMES.length];
+  $("rockName").textContent=isBoss?"ДРЕВНЯЯ ЖИЛА (босс). ТИХО!":ROCK_NAMES[S.stageIdx%ROCK_NAMES.length];
+  if(isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
   $("rockName").classList.toggle("bosslabel",isBoss);
   $("rock").textContent=isBoss?"💎":MINES[S.mine%MINES.length].rock;
 }
@@ -460,7 +493,12 @@ function breakVein(){
   if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; toastMine(); }
   newRock(); save();
 }
-function exhausted(){ dead=true; $("overlay").style.display="flex"; }
+function exhausted(){
+  dead=true;
+  const ko=KO_SCREENS[Math.floor(Math.random()*KO_SCREENS.length)];
+  $("ovTitle").textContent=ko[0]; $("ovText").textContent=ko[1];
+  $("overlay").style.display="flex";
+}
 function closeOverlay(){ $("overlay").style.display="none"; dead=false; newRock(); }
 
 /* ---------- дроп деталей ---------- */
@@ -475,11 +513,11 @@ function dropGear(){
      (редкость кирки влияет на шанс находки — молча понижать нельзя) */
   const strictlyBetter = !old || (itemPower(it)>itemPower(old) && it.r>=old.r);
   if(strictlyBetter){
-    let extra="надето автоматически";
+    let extra="надето. Гном доволен.";
     if(old){
       const p=sellPrice(old);
       S.gold+=p;
-      extra="надето · старое продано +"+fmt(p)+" 🪙";
+      extra="надето! старьё — скупщику +"+fmt(p)+" 🪙";
     }
     S.gear[slot.id]=it;
     S.energy=Math.min(S.energy,stat("energy"));
@@ -504,11 +542,11 @@ function itemDesc(item){
 }
 function showDropModal(){
   const slot=SLOTS.find(s=>s.id===pendingDrop.s);
-  $("dropTitle").textContent="Дроп из сумки: "+slot.n+"!";
-  $("dropSub").textContent="Не однозначно лучше надетого — решай сам. BAG LVL "+S.bag;
+  $("dropTitle").textContent="Из сундука выпало: "+slot.n+"!";
+  $("dropSub").textContent="Не однозначно лучше надетого. Решай, тут все бородатые. BAG LVL "+S.bag;
   $("dropNew").innerHTML=itemDesc(pendingDrop);
   $("dropOld").innerHTML=itemDesc(S.gear[pendingDrop.s]);
-  $("dropSell").textContent="Продать +"+fmt(sellPrice(pendingDrop))+" 🪙";
+  $("dropSell").textContent="Скупщику за "+fmt(sellPrice(pendingDrop))+" 🪙";
   $("dropModal").style.display="flex";
 }
 $("dropEquip").onclick=()=>{
@@ -542,7 +580,7 @@ $("geoBtn").onclick=()=>{
   } else {
     const refund=Math.round(c*0.4);
     S.gold+=refund;
-    showToast("👷",GEO_RAR[r],"r"+r,GEO_TYPES[t].n,"слабее текущего → +"+fmt(refund)+" 🪙");
+    showToast("👷",GEO_RAR[r],"r"+r,GEO_TYPES[t].n,"слабее — отправлен варить эль +"+fmt(refund)+" 🪙");
   }
   save();
 };
@@ -568,6 +606,8 @@ function loop(now){
   }
   idleAcc+=dt;
   if(idleAcc>=1){ S.gold+=idlePerSec()*Math.floor(idleAcc); idleAcc%=1; }
+  if(quipHide>0){ quipHide-=dt; if(quipHide<=0) $("bubble").classList.remove("show"); }
+  else if(!dead){ quipNext-=dt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
   render();
   requestAnimationFrame(loop);
 }
@@ -680,7 +720,8 @@ function showToast(icon,rar,rcls,name,extra){
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];
-  showToast("⛏️","Новая шахта!","",m.n,"новый пул камней · жилы богаче");
+  const lines=["Глубже! Что может пойти не так?","Новые чертоги — новые камни.","Эхо стало басовитее…"];
+  showToast("⛏️","Глубже в Гору!","",m.n,lines[Math.floor(Math.random()*lines.length)]);
 }
 $("colBtn").onclick=()=>{
   const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
@@ -692,7 +733,7 @@ $("colBtn").onclick=()=>{
   $("colModal").style.display="flex";
 };
 $("resetBtn").onclick=()=>{
-  if(confirm("Сбросить весь прогресс?")){ localStorage.removeItem("oredeep_v3"); S=freshState(); newRock(); save(); renderGear(); }
+  if(confirm("Точно всё сначала? Гора помнит, но простит.")){ localStorage.removeItem("oredeep_v3"); S=freshState(); newRock(); save(); renderGear(); }
 };
 
 /* ---------- save/load ---------- */
