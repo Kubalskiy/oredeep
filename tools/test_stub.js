@@ -22,7 +22,8 @@ class FE {
   querySelector(sel){ if(!this._q[sel]) this._q[sel]=new FE("q"); return this._q[sel]; }
 }
 const document={ getElementById:id=>{ if(!__ids[id]) __ids[id]=new FE("static"); return __ids[id]; },
-  createElement:tag=>new FE(tag) };
+  createElement:tag=>new FE(tag), addEventListener:()=>{} };
+const window={};
 __HTML_IDS.forEach(i=>document.getElementById(i));
 const __store={};
 const localStorage={ getItem:k=>(k in __store)?__store[k]:null, setItem:(k,v)=>{__store[k]=String(v)}, removeItem:k=>{delete __store[k]} };

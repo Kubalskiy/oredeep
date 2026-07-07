@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — прототип v0.5 «Копай глубже»</title>
+<title>ORE DEEP — прототип v0.6 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -19,6 +19,7 @@
   .hud .gold{font-weight:800;font-size:20px;color:var(--gold);}
   .hud .gps{font-size:12px;color:var(--green);}
   .hud .right{text-align:right;font-size:12px;color:var(--dim);}
+  #musicBtn{width:38px;margin-left:10px;padding:7px 0;font-size:15px;background:var(--panel2);}
   .hud .right b{color:var(--txt);font-size:14px;}
 
   .minebar{display:flex;justify-content:space-around;padding:6px 0;background:#161a22;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
@@ -123,6 +124,7 @@
       <div class="gps">+<span id="gps">0</span>/с</div>
     </div>
     <div class="right">ORE DEEP<br><b>копай глубже. ещё.</b></div>
+    <button id="musicBtn" title="музыка">🔊</button>
   </div>
 
   <div class="minebar">
@@ -410,8 +412,9 @@ function onFind(){
   else if(setDone(mineKey)){
     extra="СЕТ СОБРАН! Навсегда: "+SET_BONUS[mineKey].label;
     sayQuip("Полный сет! Гора запомнит это.",4);
+    jingleSet();
   }
-  else extra="в коллекцию! +2% STONE навсегда";
+  else { extra="в коллекцию! +2% STONE навсегда"; jingleFind(); }
   sayQuip(FIND_QUIPS[Math.floor(Math.random()*FIND_QUIPS.length)]);
   showToast("💎",RAR_NAMES[ri],"r"+ri,name,extra);
 }
@@ -502,6 +505,7 @@ function breakVein(){
 }
 function exhausted(){
   dead=true;
+  jingleKO();
   const ko=KO_SCREENS[Math.floor(Math.random()*KO_SCREENS.length)];
   $("ovTitle").textContent=ko[0]; $("ovText").textContent=ko[1];
   $("overlay").style.display="flex";
@@ -721,8 +725,100 @@ function load(){
   S=freshState();
 }
 
+/* ---------- музыка подгорных чертогов (WebAudio, без файлов) ---------- */
+let AC=null, MG=null, musicOn=(localStorage.getItem("oredeep_music")!=="off");
+let nextBeat=0, beatN=0, musicTimer=null;
+const BPM=76, SPB=60/BPM;
+const SCALE=[146.83,174.61,196,220,261.63,293.66];   // ре-минорная пентатоника, D3+
+
+function audioStart(){
+  if(AC||!musicOn) return;
+  try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  MG=AC.createGain(); MG.gain.value=0.22; MG.connect(AC.destination);
+  const drone=(f,type,g)=>{                            // гул Горы
+    const o=AC.createOscillator(),gn=AC.createGain(),fl=AC.createBiquadFilter();
+    o.type=type; o.frequency.value=f;
+    fl.type="lowpass"; fl.frequency.value=220;
+    gn.gain.value=g; o.connect(fl); fl.connect(gn); gn.connect(MG); o.start();
+    const lfo=AC.createOscillator(), lg=AC.createGain();
+    lfo.frequency.value=0.06+Math.random()*0.05; lg.gain.value=g*0.4;
+    lfo.connect(lg); lg.connect(gn.gain); lfo.start();
+  };
+  drone(36.71,"sine",0.10);      // D1
+  drone(73.42,"sawtooth",0.045); // D2
+  drone(110,"triangle",0.06);    // A2
+  nextBeat=AC.currentTime+0.1; beatN=0;
+  musicTimer=setInterval(musicSchedule,90);
+}
+function thump(t,vel){                                 // барабан глубин
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type="sine";
+  o.frequency.setValueAtTime(90,t);
+  o.frequency.exponentialRampToValueAtTime(38,t+0.25);
+  g.gain.setValueAtTime(vel,t);
+  g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+  o.connect(g); g.connect(MG); o.start(t); o.stop(t+0.45);
+}
+function anvil(t,f,vel,dur){                           // звон кирки/наковальни
+  [1,2.76,5.4].forEach((m,i)=>{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.type="sine"; o.frequency.value=f*m;
+    g.gain.setValueAtTime(vel/(i+1),t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.connect(g); g.connect(MG); o.start(t); o.stop(t+dur+0.05);
+  });
+}
+function horn(t,f,dur,vel){                            // хор гномов
+  [-4,0,4].forEach(det=>{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.type="triangle"; o.frequency.value=f; o.detune.value=det;
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(vel,t+dur*0.3);
+    g.gain.linearRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(MG); o.start(t); o.stop(t+dur+0.05);
+  });
+}
+function musicSchedule(){
+  if(!AC||!musicOn) return;
+  while(nextBeat<AC.currentTime+0.35){
+    const t=nextBeat, b=beatN%8;
+    if(b===0||b===3) thump(t,0.5);
+    if(b===5&&Math.random()<0.5) thump(t,0.22);
+    if(Math.random()<0.07) anvil(t,600+Math.random()*500,0.05,0.8);   // далёкая кирка
+    if(beatN%32===16){                                 // фраза хора каждые 4 такта
+      let tt=t, idx=Math.floor(Math.random()*3);
+      const len=4+Math.floor(Math.random()*3);
+      for(let i=0;i<len;i++){
+        const dur=SPB*(Math.random()<0.3?2:1);
+        horn(tt,SCALE[idx],dur*0.95,0.10);
+        idx=Math.max(0,Math.min(SCALE.length-1,idx+Math.floor(Math.random()*3)-1));
+        tt+=dur;
+      }
+    }
+    nextBeat+=SPB; beatN++;
+  }
+}
+function jingleFind(){ if(!AC||!musicOn) return; const t=AC.currentTime;
+  [392,523.25,659.25].forEach((f,i)=>anvil(t+i*0.09,f,0.12,0.6)); }
+function jingleSet(){ if(!AC||!musicOn) return; const t=AC.currentTime;
+  [293.66,392,440,587.33].forEach((f,i)=>{ horn(t+i*0.16,f,0.55,0.14); anvil(t+i*0.16,f*2,0.05,0.4); }); }
+function jingleKO(){ if(!AC||!musicOn) return; const t=AC.currentTime;
+  horn(t,146.83,1.2,0.12); horn(t+0.5,138.59,1.8,0.12); }
+function toggleMusic(){
+  musicOn=!musicOn;
+  try{ localStorage.setItem("oredeep_music",musicOn?"on":"off"); }catch(e){}
+  if(musicOn&&!AC) audioStart();
+  if(MG) MG.gain.value=musicOn?0.22:0;
+  $("musicBtn").textContent=musicOn?"🔊":"🔇";
+}
+document.addEventListener("pointerdown",()=>{
+  if(musicOn){ audioStart(); if(AC&&AC.state==="suspended") AC.resume(); }
+});
+
 /* ---------- старт ---------- */
 load(); buildUpgrades(); renderGear(); newRock(); render();
+$("musicBtn").textContent=musicOn?"🔊":"🔇";
+$("musicBtn").onclick=toggleMusic;
 requestAnimationFrame(loop);
 setInterval(save,5000);
 </script>
