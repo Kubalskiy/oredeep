@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — прототип v0.8 «Копай глубже»</title>
+<title>ORE DEEP — прототип v0.9 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -26,11 +26,26 @@
   .minebar b{display:block;color:var(--txt);font-size:13px;letter-spacing:0;}
   .minebar .mid b{color:var(--blue);}
 
-  .scene{position:relative;height:230px;background:linear-gradient(180deg,#20242e 0%,#171a21 100%);overflow:hidden;}
-  .miner{position:absolute;left:12%;bottom:24px;font-size:54px;transform-origin:70% 80%;}
-  .miner.swing{animation:swing .18s ease-out;}
-  @keyframes swing{0%{transform:rotate(0)}45%{transform:rotate(-28deg)}100%{transform:rotate(0)}}
-  .rock{position:absolute;right:10%;bottom:28px;font-size:62px;filter:drop-shadow(0 4px 6px #0008);}
+  .scene{position:relative;height:240px;overflow:hidden;
+    background:linear-gradient(180deg,var(--c1,#20242e) 0%,var(--c2,#171a21) 100%);}
+  .scene.t0{--c1:#2c2721;--c2:#171310;--gemc:#e8b93c;--rockc:#4d453b;}
+  .scene.t1{--c1:#222b39;--c2:#131824;--gemc:#5aa7e8;--rockc:#3e4a5c;}
+  .scene.t2{--c1:#38221a;--c2:#1f110c;--gemc:#ff8a4a;--rockc:#54372a;}
+  .scene.t3{--c1:#20313b;--c2:#121f28;--gemc:#7ae8dc;--rockc:#38505c;}
+  .scene.t4{--c1:#272033;--c2:#151021;--gemc:#b97ae8;--rockc:#3e3450;}
+  #decor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  #lamp{animation:flick 3.5s ease-in-out infinite;filter:drop-shadow(0 0 12px #ffcf5e);}
+  @keyframes flick{0%,100%{opacity:1}50%{opacity:.75}}
+  .mote{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffe9a855;pointer-events:none;
+    animation:mote 9s linear infinite;}
+  @keyframes mote{0%{transform:translate(0,0);opacity:0}15%{opacity:.8}85%{opacity:.5}100%{transform:translate(26px,-120px);opacity:0}}
+  .miner{position:absolute;left:9%;bottom:20px;transform-origin:70% 85%;}
+  .miner.swing #pickArm{animation:swing .18s ease-out;}
+  #pickArm{transform-origin:63px 76px;}
+  @keyframes swing{0%{transform:rotate(0)}45%{transform:rotate(-52deg)}100%{transform:rotate(0)}}
+  .rock{position:absolute;right:7%;bottom:24px;filter:drop-shadow(0 5px 7px #000a);}
+  .rock.boss svg{transform:scale(1.16);transform-origin:bottom center;}
+  .rock.boss{--gemc:#ff5544;}
   .rock.hitfx{animation:shake .12s;}
   @keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
   .chip{position:absolute;font-size:16px;pointer-events:none;animation:fly .7s ease-out forwards;}
@@ -135,15 +150,73 @@
     <div>ЭТАП<br><b id="stageLabel">1</b></div>
   </div>
 
-  <div class="scene" id="scene">
+  <div class="scene t0" id="scene">
+    <svg id="decor" viewBox="0 0 430 240" preserveAspectRatio="none">
+      <path d="M0,0 H430 V12 L412,36 L398,14 L372,28 L354,13 L320,42 L298,13 L264,26 L242,13 L206,48 L184,13 L152,30 L130,13 L98,38 L78,13 L50,24 L30,13 L10,32 L0,16 Z" fill="#0d0f14" opacity="0.9"/>
+      <rect x="0" y="10" width="430" height="10" fill="#5d4326"/>
+      <rect x="20" y="16" width="11" height="224" fill="#523a20"/>
+      <rect x="399" y="16" width="11" height="224" fill="#523a20"/>
+      <rect x="0" y="228" width="430" height="12" fill="#0d0f14" opacity="0.85"/>
+      <line x1="70" y1="20" x2="70" y2="46" stroke="#3a3a3a" stroke-width="2"/>
+      <circle id="lamp" cx="70" cy="54" r="8" fill="#ffd57a"/>
+    </svg>
+    <span class="mote" style="left:30%;bottom:40px;animation-delay:0s"></span>
+    <span class="mote" style="left:55%;bottom:70px;animation-delay:3s"></span>
+    <span class="mote" style="left:75%;bottom:50px;animation-delay:6s"></span>
     <div class="rockname">жила: <b id="rockName">Валун</b></div>
     <div class="bars">
       <div class="bar hp"><div class="fill" id="hpFill" style="width:100%"></div><span id="hpTxt"></span></div>
       <div class="bar en"><div class="fill" id="enFill" style="width:100%"></div><span id="enTxt"></span></div>
     </div>
     <div class="bubble" id="bubble"></div>
-    <div class="miner" id="miner">⛏️</div>
-    <div class="rock" id="rock">🪨</div>
+    <div class="miner" id="miner">
+      <svg viewBox="0 0 120 130" width="108" height="117">
+        <defs><filter id="mglow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <ellipse cx="52" cy="120" rx="28" ry="8" fill="rgba(0,0,0,0.27)"/>
+        <g id="pickArm">
+          <rect x="60" y="14" width="6" height="64" rx="3" fill="#8a5a33"/>
+          <path d="M40 22 Q63 6 86 22 L82 31 Q63 18 44 31 Z" fill="#aeb8c6"/>
+          <path d="M40 22 Q63 6 86 22 L84 25 Q63 11 42 25 Z" fill="#d5dde8"/>
+          <rect x="57" y="16" width="12" height="8" rx="2" fill="#6e7a8a"/>
+          <circle cx="63" cy="74" r="6.5" fill="#e8b08a"/>
+        </g>
+        <path d="M32 80 Q52 68 72 80 L74 110 Q52 120 30 110 Z" fill="#6b4a2c"/>
+        <path d="M32 80 Q52 68 72 80 L73 92 Q52 84 31 92 Z" fill="#7d583a"/>
+        <rect x="30" y="97" width="44" height="8" rx="3" fill="#3d2a18"/>
+        <circle cx="52" cy="101" r="4.5" fill="#e8b93c"/>
+        <rect x="36" y="110" width="14" height="11" rx="4" fill="#463222"/>
+        <rect x="54" y="110" width="14" height="11" rx="4" fill="#463222"/>
+        <circle cx="52" cy="52" r="16" fill="#e8b08a"/>
+        <path d="M35 50 Q37 79 52 82 Q67 79 69 50 Q60 63 52 63 Q44 63 35 50 Z" fill="#c8632a"/>
+        <path d="M44 62 Q52 70 60 62 L58 72 Q52 76 46 72 Z" fill="#b5541f"/>
+        <circle cx="60" cy="55" r="4.5" fill="#e39b72"/>
+        <circle cx="57" cy="50" r="2.2" fill="#26221e"/>
+        <path d="M34 46 Q34 27 52 27 Q70 27 70 46 Z" fill="#e8b93c"/>
+        <path d="M34 46 Q34 27 52 27 L52 46 Z" fill="#d1a531"/>
+        <rect x="33" y="41" width="38" height="5" rx="2.5" fill="#b8860b"/>
+        <circle cx="52" cy="30" r="5" fill="#fff2b0" filter="url(#mglow)"/>
+      </svg>
+    </div>
+    <div class="rock" id="rock">
+      <svg viewBox="0 0 150 130" width="138" height="120">
+        <defs><filter id="gglow"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <ellipse cx="75" cy="120" rx="58" ry="9" fill="rgba(0,0,0,0.27)"/>
+        <path d="M18 112 L13 68 Q28 28 62 20 Q102 10 128 40 Q142 62 136 90 L130 112 Z" fill="var(--rockc,#4a4550)"/>
+        <path d="M62 20 L76 52 L48 80 L24 66 Z" fill="rgba(0,0,0,0.16)"/>
+        <path d="M128 40 L100 60 L118 92 L136 90 Q142 62 128 40 Z" fill="rgba(0,0,0,0.13)"/>
+        <path d="M13 68 Q28 28 62 20 L66 30 Q38 40 22 72 Z" fill="rgba(255,255,255,0.07)"/>
+        <polygon points="70,52 84,44 94,58 82,70 66,64" fill="var(--gemc,#e8b93c)" filter="url(#gglow)"/>
+        <polygon points="40,84 50,78 57,88 48,96 38,92" fill="var(--gemc,#e8b93c)" filter="url(#gglow)" opacity="0.85"/>
+        <polygon points="102,78 112,72 119,84 110,92 100,88" fill="var(--gemc,#e8b93c)" filter="url(#gglow)" opacity="0.8"/>
+        <circle cx="86" cy="50" r="2" fill="#fff" opacity="0.9"/>
+        <circle cx="45" cy="82" r="1.6" fill="#fff" opacity="0.8"/>
+        <g id="cracks" stroke="#0e0c12" stroke-width="2.6" fill="none" opacity="0" stroke-linecap="round">
+          <path d="M74 26 L68 52 L80 72 L72 96"/>
+          <path d="M40 50 L58 66 L52 88"/>
+          <path d="M110 52 L96 70 L106 94"/>
+        </g>
+      </svg>
+    </div>
     <button id="speedBtn">×1 СКОРОСТЬ</button>
   </div>
 
@@ -497,7 +570,8 @@ function newRock(){
     : ROCK_POOLS[mk][S.stageIdx%ROCK_POOLS[mk].length];
   if(isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
   $("rockName").classList.toggle("bosslabel",isBoss);
-  $("rock").textContent=isBoss?"💎":MINES[S.mine%MINES.length].rock;
+  $("rock").classList.toggle("boss",isBoss);
+  $("scene").className="scene t"+(S.mine%MINES.length);
 }
 function minerHit(){
   let dmg=Math.max(stat("atk")*0.15, stat("atk")-rock.hard*DMG_HARD_K);
@@ -655,6 +729,7 @@ function render(){
   $("stageLabel").textContent=fmt(S.stageIdx);
   $("minerRank").textContent=RANKS[Math.min(RANKS.length-1,S.mine)];
   $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
+  $("cracks").style.opacity=(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2);
   $("hpTxt").textContent="порода "+fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
   $("enFill").style.width=Math.max(0,S.energy/stat("energy")*100)+"%";
   $("enTxt").textContent="энергия "+fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy"));
