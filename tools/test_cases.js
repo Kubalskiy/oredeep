@@ -174,6 +174,24 @@ T("миграция v1→v2: ftue выключен для старых, стри
   S.v===2 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[21] Бороды-стрижки и распитие эля");
+localStorage.removeItem("oredeep_v3"); load();
+T("5 стилей бород загружены", typeof BEARD_STYLES!=="undefined" && BEARD_STYLES.length===5);
+S.beard=0; __ids.beardBtn.onclick();
+T("кнопка бороды циклит стиль", S.beard===1);
+for(let i=0;i<5;i++) __ids.beardBtn.onclick();
+T("борода зацикливается по модулю", S.beard===(6%5));
+// эль восстанавливает энергию
+S.stageIdx=1; newRock(); S.energy=1; const before=S.energy;
+sipAle();
+T("глоток эля восстанавливает энергию", S.energy>before);
+T("эль не превышает максимум", S.energy<=stat("energy"));
+// миграция старого сейва без бороды
+localStorage.setItem("oredeep_v3", JSON.stringify({gold:1,stageIdx:3}));
+load();
+T("миграция даёт бороду по умолчанию", S.beard===0);
+localStorage.removeItem("oredeep_v3"); load();
+
 console.log("\n[20] Полный паритет: питомцы, тренировки, дейлики, магазин");
 localStorage.removeItem("oredeep_v3"); load();
 // питомец: гача + пассив

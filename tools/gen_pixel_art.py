@@ -354,22 +354,63 @@ def gen_miner_base(seed, path):
     px[11,9]=pupil; px[15,9]=pupil                   # зрачки
     px[12,9]=pupil; px[16,9]=pupil
     rect(12,11,14,12,skin_d)                  # нос по центру
-    bend = 21 if long_beard else 16
-    rect(9,12,17,14,beard)                    # борода: верх широкий
-    rect(10,15,16,bend,beard)                 # низ уже
-    rect(9,12,10,14,beard_d)
-    rect(12,12,16,12,beard_d)                 # усы
+    # лёгкая щетина на подбородке (борода-стрижка идёт отдельным слоем)
+    rect(11,12,15,12,mix(skin,(0,0,0),.12))
     outline_pass(im)
     im.save(path)
-    # борода как overlay-слой (поверх робы, под каской)
-    bl = Image.new('RGBA',(26,30),(0,0,0,0)); bp = bl.load()
-    def brect(x0,y0,x1,y1,c):
+
+# 5 стилей бород (стрижки) — переключаемая косметика
+BEARD_STYLES = [
+    ("Окладистая", "c8632a"),
+    ("Косы",       "8a5a33"),
+    ("Раздвоенная","9aa0ad"),
+    ("Козлиная",   "6e4a28"),
+    ("Патриаршая", "ece8dc"),
+]
+def gen_beard_styles():
+    for i,(nm,col) in enumerate(BEARD_STYLES):
+        b=hx(col); bd=mix(b,(0,0,0),.22); bl_=mix(b,(255,255,255),.25)
+        im=Image.new('RGBA',(26,30),(0,0,0,0)); px=im.load()
+        def R(x0,y0,x1,y1,c):
+            for y in range(y0,y1+1):
+                for x in range(x0,x1+1):
+                    if 0<=x<26 and 0<=y<30: px[x,y]=c
+        R(11,12,15,12,bd)                       # усы у всех
+        if i==0:                                # окладистая: широкая округлая
+            R(9,13,17,15,b); R(10,16,16,20,b); R(11,21,15,22,b)
+            R(9,13,10,15,bd); R(16,13,17,15,bd)
+        elif i==1:                              # косы
+            R(9,13,17,15,b); R(10,16,16,19,b)
+            R(10,20,11,25,b); R(15,20,16,25,b)  # две косы вниз
+            px[10,26]=hx('e8b93c'); px[15,26]=hx('e8b93c')   # золотые зажимы
+            R(9,13,10,15,bd)
+        elif i==2:                              # раздвоенная
+            R(9,13,17,15,b); R(10,16,16,18,b)
+            R(10,19,12,23,b); R(14,19,16,23,b)  # два острия
+            R(9,13,10,15,bd)
+        elif i==3:                              # козлиная (узкая по центру)
+            R(12,13,14,20,b); R(12,13,12,20,bd)
+            R(10,13,15,14,b)                     # тонкие усы-щёки
+        else:                                   # патриаршая (очень длинная)
+            R(9,13,17,15,b); R(10,16,16,27,b); R(11,28,15,29,b)
+            R(9,13,10,15,bd); R(12,17,14,26,bl_)  # светлая прядь
+        outline_pass(im)
+        im.save(f'{OUT}/beard_style_{i}.png')
+
+# кружка эля (спрайт для анимации распития)
+def gen_mug():
+    im=Image.new('RGBA',(12,14),(0,0,0,0)); px=im.load()
+    wood=hx('8a5f38'); woodd=hx('5f3f24'); foam=hx('f4efe2'); ale=hx('c8871f')
+    def R(x0,y0,x1,y1,c):
         for y in range(y0,y1+1):
-            for x in range(x0,x1+1): bp[x,y]=c
-    brect(9,12,17,14,beard); brect(10,15,16,bend,beard)
-    brect(9,12,10,14,beard_d); brect(12,12,16,12,beard_d)
-    outline_pass(bl)
-    bl.save(path.replace('miner_b','miner_beard_b'))
+            for x in range(x0,x1+1): px[x,y]=c
+    R(2,3,8,12,wood); R(2,3,3,12,woodd)      # кружка
+    R(3,1,8,2,foam)                          # пена
+    R(4,4,7,6,ale)                           # эль в прозрачной части
+    R(8,5,10,9,woodd); R(9,6,9,8,None if False else hx('00000000'))  # ручка
+    R(9,6,9,8,hx('8a5f38'))
+    outline_pass(im)
+    im.save(f'{OUT}/mug.png')
 
 def _layer():  return Image.new('RGBA',(26,30),(0,0,0,0))
 
@@ -406,6 +447,8 @@ def main2():
             gen_ore(sh, p, seed=pi*10+sh, path=f'{OUT}/ore_p{pi}_s{sh}.png'); n+=1
     for s in range(6):
         gen_miner_base(seed=s*7+1, path=f'{OUT}/miner_b{s}.png'); n+=1
+    gen_beard_styles(); n+=5
+    gen_mug(); n+=1
     for i,c in enumerate(RARITY):
         gen_equip_layers(c, i); n+=5
     print('v2 generated:', n, 'sprites')
