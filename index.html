@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.27 «Копай глубже»</title>
+<title>ORE DEEP — v0.28 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -1723,12 +1723,26 @@ $("navDaily").onclick=openDaily; $("navShop").onclick=openShop;
 /* ---------- распитие эля (косметика + чуть энергии) ---------- */
 let aleNext=25+Math.random()*20, aleAnim=0;
 const ALE_QUIPS=["За Гору! *глоток*","Эль честно заслужен.","Ах, пивовар не подвёл!","Пыль в горле — не беда.","Один глоток за деда."];
+/* хмельные подколы про бывших — таверный юмор, PG-13 (стор-безопасно) */
+const EX_QUIPS=[
+  "Бывшая говорила, борода колется. Теперь борода длиннее наших отношений.",
+  "За ту, что ушла к эльфу. Надеюсь, у него уши мёрзнут!",
+  "Моя бывшая была как редкий камень: блестит, копнёшь — одни долги.",
+  "Помню её глаза... а имя — нет. Эль виноват. Наверное.",
+  "Сказала: «выбирай — я или кирка». Кирка хоть мозг не пилит.",
+  "За гномиху из третьего чертога! Киркой била больнее, чем словами.",
+  "Бывшая ушла с моим золотом. Зато борода при мне, ха!",
+  "Она хотела бриллиант. Я нашёл. Себе. Правильное решение.",
+  "Говорят, гномихи любят богатых. Значит, я почти неотразим!",
+  "Развелись из-за храпа. Мой храп — как обвал. Естественно."
+];
 function sipAle(){
   const mug=$("aleMug"); mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
   clearTimeout(sipAle._t); sipAle._t=setTimeout(()=>mug.classList.remove("sip"),2450);
   aleAnim=2.4;
   S.energy=Math.min(stat("energy"), S.energy+stat("energy")*0.12);   // +12% энергии
-  sayQuip(ALE_QUIPS[Math.floor(Math.random()*ALE_QUIPS.length)],4);
+  const pool=Math.random()<0.55?EX_QUIPS:ALE_QUIPS;
+  sayQuip(pool[Math.floor(Math.random()*pool.length)], 4);
   jingleFind();
   Platform.logEvent("ale_sip",{});
 }
