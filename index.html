@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.51 «Копай глубже»</title>
+<title>ORE DEEP — v0.53 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -45,7 +45,7 @@
   .miner{position:absolute;left:9%;bottom:20px;transform-origin:70% 85%;}
   .miner.swing #pickHand{animation:chop .16s ease-in;}
   @keyframes chop{0%{transform:rotate(-22deg)}55%{transform:rotate(42deg)}100%{transform:rotate(-22deg)}}
-  .pet{position:absolute;left:33%;bottom:14px;z-index:5;animation:bob 2s ease-in-out infinite;}
+  .pet{position:absolute;left:2%;bottom:14px;z-index:5;animation:bob 2s ease-in-out infinite;}
   .rock{position:absolute;right:7%;bottom:24px;filter:drop-shadow(0 5px 7px #000a);}
   .rock{width:132px;height:132px;}
   #rockImg{width:100%;height:100%;image-rendering:pixelated;display:block;}
@@ -159,6 +159,13 @@
   .upg .u .v{font-size:13px;font-weight:800;margin:2px 0;}
   .upg .u .c{font-size:10px;color:var(--gold);margin-bottom:5px;}
   .toolbar{display:flex;gap:8px;padding:0 12px 14px;}
+  #log{margin:6px 12px 2px;background:#0d0f14;border:1px solid var(--line);border-radius:6px;
+    height:42px;overflow-y:auto;padding:4px 8px;display:flex;flex-direction:column;gap:1px;
+    scrollbar-width:thin;}
+  #log .li{font-size:8px;line-height:1.5;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #log .li b{color:var(--txt);}
+  #log .li.hot{color:var(--gold);}
+  #log .li.hot b{color:var(--gold);}
   .metabar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px 12px 10px;}
   .metabar button{padding:12px 2px;font-size:8px;background:linear-gradient(180deg,#2a3346,#1d2534);}
   .metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line);font-size:9px;gap:8px}
@@ -423,6 +430,8 @@
     </div>
     <button id="speedBtn">×1 СКОРОСТЬ</button>
   </div>
+
+  <div id="log"></div>
 
   <div class="stats">
     <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
@@ -1379,16 +1388,20 @@ function fxDamage(dmg,crit){
   $("scene").appendChild(d); setTimeout(()=>d.remove(),800);
 }
 let toastT=null;
-let lastToast=0;
+let lastLogMsg="";
 function showToast(icon,rar,rcls,name,extra,important){
-  const now=Date.now();
-  if(!important && now-lastToast<3500) return;
-  lastToast=now;
-  const t=$("toast");
-  t.innerHTML=`<div class="big">${icon}</div><div class="r ${rcls}">${rar}</div>
-    <div class="nm">${name}</div><div class="vl">${extra}</div>`;
-  t.style.display="block";
-  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display="none",1600);
+  const head=[rar,name].filter(x=>x&&(""+x).trim()).join(" ");
+  lastLogMsg=(icon||"")+" "+head+(extra?(" · "+extra):"");
+  const g=$("log"); if(!g||!g.appendChild) return;
+  const rc=(rcls||"").trim();
+  const li=document.createElement("div");
+  li.className="li"+(important?" hot":"");
+  const rarHtml = rar?`<span class="${rc}">${rar}</span> `:"";
+  li.innerHTML=`${icon} ${rarHtml}<b>${name||""}</b>${extra?(" · "+extra):""}`;
+  g.appendChild(li);
+  const kids=g.children||[];
+  while(kids.length>40 && g.removeChild) g.removeChild(kids[0]);
+  if(typeof g.scrollHeight==="number") g.scrollTop=g.scrollHeight;
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];

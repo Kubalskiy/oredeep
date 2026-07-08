@@ -148,7 +148,7 @@ console.log("\n[16] Фаза 1: глубина, стрик, онбординг, 
 // вехи глубины
 localStorage.removeItem("oredeep_v3"); load();
 S.beardXP=1e9; S.stageIdx=10; checkDepthMark(9);
-T("веха 30 м срабатывает на пересечении", __ids.toast.innerHTML.includes("30"));
+T("веха 30 м срабатывает на пересечении", lastLogMsg.includes("30"));
 // стрик: первый день
 S.streak={n:0,last:""}; const g0=S.gold; checkStreak();
 T("стрик день 1, награда выдана", S.streak.n===1 && S.gold>g0);

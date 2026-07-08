@@ -4,7 +4,7 @@
 const __ids = {};
 class FE {
   constructor(tag){ this.tag=tag; this._id=null; this.children=[];
-    this.textContent=""; this.innerHTML=""; this.disabled=false; this.onclick=null; this.dataset={}; this.src="";
+    this.textContent=""; this._innerHTML=""; this.disabled=false; this.onclick=null; this.dataset={}; this.src=""; this.scrollTop=0; this.scrollHeight=0;
     this.offsetWidth=0; this._q={};
     const self=this;
     this.style=new Proxy({}, {get:(t,k)=> k==="setProperty"?((a,b)=>{t[a]=b}):t[k], set:(t,k,v)=>{t[k]=v;return true}});
@@ -18,6 +18,8 @@ class FE {
   set className(v){ this._cls=new Set(String(v).split(/\s+/).filter(Boolean)); }
   get className(){ return [...this._cls].join(" "); }
   appendChild(c){ this.children.push(c); return c; }
+  removeChild(c){ const i=this.children.indexOf(c); if(i>=0) this.children.splice(i,1); return c; }
+  get firstChild(){ return this.children[0]; }
   setAttribute(k,v){ this._attrs=this._attrs||{}; this._attrs[k]=v; }
   getAttribute(k){ return (this._attrs||{})[k]; }
   remove(){}
