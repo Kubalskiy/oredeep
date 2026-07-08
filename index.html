@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.49 «Копай глубже»</title>
+<title>ORE DEEP — v0.50 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -69,8 +69,8 @@
     35%,65%{transform:translate(6px,-6px) rotate(-32deg);opacity:1}
     85%{transform:translate(0,0) rotate(0);opacity:1}
     100%{transform:translate(0,20px);opacity:0}}
-  #streakLine{cursor:pointer;}
-  #streakLine:active{opacity:.7;}
+  #minerRank{cursor:pointer;}
+  #minerRank:active{opacity:.7;}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
   .rock svg polygon{animation:gemPulse 3.2s ease-in-out infinite;}
   @keyframes gemPulse{0%,100%{opacity:1}50%{opacity:.7}}
@@ -1301,11 +1301,11 @@ function renderGear(){
 function render(){
   $("gold").textContent=fmt(S.gold);
   $("gps").textContent=fmt(idlePerSec());
-  $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д · 🧔 "+beardWisdom().title):("🧔 "+beardWisdom().title);
+  $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"";
   $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0); $("protein").textContent=fmt(Math.floor(S.protein||0)); $("shards").textContent=fmt(S.shards||0);
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
   $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
-  $("minerRank").textContent=RANKS[Math.min(RANKS.length-1,S.mine)];
+  $("minerRank").textContent=beardWisdom().title;
   $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
   $("cracks").style.opacity=(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2);
   $("hpTxt").textContent=fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
@@ -1926,7 +1926,7 @@ function sipAle(){
   jingleFind();
   Platform.logEvent("ale_sip",{});
 }
-$("streakLine").onclick=()=>{
+$("minerRank").onclick=()=>{
   const w=beardWisdom(); const need=beardNextXP(w.lv), have=S.beardXP||0;
   const isMax=w.lv>=BEARD_RANKS.length-1;
   metaOpen("Мудрость Бороды","Чем длиннее и седее борода — тем выше ранг и мощнее бонус.",
