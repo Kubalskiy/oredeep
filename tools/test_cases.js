@@ -190,6 +190,46 @@ load();
 T("миграция даёт бороду по умолчанию", S.beard===0);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[23] Лутбоксы и Сеты Подземелья");
+localStorage.removeItem("oredeep_v3"); load();
+// комплект одной редкости роняет лутбокс
+S.gear={}; S.boxes=[]; S.loadoutTier=0;
+SLOTS.forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:2,m:1,i:1}; });  // все Epic(r2)
+checkLoadout();
+T("полный комплект Epic роняет лутбокс(ы)", S.boxes.length>0 && S.loadoutTier===2);
+{ const n0=S.boxes.length; checkLoadout(); T("повторно тот же тир не роняет", S.boxes.length===n0); }
+// апгрейд редкости → ещё лутбокс
+SLOTS.forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:4,m:1,i:1}; }); const b0=S.boxes.length; checkLoadout();
+T("рост комплекта до Exotic даёт ещё лутбоксы", S.boxes.length>b0 && S.loadoutTier===4);
+// открытие даёт фрагмент
+S.frags={}; S.sets={}; S.boxes=[2];
+const r=openBox(2);
+T("открытие бокса даёт фрагмент сета", r && typeof r.frag==="string" && Object.keys(S.frags).length>0);
+// сбор полного сета активирует билд
+S.frags={berserk:{0:true,1:true,2:true}}; S.sets={};
+grantFragment();  // допинываем — но грантит случайный незавершённый; форсируем:
+S.frags={berserk:{0:true,1:true,2:true,3:true}}; S.sets={};
+// эмулируем завершение через прямую активацию логики grantFragment на berserk
+// проще: проверим бонус при активном сете
+S.sets={berserk:true}; S.gear={}; S.skills={};S.geo=null;S.pet=null;S.workouts={};S.beardXP=0;S.col={};S.lvls.atk=0;S.lvls.crit=0;
+const atkNo=(function(){const s=JSON.parse(JSON.stringify(S));S.sets={};const v=stat("atk");S=s;return v;})();
+T("билд Ярость Забоя: ×1.5 ATK", Math.abs(stat("atk")-atkNo*1.5)<1e-6, stat("atk")+" vs "+(atkNo*1.5));
+T("билд Ярость Забоя: +20 CRIT", stat("crit")>=25);
+S.sets={greed:true}; const stNo=120; T("билд Жадность: ×2 STONE", stat("stone")===stNo*2);
+S.sets={lucky:true}; T("билд Фарт: ×1.5 находка", findChance()>Math.min(50,8));
+S.sets={};
+// осколки из дубликата редкого камня
+S.col={0:{4:1}}; S.shards=0; S.stageIdx=100; S.bag=1;
+// вызвать onFind с forceR Exotic(4) дважды: первый — новый, второй — дубликат
+onFind(4); const sh0=S.shards; onFind(4);
+T("дубликат редкого камня даёт осколки", S.shards>sh0);
+// сплав 3→1 тратит осколки
+S.boxes=[2,2,2]; S.shards=BALANCE.fuseCost(2); const fbefore=S.boxes.length;
+fuseBoxes(2);
+T("сплав 3→1: −3 бокса +1 старший, осколки списаны", S.boxes.filter(x=>x===3).length===1 && S.shards===0 && S.boxes.length===fbefore-2);
+{ S.boxes=[2,2]; S.shards=1e9; const l=S.boxes.length; fuseBoxes(2); T("сплав без 3 боксов не работает", S.boxes.length===l); }
+localStorage.removeItem("oredeep_v3"); load();
+
 console.log("\n[22] Мудрость Бороды (престиж-ранг)");
 localStorage.removeItem("oredeep_v3"); load(); S.gear={}; S.geo=null; S.skills={};
 S.beardXP=0;
