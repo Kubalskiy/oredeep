@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.50 «Копай глубже»</title>
+<title>ORE DEEP — v0.51 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -45,7 +45,7 @@
   .miner{position:absolute;left:9%;bottom:20px;transform-origin:70% 85%;}
   .miner.swing #pickHand{animation:chop .16s ease-in;}
   @keyframes chop{0%{transform:rotate(-22deg)}55%{transform:rotate(42deg)}100%{transform:rotate(-22deg)}}
-  .pet{position:absolute;left:12%;bottom:16px;z-index:5;animation:bob 2s ease-in-out infinite;}
+  .pet{position:absolute;left:33%;bottom:14px;z-index:5;animation:bob 2s ease-in-out infinite;}
   .rock{position:absolute;right:7%;bottom:24px;filter:drop-shadow(0 5px 7px #000a);}
   .rock{width:132px;height:132px;}
   #rockImg{width:100%;height:100%;image-rendering:pixelated;display:block;}
@@ -729,7 +729,7 @@ function beardWisdom(){
 function beardNextXP(lv){ return Math.round(80*(Math.pow(1.7,lv+1)-1)); }
 function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
   if(beardLevel()>before){ const w=beardWisdom();
-    showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK");
+    showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK",true);
     sayQuip("Борода стала гуще и седее. Клан кланяется.",4);
     Platform.logEvent("beard_rank",{lv:w.lv}); } }
 const MUG_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAlklEQVR4nGNkQAIiYjL/GbCAN6+eMMLYjMiKH9w8hk09g4K6FVwTE1YVeAALzHRvTQ6G7AAnBm0FEcIakIGdxnMU/qEbknAnv3n1hBFDAzq4+uANg7cmBwMDAwPDVgaZ/0T5AdmZGDbAnIAAb1B4JIcSURquPkDYQtDT2goiDF3bnzAwMEBinGgnkR3TKGmJkOkMDAwMAC1BK8eiEIVdAAAAAElFTkSuQmCC";
@@ -1274,7 +1274,7 @@ function checkLoadout(){
     const got=minR-(S.loadoutTier||0);
     for(let t=(S.loadoutTier||0)+1; t<=minR; t++) S.boxes.push(t);
     S.loadoutTier=minR;
-    showToast("📦","КОМПЛЕКТ!","r"+minR,RAR_NAMES[minR]+" во всех слотах","лутбокс ×"+got+" · тир "+minR);
+    showToast("📦","КОМПЛЕКТ!","r"+minR,RAR_NAMES[minR]+" во всех слотах","лутбокс ×"+got+" · тир "+minR,true);
     Platform.logEvent("lootbox_drop",{tier:minR}); sfxGear();
   }
 }
@@ -1379,12 +1379,16 @@ function fxDamage(dmg,crit){
   $("scene").appendChild(d); setTimeout(()=>d.remove(),800);
 }
 let toastT=null;
-function showToast(icon,rar,rcls,name,extra){
+let lastToast=0;
+function showToast(icon,rar,rcls,name,extra,important){
+  const now=Date.now();
+  if(!important && now-lastToast<3500) return;
+  lastToast=now;
   const t=$("toast");
   t.innerHTML=`<div class="big">${icon}</div><div class="r ${rcls}">${rar}</div>
     <div class="nm">${name}</div><div class="vl">${extra}</div>`;
   t.style.display="block";
-  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display="none",2200);
+  clearTimeout(toastT); toastT=setTimeout(()=>t.style.display="none",1600);
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];
@@ -1653,7 +1657,7 @@ function checkStreak(){
   S.gold+=reward;
   showToast("🔥","Стрик: день "+S.streak.n,"",
     (mult>1?"ВЕХА СТРИКА! Награда ×"+mult:"Гора рада тебя видеть"),
-    "+"+fmt(reward)+" 🪙");
+    "+"+fmt(reward)+" 🪙", true);
   sayQuip(S.streak.n>=7?"Стрик "+S.streak.n+" дней! Борода довольна.":"Снова в забой! Это по-дворфьи.",4);
   Platform.logEvent("streak",{n:S.streak.n}); addBeardXP(25);
   save();
@@ -1742,7 +1746,7 @@ function pvpFight(){
   const win=me>=opp;
   if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1);
     const li=pvpLeagueIdx(); S.gold+=BALANCE.pvp.rewards[li]*100;
-    showToast("⚔","ПОБЕДА!","","+30 🏆 · +"+fmt(BALANCE.pvp.rewards[li]*100)+" 🪙","Power "+fmt(me)+" vs "+fmt(opp)); }
+    showToast("⚔","ПОБЕДА!","","+30 🏆 · +"+fmt(BALANCE.pvp.rewards[li]*100)+" 🪙","Power "+fmt(me)+" vs "+fmt(opp),true); }
   else { S.trophies=Math.max(0,(S.trophies||0)-15);
     showToast("⚔","Поражение","","-15 🏆","Power "+fmt(me)+" vs "+fmt(opp)); }
   Platform.logEvent("pvp_fight",{win}); save(); render(); openPvp();
@@ -1794,7 +1798,7 @@ function playEvent(id){
     S.keys-=1; if(!S.keyAt||S.keys===BALANCE.keyMax-1) S.keyAt=Date.now();   // запустить таймер рефилла
     const rew=eventReward(s,lvl)*(s.mult||1);
     S[s.res]=(S[s.res]||0)+rew;                                              // реальный ресурс
-    showToast("★","Забег пройден!","",s.ic+" +"+fmt(rew)+" "+s.currency,"уровень "+lvl+" · осталось 🔑"+S.keys);
+    showToast("★","Забег пройден!","",s.ic+" +"+fmt(rew)+" "+s.currency,"уровень "+lvl+" · осталось 🔑"+S.keys,true);
     Platform.logEvent("event_win",{id,lvl});
   } else {
     showToast("★","Провал забега","","ключ НЕ потрачен","попробуй снова");
@@ -1952,7 +1956,7 @@ function grantFragment(){
   S.frags[s.id][idx]=true;
   const complete=s.frags.every((f,i)=>S.frags[s.id][i]);
   if(complete && !(S.sets||{})[s.id]){ S.sets=S.sets||{}; S.sets[s.id]=true;
-    showToast("⚒","СЕТ СОБРАН!","",s.n,s.bonus); sayQuip("Билд «"+s.n+"» активирован! Мощь!",5);
+    showToast("⚒","СЕТ СОБРАН!","",s.n,s.bonus,true); sayQuip("Билд «"+s.n+"» активирован! Мощь!",5);
     Platform.logEvent("dungeon_set",{id:s.id}); jingleSet(); }
   return {set:s.n, frag:s.frags[idx], complete};
 }
