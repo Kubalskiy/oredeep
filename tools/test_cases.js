@@ -251,6 +251,20 @@ S.beardXP=0; const inc0=idlePerSec(); S.beardXP=1e9; const inc1=idlePerSec();
 T("доход выше при длинной бороде", inc1>inc0);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[25] Вагонетка с рудой");
+localStorage.removeItem("oredeep_v3"); load();
+cartBusy=false;
+S.cartFill=0; S.cartRuns=0; S.stageIdx=100; S.bag=5; newRock();
+// разбить несколько жил — вагонетка наполняется
+for(let i=0;i<3;i++){ S.rockHP=0; breakVein(); }
+T("вагонетка наполняется за жилы", (S.cartFill||0)>=1 && (S.cartFill||0)<=8);
+// добить до полной — уезжает (отъезд асинхронный, но cartFill растёт до cap)
+S.cartFill=7; addCartOre();
+T("на полной вагонетке запускается отъезд", cartBusy===true || (S.cartFill||0)===0);
+// после отъезда счётчик рейсов вырос
+T("рейс вагонетки засчитан", (S.cartRuns||0)>=1);
+localStorage.removeItem("oredeep_v3"); load();
+
 console.log("\n[24] Рефилл ключей ивентов");
 localStorage.removeItem("oredeep_v3"); load();
 S.keys=0; S.keyAt=Date.now()-BALANCE.keyRefillSec*1000-1000; refillKeys();
