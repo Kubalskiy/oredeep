@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.16 «Копай глубже»</title>
+<title>ORE DEEP — v0.18 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -127,6 +127,11 @@
   .upg .u .v{font-size:13px;font-weight:800;margin:2px 0;}
   .upg .u .c{font-size:10px;color:var(--gold);margin-bottom:5px;}
   .toolbar{display:flex;gap:8px;padding:0 12px 14px;}
+  .metabar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px 12px 10px;}
+  .metabar button{padding:12px 2px;font-size:8px;background:linear-gradient(180deg,#2a3346,#1d2534);}
+  .metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line);font-size:9px;gap:8px}
+  .metarow button{width:auto;padding:8px 10px;font-size:8px}
+  #gemLine{color:#b97ae8;font-size:11px}
 
   #toast{position:fixed;left:50%;top:15%;transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
     border-radius:14px;padding:12px 20px;text-align:center;z-index:50;display:none;box-shadow:0 8px 30px #000a;min-width:230px;}
@@ -245,6 +250,7 @@
       <div class="gold">🪙 <span id="gold">0</span></div>
       <div class="gps">+<span id="gps">0</span>/с</div>
       <div class="gps" id="streakLine" style="color:#ff9d5c"></div>
+      <div id="gemLine">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span></div>
     </div>
     <div class="right">ORE DEEP<br><b>копай глубже. ещё.</b></div>
     <button id="musicBtn" title="музыка">🔊</button>
@@ -382,8 +388,23 @@
 
   <div class="upg" id="upgrades"></div>
 
+  <div class="metabar">
+    <button id="navSkills">✦ НАВЫКИ</button>
+    <button id="navWheel">◎ КОЛЕСО</button>
+    <button id="navPvp">⚔ PvP</button>
+    <button id="navEvents">★ ИВЕНТЫ</button>
+  </div>
   <div class="toolbar">
     <button id="resetBtn" class="red">↺ Всё сначала (клянусь бородой)</button>
+  </div>
+
+  <div class="modal" id="metaModal">
+    <div class="box">
+      <h3 id="metaTitle"></h3>
+      <div class="sub" id="metaSub"></div>
+      <div id="metaBody"></div>
+      <button style="margin-top:12px" onclick="document.getElementById('metaModal').style.display='none'">Закрыть</button>
+    </div>
   </div>
 </div>
 
@@ -679,6 +700,7 @@ function stat(id){
   let v=BASE[id]+(u?u.step*S.lvls[id]:0)+gearSum(id);
   if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+GEO_TYPES[S.geo.t].pct[S.geo.r]/100);
   if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
+  for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
   for(let k=0;k<SET_BONUS.length;k++){                  // сет-бонусы чертогов
     if(SET_BONUS[k].stat===id && setDone(k))
       v = SET_BONUS[k].flat ? v+SET_BONUS[k].flat : v*(1+SET_BONUS[k].pct/100);
@@ -754,7 +776,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, pickLog:{}, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, pickLog:{}, gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1032,6 +1054,7 @@ function render(){
   $("gold").textContent=fmt(S.gold);
   $("gps").textContent=fmt(idlePerSec());
   $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"";
+  $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0);
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
   $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
   $("minerRank").textContent=RANKS[Math.min(RANKS.length-1,S.mine)];
@@ -1405,6 +1428,100 @@ function claimOffline(mult){
   if(mult>1) Platform.showRewarded(ok=>{ if(ok) grant(); });
   else grant();
 }
+
+/* ============================================================
+   МЕТА-СИСТЕМЫ (перенос из боксёра, всё из BALANCE)
+   ============================================================ */
+function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub").innerHTML=sub;
+  $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
+const SKILL_DEFS=[
+  {id:"crit_up",n:"Точный удар",stat:"crit",per:1.5},
+  {id:"atk_up",n:"Сила забоя",stat:"atk",per:8},
+  {id:"luck_up",n:"Нюх на камни",stat:"luck",per:1.2},
+  {id:"stone_up",n:"Жадность",stat:"stone",per:12},
+  {id:"energy_up",n:"Второе дыхание",stat:"energy",per:15}
+];
+function skillBonus(id){ const lv=(S.skills&&S.skills[id])||0; if(!lv) return 0;
+  const d=SKILL_DEFS.find(s=>s.id===id); return d?d.per*lv:0; }
+function openSkills(){
+  let rows=SKILL_DEFS.map(d=>{
+    const lv=(S.skills&&S.skills[d.id])||0;
+    const c=BALANCE.skillCosts[Math.min(lv,BALANCE.skillCosts.length-1)]*10;
+    return `<div class="metarow"><span>${d.n} · ур.${lv}<br><span style="color:var(--dim)">+${(d.per*(lv+1)).toFixed(1)} ${d.stat.toUpperCase()}</span></span>
+      <button class="buy" onclick="upSkill('${d.id}',${c})">прокачать · ${c}💎</button></div>`;
+  }).join("");
+  metaOpen("Навыки добычи","Косты 1…75 ×10 (BALANCE §6). Навыки — постоянные пассивы к статам.",rows);
+}
+function upSkill(id,c){ if((S.gems||0)<c) return; S.gems-=c; S.skills=S.skills||{}; S.skills[id]=(S.skills[id]||0)+1;
+  Platform.logEvent("skill_up",{id}); sfxGear(); save(); render(); openSkills(); }
+function openWheel(){
+  const spin=S.wheelSpins||0;
+  const cost=BALANCE.wheel.cost[Math.min(spin,BALANCE.wheel.cost.length-1)];
+  metaOpen("Колесо старателя","Крутка "+(spin+1)+" · цена растёт 30→820💎 (§9)",
+    `<div style="text-align:center;padding:10px 0">
+      <div style="font-size:9px;margin-bottom:10px;line-height:1.8">Награды: золото · кристаллы · редкий камень</div>
+      <button class="gold" onclick="spinWheel(${cost})" ${(S.gems||0)<cost?"disabled":""}>Крутить за ${cost}💎</button>
+    </div>`);
+}
+function spinWheel(cost){
+  if((S.gems||0)<cost) return; S.gems-=cost; S.wheelSpins=(S.wheelSpins||0)+1;
+  const roll=Math.random(); let msg;
+  if(roll<0.5){ const g=Math.round(veinReward()*50); S.gold+=g; msg="+"+fmt(g)+" 🪙"; }
+  else if(roll<0.8){ const gm=[25,50,100][Math.floor(Math.random()*3)]; S.gems+=gm; msg="+"+gm+" 💎"; }
+  else { onFind(); msg="редкий камень!"; }
+  Platform.logEvent("wheel_spin",{n:S.wheelSpins});
+  showToast("◎","Колесо!","",msg,"крутка "+S.wheelSpins); save(); render(); openWheel();
+}
+function powerScore(){
+  return Math.round(stat("energy")+stat("tough")*100+stat("atk")*8+stat("spd")*5
+    +stat("crit")*2+stat("luck")*2+stat("mining")*3+stat("stone"));
+}
+function pvpLeagueIdx(){ const t=S.trophies||0; let i=0; for(let k=0;k<BALANCE.pvp.thresholds.length;k++) if(t>=BALANCE.pvp.thresholds[k]) i=k; return i; }
+function openPvp(){
+  const li=pvpLeagueIdx(), me=powerScore();
+  metaOpen("PvP · дуэль забоя","Лига: "+BALANCE.pvp.names[li]+" · Power "+fmt(me)+" (§11)",
+    `<div class="metarow"><span>Кубки: ${fmt(S.trophies||0)} · побед: ${S.pvpWins||0}</span></div>
+     <div style="text-align:center;padding:10px 0">
+       <button class="buy" onclick="pvpFight()">В бой! (соперник ±Power)</button>
+     </div>`);
+}
+function pvpFight(){
+  const me=powerScore(), opp=Math.round(me*(0.8+Math.random()*0.5));
+  const win=me>=opp;
+  if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30;
+    const li=pvpLeagueIdx(); S.gold+=BALANCE.pvp.rewards[li]*100;
+    showToast("⚔","ПОБЕДА!","","+30 🏆 · +"+fmt(BALANCE.pvp.rewards[li]*100)+" 🪙","Power "+fmt(me)+" vs "+fmt(opp)); }
+  else { S.trophies=Math.max(0,(S.trophies||0)-15);
+    showToast("⚔","Поражение","","-15 🏆","Power "+fmt(me)+" vs "+fmt(opp)); }
+  Platform.logEvent("pvp_fight",{win}); save(); render(); openPvp();
+}
+const EVENT_LIST=[
+  ["rockfall","Rockfall","волна валунов"],["lavaVein","Lava Vein","череда пластов"],
+  ["prospectorFair","Prospector Fair","показательная добыча"],
+  ["crystalCave","Crystal Cave","кристаллы-сейфы"],["critterDen","Critter Den","зачистка логова"]
+];
+function openEvents(){
+  const rows=EVENT_LIST.map(([id,nm,desc])=>{
+    const s=BALANCE.events[id];
+    const r1=eventReward(s,1), rmax=eventReward(s,s.maxLvl);
+    return `<div class="metarow"><span>${nm} · <span style="color:var(--dim)">${desc}</span><br>
+      <span style="color:var(--gold)">${s.currency}: ур.1=${fmt(r1)} … ур.${s.maxLvl}=${fmt(rmax)}</span></span>
+      <button class="buy" onclick="playEvent('${id}')">Забег</button></div>`;
+  }).join("");
+  metaOpen("Ивенты (5 режимов)","Ключей: "+(S.keys||0)+"/2 · ключ тратится только на победе (§12)",rows);
+}
+function playEvent(id){
+  if((S.keys||0)<1){ showToast("🔑","Нет ключей","","рефилл ~4ч","событие"); return; }
+  const s=BALANCE.events[id], lvl=Math.min(s.maxLvl, Math.floor((S.mine||0)/2)+1);
+  const win=Math.random()<0.7;
+  if(win){ S.keys-=1; const rew=eventReward(s,lvl);
+    if(id==="crystalCave") S.gems+=rew; else S.gold+=rew*50;
+    showToast("★","Забег пройден!","",s.currency+" +"+fmt(rew),"уровень "+lvl); }
+  else showToast("★","Провал","","ключ не потрачен","попробуй снова");
+  Platform.logEvent("event_run",{id,win}); save(); render(); openEvents();
+}
+$("navSkills").onclick=openSkills; $("navWheel").onclick=openWheel;
+$("navPvp").onclick=openPvp; $("navEvents").onclick=openEvents;
 
 /* ---------- старт ---------- */
 load(); buildUpgrades(); renderGear(); newRock(); render(); checkOffline(); checkStreak();

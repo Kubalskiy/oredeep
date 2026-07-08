@@ -174,6 +174,27 @@ T("миграция v1→v2: ftue выключен для старых, стри
   S.v===2 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[19] Мета-системы boxer→miner");
+localStorage.removeItem("oredeep_v3"); load();
+// навыки влияют на статы
+S.gems=100000; S.skills={}; S.gear={}; S.geo=null; S.col={};
+const atkB=stat("atk"); upSkill("atk_up",10);
+T("навык повышает стат", stat("atk")>atkB && S.skills.atk_up===1);
+{ const g0=S.gems; upSkill("atk_up",999999); T("нет кристаллов — навык не качается", S.gems===g0 || S.skills.atk_up===1); }
+// Колесо: списывает по кривой
+S.gems=100000; S.wheelSpins=0; { const g0=S.gems; spinWheel(BALANCE.wheel.cost[0]);
+  T("колесо: крутка +1, списано 30", S.wheelSpins===1 && S.gems===g0-30); }
+// PvP: power score растёт с прокачкой
+const p0=powerScore(); S.lvls.atk=50; T("Power Score реагирует на прокачку", powerScore()>p0);
+// PvP лига по кубкам
+S.trophies=0; T("лига ROOKIE на 0 кубков", BALANCE.pvp.names[pvpLeagueIdx()]==="ROOKIE");
+S.trophies=500; T("лига CHAMP III на 500 кубков", pvpLeagueIdx()===8);
+// ивент: победа тратит ключ, награда по геометрии
+S.keys=2; S.mine=4; let spent=false;
+for(let i=0;i<40;i++){ const k=S.keys; playEvent("rockfall"); if(S.keys<k){spent=true;break;} }
+T("ивент: победа тратит ключ", spent);
+S.keys=0; { const g=S.gold; playEvent("rockfall"); T("без ключей ивент недоступен", S.gold===g); }
+
 console.log("\n[18] BALANCE и геометрический движок наград");
 T("idle-константы = boxer", BALANCE.idle.base===100000 && BALANCE.idle.growth===2.5 && BALANCE.idle.damp===0.65);
 T("idle-кап 2 часа", BALANCE.idle.capSec===7200);
