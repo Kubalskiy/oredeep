@@ -24,7 +24,7 @@ T("fmt сверхбольшие → компактная экспонента", 
 console.log("\n[2] Базовые статы (GDD §3, 1:1)");
 T("ATK=10", stat("atk")===10);
 T("Energy=70", stat("energy")===70);
-T("SPD=4.5", stat("spd")===4.5);
+T("SPD база=1.0 (boxer)", stat("spd")===BALANCE.combat.baseAPS);
 T("CRIT=5, LUCK=10, STONE=120", stat("crit")===5&&stat("luck")===10&&stat("stone")===120);
 T("шанс находки старт = 8%", findChance()===8);
 
@@ -44,7 +44,7 @@ for(let i=0;i<36000 && framesRun<36000;i++){
 T("прогресс идёт: этап вырос", S.stageIdx>stage0+20, "этап "+S.stageIdx);
 T("золото зарабатывается", S.gold>gold0);
 T("дропы случаются (модалки+авто)", drops+Object.keys(S.gear).length>5, drops+" модалок, "+Object.keys(S.gear).length+" слотов");
-T("боссы встречаются", bossSeen);
+T("босс на кратном 20 этапе", (function(){S.stageIdx=40;newRock();return rock.isBoss;})() && (function(){S.stageIdx=41;newRock();return !rock.isBoss;})());
 T("снаряжение надевается", Object.keys(S.gear).length>=3, Object.keys(S.gear).length+" слотов");
 const findsTotal=Object.values(S.col).reduce((a,m)=>a+Object.values(m).reduce((x,y)=>x+y,0),0);
 T("камни находятся, коллекция растёт", findsTotal>3, findsTotal+" камней");
@@ -76,8 +76,8 @@ closeOverlay();
 T("продолжение: энергия восстановлена, этап тот же", !dead && S.energy===stat("energy") && S.stageIdx===2000);
 
 console.log("\n[6] Экономика на глубине");
-const v=veinReward(), hp=anchored(ANCHOR_HP,S.stageIdx);
-T("доход/HP = STONE/1200 (константа)", Math.abs(v/hp - stat("stone")/100/12)<1e-9);
+T("idle растёт с глубиной (2.5/блок)", (function(){S.stageIdx=1;const a=idleGoldPerDay();S.stageIdx=51;const b=idleGoldPerDay();return b>a*2 && b<a*3.2;})());
+T("idle-формула = base на этапе 0", (function(){S.stageIdx=0;return Math.abs(idleGoldPerDay()-BALANCE.idle.base)<1;})());
 const w=stoneWeights(); const avg=w.reduce((a,wi,i)=>a+wi*RAR_MULT[i],0)/100;
 let expShare=0; for(let i=0;i<8;i++){ expShare+=w[i]/100*Math.max(0.15, 0.15*RAR_MULT[i]/(findChance()/100*avg)); }
 expShare*=findChance()/100;
@@ -174,6 +174,21 @@ T("миграция v1→v2: ftue выключен для старых, стри
   S.v===2 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[18] BALANCE и геометрический движок наград");
+T("idle-константы = boxer", BALANCE.idle.base===100000 && BALANCE.idle.growth===2.5 && BALANCE.idle.damp===0.65);
+T("idle-кап 2 часа", BALANCE.idle.capSec===7200);
+T("блок = 50 стадий, босс каждый 20-й", BALANCE.venueStride===50 && BALANCE.combat.bossEvery===20);
+T("косты навыков 1..75", JSON.stringify(BALANCE.skillCosts)==="[1,2,3,4,6,8,11,15,20,26,34,44,57,75]");
+T("пороги геологов до 7000", BALANCE.geo.thresholds[14]===7000 && BALANCE.geo.thresholds.length===15);
+T("цены Колеса 30..820", BALANCE.wheel.cost[0]===30 && BALANCE.wheel.cost[12]===820);
+T("PvP: 10 лиг, награда DEEP LORD 12500", BALANCE.pvp.rewards[9]===12500);
+// геом-движок: Rockfall (10, 50000, 200) — сумма ≈ total
+{ const s=BALANCE.events.rockfall, r=solveGeometricRatio(s.maxLvl,s.total,s.first);
+  let sum=0; for(let L=1;L<=s.maxLvl;L++) sum+=s.first*Math.pow(r,L-1);
+  T("Rockfall: сумма наград ≈ total 50000", Math.abs(sum-s.total)/s.total<0.02, "sum="+Math.round(sum)); }
+T("eventReward уровень 1 = first", eventReward(BALANCE.events.rockfall,1)===200);
+T("Crystal Cave flat=10/победа", eventReward(BALANCE.events.crystalCave,3)===10);
+
 console.log("\n[17] Прогрессия кирок");
 localStorage.removeItem("oredeep_v3"); load(); S.gear={}; S.bag=1;
 let named=true;
@@ -217,7 +232,7 @@ T("кнопка CRIT заблокирована и показывает MAX",
 { const g0=S.gold, l0=S.lvls.crit;
   __ids.u_crit._q["button"].onclick();
   T("клик на капе: золото не списано, уровень не растёт", S.gold===g0 && S.lvls.crit===l0); }
-S.lvls.spd=50; T("SPD закапан на 14", stat("spd")===14);
+S.lvls.spd=200; T("SPD закапан на 4.5 (boxer max)", stat("spd")===BALANCE.combat.maxAPS);
 render();
 T("SPD: MAX и блок", __ids.u_spd._q["button"].disabled);
 S.lvls.atk=5; render();
