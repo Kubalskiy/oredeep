@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.33 «Копай глубже»</title>
+<title>ORE DEEP — v0.34 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -93,15 +93,23 @@
     font-size:11px;font-weight:600;padding:7px 11px;border-radius:12px 12px 12px 3px;opacity:0;
     transition:opacity .35s;pointer-events:none;z-index:5;box-shadow:0 3px 10px #0007;}
   .bubble.show{opacity:1;}
-  .rockname{position:absolute;top:8px;left:0;right:0;text-align:center;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;}
+  .rockname{position:absolute;top:8px;left:50%;transform:translateX(-50%);
+    background:#0d0f14cc;border:1px solid var(--line);border-radius:8px;padding:4px 14px;
+    font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;}
   .rockname b{color:var(--txt);}
   .bosslabel{color:#ff8a4a !important;}
-  .bars{position:absolute;top:30px;left:14px;right:14px;}
-  .bar{height:14px;border-radius:7px;background:#0f1218;margin-bottom:6px;overflow:hidden;border:1px solid var(--line);position:relative;}
-  .bar .fill{height:100%;border-radius:7px;transition:width .15s;}
-  .bar.hp .fill{background:linear-gradient(90deg,#c0392b,#e67e22);}
-  .bar.en .fill{background:linear-gradient(90deg,#27ae60,#7ee081);}
-  .bar span{position:absolute;inset:0;text-align:center;font-size:10px;line-height:14px;color:#fff;text-shadow:0 1px 1px #000;}
+  .bars{position:absolute;top:38px;left:16px;right:16px;display:flex;flex-direction:column;gap:7px;}
+  .bar{height:20px;border-radius:6px;background:#0b0e13;overflow:hidden;
+    border:1.5px solid #000; box-shadow:inset 0 1px 0 #ffffff10, 0 1px 2px #0007; position:relative;}
+  .bar .fill{height:100%;border-radius:4px 3px 3px 4px;transition:width .18s ease-out;position:relative;}
+  .bar .fill::after{content:"";position:absolute;left:0;right:0;top:0;height:45%;
+    background:linear-gradient(#ffffff40,#ffffff00);border-radius:4px 3px 0 0;}
+  .bar.hp .fill{background:linear-gradient(180deg,#e8654a,#b02d1f);}
+  .bar.en .fill{background:linear-gradient(180deg,#5fd884,#249a4e);}
+  .bar .blabel{position:absolute;left:8px;top:0;line-height:20px;font-size:8px;
+    color:#fff;text-shadow:0 1px 2px #000c;letter-spacing:.5px;font-weight:700;z-index:2;}
+  .bar .bval{position:absolute;right:8px;top:0;line-height:20px;font-size:8px;
+    color:#fff;text-shadow:0 1px 2px #000c;z-index:2;}
 
   .stats{display:grid;grid-template-columns:repeat(6,1fr);background:#0f1218;padding:8px 6px;gap:2px;}
   .stat{text-align:center;}
@@ -313,8 +321,10 @@
     <span class="mote" style="left:75%;bottom:50px;animation-delay:6s"></span>
     <div class="rockname">жила: <b id="rockName">Валун</b></div>
     <div class="bars">
-      <div class="bar hp"><div class="fill" id="hpFill" style="width:100%"></div><span id="hpTxt"></span></div>
-      <div class="bar en"><div class="fill" id="enFill" style="width:100%"></div><span id="enTxt"></span></div>
+      <div class="bar hp"><div class="fill" id="hpFill" style="width:100%"></div>
+        <span class="blabel">⛏ ПОРОДА</span><span class="bval" id="hpTxt"></span></div>
+      <div class="bar en"><div class="fill" id="enFill" style="width:100%"></div>
+        <span class="blabel">⚡ ЭНЕРГИЯ</span><span class="bval" id="enTxt"></span></div>
     </div>
     <div class="bubble" id="bubble"></div>
     <div class="miner" id="miner">
@@ -1195,9 +1205,9 @@ function render(){
   $("minerRank").textContent=RANKS[Math.min(RANKS.length-1,S.mine)];
   $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
   $("cracks").style.opacity=(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2);
-  $("hpTxt").textContent="порода "+fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
+  $("hpTxt").textContent=fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
   $("enFill").style.width=Math.max(0,S.energy/stat("energy")*100)+"%";
-  $("enTxt").textContent="энергия "+fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy"));
+  $("enTxt").textContent=fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy"));
   $("sAtk").textContent=fmt(stat("atk"));
   $("sSpd").textContent=stat("spd").toFixed(1);
   $("sMin").textContent=Math.round(stat("mining"));
