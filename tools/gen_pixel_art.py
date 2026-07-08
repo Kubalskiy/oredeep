@@ -349,8 +349,11 @@ def gen_miner_base(seed, path):
     rect(9,4,17,5,beard_d)                    # волосы под каску
     rect(8,6,18,13,skin)                      # голова
     rect(8,6,9,13,skin_d)
-    px[15,9]=hx('26221e'); px[16,9]=hx('26221e')   # глаз (вправо)
-    rect(17,11,18,12,skin_d)                  # нос
+    white=hx('f4efe2'); pupil=hx('26221e')
+    rect(10,8,12,10,white); rect(14,8,16,10,white)   # два глаза (белки)
+    px[11,9]=pupil; px[15,9]=pupil                   # зрачки
+    px[12,9]=pupil; px[16,9]=pupil
+    rect(12,11,14,12,skin_d)                  # нос по центру
     bend = 21 if long_beard else 16
     rect(9,12,17,14,beard)                    # борода: верх широкий
     rect(10,15,16,bend,beard)                 # низ уже
