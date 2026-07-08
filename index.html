@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.30 «Копай глубже»</title>
+<title>ORE DEEP — v0.31 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -263,7 +263,7 @@
       <div class="gold">🪙 <span id="gold">0</span></div>
       <div class="gps">+<span id="gps">0</span>/с</div>
       <div class="gps" id="streakLine" style="color:#ff9d5c"></div>
-      <div id="gemLine">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span> · 🥩 <span id="protein">0</span> · 💠 <span id="shards">0</span></div>
+      <div id="gemLine">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span> · 🍺 <span id="protein">0</span> · 💠 <span id="shards">0</span></div>
     </div>
     <div class="right">ORE DEEP<br><b>копай глубже. ещё.</b></div>
     <button id="musicBtn" title="музыка">🔊</button>
@@ -532,7 +532,7 @@ const BALANCE = {
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },
   events:{
     rockfall:{ maxLvl:10, total:50000, first:200, currency:"мешки руды", waveSize:5 },
-    lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"провизия" },
+    lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"пиво" },
     prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"жетоны найма" },
     crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", flat:10 },
     critterDen:{ maxLvl:10, total:8000, first:100, currency:"яйца" } },
@@ -1685,21 +1685,21 @@ function rollPet(cost){
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
 }
 
-/* --- Тренировки: таймеры + провизия (§10) --- */
+/* --- Тренировки: таймеры + пиво (§10) --- */
 function openWorkouts(){
   const rows=BALANCE.workoutPaths.map((p,i)=>{
     const lv=(S.workouts&&S.workouts[p])||0;
     const active=S.wkActive&&S.wkActive.path===p;
-    const cost=20+lv*5;    // провизия за старт шага
+    const cost=20+lv*5;    // пиво за старт шага
     let btn;
     if(active){
       const left=Math.max(0,Math.ceil((S.wkActive.end-Date.now())/1000));
       btn=left>0?`<button onclick="skipWorkout()">⏱ ${left}с · пропуск 💎5</button>`
                 :`<button class="buy" onclick="claimWorkout()">Забрать +${BALANCE.workoutStepPct[i]}%</button>`;
-    } else btn=`<button class="buy" onclick="startWorkout('${p}',${cost})" ${(S.protein||0)<cost?"disabled":""}>+${BALANCE.workoutStepPct[i]}% ${p.toUpperCase()} · 🥩${cost}</button>`;
+    } else btn=`<button class="buy" onclick="startWorkout('${p}',${cost})" ${(S.protein||0)<cost?"disabled":""}>+${BALANCE.workoutStepPct[i]}% ${p.toUpperCase()} · 🍺${cost}</button>`;
     return `<div class="metarow"><span>${p.toUpperCase()} · ур.${lv}<br><span style="color:var(--dim)">пост. буст к стату</span></span>${btn}</div>`;
   }).join("");
-  metaOpen("Улучшения-таймеры","Провизия +5/ч (кап 8ч). 7 путей, шаг 50, недельный кап 10080 мин (§10).",rows);
+  metaOpen("Улучшения-таймеры","🍺 Пиво +5/ч (кап 8ч) — топливо тренировок. 7 путей, шаг 50, кап 10080 мин (§10).",rows);
 }
 function startWorkout(path,cost){
   if(S.wkActive||(S.protein||0)<cost) return;
