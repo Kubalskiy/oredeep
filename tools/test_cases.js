@@ -251,6 +251,17 @@ S.beardXP=0; const inc0=idlePerSec(); S.beardXP=1e9; const inc1=idlePerSec();
 T("доход выше при длинной бороде", inc1>inc0);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[24] Рефилл ключей ивентов");
+localStorage.removeItem("oredeep_v3"); load();
+S.keys=0; S.keyAt=Date.now()-BALANCE.keyRefillSec*1000-1000; refillKeys();
+T("1 ключ восполняется через рефилл", S.keys===1);
+S.keys=0; S.keyAt=Date.now()-BALANCE.keyRefillSec*3000; refillKeys();
+T("рефилл не превышает кап 2", S.keys===BALANCE.keyMax);
+S.keys=BALANCE.keyMax; const t0=S.keyAt; refillKeys();
+T("на полном запасе таймер сброшен", S.keys===BALANCE.keyMax);
+S.keys=1; S.keyAt=Date.now(); refillKeys();
+T("свежий таймер не даёт ключ раньше времени", S.keys===1);
+
 console.log("\n[20] Полный паритет: питомцы, тренировки, дейлики, магазин");
 localStorage.removeItem("oredeep_v3"); load();
 // питомец: гача + пассив
@@ -295,10 +306,11 @@ const p0=powerScore(); S.lvls.atk=50; T("Power Score реагирует на п�
 S.trophies=0; T("лига ROOKIE на 0 кубков", BALANCE.pvp.names[pvpLeagueIdx()]==="ROOKIE");
 S.trophies=500; T("лига CHAMP III на 500 кубков", pvpLeagueIdx()===8);
 // ивент: победа тратит ключ, награда по геометрии
-S.keys=2; S.mine=4; let spent=false;
-for(let i=0;i<40;i++){ const k=S.keys; playEvent("rockfall"); if(S.keys<k){spent=true;break;} }
+S.keys=2; S.keyAt=Date.now(); S.mine=4; S.shards=0; let spent=false, gotRes=false;
+for(let i=0;i<40;i++){ const k=S.keys, r=S.shards; playEvent("rockfall"); if(S.keys<k){spent=true; if(S.shards>r)gotRes=true;} }
 T("ивент: победа тратит ключ", spent);
-S.keys=0; { const g=S.gold; playEvent("rockfall"); T("без ключей ивент недоступен", S.gold===g); }
+T("ивент rockfall даёт осколки (реальный ресурс)", gotRes);
+S.keys=0; S.keyAt=Date.now(); { const g=S.gold; playEvent("rockfall"); T("без ключей ивент недоступен", S.gold===g); }
 
 console.log("\n[18] BALANCE и геометрический движок наград");
 T("idle-константы = boxer", BALANCE.idle.base===100000 && BALANCE.idle.growth===2.5 && BALANCE.idle.damp===0.65);

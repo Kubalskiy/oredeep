@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.31 «Копай глубже»</title>
+<title>ORE DEEP — v0.32 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -531,11 +531,12 @@ const BALANCE = {
         rewards:[0,200,500,1000,2000,3500,5000,7500,10000,12500],
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },
   events:{
-    rockfall:{ maxLvl:10, total:50000, first:200, currency:"мешки руды", waveSize:5 },
-    lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"пиво" },
-    prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"жетоны найма" },
-    crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", flat:10 },
-    critterDen:{ maxLvl:10, total:8000, first:100, currency:"яйца" } },
+    rockfall:{ maxLvl:10, total:50000, first:200, currency:"осколки", res:"shards", ic:"💠", waveSize:5 },
+    lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"пиво", res:"protein", ic:"🍺" },
+    prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"кристаллы", res:"gems", ic:"💎" },
+    crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", res:"gems", ic:"💎", flat:10 },
+    critterDen:{ maxLvl:10, total:8000, first:100, currency:"золото", res:"gold", ic:"🪙", mult:50 } },
+  keyMax:2, keyRefillSec:Math.round(3.8*3600),   // 2/2, рефилл ~3ч48м
   shop:{ gemPacks:[250,900,3500],
     comeback:[[250,10000],[900,50000],[1500,100000],[2500,175000],[4000,300000],[10000,1000000]] }
 };
@@ -852,7 +853,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, pickLog:{}, beard:0, beardXP:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, pickLog:{}, beard:0, beardXP:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1078,7 +1079,7 @@ function loop(now){
     while(respTimer>=respInt&&!dead&&S.rockHP>0){ respTimer-=respInt; rockRespond(); }
   }
   idleAcc+=dt;
-  if(idleAcc>=1){ const w=Math.floor(idleAcc); S.gold+=idlePerSec()*w;
+  if(idleAcc>=1){ const w=Math.floor(idleAcc); refillKeys(); S.gold+=idlePerSec()*w;
     S.protein=Math.min(BALANCE.workouts.proteinCapH*BALANCE.workouts.proteinPerHour,
       (S.protein||0)+BALANCE.workouts.proteinPerHour/3600*w);   // +5/час, кап 8ч
     idleAcc%=1; }
@@ -1308,6 +1309,7 @@ function migrate(d){
   if(d.beard===undefined) d.beard=0;
   if(d.beardXP===undefined) d.beardXP=0;
   if(d.shards===undefined){ d.shards=0; d.boxes=[]; d.loadoutTier=0; d.frags={}; d.sets={}; }
+  if(d.keyAt===undefined) d.keyAt=Date.now();
   if(!d.pickLog){
     d.pickLog={};
     if(d.gear&&d.gear.pick&&!d.gear.pick.n){
@@ -1637,25 +1639,55 @@ const EVENT_LIST=[
   ["prospectorFair","Prospector Fair","показательная добыча"],
   ["crystalCave","Crystal Cave","кристаллы-сейфы"],["critterDen","Critter Den","зачистка логова"]
 ];
+/* рефилл ключей по реальному времени (2/2, ~3ч48м/ключ) */
+function refillKeys(){
+  if((S.keys||0)>=BALANCE.keyMax){ S.keyAt=Date.now(); return; }
+  if(!S.keyAt) S.keyAt=Date.now();
+  const elapsed=(Date.now()-S.keyAt)/1000;
+  const gained=Math.floor(elapsed/BALANCE.keyRefillSec);
+  if(gained>0){
+    S.keys=Math.min(BALANCE.keyMax,(S.keys||0)+gained);
+    S.keyAt = (S.keys>=BALANCE.keyMax) ? Date.now() : S.keyAt+gained*BALANCE.keyRefillSec*1000;
+  }
+}
+function keyTimerStr(){
+  if((S.keys||0)>=BALANCE.keyMax) return "полный запас";
+  const left=Math.max(0, BALANCE.keyRefillSec-(Date.now()-(S.keyAt||Date.now()))/1000);
+  const h=Math.floor(left/3600), m=Math.floor(left%3600/60);
+  return "след. ключ через "+(h?h+"ч ":"")+m+"м";
+}
+function eventLevel(){ return Math.max(1, Math.floor((S.mine||0)/2)+1); }
 function openEvents(){
+  refillKeys();
+  const lvl=eventLevel();
   const rows=EVENT_LIST.map(([id,nm,desc])=>{
     const s=BALANCE.events[id];
-    const r1=eventReward(s,1), rmax=eventReward(s,s.maxLvl);
-    return `<div class="metarow"><span>${nm} · <span style="color:var(--dim)">${desc}</span><br>
-      <span style="color:var(--gold)">${s.currency}: ур.1=${fmt(r1)} … ур.${s.maxLvl}=${fmt(rmax)}</span></span>
-      <button class="buy" onclick="playEvent('${id}')">Забег</button></div>`;
+    const rew=eventReward(s,lvl)*(s.mult||1);
+    const cap=lvl>=s.maxLvl?" (макс)":"";
+    return `<div class="metarow"><span><b>${nm}</b> · <span style="color:var(--dim)">${desc}</span><br>
+      <span style="color:var(--gold)">${s.ic} +${fmt(rew)} ${s.currency}</span> · ур.${lvl}/${s.maxLvl}${cap}</span>
+      <button class="buy" onclick="playEvent('${id}')" ${(S.keys||0)<1?"disabled":""}>Забег 🔑</button></div>`;
   }).join("");
-  metaOpen("Ивенты (5 режимов)","Ключей: "+(S.keys||0)+"/2 · ключ тратится только на победе (§12)",rows);
+  metaOpen("Ивенты (5 режимов)",
+    "🔑 "+(S.keys||0)+"/"+BALANCE.keyMax+" · "+keyTimerStr()+" · ключ тратится только на победе (§12)",
+    rows);
 }
 function playEvent(id){
-  if((S.keys||0)<1){ showToast("🔑","Нет ключей","","рефилл ~4ч","событие"); return; }
-  const s=BALANCE.events[id], lvl=Math.min(s.maxLvl, Math.floor((S.mine||0)/2)+1);
+  refillKeys();
+  if((S.keys||0)<1){ showToast("🔑","Нет ключей","","подожди рефилл — "+keyTimerStr(),"событие"); return; }
+  const s=BALANCE.events[id], lvl=eventLevel();
   const win=Math.random()<0.7;
-  if(win){ S.keys-=1; const rew=eventReward(s,lvl);
-    if(id==="crystalCave") S.gems+=rew; else S.gold+=rew*50;
-    showToast("★","Забег пройден!","",s.currency+" +"+fmt(rew),"уровень "+lvl); }
-  else showToast("★","Провал","","ключ не потрачен","попробуй снова");
-  Platform.logEvent("event_run",{id,win}); save(); render(); openEvents();
+  if(win){
+    S.keys-=1; if(!S.keyAt||S.keys===BALANCE.keyMax-1) S.keyAt=Date.now();   // запустить таймер рефилла
+    const rew=eventReward(s,lvl)*(s.mult||1);
+    S[s.res]=(S[s.res]||0)+rew;                                              // реальный ресурс
+    showToast("★","Забег пройден!","",s.ic+" +"+fmt(rew)+" "+s.currency,"уровень "+lvl+" · осталось 🔑"+S.keys);
+    Platform.logEvent("event_win",{id,lvl});
+  } else {
+    showToast("★","Провал забега","","ключ НЕ потрачен","попробуй снова");
+    Platform.logEvent("event_fail",{id});
+  }
+  save(); render(); openEvents();
 }
 $("navSkills").onclick=openSkills; $("navWheel").onclick=openWheel;
 $("navPvp").onclick=openPvp; $("navEvents").onclick=openEvents;
