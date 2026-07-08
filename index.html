@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.37 «Копай глубже»</title>
+<title>ORE DEEP — v0.39 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -89,16 +89,14 @@
 
   #speedBtn{position:absolute;right:10px;bottom:10px;width:auto;padding:6px 14px;z-index:6;
     background:#1b2029cc;border:1px solid var(--gold);color:var(--gold);font-size:12px;}
-  .bubble{position:absolute;left:14px;bottom:104px;max-width:200px;
-    background:linear-gradient(180deg,#fbf8f0,#efe9dc);color:#2a2622;
-    font-size:9px;line-height:1.5;font-weight:500;padding:8px 11px;border-radius:11px;
-    opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s;
-    pointer-events:none;z-index:6;box-shadow:0 4px 14px #000a,inset 0 1px 0 #fff;
-    border:1px solid #00000018;}
-  .bubble::after{content:"";position:absolute;left:20px;bottom:-6px;width:12px;height:12px;
-    background:#efe9dc;transform:rotate(45deg);border-right:1px solid #00000018;border-bottom:1px solid #00000018;}
-  .bubble.show{opacity:1;transform:translateY(0);}
-  .bubble b{color:#8a5a1e;font-weight:700;}
+  .bubble{position:absolute;bottom:8px;left:50%;transform:translate(-50%,4px);
+    max-width:56%;background:#12151dd0;color:#e8e6df;backdrop-filter:blur(2px);
+    font-size:8px;line-height:1.4;font-weight:500;padding:5px 12px;border-radius:20px;
+    text-align:center;opacity:0;transition:opacity .3s,transform .3s;
+    pointer-events:none;z-index:5;box-shadow:0 2px 8px #0009;border:1px solid #ffffff14;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bubble.show{opacity:1;transform:translate(-50%,0);}
+  .bubble b{color:var(--gold);font-weight:700;}
   .rockname{position:absolute;top:10px;left:50%;transform:translateX(-50%);
     font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:2px;
     white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;opacity:.85;}
