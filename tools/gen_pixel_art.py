@@ -455,6 +455,14 @@ def main2():
         gen_equip_layers(c, i); n+=5
     print('v2 generated:', n, 'sprites')
 
+def main3():
+    import gen_hq; gen_hq.main()
+    # HQ-ноды заменяют старые node_r*
+    import shutil
+    for i in range(8): shutil.copy(f'{OUT}/node_hq_r{i}.png', f'{OUT}/node_r{i}.png')
+    print('HQ nodes → node_r*')
+
 if __name__ == '__main__':
     main()
     main2()
+    main3()
