@@ -147,7 +147,7 @@ T("старый сейв без имени не ломает карточку", 
 console.log("\n[16] Фаза 1: глубина, стрик, онбординг, миграции");
 // вехи глубины
 localStorage.removeItem("oredeep_v3"); load();
-S.stageIdx=10; checkDepthMark(9);
+S.beardXP=1e9; S.stageIdx=10; checkDepthMark(9);
 T("веха 30 м срабатывает на пересечении", __ids.toast.innerHTML.includes("30"));
 // стрик: первый день
 S.streak={n:0,last:""}; const g0=S.gold; checkStreak();
@@ -177,10 +177,8 @@ localStorage.removeItem("oredeep_v3"); load();
 console.log("\n[21] Бороды-стрижки и распитие эля");
 localStorage.removeItem("oredeep_v3"); load();
 T("5 стилей бород загружены", typeof BEARD_STYLES!=="undefined" && BEARD_STYLES.length===5);
-S.beard=0; __ids.beardBtn.onclick();
-T("кнопка бороды циклит стиль", S.beard===1);
-for(let i=0;i<5;i++) __ids.beardBtn.onclick();
-T("борода зацикливается по модулю", S.beard===(6%5));
+__ids.beardBtn.onclick();
+T("кнопка бороды открывает ранг", __ids.metaModal.style.display==="flex" && __ids.metaTitle.textContent.includes("Мудрость"));
 // эль восстанавливает энергию
 S.stageIdx=1; newRock(); S.energy=1; const before=S.energy;
 sipAle();
@@ -190,6 +188,27 @@ T("эль не превышает максимум", S.energy<=stat("energy"));
 localStorage.setItem("oredeep_v3", JSON.stringify({gold:1,stageIdx:3}));
 load();
 T("миграция даёт бороду по умолчанию", S.beard===0);
+localStorage.removeItem("oredeep_v3"); load();
+
+console.log("\n[22] Мудрость Бороды (престиж-ранг)");
+localStorage.removeItem("oredeep_v3"); load(); S.gear={}; S.geo=null; S.skills={};
+S.beardXP=0;
+T("на старте ранг 0 (Пушок)", beardLevel()===0 && beardWisdom().title==="Пушок");
+T("нулевая борода — нулевой бонус", beardWisdom().goldPct===0 && beardWisdom().luckAdd===0);
+const luckB=stat("luck");
+S.beardXP=1e9;
+T("макс ранг = ПАТРИАРХ ГОРЫ", beardWisdom().title==="ПАТРИАРХ ГОРЫ");
+T("макс борода даёт бонус к доходу", beardWisdom().goldPct>0);
+T("борода добавляет LUCK", stat("luck")>luckB);
+T("длинная борода = самый длинный стиль (Патриаршая=4)", beardWisdom().lenStyle===4);
+T("седина на максимуме = 1.0", beardWisdom().grey===1);
+// XP копится на добыче
+S.beardXP=0; S.stageIdx=1; S.stage=1; newRock(); const x0=S.beardXP;
+breakVein();
+T("разбитие жилы даёт beardXP", S.beardXP>x0);
+// доход растёт с бородой
+S.beardXP=0; const inc0=idlePerSec(); S.beardXP=1e9; const inc1=idlePerSec();
+T("доход выше при длинной бороде", inc1>inc0);
 localStorage.removeItem("oredeep_v3"); load();
 
 console.log("\n[20] Полный паритет: питомцы, тренировки, дейлики, магазин");

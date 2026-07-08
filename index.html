@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.26 «Копай глубже»</title>
+<title>ORE DEEP — v0.27 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -636,6 +636,25 @@ const ORE_SPRITES=[["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAA
 const MINER_BASES=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABT0lEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/6uqQhkYGBgYtBQkCRqmkzYJp6/o5iMWYhXy2EfA2V8OrsDgEwIk+cjI2IbByNgGJ59qFp07e4Th3NkjOPn4ANFBBwueaw+eQwQe9BOVQGCAJB89efWegY+LA46fvHpPtF6ifcTAwMAgIyZIinIUgJHmkYubcG9LBgYGBob7P+UZGBgYGBTZH2IYgC63cutxuBxynkLxkYiYzH+Y4TBNyHxCAF39yq3H/8Mso1uGHTwlAywO0NnY1R3HKY9hUa2/KZyNHLHEAlz6B66aQE7eyrrWJBt49/JROBtn8kaWFBGT+S8sLkuGRdir9cFTw2ILvruXj2IN1ruXjw58DTvwQSciJvPfSIYNq9y5J78Y8MkNaGKgm0UAfjh80MYeCPAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABUUlEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP/0rDyCjpk5bRJey5gImkAlgNdHImIy/1dVhTIwMDAwaClIEjRMJw23r+jmIxZiFfLYR8DZXw6uwOATAiT5yMjYhsHI2AYnn2oWnTt7hOHc2SM4+fgA0UEHC55rD55DBB70E5VAYIAkHz159Z6Bj4sDjp+8ek+0XqJ9xMDAwCAjJkiKchSAkeaRi5tMJzkGBgYGhrNMVgwMDAwMxv+OYRiALjd93yO4HHKeQvGRiJjMf5jhME3IfEIAXf30fQz/YZbRLcMOnpIBFgfobOzqHuGUx7AoOyIAzp6+bxIhd2AAXPoHrppATt7KutYkG3j38lE4G2fyRpYUEZP5LywuS4ZF2Kv1wVPDYgu+u5ePYg3Wu5ePDnwNO/BBJyIm899Ihg2r3LknvxjwyQ1oYqCbRQA2j3jnBMGCvgAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABUklEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/6uqQhkYGBgYtBQkCRqmkzYJp6/o5iMWYhXy2EfA2V8OrsDgEwIk+cjI2IbByNgGJ59qFp07e4Th3NkjOPn4ANFBBwueaw+eQwQe9BOVQGCAJB89efWegY+LA46fvHpPtF6ifcTAwMAgIyZIinIUgJHmkYubTCc5BgYGBoazTFYMDAwMDMb/jmEYgC43fd8juBxynkLxkYiYzH+Y4TBNyHxCAF399H0M/2GW0S3DDp6SARYH6Gzs6h7hlMewKDsiAM6evm8SIXdgAFz6B66aQE7eyrrWJBt49/JROBtn8kaWFBGT+S8sLkuGRdir9cFTw2ILvruXj2IN1ruXjw58DTvwQSciJvPfSIYNq9y5J78Y8MkNaGKgm0UAJht45zbrmIsAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABT0lEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8oIx6Cjll27gtey5gImkAlgNdHImIy/1dVhTIwMDAwaClIEjRMJ20STl/RzUcsxCrksY+As78cXIHBJwRI8pGRsQ2DkbENTj7VLDp39gjDubNHcPLxAaKDDhY81x48hwg86CcqgcAAST568uo9Ax8XBxw/efWeaL1E+4iBgYFBRkyQFOUoACPNIxc34d6WDAwMDAz3f8ozMDAwMCiyP8QwAF1u5dbjcDnkPIXiIxExmf8ww2GakPmEALr6lVuP/4dZRrcMO3hKBlgcoLOxqzuOUx7Dolp/UzgbOWKJBbj0D1w1gZy8lXWtSTbw7uWjcDbO5I0sKSIm819YXJYMi7BX64OnhsUWfHcvH8UarHcvHx34Gnbgg05ETOa/kQwbVrlzT34x4JMb0MRAN4sAdzB80JMDBxsAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABTklEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/70R2gwMDAwMKpICBA3z7z+K01d08xELsQr1M7rh7IszSjH4hABJPjIytmEwMrbByaeaRefOHmE4d/YITj4+QHTQwYLnzvMPELo+lagEAgMk+ejF+68MPByscPzi/Vei9RLtIwYGBgYJQW5SlKMAjDSPXNx4hloyMDAwMLx9L8/AwMDAICz4EMMAdLntq4/D5ZDzFIqPRMRk/sMMh2lC5hMC6Oq3rz7+H2YZ3TLs4CkZYHGAzsau7jhOeQyLMmQQntxOyBVYAC79A1dNICdvZV1rkg28e/konI0zeSNLiojJ/BcWlyXDIuzV+uCpYbEF393LR7EG693Lg6CGHfigExGT+W8kw4ZV7tyTXwz45AY0MdDNIgDKrHjWAfSkLAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABUUlEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/3MzbRgYGBgYNGRECBpmXb0Bp6/o5iMWYhVKh5TB2U/XdGHwCQGSfGRkbMNgZGyDk081i86dPcJw7uwRnHx8gOiggwXPjSdvIPSEMqISCAyQ5KOnbz8z8HKyw/HTt5+J1ku0jxgYGBikhXlJUY4CMNI8cnET7m3JwMDAwHD/pzwDAwMDgyL7QwwD0OVWbj0Ol0POUyg+EhGT+Q8zHKYJmU8IoKtfufX4f5hldMuwg6dkgMUBOhu7uuM45TEsyrMSh7NXbiXkDEyAS//AVRPIyVtZ15pkA+9ePgpn40zeyJIiYjL/hcVlybAIe7U+eGpYbMF39/JRrMF69/LRga9hBz7oRMRk/hvJsGGVO/fkFwM+uQFNDHSzCADrTHrq4BhwGgAAAABJRU5ErkJggg=="];
 const BEARD_STYLES=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAfElEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMIEoRzIIOcxYMuYqTf4iykKBFImIy/2EW6IhxYchfefUNbiE+y5gIWUQtQDeLiI6jLb58OOV9Nn8iGEfDL+hGqEVvXj1h9Nn8CascMQmBaIuoAehW1o2CUUB/AACB6ClugBF67QAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAj0lEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMIEoRzIJwA24MuZUXvhJlIUGLRMRk/sMskBfhwamua89LvJYxEbKIWmDwWPTm1RPGlRe+UhRsRFlELTD8LGIhVUPXnpdwdpmLONH6yPIRsaUBxRaRA0Ytoi0QEZP5/2KnzX/kagKbGNUsI0Zs5AAAOSUvgX2nKKMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAfUlEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMIEoRzIKUtCwMuTmzphFlIUGLRMRk/sMsUFJRx6muqiwfr2VMhCyiFqCbRUTHUVvXRJzyhIKNgWE4Bh1ZFlWV5dPHInLAqEVkA6ILVeQC9c2rJ4zofGo7bBQMYwAAP0oid4zJKKYAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAe0lEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMYCHFEkdlZgzx/Qwy/4mxjCiLRMRk/keZ8OCQ/UKMEQxMRKmiAiA6jmDx46jMzCApyMnAwMDAsOzMF6LjiGgfEWsgxRZRCkYtIhuQHMHIpQOlCWQUjIJRQBoAAC7GGudqNF8dAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAkUlEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMINoiETGZ/0vm9WOIxyQVEmUZURYhW2JiYoghr6HnQNAyJmIsogagm0UkxdGNSwcwxIkJNgYGMnzEwsrBwMLKQaq2YRhHoxYNfotYSNXw5/cPWrgDFYiIyfx/8+IOHGMrzXGBwVcEwQCyL4iti4YnAAAX+S3GCHBs2QAAAABJRU5ErkJggg=="];
 const BEARD_NAMES=["Окладистая","Косы","Раздвоенная","Козлиная","Патриаршая"];
+/* ===== МУДРОСТЬ БОРОДЫ: престиж-ранг ===== */
+/* стили по длине (короткая→длинная) для авто-роста */
+const BEARD_LEN_ORDER=[3,2,0,1,4];   // Козлиная<Раздвоенная<Окладистая<Косы<Патриаршая
+const BEARD_RANKS=[
+  "Пушок","Щетина","Борода Новобранца","Окладистая Гордость",
+  "Косматый Ветеран","Седеющий Мастер","Серебряная Борода","ПАТРИАРХ ГОРЫ"];
+function beardLevel(){ const xp=S.beardXP||0; return Math.min(BEARD_RANKS.length-1, Math.floor(Math.log((xp/80)+1)/Math.log(1.7))); }
+function beardWisdom(){
+  const lv=beardLevel();
+  return { lv, goldPct:lv*3, luckAdd:lv*0.4, title:BEARD_RANKS[lv],
+    lenStyle:BEARD_LEN_ORDER[Math.min(4, Math.round(lv*4/(BEARD_RANKS.length-1)))],
+    grey:Math.min(1, lv/(BEARD_RANKS.length-1)) };
+}
+function beardNextXP(lv){ return Math.round(80*(Math.pow(1.7,lv+1)-1)); }
+function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
+  if(beardLevel()>before){ const w=beardWisdom();
+    showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK");
+    sayQuip("Борода стала гуще и седее. Клан кланяется.",4);
+    Platform.logEvent("beard_rank",{lv:w.lv}); } }
 const MUG_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAlklEQVR4nGNkQAIiYjL/GbCAN6+eMMLYjMiKH9w8hk09g4K6FVwTE1YVeAALzHRvTQ6G7AAnBm0FEcIakIGdxnMU/qEbknAnv3n1hBFDAzq4+uANg7cmBwMDAwPDVgaZ/0T5AdmZGDbAnIAAb1B4JIcSURquPkDYQtDT2goiDF3bnzAwMEBinGgnkR3TKGmJkOkMDAwMAC1BK8eiEIVdAAAAAElFTkSuQmCC";
 const EQ={helm:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYFi0ZDmGXFxMJAMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/6oZ2og1rbajE6Su6+QinRbAEQCrApQ+rN0XEZP4HBIeRYw8DAwMDw4a1qzCCEGcckesjBgbCSX0UjIJRMApGwSgYBaNg5AAA0+gilt+FcIcAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAgklEQVR4nGNkIAKIiMn8Z2BgYGg+1YAhV2sGEXvz6gkjPjPwSsIswWYBNgvxWcZE0AQqAbw+EhGT+e+9y4dow7a6bcHpK7r5CKdFsARAKsClD6s3RcRk/utV65BjDwMDAwPDpdYrGEGIM47I9REDA+GkPgpGwSgYBaNgFIyCUTByAAC8DCKWRuwWgQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYKhffwVDrjFQh4GBgYHhzasnjPjMwCsJswSbBdgsxGcZE0ETqATw+khETOa/28QzRBu2K98Ep6/o5iOcFsESAKkAlz6s3hQRk/mvHddGjj0MDAwMDFcXVWEEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEA41QillL+UEcAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYNg76QqGnHOeDgMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/pSlniDYseo4JTl/RzUc4LYIlAFIBLn1YvSkiJvM/176NHHsYGBgYGCYfrMIIQpxxRK6PGBgIJ/VRMApGwSgYBaNgFIyCkQMA+1gilhY0scgAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYLgzqQdDTiWvhIGBgYHhzasnjPjMwCsJswSbBdgsxGcZE0ETqATw+khETOb/lZQ4og3TmbMIp6/o5iOcFsESAKkAlz6s3hQRk/nfZ29Jjj0MDAwMDEUHj2MEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEA3TwilhCvh1IAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYLizOwVDTsV1DgMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/K4sViDZMJ/YBTl/RzUc4LYIlAFIBLn1YvSkiJvO/L5uPHHsYGBgYGIqmfsIIQpxxRK6PGBgIJ/VRMApGwSgYBaNgFIyCkQMA3dwilhE4rsAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYJhy6wyGXI6aCQMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/tEsHiDZslp4DTl/RzUc4LYIlAFIBLn1YvSkiJvPfsaeOHHsYGBgYGPaXNGEEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEADE8iljHn+CAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhElEQVR4nO2SqxGAMBAFF2oIUZEUQhd4uqACusDTBYUgUUAPQaHIjwyD4dbe5O283BUkoLSxAPvU32ZVOwBwbGsRyggOL4lL4BKGZGU04SWCjZQ2dh+a5LCqn72tPmvkFV0H8BTfO2dNpY0d2zrHA0A3Lbcv9O4otxHET10QBEEQBOE/nOqoIpYZ3VCvAAAAAElFTkSuQmCC"],robe:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusEBwWE4DdmwdhVBi7FaJCIm83/RkuWEHIkTxMVEYljGRLZpJAK6WcSCS+LmnQdUtWgEBd3+PdtwatrYysrgX/2bOhaJiUvi1JQ6iYFBTJwke4ZhHBFdBJECiCn7RsEIBgAqnB9NtFTJoQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAiklEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiaw0KswXrVOjgNudTKgKIWm8VYXSIiJvO/+VQDIUfiBLVmDRiWMZFtGomAbhbhjKMTH85Q1aIRFHRXF13Eqel0qiqD6ezb1LGIT54fpybnXa/wyjMwPMYQGX5xhLOMwle2EQLElH2jYAQDAKHyIVlw380vAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusHacW04Dbm6qIqgxVgtEhGT+V+//gohR+IEjYE6GJYxkW0aiYBuFrHgkjj+6AdVLRpBQXd9y3Scms7V3GcwalGkjkV8kso4NTnMVWbgkyTJnmEYR0QXQaQAYsq+UTCCAQBQ/B9RgqTjOQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusG59m04DZl8sIqgxVgtEhGT+b930hVCjsQJnPN0MCxjIts0EgHdLGLBJfHi0g+qWjSCgm7Nyek4Nc2acp8hLUeROhbJCCnj1NRUp8wgI0SSPcMwjogugkgBxJR9o2AEAwAInR99/e+v9wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhElEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusF99pY4DSk6eJygxVgtEhGT+X9nUg8hR+IEKnklGJYxkW0aiYBuFrHgkvhx6RJVLRpBQTf95EmcmhqmSDM05DyljkXKQkI4NS2u+45XHhsYfnFEdBFECiCm7BsFIxgAAH6NIIjVz6qrAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAh0lEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusF92Xw4DSma+omgxVgtEhGT+X9ndwohR+IEKq5zMCxjIts0EgHdLGLBJfHjxR6qWjSCgm76mqc4NTUU2TI09B2mjkXKMpw4NS1edQavPAPDbwyR4RdHRBdBpABiyr5RMIIBAM8QIYUodzoJAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusGOPXU4Ddlf0kTQYqwWiYjJ/J9y6wwhR+IEOWomGJYxkW0aiYBuFrHgkrj04wtVLRpBQXdy+lycmvZEPGVwWSFNHYuElBVxago7rcggpEySPcMwjogugkgBxJR9o2AEAwCpEx+lS25tigAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAiklEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiaw0KswfPCVXAakrSSAUUtNouxukRETOb/65WVhByJE4iGt2NYxkS2aSQCulmEM44Y7h2nqkUjKOh6d17Dqam4UYeht/4KdSxSE+fDqWnztEd45RkYXmGIDL84wllG4SvbCAFiyr5RMIIBALDrIK9/fnFPAAAAAElFTkSuQmCC"],boots:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf+LlizHKhcXE8mATw6bZSy4LGJgYGC4eecBWXLYABNJqikAeH109fJ5suSwAQBd9hwlC1cEJAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf/NpxqwytWaNTDgk8NmGQsuixgYGBhOfDhDlhw2wESSagoAXh89PviALDlsAAA6KhwdTZ+vNAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf/1669glWsM1GHAJ4fNMhZcFjEwMDAcf/SDLDlsgIkk1RQAvD56enYXWXLYAAB2BhwnLd0C+wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf97J13BKuecp8OATw6bZSy4LGJgYGB4cekHWXLYABNJqikAeH104vYusuSwAQCZFhwrXqNGIQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf93JvVglVPJK2HAJ4fNMhZcFjEwMDD8uHSJLDlsgIkk1RQAvD7adfs2WXLYAABr7hwlDkNQKQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf93dqdglVNxncOATw6bZSy4LGJgYGD48WIPWXLYABNJqikAeH2068Q7suSwAQBsJBwlmikQMQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf9Tbp3BKpejZsKATw6bZSy4LGJgYGC49OMLWXLYABNJqikAeH10e9c+suSwAQCyBBwviSzxOgAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf+vV1ZilRMNb2fAJ4fNMhZcFjEwMDAw3DtOnhwWwESSagoAXh9tvvCELDlsAABeKholP5+NlQAAAABJRU5ErkJggg=="],glove:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqJFS5ZjaI6LiSTKMkL6WZAFb955QJTLcQF8+pkoMpkEQDeL6JYYRsEoGAWUAwD2kyM2n6bFRAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqLmUw0YmmvNGoiyjJB+FmTBEx/OEONwnACffiaKTCYB0M0iuiWGUTAKRgHlAABQXSMU5FMA2wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqL69VcwNDcG6hBlGSH9LMiCxx/9IM7pOAA+/UwUmUwCoJtFdEsMo2AUjALKAQBrZiNOSiZ/4AAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqK9k65gaHbO0yHKMkL6WZAFX1z6QZzTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwASGyNwudbjZwAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqI7k3owNKvklRBlGSH9LMiCPy5dIs7pOAA+/UwUmUwCoJtFdEsMo2AUjALKAQA7aCNEspER+QAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqI7u1MwNKu4ziHKMkL6WZAFf7zYQ5zTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwA7vCNEb5+IaQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqIpt85gaM5RMyHKMkL6WZAFL/34QpzTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwCHXyOITiF8BAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAV0lEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqLXKysxNIuGtxNlGSH9LCii944T5XKcAI9+JspMJh7QzSK6JYZRMApGAeUAABVbIVYeKPGkAAAAAElFTkSuQmCC"],pack:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaUlEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxBASH4ZTcsHbVf2pZxkQNQwaVRSzauoY4JTesXUU1i4Zh0DEwMDBcvXweQwJfkJID6OsjarseGxiGiQFbQqAFoFuhOgpGARwAAHulF2/IDsdcAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax6FXr4JS81Mrwn1qWMVHDkEFlEYusvQJOyUutV6hm0TAMOgYGBobHBx9gSOALUnIAfX1EbddjA8MwMWBLCLQAdCtUR8EogAMA7nYWsti6JtAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxaMe14ZS8uqjqP7UsY6KGIYPKIhZpYzecklcXVVHNomEYdAwMDAxPz+7CkMAXpOQA+vqI2q7HBoZhYsCWEGgB6FaojoJRAAcASY8XZMG+HxMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax5Nq34ZScfLDqP7UsY6KGIYPKIhYLVTeckpMPVlHNomEYdAwMDAwnbu/CkMAXpOQA+vqI2q7HBoZhYsCWEGgB6FaojoJRAAcA5ywXUDXUuFMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax9Nlb4pQsOnj8P7UsY6KGIYPKIhY3VVXcsgePU82iYRh0DAwMDLtu38aQwBukZAD6+ojarscGhmFiwJYQaAHoVqiOglEABwCwvxb3JqNiMAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax9GXz4ZQsmirzn1qWMVHDkEFlEYubhRBu2amfqGbRMAw6BgYGhl0n3mFI4A1SMgB9fURt12MDwzAxYEsItAB0K1RHwSiAAwCYXhYgAqkESQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZklEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRahaFLpqF06L9JU1Us4yJGoYMKotYVN2ccEruZ2iimkXDMOgYGBgYbu/ahyGBL0jJAfT1EbVdjw0Mw8SALSHQAtCtUB0FowAOAOm/FxCvxoj1AAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxzAtXwSmZtJLhP7UsY6KGIYPKIhZfAxncsivvUM2iYRh0DAwMDJsvPMGQwBukZAD6+ojarscGhmFiwJYQaAHoVqiOglEABwCkTRYh0dh1awAAAABJRU5ErkJggg=="]};
 
@@ -733,6 +752,7 @@ function stat(id){
   if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+GEO_TYPES[S.geo.t].pct[S.geo.r]/100);
   if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
   for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
+  if(id==="luck") v+=beardWisdom().luckAdd;                              // Мудрость Бороды
   const petPct=petBonus(id), wkPct=workoutBonus(id);
   if(petPct||wkPct) v*=(1+(petPct+wkPct)/100);          // питомец (§8) + тренировки (§10)
   for(let k=0;k<SET_BONUS.length;k++){                  // сет-бонусы чертогов
@@ -752,8 +772,8 @@ function idleGoldPerDay(){
   const A=block+within, B=block*0.4;
   return BALANCE.idle.base*Math.pow(BALANCE.idle.growth,A)*Math.pow(BALANCE.idle.damp,B);
 }
-const idlePerSec=()=>Math.max(1, idleGoldPerDay()/86400*(stat("stone")/100));
-function veinReward(){ return Math.max(5, idlePerSec()*8); }
+const idlePerSec=()=>Math.max(1, idleGoldPerDay()/86400*(stat("stone")/100)*(1+beardWisdom().goldPct/100));
+function veinReward(){ return Math.max(5, idlePerSec()*8); }   // idlePerSec уже с бонусом бороды
 
 /* ---------- слой находок камней (§6bis) ---------- */
 function pickBonusFind(){ return S.gear.pick ? S.gear.pick.r*4 : 0; }
@@ -811,7 +831,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, pickLog:{}, beard:0, gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, pickLog:{}, beard:0, beardXP:0, gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -832,7 +852,7 @@ function checkDepthMark(prevIdx){
     if(d0<m && d1>=m){
       showToast("⛏️","Веха: "+fmt(m)+" м","",title,"Гора отмечает твой путь");
       sayQuip(quip,4);
-      Platform.logEvent("depth_mark",{m});
+      Platform.logEvent("depth_mark",{m}); addBeardXP(60);
       break;
     }
   }
@@ -942,6 +962,7 @@ function breakVein(){
   if(rock.buried && rock.buried.item) dropGearItem(rock.buried.item);    // ролл 3 — деталь (решена заранее)
   S.stageIdx++; S.stage++;
   dailyProgress("break",1);
+  addBeardXP(rock.isBoss?12:2);
   checkDepthMark(prevIdx);
   if(rock.isBoss) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
   if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
@@ -1083,7 +1104,9 @@ function setFill(id,c){ const el=document.getElementById(id); if(el&&el.setAttri
 function updateMiner(){
   const g=S.gear;
   $("mlBase").src=MINER_BASES[S.look||0];
-  $("mlBeard").src=BEARD_STYLES[S.beard||0];
+  { const w=beardWisdom();
+    $("mlBeard").src=BEARD_STYLES[w.lenStyle];
+    $("mlBeard").style.filter="grayscale("+w.grey.toFixed(2)+") brightness("+(1+w.grey*0.7).toFixed(2)+")"; }
   $("aleMug").src=MUG_ICON;
   const L={pack:"mlPack",robe:"mlRobe",boots:"mlBoots",glove:"mlGlove",helm:"mlHelm"};
   for(const k in L){
@@ -1130,7 +1153,7 @@ function renderGear(){
 function render(){
   $("gold").textContent=fmt(S.gold);
   $("gps").textContent=fmt(idlePerSec());
-  $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"";
+  $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д · 🧔 "+beardWisdom().title):("🧔 "+beardWisdom().title);
   $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0); $("protein").textContent=fmt(Math.floor(S.protein||0));
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
   $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
@@ -1249,6 +1272,7 @@ function migrate(d){
     d.v=2;
   }
   if(d.beard===undefined) d.beard=0;
+  if(d.beardXP===undefined) d.beardXP=0;
   if(!d.pickLog){
     d.pickLog={};
     if(d.gear&&d.gear.pick&&!d.gear.pick.n){
@@ -1445,7 +1469,7 @@ async function buildShareCard(){
     x.fillText("СТРИК: "+S.streak.n+" д 🔥",190,600);
   }
   x.fillStyle="#8a93a3"; x.font=F(10); x.textAlign="center";
-  x.fillText("гном "+RANKS[Math.min(RANKS.length-1,S.mine)],280,660);
+  x.fillText("🧔 "+beardWisdom().title,280,660);
   return c;
 }
 async function shareCard(){
@@ -1481,7 +1505,7 @@ function checkStreak(){
     (mult>1?"ВЕХА СТРИКА! Награда ×"+mult:"Гора рада тебя видеть"),
     "+"+fmt(reward)+" 🪙");
   sayQuip(S.streak.n>=7?"Стрик "+S.streak.n+" дней! Борода довольна.":"Снова в забой! Это по-гномьи.",4);
-  Platform.logEvent("streak",{n:S.streak.n});
+  Platform.logEvent("streak",{n:S.streak.n}); addBeardXP(25);
   save();
 }
 
@@ -1709,9 +1733,14 @@ function sipAle(){
   Platform.logEvent("ale_sip",{});
 }
 $("beardBtn").onclick=()=>{
-  S.beard=((S.beard||0)+1)%BEARD_STYLES.length;
-  sayQuip("Новая борода: «"+BEARD_NAMES[S.beard]+"»! Клан оценит.",3);
-  save(); renderGear();
+  const w=beardWisdom(); const need=beardNextXP(w.lv), have=S.beardXP||0;
+  const isMax=w.lv>=BEARD_RANKS.length-1;
+  metaOpen("Мудрость Бороды","Чем длиннее и седее борода — тем выше ранг и мощнее бонус.",
+    `<div class="metarow"><span>Ранг: <b class="r5">${w.title}</b> (${w.lv}/${BEARD_RANKS.length-1})</span></div>
+     <div class="metarow"><span>Бонус: <b style="color:var(--gold)">+${w.goldPct}% доход · +${w.luckAdd.toFixed(1)} LUCK</b></span></div>
+     <div class="metarow"><span>Прогресс</span><span>${isMax?"МАКСИМУМ ✓":fmt(have)+" / "+fmt(need)+" XP"}</span></div>
+     <div class="sub" style="margin-top:10px">Борода растёт от добычи жил, вех глубины и дней стрика. Ранг виден в HUD и на карточке хвастовства.</div>`);
+  Platform.logEvent("beard_view",{lv:w.lv});
 };
 
 /* ---------- старт ---------- */
