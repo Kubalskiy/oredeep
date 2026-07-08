@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.48 «Копай глубже»</title>
+<title>ORE DEEP — v0.49 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -1042,12 +1042,28 @@ function rockRespond(){
 function cartCapacity(){ return 8; }   // жил на полную вагонетку
 function renderCart(){
   const g=$("cartOre"); if(!g) return;
-  const n=Math.min(cartCapacity(), Math.round(S.cartFill||0));
-  const mk=(S.mine||0)%MINES.length;
-  let html="";
-  const cols=[[12,22],[18,20],[24,22],[30,20],[15,17],[21,15],[27,17],[33,15]];
-  for(let i=0;i<n;i++){ const [x,y]=cols[i]||[12+i*3,20];
-    html+=`<rect x="${x}" y="${y}" width="4" height="4" rx="1" fill="${["#8a6a3a","#a5824a","#6e5230"][i%3]}"/>`; }
+  const cap=cartCapacity(), n=Math.min(cap, Math.round(S.cartFill||0));
+  const pal=["#8a6a3a","#a5824a","#6e5230","#9a7440"];
+  // укладываем кусками слоями снизу вверх; при заполнении растёт ГОРКА над бортом
+  // борт кузова ~ y 12..15; дно ~ 22
+  const rows=[      // (dx от центра 20, ширина слоя) снизу вверх
+    [[9,4],[15,4],[21,4],[27,4]],   // слой 1 (на дне, вровень с бортом)
+    [[11,4],[17,4],[23,4]],         // слой 2
+    [[14,4],[20,4]],                // слой 3 — начинает торчать
+    [[17,4]]                        // вершина горки
+  ];
+  const yRow=[18,14,10,7];          // выше = меньше y (торчит над бортом y~12)
+  let html=""; let placed=0;
+  for(let r=0;r<rows.length && placed<n;r++){
+    for(const [x,w] of rows[r]){
+      if(placed>=n) break;
+      const c=pal[(placed)%pal.length];
+      html+=`<rect x="${x}" y="${yRow[r]}" width="${w}" height="5" rx="1.5" fill="${c}"/>`;
+      // блик сверху куска
+      html+=`<rect x="${x}" y="${yRow[r]}" width="${w}" height="1.5" rx="1" fill="#ffffff30"/>`;
+      placed++;
+    }
+  }
   g.innerHTML=html;
 }
 function addCartOre(){
