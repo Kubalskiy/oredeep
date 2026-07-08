@@ -4,7 +4,7 @@
 const __ids = {};
 class FE {
   constructor(tag){ this.tag=tag; this._id=null; this.children=[];
-    this.textContent=""; this.innerHTML=""; this.disabled=false; this.onclick=null;
+    this.textContent=""; this.innerHTML=""; this.disabled=false; this.onclick=null; this.dataset={}; this.src="";
     this.offsetWidth=0; this._q={};
     const self=this;
     this.style=new Proxy({}, {get:(t,k)=> k==="setProperty"?((a,b)=>{t[a]=b}):t[k], set:(t,k,v)=>{t[k]=v;return true}});

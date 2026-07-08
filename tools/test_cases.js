@@ -209,8 +209,9 @@ const atkB=stat("atk"); upSkill("atk_up",10);
 T("навык повышает стат", stat("atk")>atkB && S.skills.atk_up===1);
 { const g0=S.gems; upSkill("atk_up",999999); T("нет кристаллов — навык не качается", S.gems===g0 || S.skills.atk_up===1); }
 // Колесо: списывает по кривой
-S.gems=100000; S.wheelSpins=0; { const g0=S.gems; spinWheel(BALANCE.wheel.cost[0]);
-  T("колесо: крутка +1, списано 30", S.wheelSpins===1 && S.gems===g0-30); }
+S.gems=100000; S.wheelSpins=0; { const g0=S.gems; const _r=Math.random; Math.random=()=>0.1;
+  spinWheel(BALANCE.wheel.cost[0]); Math.random=_r;
+  T("колесо: крутка +1, списано 30 (ролл золота)", S.wheelSpins===1 && S.gems===g0-30); }
 // PvP: power score растёт с прокачкой
 const p0=powerScore(); S.lvls.atk=50; T("Power Score реагирует на прокачку", powerScore()>p0);
 // PvP лига по кубкам
