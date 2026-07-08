@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.44 «Копай глубже»</title>
+<title>ORE DEEP — v0.45 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -69,8 +69,8 @@
     35%,65%{transform:translate(6px,-6px) rotate(-32deg);opacity:1}
     85%{transform:translate(0,0) rotate(0);opacity:1}
     100%{transform:translate(0,20px);opacity:0}}
-  #beardBtn{position:absolute;left:10px;bottom:10px;width:auto;padding:6px 12px;z-index:6;
-    background:#1b2029cc;border:1px solid var(--gold);color:var(--gold);font-size:8px;}
+  #streakLine{cursor:pointer;}
+  #streakLine:active{opacity:.7;}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
   .rock svg polygon{animation:gemPulse 3.2s ease-in-out infinite;}
   @keyframes gemPulse{0%,100%{opacity:1}50%{opacity:.7}}
@@ -430,7 +430,6 @@
       </svg>
     </div>
     <button id="speedBtn">×1 СКОРОСТЬ</button>
-    <button id="beardBtn">🧔 БОРОДА</button>
   </div>
 
   <div class="stats">
@@ -1919,7 +1918,7 @@ function sipAle(){
   jingleFind();
   Platform.logEvent("ale_sip",{});
 }
-$("beardBtn").onclick=()=>{
+$("streakLine").onclick=()=>{
   const w=beardWisdom(); const need=beardNextXP(w.lv), have=S.beardXP||0;
   const isMax=w.lv>=BEARD_RANKS.length-1;
   metaOpen("Мудрость Бороды","Чем длиннее и седее борода — тем выше ранг и мощнее бонус.",

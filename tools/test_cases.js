@@ -177,7 +177,7 @@ localStorage.removeItem("oredeep_v3"); load();
 console.log("\n[21] Бороды-стрижки и распитие эля");
 localStorage.removeItem("oredeep_v3"); load();
 T("5 стилей бород загружены", typeof BEARD_STYLES!=="undefined" && BEARD_STYLES.length===5);
-__ids.beardBtn.onclick();
+__ids.streakLine.onclick();
 T("кнопка бороды открывает ранг", __ids.metaModal.style.display==="flex" && __ids.metaTitle.textContent.includes("Мудрость"));
 // эль восстанавливает энергию
 S.stageIdx=1; newRock(); S.energy=1; const before=S.energy;
