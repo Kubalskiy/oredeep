@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.53 «Копай глубже»</title>
+<title>ORE DEEP — v0.62 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -121,6 +121,15 @@
     background:#ffffff4d;}
   .bar.hp .fill{background:linear-gradient(180deg,#e8654a,#c33e2a);}
   .bar.en .fill{background:linear-gradient(180deg,#5fd07e,#2f9c54);}
+  .bar.du .fill{background:linear-gradient(180deg,#c9a24a,#8a6a24);transition:width .2s,background .3s;}
+  .bar.du.warn .fill{background:linear-gradient(180deg,#e8a24a,#c46a20);}
+  .bar.du.crit .fill{background:linear-gradient(180deg,#e86a4a,#c33020);animation:duflash .7s ease-in-out infinite;}
+  @keyframes duflash{0%,100%{opacity:1}50%{opacity:.55}}
+  .reinf{flex:0 0 auto;width:auto !important;background:#1b2029;border:1px solid var(--gold);color:var(--gold);
+    font-size:9px;font-weight:700;border-radius:6px;padding:4px 9px;cursor:pointer;white-space:nowrap;}
+  .barwrap .bar.du{min-width:0;}
+  .reinf:hover{background:#242a35;}
+  .reinf:disabled{opacity:.4;cursor:default;border-color:var(--line);color:var(--dim);}
 
   .stats{display:grid;grid-template-columns:repeat(6,1fr);background:#0f1218;padding:8px 6px;gap:2px;}
   .stat{text-align:center;}
@@ -159,13 +168,31 @@
   .upg .u .v{font-size:13px;font-weight:800;margin:2px 0;}
   .upg .u .c{font-size:10px;color:var(--gold);margin-bottom:5px;}
   .toolbar{display:flex;gap:8px;padding:0 12px 14px;}
-  #log{margin:6px 12px 2px;background:#0d0f14;border:1px solid var(--line);border-radius:6px;
-    height:42px;overflow-y:auto;padding:4px 8px;display:flex;flex-direction:column;gap:1px;
-    scrollbar-width:thin;}
-  #log .li{font-size:8px;line-height:1.5;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  #log .li b{color:var(--txt);}
+  #log{margin:6px 12px 2px;background:#0b0e13;border:1px solid var(--line);border-radius:8px;
+    height:66px;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding:6px 10px;
+    display:flex;flex-direction:column;gap:3px;scrollbar-width:thin;scrollbar-color:#3a4454 #0b0e13;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+  #log::-webkit-scrollbar{width:6px;}
+  #log::-webkit-scrollbar-thumb{background:#3a4454;border-radius:3px;}
+  #log::-webkit-scrollbar-track{background:transparent;}
+  #log .li{font-size:11px;line-height:1.35;letter-spacing:0;text-transform:none;
+    color:#c3cad6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    display:flex;align-items:center;gap:6px;flex:0 0 auto;min-height:16px;}
+  #log .li b{color:#f2efe6;font-weight:600;}
+  #log .li .tail{color:#828b9c;}
   #log .li.hot{color:var(--gold);}
-  #log .li.hot b{color:var(--gold);}
+  #log .li.hot b{color:#ffe08a;}
+  #log .li img{height:15px;width:15px;image-rendering:pixelated;flex:none;vertical-align:middle;}
+  #log .li .ic{flex:none;font-size:12px;line-height:1;}
+  #logWrap{margin:6px 12px 2px;}
+  #logWrap #log{margin:0;}
+  #logPager{display:flex;align-items:center;justify-content:flex-end;gap:6px;
+    margin-top:3px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+  #logPager .pgbtn{background:#141821;border:1px solid var(--line);color:#c3cad6;
+    width:22px;height:20px;border-radius:5px;font-size:12px;line-height:1;cursor:pointer;padding:0;}
+  #logPager .pgbtn:hover{background:#1c222e;}
+  #logPager .pgbtn:disabled{opacity:.35;cursor:default;}
+  #logPager #logPos{font-size:10px;color:#828b9c;min-width:38px;text-align:center;}
   .metabar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px 12px 10px;}
   .metabar button{padding:12px 2px;font-size:8px;background:linear-gradient(180deg,#2a3346,#1d2534);}
   .metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line);font-size:9px;gap:8px}
@@ -372,6 +399,11 @@
         <div class="bar en" style="flex:1"><div class="fill" id="enFill" style="width:100%"></div></div>
         <span class="val" id="enTxt"></span>
       </div>
+      <div class="barwrap">
+        <span class="lab">Крепь</span>
+        <div class="bar du" id="duBar" style="flex:1"><div class="fill" id="duFill" style="width:100%"></div><span class="val" id="duTxt"></span></div>
+        <button id="reinfBtn" class="reinf">Укрепить</button>
+      </div>
     </div>
     <div class="bubble" id="bubble"></div>
     <div class="miner" id="miner">
@@ -431,7 +463,15 @@
     <button id="speedBtn">×1 СКОРОСТЬ</button>
   </div>
 
-  <div id="log"></div>
+  <div id="logWrap">
+    <div id="log"></div>
+    <div id="logPager">
+      <button id="logFirst" class="pgbtn" title="К свежим">⤓</button>
+      <button id="logPrev" class="pgbtn" title="Старее">‹</button>
+      <span id="logPos">1/1</span>
+      <button id="logNext" class="pgbtn" title="Новее">›</button>
+    </div>
+  </div>
 
   <div class="stats">
     <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
@@ -700,7 +740,26 @@ const SLOTS=[
   {id:"glove", n:"Перчатки", ic:"🧤", st:{crit:1.6}},
   {id:"lamp",  n:"Фонарь",   ic:"🏮", st:{mining:2,luck:1}}
 ];
-const STAT_CAPS={crit:60,luck:45,mining:80,spd:BALANCE.combat.maxAPS};    // CALIB: вероятностные капы
+const STAT_CAPS={crit:60,luck:100,mining:80,spd:BALANCE.combat.maxAPS};    // CALIB: вероятностные капы (luck — шанс, макс 100%)
+/* === Крепь шахты (Mine Timbering) — юнит-экономика обвала ===
+   max 100 → 0% обвала. Падает ~0.08/с активной добычи → полный бар ≈ 21 мин.
+   Риск только ниже safe=50, квадратично растёт к нулю; даже у 0 ~8%/мин — очень редко.
+   Укрепить = восстановить до 100 за ≈25 с дохода (лёгкий налог ~3.5% добычи). */
+const MINE_DURAB={max:100, decayPerSec:0.08, safe:50, checkSec:6, baseP:0.008,
+  reinfSecOfIncome:25, warnAt:50, critAt:20, penaltyGoldPct:0.08};
+function reinforceCost(){ return Math.max(50, Math.round(idlePerSec()*MINE_DURAB.reinfSecOfIncome)); }
+/* Крепёж (бывшая Броня) замедляет оседание крепи: пусто→×1, глубокий апгрейд→пол ×0.4.
+   Диминишинг, чтобы механика обслуживания не обнулялась. */
+const DURAB_SUPPORT_K=2000;
+function durabDecayMult(){ const s=Math.max(0,stat("tough")); return Math.max(0.4, 1 - s/(s+DURAB_SUPPORT_K)); }
+function collapseRiskPerMin(){                       // для показа игроку
+  const d=S.durab==null?MINE_DURAB.max:S.durab;
+  if(d>=MINE_DURAB.safe) return 0;
+  const f=(MINE_DURAB.safe-d)/MINE_DURAB.safe;
+  const pCheck=MINE_DURAB.baseP*f*f;
+  const checksMin=60/MINE_DURAB.checkSec;
+  return 1-Math.pow(1-pCheck,checksMin);
+}
 /* стат детали = base_слота × RAR_POW × (1+stageScale) × roll[0.85..1.15] — §6.3 */
 function itemStat(item, statId){
   const base=SLOTS.find(s=>s.id===item.s).st[statId]||0;
@@ -817,7 +876,7 @@ const UPGRADES=[
   {id:"atk",   k:"ATK",     step:3,  base:25, g:1.35, fmt:v=>fmt(v)},
   {id:"energy",k:"Энергия", step:20, base:20, g:1.32, fmt:v=>fmt(v)},
   {id:"spd",   k:"SPD",     step:0.12,base:40, g:1.35, fmt:v=>v.toFixed(2)},
-  {id:"tough", k:"Прочн.",  step:2,  base:35, g:1.45, fmt:v=>fmt(v)},
+  {id:"tough", k:"Крепёж",  step:2,  base:35, g:1.45, fmt:v=>fmt(v)},
   {id:"crit",  k:"CRIT",    step:1,  base:50, g:1.6,  fmt:v=>Math.round(v)+"%"},
   {id:"luck",  k:"LUCK",    step:1,  base:50, g:1.55, fmt:v=>Math.round(v)+"%"},
   {id:"mining",k:"MINING",  step:2,  base:45, g:1.5,  fmt:v=>Math.round(v)},
@@ -982,7 +1041,7 @@ function sayQuip(t,dur){ const b=$("bubble"); b.innerHTML="<b>Борин:</b> "+
   quipHide=dur||3; quipNext=9+Math.random()*8; }
 
 /* ---------- боевой тик (§5) ---------- */
-let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null;
+let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null, durabTimer=0, lastDurabWarn=100;
 function newRock(){
   const isBoss=(S.stageIdx % BALANCE.combat.bossEvery)===0;   // босс каждый 20-й бой
   rock=rockStatsAt(S.stageIdx,isBoss);
@@ -1094,6 +1153,28 @@ function departCart(){
     setTimeout(()=>{ c.classList.remove("arrive"); cartBusy=false; }, 820);
   }, 1420);
 }
+function reinforceMine(){
+  if(dead) return;
+  if((S.durab||0)>=MINE_DURAB.max-1e-6){ showToast("🪵","Крепь цела","","Укреплять пока нечего"); return; }
+  const c=reinforceCost();
+  if((S.gold||0)<c){ showToast("🪙","Мало золота","","На крепь нужно "+fmt(c)+" 🪙"); return; }
+  S.gold-=c; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max;
+  Platform.logEvent("reinforce",{cost:c}); sfxGear();
+  showToast("🪵","Крепь укреплена","","Своды держат","−"+fmt(c)+" 🪙 · 100%");
+  save(); render();
+}
+function caveIn(){
+  if(dead) return;
+  dead=true;
+  Platform.logEvent("collapse",{stage:S.stageIdx});
+  const lost=Math.floor((S.gold||0)*MINE_DURAB.penaltyGoldPct);
+  S.gold-=lost; S.cartFill=0; S.energy=0;
+  try{ jingleKO(); }catch(e){}
+  $("ovTitle").textContent="⛰️ ОБВАЛ!";
+  $("ovText").textContent="Крепь не выдержала — своды рухнули. Дворфа завалило, откапываемся. Потеряно "+fmt(lost)+" 🪙. В другой раз — следи за крепью!";
+  $("overlay").style.display="flex";
+  showToast("⛰️","ОБВАЛ!","","Шахту завалило","−"+fmt(lost)+" 🪙",true);
+}
 function breakVein(){
   const prevIdx=S.stageIdx;
   sfxBreak();
@@ -1109,7 +1190,7 @@ function breakVein(){
   addBeardXP(rock.isBoss?12:2);
   checkDepthMark(prevIdx);
   if(rock.isBoss) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
-  if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
+  if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
   newRock(); save();
 }
 function exhausted(){
@@ -1120,7 +1201,7 @@ function exhausted(){
   $("ovTitle").textContent=ko[0]; $("ovText").textContent=ko[1];
   $("overlay").style.display="flex";
 }
-function closeOverlay(){ $("overlay").style.display="none"; dead=false; newRock(); }
+function closeOverlay(){ $("overlay").style.display="none"; dead=false; S.durab=MINE_DURAB.max; durabTimer=0; lastDurabWarn=MINE_DURAB.max; newRock(); }
 
 /* ---------- дроп деталей ---------- */
 /* скалярная «сила» детали: все статы слота масштабируются одним
@@ -1199,6 +1280,24 @@ function loop(now){
     const hitInt=1/stat("spd"), respInt=1/rock.resp;
     while(hitTimer>=hitInt&&S.rockHP>0){ hitTimer-=hitInt; minerHit(); }
     while(respTimer>=respInt&&!dead&&S.rockHP>0){ respTimer-=respInt; rockRespond(); }
+    // крепь падает во время активной добычи
+    if(S.durab==null) S.durab=MINE_DURAB.max;
+    S.durab=Math.max(0,S.durab-MINE_DURAB.decayPerSec*durabDecayMult()*dt);
+    // предупреждения при пересечении порогов
+    if(S.durab<=MINE_DURAB.critAt && lastDurabWarn>MINE_DURAB.critAt){
+      showToast("⚠️","КРЕПЬ ТРЕЩИТ!","","Своды вот-вот рухнут","укрепи немедленно",true); lastDurabWarn=S.durab; }
+    else if(S.durab<=MINE_DURAB.warnAt && lastDurabWarn>MINE_DURAB.warnAt){
+      showToast("🪵","Крепь ослабла","","Пора укрепить своды"); lastDurabWarn=S.durab; }
+    else if(S.durab>lastDurabWarn) lastDurabWarn=S.durab;
+    // редкий шанс обвала ниже порога безопасности
+    durabTimer+=dt;
+    while(durabTimer>=MINE_DURAB.checkSec){
+      durabTimer-=MINE_DURAB.checkSec;
+      if(!dead && S.durab<MINE_DURAB.safe){
+        const f=(MINE_DURAB.safe-S.durab)/MINE_DURAB.safe;
+        if(Math.random()<MINE_DURAB.baseP*f*f){ caveIn(); break; }
+      }
+    }
   }
   idleAcc+=dt;
   if(idleAcc>=1){ const w=Math.floor(idleAcc); refillKeys(); S.gold+=idlePerSec()*w;
@@ -1320,6 +1419,15 @@ function render(){
   $("hpTxt").textContent=fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
   $("enFill").style.width=Math.max(0,S.energy/stat("energy")*100)+"%";
   $("enTxt").textContent=fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy"));
+  { const d=S.durab==null?MINE_DURAB.max:S.durab;
+    $("duFill").style.width=Math.max(0,d)+"%";
+    const bar=$("duBar"); if(bar&&bar.classList){ bar.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt); bar.classList.toggle("crit",d<MINE_DURAB.critAt); }
+    const risk=collapseRiskPerMin();
+    $("duTxt").textContent=risk>0?("⚠ "+(risk*100<1?"<1":Math.round(risk*100))+"%/мин"):(Math.round(d)+"%");
+    const rb=$("reinfBtn");
+    if(rb){ const full=d>=MINE_DURAB.max-1e-6, c=reinforceCost();
+      rb.textContent=full?"Крепь цела":("Укрепить · "+fmt(c)+"🪙");
+      rb.disabled=full||(S.gold||0)<c; } }
   $("sAtk").textContent=fmt(stat("atk"));
   $("sSpd").textContent=stat("spd").toFixed(1);
   $("sMin").textContent=Math.round(stat("mining"));
@@ -1389,19 +1497,43 @@ function fxDamage(dmg,crit){
 }
 let toastT=null;
 let lastLogMsg="";
+var LOG_PER_PAGE=100, LOG_MAX_PAGES=10, LOG_CAP=LOG_PER_PAGE*LOG_MAX_PAGES;
+var logBuf=[];        // самые старые в начале, свежие в конце
+var logPage=0;        // 0 = страница со свежими; чем больше, тем старее
+function logTotalPages(){ return Math.max(1, Math.ceil(logBuf.length/LOG_PER_PAGE)); }
+function renderLog(){
+  const g=$("log"); if(!g||!g.appendChild) return;
+  const pages=logTotalPages();
+  if(logPage>pages-1) logPage=pages-1;
+  if(logPage<0) logPage=0;
+  // страница 0 = хвост буфера (свежие); page N = глубже в прошлое
+  const endIdx=logBuf.length-logPage*LOG_PER_PAGE;
+  const startIdx=Math.max(0,endIdx-LOG_PER_PAGE);
+  const slice=logBuf.slice(startIdx,endIdx);
+  while(g.firstChild && g.removeChild) g.removeChild(g.firstChild);
+  for(const e of slice){
+    const li=document.createElement("div");
+    li.className="li"+(e.important?" hot":"");
+    const rarHtml = e.rar?`<span class="${e.rc}">${e.rar}</span> `:"";
+    li.innerHTML=`<span class="ic">${e.icon}</span><span>${rarHtml}<b>${e.name||""}</b>${e.extra?(` <span class="tail">· ${e.extra}</span>`):""}</span>`;
+    g.appendChild(li);
+  }
+  const pos=$("logPos"); if(pos) pos.textContent=(logPage+1)+"/"+pages;
+  const nb=$("logNext"), pb=$("logPrev"), fb=$("logFirst");
+  if(nb&&"disabled"in nb) nb.disabled=(logPage<=0);
+  if(pb&&"disabled"in pb) pb.disabled=(logPage>=pages-1);
+  if(fb&&"disabled"in fb) fb.disabled=(logPage<=0);
+  // автоскролл вниз только на свежей странице
+  if(logPage===0 && typeof g.scrollHeight==="number") g.scrollTop=g.scrollHeight;
+}
 function showToast(icon,rar,rcls,name,extra,important){
   const head=[rar,name].filter(x=>x&&(""+x).trim()).join(" ");
   lastLogMsg=(icon||"")+" "+head+(extra?(" · "+extra):"");
-  const g=$("log"); if(!g||!g.appendChild) return;
-  const rc=(rcls||"").trim();
-  const li=document.createElement("div");
-  li.className="li"+(important?" hot":"");
-  const rarHtml = rar?`<span class="${rc}">${rar}</span> `:"";
-  li.innerHTML=`${icon} ${rarHtml}<b>${name||""}</b>${extra?(" · "+extra):""}`;
-  g.appendChild(li);
-  const kids=g.children||[];
-  while(kids.length>40 && g.removeChild) g.removeChild(kids[0]);
-  if(typeof g.scrollHeight==="number") g.scrollTop=g.scrollHeight;
+  logBuf.push({icon:icon||"",rar:rar||"",rc:(rcls||"").trim(),name:name||"",extra:extra||"",important:!!important});
+  while(logBuf.length>LOG_CAP) logBuf.shift();
+  if(logPage!==0) logPage++;                       // держим позицию при чтении истории
+  if(logPage>logTotalPages()-1) logPage=0;         // выпало за буфер — прыгаем к свежим
+  renderLog();
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];
@@ -1409,6 +1541,12 @@ function toastMine(){
   showToast("⛏️","Глубже в Гору!","",m.n,lines[Math.floor(Math.random()*lines.length)]);
 }
 $("shareBtn").onclick=()=>{ try{ shareCard(); }catch(e){} };
+if($("reinfBtn")) $("reinfBtn").onclick=()=>reinforceMine();
+if($("logNext")&&$("logNext").addEventListener){
+  $("logNext").onclick=()=>{ logPage--; renderLog(); };
+  $("logPrev").onclick=()=>{ logPage++; renderLog(); };
+  $("logFirst").onclick=()=>{ logPage=0; renderLog(); };
+}
 $("colBtn").onclick=()=>{
   const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
   $("colTitle").textContent="Коллекция: "+m.n;
@@ -1429,7 +1567,8 @@ $("resetBtn").onclick=()=>{
 /* ---------- save/load ---------- */
 function save(){ try{ S.lastSeen=Date.now(); localStorage.setItem("oredeep_v3",JSON.stringify(S)); }catch(e){} }
 const SAVE_VER=2;
-function migrate(d){
+function ensureDurab(d){ if(d && d.durab==null) d.durab=MINE_DURAB.max; return d; }
+function migrate(d){ ensureDurab(d);
   if(!d.v||d.v<2){                       // v1→v2: новые поля Фазы 1
     if(!d.ftue) d.ftue={u:1,b:1};        // старым игрокам подсказки не нужны
     if(!d.streak) d.streak={n:0,last:""};
@@ -1716,12 +1855,26 @@ function openSkills(){
   let rows=SKILL_DEFS.map(d=>{
     const lv=(S.skills&&S.skills[d.id])||0;
     const c=BALANCE.skillCosts[Math.min(lv,BALANCE.skillCosts.length-1)]*10;
-    return `<div class="metarow"><span>${d.n} · ур.${lv}<br><span style="color:var(--dim)">+${(d.per*(lv+1)).toFixed(1)} ${d.stat.toUpperCase()}</span></span>
-      <button class="buy" onclick="upSkill('${d.id}',${c})">прокачать · ${c}💎</button></div>`;
+    const cap=STAT_CAPS[d.stat];                       // вероятностный потолок, если есть
+    const cur=stat(d.stat);
+    const pct=(d.stat==="crit"||d.stat==="luck"||d.stat==="mining");
+    const curTxt=pct?(Math.round(cur)+"%"):Math.round(cur);
+    const maxed=cap!=null && cur>=cap-1e-9;
+    const capTxt=cap!=null?` / макс ${cap}${pct?"%":""}`:"";
+    const sub=maxed
+      ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} на максимуме · ${curTxt}${capTxt}</span>`
+      : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}</span>`;
+    const btn=maxed
+      ? `<button class="buy" disabled style="opacity:.4">макс</button>`
+      : `<button class="buy" onclick="upSkill('${d.id}',${c})">прокачать · ${c}💎</button>`;
+    return `<div class="metarow"><span>${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
   }).join("");
-  metaOpen("Навыки добычи","Косты 1…75 ×10 (BALANCE §6). Навыки — постоянные пассивы к статам.",rows);
+  metaOpen("Навыки добычи","Косты 1…75 ×10 (BALANCE §6). Навыки — пассивы к статам; шансовые статы капятся.",rows);
 }
-function upSkill(id,c){ if((S.gems||0)<c) return; S.gems-=c; S.skills=S.skills||{}; S.skills[id]=(S.skills[id]||0)+1;
+function upSkill(id,c){ if((S.gems||0)<c) return;
+  const sd=SKILL_DEFS.find(s=>s.id===id), cap=sd&&STAT_CAPS[sd.stat];
+  if(cap!=null && stat(sd.stat)>=cap-1e-9){ showToast("🔒",sd.stat.toUpperCase()+" на максимуме","","Дальше некуда","потолок "+cap+"%"); return; }
+  S.gems-=c; S.skills=S.skills||{}; S.skills[id]=(S.skills[id]||0)+1;
   dailyProgress("skill",1); Platform.logEvent("skill_up",{id}); sfxGear(); save(); render(); openSkills(); }
 function openWheel(){
   const spin=S.wheelSpins||0;
@@ -1974,7 +2127,7 @@ function grantFragment(){
   return {set:s.n, frag:s.frags[idx], complete};
 }
 function openBox(tier){
-  const rolls=1+(Math.random()<(tier-1)*0.12?1:0);
+  const rolls=1+(Math.random()<(tier-1)*0.15?1:0);   // чуть выше шанс двойного фрагмента → сеты собираются быстрее
   let last; for(let k=0;k<rolls;k++) last=grantFragment();
   return last;
 }
@@ -2027,12 +2180,16 @@ $("navLoot").onclick=openLoot;
 load(); buildUpgrades(); renderGear(); newRock(); render(); renderCart(); checkOffline(); checkStreak();
 $("musicBtn").textContent=musicOn?"🔊":"🔇";
 $("musicBtn").onclick=toggleMusic;
+const SPEEDS=[1,2,3,10,100];
 $("speedBtn").onclick=()=>{
-  const next=(S.speed||1)>=3?1:(S.speed||1)+1;
+  const cur=S.speed||1, i=SPEEDS.indexOf(cur);
+  const next=SPEEDS[(i+1)%SPEEDS.length];
   if(next>1){ Platform.showRewarded(ok=>{ if(!ok) return; }); }
   Platform.logEvent("speed_toggle",{speed:next});
   S.speed=next;
-  sayQuip(S.speed===1?"Спокойный темп. Медитируем.":(S.speed===2?"Двойной темп! Борода развевается!":"ТРОЙНОЙ! Держите шлем!"),3);
+  const q={1:"Спокойный темп. Медитируем.",2:"Двойной темп! Борода развевается!",
+    3:"ТРОЙНОЙ! Держите шлем!",10:"×10! Кирка плавится!",100:"×100! ГОРА ДРОЖИТ!!!"};
+  sayQuip(q[S.speed]||("×"+S.speed+"!"),3);
   save();
 };
 requestAnimationFrame(loop);

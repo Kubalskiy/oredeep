@@ -59,7 +59,8 @@ T("геолог нанят", !!S.geo, S.geo?("r"+S.geo.r):"");
 const lvl0=S.lvls.atk; __ids.u_atk._q["button"].onclick();
 T("кнопка апгрейда ATK работает", S.lvls.atk===lvl0+1);
 S.lvls.luck=200; S.gear={};   // без кирки: pickBonus=0
-T("находка ≤50% без кирки (LUCK кап 45)", findChance()<=50 && findChance()===43);
+T("LUCK капится на 100% (вероятность)", stat("luck")===100);
+T("находка ≤50% без кирки", findChance()<=50 && findChance()===50);
 S.gear.pick={s:"pick",r:7,m:1,i:1};
 T("кап находки 50% с Cosmic-киркой", findChance()===50);
 S.gear={}; S.lvls.luck=0;
@@ -404,7 +405,9 @@ console.log("\n[12] Скорость x1/x2/x3");
 S.speed=1;
 __ids.speedBtn.onclick(); T("x1 -> x2", S.speed===2);
 __ids.speedBtn.onclick(); T("x2 -> x3", S.speed===3);
-__ids.speedBtn.onclick(); T("x3 -> x1 (цикл)", S.speed===1);
+__ids.speedBtn.onclick(); T("x3 -> x10", S.speed===10);
+__ids.speedBtn.onclick(); T("x10 -> x100", S.speed===100);
+__ids.speedBtn.onclick(); T("x100 -> x1 (цикл)", S.speed===1);
 render();
 T("кнопка показывает текущую скорость", __ids.speedBtn.textContent.includes("×1"));
 
