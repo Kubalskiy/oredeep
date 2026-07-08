@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.18 «Копай глубже»</title>
+<title>ORE DEEP — v0.19 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -250,7 +250,7 @@
       <div class="gold">🪙 <span id="gold">0</span></div>
       <div class="gps">+<span id="gps">0</span>/с</div>
       <div class="gps" id="streakLine" style="color:#ff9d5c"></div>
-      <div id="gemLine">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span></div>
+      <div id="gemLine">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span> · 🥩 <span id="protein">0</span></div>
     </div>
     <div class="right">ORE DEEP<br><b>копай глубже. ещё.</b></div>
     <button id="musicBtn" title="музыка">🔊</button>
@@ -390,7 +390,11 @@
 
   <div class="metabar">
     <button id="navSkills">✦ НАВЫКИ</button>
+    <button id="navPets">🐕 ПИТОМЦЫ</button>
     <button id="navWheel">◎ КОЛЕСО</button>
+    <button id="navWork">💪 ТРЕНИР.</button>
+    <button id="navDaily">✓ ДЕЙЛИКИ</button>
+    <button id="navShop">🛒 МАГАЗИН</button>
     <button id="navPvp">⚔ PvP</button>
     <button id="navEvents">★ ИВЕНТЫ</button>
   </div>
@@ -478,6 +482,16 @@ const BALANCE = {
   gymPerks:["WORKOUT_SPEED","IDLE_CASH","HP_GEAR_BOOST","ATK_GEAR_BOOST","DEF_GEAR_BOOST","COMBO_STAT"],
   gymTiers:["Slate","Bronze","Silver","Gold","Amethyst","Amber"],
   chestCosts:{ rare:50, epic:140, legendary:280 },   // §10.3 сундуки навыков (💎)
+  petPower:[1,3,9,27],
+  workoutPaths:["energy","atk","tough","mining","crit","stone","luck"],
+  workoutStepPct:[15,12,10,8,6,10,5],
+  dailyQuests:[
+    {id:"break",n:"Разбей 30 жил",need:30,tok:10},
+    {id:"find",n:"Найди 5 камней",need:5,tok:10},
+    {id:"pvp",n:"Выиграй 2 PvP",need:2,tok:10},
+    {id:"skill",n:"Прокачай навык",need:1,tok:10}],
+  dailyTrack:[[25,"ключ ×1"],[50,"яйцо ×3"],[100,"кристаллы ×50"],[150,"образец ×1"]],
+  noAdsPrice:"49.99",
   gearRarityMul:[1,2.2,4.8,10,22,48,110,250],
   skillCosts:[1,2,3,4,6,8,11,15,20,26,34,44,57,75],
   skillUpMul:0.7, skillRollW:[0.56,0.27,0.12,0.05],
@@ -701,6 +715,8 @@ function stat(id){
   if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+GEO_TYPES[S.geo.t].pct[S.geo.r]/100);
   if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
   for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
+  const petPct=petBonus(id), wkPct=workoutBonus(id);
+  if(petPct||wkPct) v*=(1+(petPct+wkPct)/100);          // питомец (§8) + тренировки (§10)
   for(let k=0;k<SET_BONUS.length;k++){                  // сет-бонусы чертогов
     if(SET_BONUS[k].stat===id && setDone(k))
       v = SET_BONUS[k].flat ? v+SET_BONUS[k].flat : v*(1+SET_BONUS[k].pct/100);
@@ -744,6 +760,7 @@ function onFind(forceR){
   const name=MINES[mineKey].stones[ri];
   const val=stoneValue(ri);
   if(!S.best||ri>=S.best.r) S.best={r:ri,name:name};
+  dailyProgress("find",1);
   S.col[mineKey]=S.col[mineKey]||{};
   const had=S.col[mineKey][ri]||0;
   S.col[mineKey][ri]=had+1;
@@ -776,7 +793,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, pickLog:{}, gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, pickLog:{}, gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -871,6 +888,7 @@ function breakVein(){
   const dropRoll=(rock.isBoss||S.stageIdx<=3)?100:DROP_CHANCE;   // онбординг: первые жилы всегда с дропом
   if(Math.random()*100<dropRoll) dropGear();
   S.stageIdx++; S.stage++;
+  dailyProgress("break",1);
   checkDepthMark(prevIdx);
   if(rock.isBoss) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
   if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
@@ -965,7 +983,10 @@ function loop(now){
     while(respTimer>=respInt&&!dead&&S.rockHP>0){ respTimer-=respInt; rockRespond(); }
   }
   idleAcc+=dt;
-  if(idleAcc>=1){ S.gold+=idlePerSec()*Math.floor(idleAcc); idleAcc%=1; }
+  if(idleAcc>=1){ const w=Math.floor(idleAcc); S.gold+=idlePerSec()*w;
+    S.protein=Math.min(BALANCE.workouts.proteinCapH*BALANCE.workouts.proteinPerHour,
+      (S.protein||0)+BALANCE.workouts.proteinPerHour/3600*w);   // +5/час, кап 8ч
+    idleAcc%=1; }
   if(quipHide>0){ quipHide-=rawDt; if(quipHide<=0) $("bubble").classList.remove("show"); }
   else if(!dead){ quipNext-=rawDt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
   render();
@@ -1054,7 +1075,7 @@ function render(){
   $("gold").textContent=fmt(S.gold);
   $("gps").textContent=fmt(idlePerSec());
   $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"";
-  $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0);
+  $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0); $("protein").textContent=fmt(Math.floor(S.protein||0));
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
   $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
   $("minerRank").textContent=RANKS[Math.min(RANKS.length-1,S.mine)];
@@ -1453,7 +1474,7 @@ function openSkills(){
   metaOpen("Навыки добычи","Косты 1…75 ×10 (BALANCE §6). Навыки — постоянные пассивы к статам.",rows);
 }
 function upSkill(id,c){ if((S.gems||0)<c) return; S.gems-=c; S.skills=S.skills||{}; S.skills[id]=(S.skills[id]||0)+1;
-  Platform.logEvent("skill_up",{id}); sfxGear(); save(); render(); openSkills(); }
+  dailyProgress("skill",1); Platform.logEvent("skill_up",{id}); sfxGear(); save(); render(); openSkills(); }
 function openWheel(){
   const spin=S.wheelSpins||0;
   const cost=BALANCE.wheel.cost[Math.min(spin,BALANCE.wheel.cost.length-1)];
@@ -1488,7 +1509,7 @@ function openPvp(){
 function pvpFight(){
   const me=powerScore(), opp=Math.round(me*(0.8+Math.random()*0.5));
   const win=me>=opp;
-  if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30;
+  if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1);
     const li=pvpLeagueIdx(); S.gold+=BALANCE.pvp.rewards[li]*100;
     showToast("⚔","ПОБЕДА!","","+30 🏆 · +"+fmt(BALANCE.pvp.rewards[li]*100)+" 🪙","Power "+fmt(me)+" vs "+fmt(opp)); }
   else { S.trophies=Math.max(0,(S.trophies||0)-15);
@@ -1522,6 +1543,101 @@ function playEvent(id){
 }
 $("navSkills").onclick=openSkills; $("navWheel").onclick=openWheel;
 $("navPvp").onclick=openPvp; $("navEvents").onclick=openEvents;
+
+/* --- Питомцы: гача с pity (§8), пассив к добыче --- */
+const PET_TYPES=[
+  {stat:"luck",  n:"Канарейка",pct:[8,24,72,216]},
+  {stat:"mining",n:"Рудный пёс",pct:[10,30,90,270]},
+  {stat:"stone", n:"Мул-тяжеловоз",pct:[12,36,108,324]}
+];
+const PET_RAR=["Common","Rare","Epic","Legendary"];
+function petBonus(id){ if(!S.pet||PET_TYPES[S.pet.t].stat!==id) return 0;
+  return PET_TYPES[S.pet.t].pct[S.pet.r]; }   // множитель %, применяется в stat()
+function openPets(){
+  const cost=Math.round(veinReward()*10);
+  let cur=S.pet?`<div class="metarow"><span>Питомец: <b class="r${S.pet.r}">${PET_TYPES[S.pet.t].n}</b> · +${PET_TYPES[S.pet.t].pct[S.pet.r]}% ${PET_TYPES[S.pet.t].stat.toUpperCase()}</span></div>`:"";
+  metaOpen("Питомцы","Гача с жалостью Горы (§8), роллов: "+(S.petRolls||0)+". Пассив к добыче.",
+    cur+`<div style="text-align:center;padding:10px 0"><button class="gold" onclick="rollPet(${cost})" ${(S.gold||0)<cost?"disabled":""}>Яйцо за ${fmt(cost)} 🪙</button></div>`);
+}
+function rollPet(cost){
+  if((S.gold||0)<cost) return; S.gold-=cost;
+  const r=rollRarity(geoWeights(S.petRolls||0)); S.petRolls=(S.petRolls||0)+1;
+  const t=Math.floor(Math.random()*PET_TYPES.length); const cand={t,r};
+  if(!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r])){
+    S.pet=cand; showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,"приручён! +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase());
+  } else { const rf=Math.round(cost*0.4); S.gold+=rf; showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,"слабее — отпущен +"+fmt(rf)+" 🪙"); }
+  Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
+}
+
+/* --- Тренировки: таймеры + провизия (§10) --- */
+function openWorkouts(){
+  const rows=BALANCE.workoutPaths.map((p,i)=>{
+    const lv=(S.workouts&&S.workouts[p])||0;
+    const active=S.wkActive&&S.wkActive.path===p;
+    const cost=20+lv*5;    // провизия за старт шага
+    let btn;
+    if(active){
+      const left=Math.max(0,Math.ceil((S.wkActive.end-Date.now())/1000));
+      btn=left>0?`<button onclick="skipWorkout()">⏱ ${left}с · пропуск 💎5</button>`
+                :`<button class="buy" onclick="claimWorkout()">Забрать +${BALANCE.workoutStepPct[i]}%</button>`;
+    } else btn=`<button class="buy" onclick="startWorkout('${p}',${cost})" ${(S.protein||0)<cost?"disabled":""}>+${BALANCE.workoutStepPct[i]}% ${p.toUpperCase()} · 🥩${cost}</button>`;
+    return `<div class="metarow"><span>${p.toUpperCase()} · ур.${lv}<br><span style="color:var(--dim)">пост. буст к стату</span></span>${btn}</div>`;
+  }).join("");
+  metaOpen("Улучшения-таймеры","Провизия +5/ч (кап 8ч). 7 путей, шаг 50, недельный кап 10080 мин (§10).",rows);
+}
+function startWorkout(path,cost){
+  if(S.wkActive||(S.protein||0)<cost) return;
+  S.protein-=cost;
+  S.wkActive={path, end:Date.now()+30000};   // демо-таймер 30с (в проде — минуты)
+  Platform.logEvent("workout_start",{path}); save(); render(); openWorkouts();
+}
+function claimWorkout(){
+  if(!S.wkActive||Date.now()<S.wkActive.end) return;
+  const p=S.wkActive.path; S.workouts=S.workouts||{}; S.workouts[p]=(S.workouts[p]||0)+1;
+  S.wkActive=null; sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); openWorkouts();
+}
+function skipWorkout(){ if(!S.wkActive) return; if((S.gems||0)<5) return; S.gems-=5; S.wkActive.end=Date.now(); render(); openWorkouts(); }
+function workoutBonus(id){ const lv=(S.workouts&&S.workouts[id])||0; if(!lv) return 0;
+  const i=BALANCE.workoutPaths.indexOf(id); return i<0?0:BALANCE.workoutStepPct[i]*lv; }  // % буст
+
+/* --- Дейлики: жетоны + трек (§8) --- */
+function dailyReset(){ const t=todayStr(); if(!S.daily) S.daily={day:t,prog:{},tok:0,claimed:[]};
+  if(S.daily.day!==t){ S.daily={day:t,prog:{},tok:0,claimed:[]}; } }
+function dailyProgress(id,amt){ dailyReset(); const q=BALANCE.dailyQuests.find(x=>x.id===id); if(!q) return;
+  const p=S.daily.prog; const was=p[id]||0; if(was>=q.need) return;
+  p[id]=was+amt;
+  if(p[id]>=q.need && was<q.need){ S.daily.tok+=q.tok; showToast("✓","Задание!","",q.n,"+"+q.tok+" жетонов"); }
+}
+function openDaily(){
+  dailyReset();
+  const qrows=BALANCE.dailyQuests.map(q=>{
+    const p=Math.min(S.daily.prog[q.id]||0,q.need);
+    return `<div class="metarow"><span>${q.n}<br><span style="color:var(--dim)">${p}/${q.need}</span></span><span style="color:var(--gold)">${p>=q.need?"✓ +"+q.tok:"+"+q.tok+" жет."}</span></div>`;
+  }).join("");
+  const trows=BALANCE.dailyTrack.map(([need,rew],i)=>{
+    const done=(S.daily.claimed||[]).includes(i), can=S.daily.tok>=need && !done;
+    return `<div class="metarow"><span>${need} жетонов → ${rew}</span>${done?"<span style=color:var(--green)>✓</span>":`<button class="buy" onclick="claimDaily(${i},${need})" ${can?"":"disabled"}>Забрать</button>`}</div>`;
+  }).join("");
+  metaOpen("Дейлики","Жетонов сегодня: "+(S.daily.tok||0)+"/150 (§8)",qrows+"<div style='height:8px'></div>"+trows);
+}
+function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.claimed||[]).includes(i)) return;
+  S.daily.claimed.push(i);
+  if(i===0) S.keys=(S.keys||0)+1; else if(i===2) S.gems+=50; else S.gold+=veinReward()*50;
+  Platform.logEvent("daily_claim",{i}); save(); render(); openDaily(); }
+
+/* --- Магазин: паки, comeback, no-ads (§13) --- */
+function openShop(){
+  const gems=BALANCE.shop.gemPacks.map((g,i)=>`<div class="metarow"><span>💎 ${g} кристаллов</span><button class="gold" onclick="buyGems(${i})">$${[19.99,59.99,199.99][i]}</button></div>`).join("");
+  const cb=BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>`<div class="metarow"><span>Пак: 💎${g} + 🪙${fmt(gold)}</span><button class="gold" onclick="buyPack(${i})">$${[6.99,16.99,24.99][i]}</button></div>`).join("");
+  const na=S.noAds?"<div class='metarow'><span>✓ Реклама отключена</span></div>":`<div class="metarow"><span>Отключить рекламу</span><button class="gold" onclick="buyNoAds()">$${BALANCE.noAdsPrice}</button></div>`;
+  metaOpen("Магазин","IAP-стабы (Platform.buy → Play Billing в проде). §13",gems+"<div style='height:8px'></div>"+cb+na);
+}
+function buyGems(i){ Platform.buy("gems_"+i); S.gems+=BALANCE.shop.gemPacks[i]; showToast("💎","Покупка","",BALANCE.shop.gemPacks[i]+" кристаллов","спасибо!"); save(); render(); openShop(); }
+function buyPack(i){ Platform.buy("pack_"+i); const [g,gold]=BALANCE.shop.comeback[i]; S.gems+=g; S.gold+=gold; showToast("🎁","Пак куплен","","+"+g+"💎 +"+fmt(gold)+"🪙","спасибо!"); save(); render(); openShop(); }
+function buyNoAds(){ Platform.buy("noads"); S.noAds=true; showToast("🚫","No-Ads","","реклама отключена","спасибо!"); save(); render(); openShop(); }
+
+$("navPets").onclick=openPets; $("navWork").onclick=openWorkouts;
+$("navDaily").onclick=openDaily; $("navShop").onclick=openShop;
 
 /* ---------- старт ---------- */
 load(); buildUpgrades(); renderGear(); newRock(); render(); checkOffline(); checkStreak();

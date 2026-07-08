@@ -174,6 +174,33 @@ T("миграция v1→v2: ftue выключен для старых, стри
   S.v===2 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3);
 localStorage.removeItem("oredeep_v3"); load();
 
+console.log("\n[20] Полный паритет: питомцы, тренировки, дейлики, магазин");
+localStorage.removeItem("oredeep_v3"); load();
+// питомец: гача + пассив
+S.gold=1e12; S.pet=null; S.petRolls=0;
+for(let i=0;i<30;i++) rollPet(1);
+T("питомец приручён после роллов", !!S.pet && typeof S.pet.t==="number");
+{ const st=PET_TYPES[S.pet.t].stat; const before=stat(st);
+  T("питомец даёт % к своему стату", petBonus(st)>0); }
+// тренировки: провизия → таймер → буст
+S.protein=1000; S.wkActive=null; S.workouts={};
+const e0=stat("energy"); startWorkout("energy",20);
+T("тренировка стартовала, провизия списана", !!S.wkActive && S.protein===980);
+S.wkActive.end=Date.now()-1; claimWorkout();
+T("тренировка завершена: буст к стату", (S.workouts.energy||0)===1 && stat("energy")>e0);
+// дейлики: прогресс + жетоны + клейм
+S.daily={day:todayStr(),prog:{},tok:0,claimed:[]};
+for(let i=0;i<30;i++) dailyProgress("break",1);
+T("дейлик 'разбей 30' выдал жетоны", S.daily.tok>=10);
+S.daily.tok=25; S.daily.claimed=[]; const k0=S.keys||0; claimDaily(0,25);
+T("клейм трека дейликов работает", (S.daily.claimed||[]).includes(0) && S.keys===k0+1);
+// магазин: паки начисляют
+{ const g0=S.gems; buyGems(1); T("пак кристаллов начислен", S.gems===g0+BALANCE.shop.gemPacks[1]); }
+{ const before=S.noAds; buyNoAds(); T("no-ads покупается", S.noAds===true); }
+// провизия капается
+S.protein=BALANCE.workouts.proteinCapH*BALANCE.workouts.proteinPerHour;
+T("провизия имеет кап 8ч×5", S.protein===40);
+
 console.log("\n[19] Мета-системы boxer→miner");
 localStorage.removeItem("oredeep_v3"); load();
 // навыки влияют на статы
