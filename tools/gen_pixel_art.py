@@ -73,31 +73,33 @@ def outline_pass(im):
 
 def gen_pick(color_hex, path, gem=False):
     base = hx(color_hex)
-    light = mix(base,(255,255,255),.45); dark = mix(base,(0,0,0),.3)
-    im = Image.new('RGBA',(22,22),(0,0,0,0)); px=im.load()
+    light = mix(base,(255,255,255),.5); dark = mix(base,(0,0,0),.32)
+    im = Image.new('RGBA',(24,24),(0,0,0,0)); px=im.load()
     def put(x,y,c):
-        if 0<=x<22 and 0<=y<22: px[x,y]=c
-    # рукоять: диагональ (5,19)->(15,5), 3px
-    for i in range(15):
-        t=i/14.0
-        x=int(5+t*10); y=int(19-t*14)
+        if 0<=x<24 and 0<=y<24 and c is not None: px[x,y]=c
+    # рукоять: вертикально-диагональная, деревянная, 3px толщиной
+    for i in range(16):
+        t=i/15.0
+        x=int(11 - t*3); y=int(4 + t*18)
         put(x,y,WOOD['W']); put(x+1,y,WOOD['w']); put(x+2,y,WOOD['W'])
-    # голова: дуга-полумесяц, толщина 3-4
+    # голова кирки: двусторонняя изогнутая (полумесяц-«кирка»)
     import math
-    for i in range(41):
-        t=i/40.0
-        # квадратичная дуга от (3,10) через (11,1) к 19,10
-        x=(1-t)**2*3 + 2*(1-t)*t*11 + t*t*19
-        y=(1-t)**2*10 + 2*(1-t)*t*(-2) + t*t*10
+    for i in range(33):
+        t=i/32.0
+        # верхняя дуга слева-направо через макушку
+        x=(1-t)**2*2 + 2*(1-t)*t*12 + t*t*22
+        y=(1-t)**2*8 + 2*(1-t)*t*1 + t*t*8
         xi,yi=int(round(x)),int(round(y))
-        thick = 4 if 0.25<t<0.75 else (3 if 0.1<t<0.9 else 2)
-        for k in range(thick):
-            put(xi,yi+k, light if k==0 else (base if k<thick-1 else dark))
-    # хомут на стыке
-    for dx in range(-1,3):
+        put(xi,yi-1,light); put(xi,yi,base); put(xi,yi+1,dark)
+    # заострённые концы
+    put(1,8,dark); put(0,9,dark); put(22,8,dark); put(23,9,dark)
+    put(2,7,light); put(21,7,light)
+    # проушина/муфта на рукояти
+    for dx in range(-1,4):
         for dy in range(0,3):
-            put(10+dx,4+dy,dark)
-    if gem: put(10,5,hx('fff2b0')); put(11,5,hx('ffd75e'))
+            put(9+dx,7+dy,dark)
+    put(10,8,base); put(11,8,base)
+    if gem: put(10,8,hx('fff2b0')); put(11,7,hx('ffd75e'))
     outline_pass(im)
     im.save(path)
 
