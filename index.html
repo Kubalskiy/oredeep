@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.34 «Копай глубже»</title>
+<title>ORE DEEP — v0.35 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -93,23 +93,23 @@
     font-size:11px;font-weight:600;padding:7px 11px;border-radius:12px 12px 12px 3px;opacity:0;
     transition:opacity .35s;pointer-events:none;z-index:5;box-shadow:0 3px 10px #0007;}
   .bubble.show{opacity:1;}
-  .rockname{position:absolute;top:8px;left:50%;transform:translateX(-50%);
-    background:#0d0f14cc;border:1px solid var(--line);border-radius:8px;padding:4px 14px;
-    font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;}
-  .rockname b{color:var(--txt);}
+  .rockname{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:2px;
+    white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;opacity:.85;}
+  .rockname b{color:var(--txt);font-weight:400;letter-spacing:1.5px;}
   .bosslabel{color:#ff8a4a !important;}
-  .bars{position:absolute;top:38px;left:16px;right:16px;display:flex;flex-direction:column;gap:7px;}
-  .bar{height:20px;border-radius:6px;background:#0b0e13;overflow:hidden;
-    border:1.5px solid #000; box-shadow:inset 0 1px 0 #ffffff10, 0 1px 2px #0007; position:relative;}
-  .bar .fill{height:100%;border-radius:4px 3px 3px 4px;transition:width .18s ease-out;position:relative;}
-  .bar .fill::after{content:"";position:absolute;left:0;right:0;top:0;height:45%;
-    background:linear-gradient(#ffffff40,#ffffff00);border-radius:4px 3px 0 0;}
-  .bar.hp .fill{background:linear-gradient(180deg,#e8654a,#b02d1f);}
-  .bar.en .fill{background:linear-gradient(180deg,#5fd884,#249a4e);}
-  .bar .blabel{position:absolute;left:8px;top:0;line-height:20px;font-size:8px;
-    color:#fff;text-shadow:0 1px 2px #000c;letter-spacing:.5px;font-weight:700;z-index:2;}
-  .bar .bval{position:absolute;right:8px;top:0;line-height:20px;font-size:8px;
-    color:#fff;text-shadow:0 1px 2px #000c;z-index:2;}
+  .bars{position:absolute;top:40px;left:20px;right:20px;display:flex;flex-direction:column;gap:11px;}
+  .barwrap{position:relative;}
+  .barhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;padding:0 1px;}
+  .barhead .lab{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);}
+  .barhead .val{font-size:8px;letter-spacing:.5px;color:var(--txt);opacity:.9;font-variant-numeric:tabular-nums;}
+  .bar{height:8px;border-radius:5px;background:#00000055;overflow:hidden;
+    box-shadow:inset 0 0 0 1px #ffffff0a; position:relative;}
+  .bar .fill{height:100%;border-radius:5px;transition:width .25s cubic-bezier(.4,0,.2,1);position:relative;}
+  .bar .fill::after{content:"";position:absolute;inset:0;border-radius:5px;
+    background:linear-gradient(180deg,#ffffff2e,#ffffff00 55%);}
+  .bar.hp .fill{background:linear-gradient(90deg,#d1503a,#e87e5a);}
+  .bar.en .fill{background:linear-gradient(90deg,#3fae63,#69dd8b);}
 
   .stats{display:grid;grid-template-columns:repeat(6,1fr);background:#0f1218;padding:8px 6px;gap:2px;}
   .stat{text-align:center;}
@@ -321,10 +321,14 @@
     <span class="mote" style="left:75%;bottom:50px;animation-delay:6s"></span>
     <div class="rockname">жила: <b id="rockName">Валун</b></div>
     <div class="bars">
-      <div class="bar hp"><div class="fill" id="hpFill" style="width:100%"></div>
-        <span class="blabel">⛏ ПОРОДА</span><span class="bval" id="hpTxt"></span></div>
-      <div class="bar en"><div class="fill" id="enFill" style="width:100%"></div>
-        <span class="blabel">⚡ ЭНЕРГИЯ</span><span class="bval" id="enTxt"></span></div>
+      <div class="barwrap">
+        <div class="barhead"><span class="lab">Порода</span><span class="val" id="hpTxt"></span></div>
+        <div class="bar hp"><div class="fill" id="hpFill" style="width:100%"></div></div>
+      </div>
+      <div class="barwrap">
+        <div class="barhead"><span class="lab">Энергия</span><span class="val" id="enTxt"></span></div>
+        <div class="bar en"><div class="fill" id="enFill" style="width:100%"></div></div>
+      </div>
     </div>
     <div class="bubble" id="bubble"></div>
     <div class="miner" id="miner">
