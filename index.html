@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.24 «Копай глубже»</title>
+<title>ORE DEEP — v0.25 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -43,9 +43,8 @@
     animation:mote 9s linear infinite;}
   @keyframes mote{0%{transform:translate(0,0);opacity:0}15%{opacity:.8}85%{opacity:.5}100%{transform:translate(26px,-120px);opacity:0}}
   .miner{position:absolute;left:9%;bottom:20px;transform-origin:70% 85%;}
-  .miner.swing #pickHand{animation:swing .18s ease-out;}
-  #pickArm{transform-origin:63px 76px;}
-  @keyframes swing{0%{transform:rotate(14deg)}45%{transform:rotate(-55deg)}100%{transform:rotate(14deg)}}
+  .miner.swing #armGroup{animation:chop .16s ease-in;}
+  @keyframes chop{0%{transform:rotate(-38deg)}55%{transform:rotate(34deg)}100%{transform:rotate(-38deg)}}
   .pet{position:absolute;left:31%;bottom:20px;animation:bob 2s ease-in-out infinite;}
   .rock{position:absolute;right:7%;bottom:24px;filter:drop-shadow(0 5px 7px #000a);}
   .rock{width:132px;height:132px;}
@@ -61,8 +60,11 @@
   .rock.hitfx{animation:shake .12s;}
   .miner{width:117px;height:135px;animation:bob 2.6s ease-in-out infinite;}
   .ml{position:absolute;left:0;top:0;width:117px;height:135px;image-rendering:pixelated;}
-  #pickHand{position:absolute;right:6px;top:16px;width:52px;image-rendering:pixelated;
-    transform:rotate(18deg);transform-origin:30% 80%;z-index:4;}
+  #armGroup{position:absolute;right:2px;top:38px;width:60px;height:60px;
+    transform-origin:14px 10px;transform:rotate(-38deg);z-index:4;}
+  #foreArm{position:absolute;left:6px;top:2px;width:12px;height:26px;border-radius:6px;
+    background:#e0a06e;border:2px solid #14161c;transform:rotate(24deg);transform-origin:6px 4px;}
+  #pickHand{position:absolute;left:12px;top:16px;width:52px;image-rendering:pixelated;transform:rotate(-6deg);}
   #aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
   #aleMug.sip{display:block;animation:drink 2.4s ease-in-out forwards;}
   @keyframes drink{0%{transform:translate(0,20px) rotate(0);opacity:0}
@@ -326,7 +328,10 @@
       <img class="ml" id="mlGlove" alt="">
       <img class="ml" id="mlBeard" alt="">
       <img class="ml" id="mlHelm" alt="">
-      <img id="pickHand" alt="">
+      <div id="armGroup">
+        <div id="foreArm"></div>
+        <img id="pickHand" alt="">
+      </div>
       <img id="aleMug" alt="">
     </div>
     <div class="pet" id="petBox" style="display:none">
@@ -1093,6 +1098,7 @@ function updateMiner(){
     else el.style.display="none";
   }
   $("pickHand").src=PICK_ICONS[g.pick?g.pick.r:0];
+  const fa=$("foreArm"); if(fa&&fa.style){ fa.style.background = g.glove?RAR_HEX[g.glove.r]:"#e0a06e"; }
   $("petBox").style.display=g.pet?"block":"none";
   if(g.pet) setFill("petCollar",RAR_HEX[g.pet.r]);
 }
