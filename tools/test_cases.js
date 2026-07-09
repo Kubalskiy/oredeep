@@ -424,5 +424,49 @@ S.col={3:{0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1}};   // сет чертога 4: +5 LU
 T("сет чертога 4: +15% LUCK (с капом 45)", stat("luck")===Math.min(45,luck0+15), "luck="+stat("luck"));
 S.col={};
 
+
+console.log("\n[16] Бесконечная сложность + компаунд ATK");
+// HP больше не упирается в потолок 1e7
+{ const h1=rockStatsAt(50000,false).hp, h2=rockStatsAt(60000,false).hp, h3=rockStatsAt(80000,false).hp;
+  T("HP породы растёт без предела", h2>h1*2 && h3>h2*2, h1.toExponential(1)+" -> "+h3.toExponential(1)); }
+T("до escStart кривая не тронута", Math.abs(rockStatsAt(200,false).hp-anchored(ANCHOR_HP,200))<1e-6);
+T("resp не эскалируем", rockStatsAt(90000,false).resp===anchored(ANCHOR_RESP,90000));
+// равновесие треадмилла выводится из констант
+{ const lpb=atkLevelsPerBlock(), esc=escPerBlock();
+  T("esc = ATK_COMPOUND^LPB (равновесие)", Math.abs(esc-Math.pow(ATK_COMPOUND,lpb))<1e-9, "esc="+esc.toFixed(4));
+  T("LPB = ln(G)/ln(g) ≈ 2.479", Math.abs(lpb-2.4791)<0.01, lpb.toFixed(4)); }
+// компаунд: апгрейд множит всю атаку, включая шмот
+{ S.gear={}; S.geo=null;S.pet=null;S.workouts={};S.skills={};S.sets={};S.col={};
+  S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
+  const a0=stat("atk"); S.lvls.atk=10; const a10=stat("atk");
+  const expect=(BASE.atk+3*10)*Math.pow(ATK_COMPOUND,10);
+  T("ATK компаундится (не плоский +3)", Math.abs(a10-expect)<1e-6 && a10>a0*3, a0+" -> "+a10.toFixed(1));
+  S.lvls.atk=0; }
+console.log("\n[17] Крафт лутбоксов из камней коллекции");
+S.col={0:{1:60, 2:5}}; S.boxes=[];
+T("цена крафта растёт с редкостью", craftBoxCost(1)===50 && craftBoxCost(7)===200);
+craftBoxFromStones(1);
+T("крафт бокса тира 1 за 50 дубликатов", S.boxes.length===1 && S.boxes[0]===1 && S.col[0][1]===10);
+craftBoxFromStones(2);
+T("мало дубликатов — крафта нет", S.boxes.length===1 && S.col[0][2]===5);
+S.col={0:{3:1}}; S.boxes=[];
+craftBoxFromStones(3);
+T("последний камень коллекции не тратится", S.boxes.length===0 && S.col[0][3]===1);
+
+console.log("\n[18b] Графическая карточка сета");
+T("у каждого сета есть арт", BALANCE.dungeonSets.every(s=>SET_ART[s.id]&&SET_ART[s.id].fi.length===s.frags.length));
+S.frags={berserk:{0:true,2:true}}; S.sets={};
+openSetCard("berserk");
+{ const h=__ids.setCard.innerHTML;
+  T("попап сета открывается по клику", __ids.setModal.style.display==="flex");
+  T("частичный сет: прогресс и замки", h.includes("СОБРАНО 2 ИЗ 4") && (h.match(/🔒/g)||[]).length===2);
+  T("найденные фрагменты отмечены", (h.match(/class="tick"/g)||[]).length===2); }
+S.frags={guardian:{0:true,1:true,2:true,3:true}}; S.sets={guardian:true};
+openSetCard("guardian");
+{ const h=__ids.setCard.innerHTML;
+  T("собранный сет: активен, бар 100%, без замков",
+    h.includes("БИЛД АКТИВЕН") && h.includes("width:100%") && !h.includes("🔒")); }
+S.frags={}; S.sets={};
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

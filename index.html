@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.62 «Копай глубже»</title>
+<title>ORE DEEP — v0.69 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -18,7 +18,9 @@
     font-family:-apple-system,"Segoe UI",Roboto,sans-serif; height:100%; overflow-x:hidden;}
   #app{max-width:430px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
 
-  .hud{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--panel);}
+  .hud{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--panel);}
+  .hud>div:first-child{min-width:0;flex:1;overflow:hidden;}
+  .hud .gold{white-space:nowrap;}
   .hud .gold{font-weight:800;font-size:20px;color:var(--gold);}
   .hud .gps{font-size:12px;color:var(--green);}
   .hud .right{text-align:right;font-size:12px;color:var(--dim);}
@@ -184,6 +186,34 @@
   #log .li.hot b{color:#ffe08a;}
   #log .li img{height:15px;width:15px;image-rendering:pixelated;flex:none;vertical-align:middle;}
   #log .li .ic{flex:none;font-size:12px;line-height:1;}
+  /* --- графическая карточка сета --- */
+  #setModal{z-index:90;}
+  .setHead{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .setEmblem{width:54px;height:54px;flex:none;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;font-size:26px;border:2px solid;box-shadow:0 0 14px -2px currentColor;}
+  .setHead .sh-n{font-size:12px;font-weight:800;line-height:1.4;}
+  .setHead .sh-s{font-size:7px;color:var(--dim);margin-top:5px;letter-spacing:.5px;}
+  .setBar{height:8px;border-radius:5px;background:#00000066;overflow:hidden;margin:10px 0 14px;}
+  .setBar>div{height:100%;border-radius:5px;transition:width .3s;}
+  .setFrags{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+  .frag{background:#12151d;border:2px solid var(--line);border-radius:8px;padding:9px 3px 7px;text-align:center;
+    min-width:0;position:relative;}
+  .frag .fi{font-size:20px;line-height:1.2;filter:grayscale(1) brightness(.45);}
+  .frag .fn{font-size:6px;margin-top:5px;color:#4a5261;letter-spacing:.3px;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;}
+  .frag.on .fi{filter:none;}
+  .frag.on .fn{color:var(--txt);}
+  .frag .tick{position:absolute;top:2px;right:3px;font-size:7px;color:var(--green);}
+  .setBonus{background:#12151d;border:1px solid var(--line);border-radius:8px;padding:11px 12px;text-align:center;}
+  .setBonus .bl{font-size:6px;color:var(--dim);letter-spacing:1px;margin-bottom:6px;}
+  .setBonus .bv{font-size:10px;line-height:1.6;font-weight:800;}
+  .setNote{font-size:7px;color:var(--dim);line-height:1.9;margin-top:10px;text-align:center;}
+  .metarow.setrow{cursor:pointer;}
+  .metarow.setrow:hover{background:#171b24;}
+  .setline{display:flex;flex-direction:column;gap:5px;min-width:0;}
+  .setline .sl-t{font-size:9px;line-height:1.4;}
+  .setline .sl-f{font-size:7px;line-height:1.5;}
+  .setline .sl-b{font-size:7px;line-height:1.5;color:var(--gold);}
   #logWrap{margin:6px 12px 2px;}
   #logWrap #log{margin:0;}
   #logPager{display:flex;align-items:center;justify-content:flex-end;gap:6px;
@@ -197,7 +227,7 @@
   .metabar button{padding:12px 2px;font-size:8px;background:linear-gradient(180deg,#2a3346,#1d2534);}
   .metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line);font-size:9px;gap:8px}
   .metarow button{width:auto;padding:8px 10px;font-size:8px}
-  #gemLine{color:#b97ae8;font-size:11px}
+  #gemLine{color:#b97ae8;font-size:8px;white-space:nowrap;letter-spacing:0;margin-top:3px;overflow:hidden;text-overflow:ellipsis;}
 
   #toast{position:fixed;left:50%;top:15%;transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
     border-radius:14px;padding:12px 20px;text-align:center;z-index:50;display:none;box-shadow:0 8px 30px #000a;min-width:230px;}
@@ -210,8 +240,10 @@
   #overlay .big{font-size:52px;}
   #overlay h2{color:var(--red);margin:8px 0;}
   #overlay p{color:var(--dim);font-size:13px;max-width:280px;}
+  #ovActions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:300px;margin-top:16px;}
+  #ovActions button{flex:1;min-width:130px;margin:0;}
 
-  .modal{position:fixed;inset:0;background:#000b;z-index:60;display:none;align-items:flex-end;justify-content:center;}
+  .modal{position:fixed;inset:0;background:#000b;z-index:80;display:none;align-items:flex-end;justify-content:center;}
   .modal .box{background:var(--panel);width:100%;max-width:430px;max-height:80%;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;}
   .modal h3{margin:0 0 4px;color:var(--gold);}
   .modal .sub{font-size:11px;color:var(--dim);margin-bottom:10px;}
@@ -259,7 +291,7 @@
   .stats{padding:12px 8px;gap:4px;}
   .statimg{margin:0 auto 5px;}
   .stat .k{margin-bottom:3px;letter-spacing:.5px;}
-  .gearwrap{padding:14px 14px 0;}
+  .gearwrap{padding:14px 14px 12px;}
   .gearttl{margin-bottom:8px;letter-spacing:.5px;}
   .gear{gap:10px;}
   .slot{padding:10px 4px 9px;min-height:86px;}
@@ -324,6 +356,20 @@
     <div>ДВОРФ<br><b id="minerRank">БЕЗБОРОДЫЙ</b></div>
     <div class="mid">ЧЕРТОГ<br><b id="mineLabel">1-1</b></div>
     <div>ГЛУБИНА<br><b id="stageLabel">3 м</b></div>
+  </div>
+
+  <div class="gearwrap">
+    <div class="gearttl">Снаряжение дворфа · что выпало, то надето (если лучше)</div>
+    <div class="gear" id="gearGrid"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAdElEQVR4nGNgIBMwInNExGT+I/PfvHrCyIADsCBrKgvRRJHsWsPwH5dmJnQBaQlRBmkJUYJOZUEXePriNUFNtLURFmDofsXQiAyQA6trDQOKAUwwU2GKcDkVPcTJDhy4xgMXHhKlAQbgHkZPNdgAvpREewAAKKsooD3mqhMAAAAASUVORK5CYII=" alt=""><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABHklEQVR4nO2UsUrDUBSGv0jHDg61U8BZRETpU3RKCTiE9g18IlelQ+DS+xqCKCLiC2SqHRzENQ7mlHtzb26KSbf+U7jn3u/8nP8QOKhStMul0Tgu62ebdRF8GywKMElvrPPFPCOdJcFGgxBUrTQA9w9Lpy61x7tbis8vlk9xacK9jgX6/PoBwPvbi1U/v7gC4PryDIB0ljiOj9qgIckdtdJODlYXE1p3qVUOQDYZ8nM6tdz7nEd1qDlPgcFfOKNxXGaTIfHJcTXX722wi3lmwa3wBCpAc24+6GZdRFrl2xEIHDxboVXuBNEENZubDcAIr+reuvhNqr9vhYTchuSsWx/QILgLtNVxF3nBXd16wX1AGx33oca/m3z/d6/3pl+bK8sX9TWzBwAAAABJRU5ErkJggg==" alt=""><div class="k">Mining</div><div class="v" id="sMin"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAlklEQVR4nGNgwAFExGT+45LDqVBETOb//+tx/9HFkNUzwRhvXj1hxGWLiJjM/zevnjAStPn/9bj/D0JDMWxFBozIGhgYGBheH3RieFj3Ha5AvomTQdR+H9xVKBpFxGT+vz7oxMDAwADX1Pf1MkMRty5cMwMDA4Oo/T64ZrJtJNuPGJqQNSPz0dUyIWvC5RR8UYXT9mEAANdAWxJm6EJAAAAAAElFTkSuQmCC" alt=""><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAvklEQVR4nKWQvQ2DMBSEPxAjWK4YIBIVbaSIPlKWyACpPQJTZIlMgCKldeUNqBA7vFRGz4ZQkKuss+7dDxxEER/G1tL0LQDD/bXw3fMmAMF55mlc+EqLuvMFgGC9zNNYGFtL5OghOCSKK20/fN6rSFscQAkwT2MRnE8+jK0lOaDiJx3znhp5v0SoRdpdc1pc/nLKHZq+TeIn4yyr4ldcPlIVrweH0K/domCr5wrG1vK4niRfVqPcvXAEe25/4Qv6iln+XowdZAAAAABJRU5ErkJggg==" alt=""><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAjElEQVR4nGNgIBMwoguIiMn8Rxd78+oJhjoWdE1OHiFwvqqaJsPMSc1wOWQDGLFpUlXTZGBgYGC4fes6AwMDA8O+HWswbGXEpgmmARmga2aCMZ48vINiCyHAhMyBaUYH2MSZGBggoXbr+gW4ImSFuAxD8bCImMx/NU0DDEW3rl/AHjjomtHFsMXjSAAAbHZC43qoeTUAAAAASUVORK5CYII=" alt=""><div class="k">Stone</div><div class="v" id="sStone"></div></div>
   </div>
 
   <div class="scene t0" id="scene">
@@ -473,19 +519,7 @@
     </div>
   </div>
 
-  <div class="stats">
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAdElEQVR4nGNgIBMwInNExGT+I/PfvHrCyIADsCBrKgvRRJHsWsPwH5dmJnQBaQlRBmkJUYJOZUEXePriNUFNtLURFmDofsXQiAyQA6trDQOKAUwwU2GKcDkVPcTJDhy4xgMXHhKlAQbgHkZPNdgAvpREewAAKKsooD3mqhMAAAAASUVORK5CYII=" alt=""><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABHklEQVR4nO2UsUrDUBSGv0jHDg61U8BZRETpU3RKCTiE9g18IlelQ+DS+xqCKCLiC2SqHRzENQ7mlHtzb26KSbf+U7jn3u/8nP8QOKhStMul0Tgu62ebdRF8GywKMElvrPPFPCOdJcFGgxBUrTQA9w9Lpy61x7tbis8vlk9xacK9jgX6/PoBwPvbi1U/v7gC4PryDIB0ljiOj9qgIckdtdJODlYXE1p3qVUOQDYZ8nM6tdz7nEd1qDlPgcFfOKNxXGaTIfHJcTXX722wi3lmwa3wBCpAc24+6GZdRFrl2xEIHDxboVXuBNEENZubDcAIr+reuvhNqr9vhYTchuSsWx/QILgLtNVxF3nBXd16wX1AGx33oca/m3z/d6/3pl+bK8sX9TWzBwAAAABJRU5ErkJggg==" alt=""><div class="k">Mining</div><div class="v" id="sMin"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAlklEQVR4nGNgwAFExGT+45LDqVBETOb//+tx/9HFkNUzwRhvXj1hxGWLiJjM/zevnjAStPn/9bj/D0JDMWxFBozIGhgYGBheH3RieFj3Ha5AvomTQdR+H9xVKBpFxGT+vz7oxMDAwADX1Pf1MkMRty5cMwMDA4Oo/T64ZrJtJNuPGJqQNSPz0dUyIWvC5RR8UYXT9mEAANdAWxJm6EJAAAAAAElFTkSuQmCC" alt=""><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAvklEQVR4nKWQvQ2DMBSEPxAjWK4YIBIVbaSIPlKWyACpPQJTZIlMgCKldeUNqBA7vFRGz4ZQkKuss+7dDxxEER/G1tL0LQDD/bXw3fMmAMF55mlc+EqLuvMFgGC9zNNYGFtL5OghOCSKK20/fN6rSFscQAkwT2MRnE8+jK0lOaDiJx3znhp5v0SoRdpdc1pc/nLKHZq+TeIn4yyr4ldcPlIVrweH0K/domCr5wrG1vK4niRfVqPcvXAEe25/4Qv6iln+XowdZAAAAABJRU5ErkJggg==" alt=""><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAjElEQVR4nGNgIBMwoguIiMn8Rxd78+oJhjoWdE1OHiFwvqqaJsPMSc1wOWQDGLFpUlXTZGBgYGC4fes6AwMDA8O+HWswbGXEpgmmARmga2aCMZ48vINiCyHAhMyBaUYH2MSZGBggoXbr+gW4ImSFuAxD8bCImMx/NU0DDEW3rl/AHjjomtHFsMXjSAAAbHZC43qoeTUAAAAASUVORK5CYII=" alt=""><div class="k">Stone</div><div class="v" id="sStone"></div></div>
-  </div>
-
-  <div class="gearwrap">
-    <div class="gearttl">Снаряжение дворфа · что выпало, то надето (если лучше)</div>
-    <div class="gear" id="gearGrid"></div>
-  </div>
+  <div class="upg" id="upgrades"></div>
 
   <div class="row">
     <div class="card">
@@ -517,7 +551,6 @@
     </div>
   </div>
 
-  <div class="upg" id="upgrades"></div>
 
   <div class="metabar">
     <button id="navSkills">✦ НАВЫКИ</button>
@@ -563,7 +596,12 @@
   <div class="big">😮‍💨</div>
   <h2 id="ovTitle">ПЕРЕКУР В ЧЕРТОГАХ</h2>
   <p id="ovText">Дворф прилёг подумать о вечном.</p>
-  <button style="max-width:220px;margin-top:14px" onclick="closeOverlay()">Ещё разок, за Гору!</button>
+  <div id="ovActions">
+    <button class="buy" onclick="overlayAle()">🍺 Выпить эль</button>
+    <button class="gold" onclick="openShop()">🛒 Магазин</button>
+    <button onclick="openUpgradesModal()">⚒ Апгрейды</button>
+  </div>
+  <button style="max-width:260px;margin-top:10px" onclick="closeOverlay()">Ещё разок, за Гору!</button>
 </div>
 
 <div class="modal" id="pickModal">
@@ -572,6 +610,13 @@
     <div class="sub">Тапни по слоту кирки, чтобы вернуться сюда. Владел — подсвечена.</div>
     <div id="pickList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
     <button style="margin-top:12px" onclick="document.getElementById('pickModal').style.display='none'">Закрыть</button>
+  </div>
+</div>
+
+<div class="modal" id="setModal">
+  <div class="box">
+    <div id="setCard"></div>
+    <button style="margin-top:12px" onclick="document.getElementById('setModal').style.display='none'">Закрыть</button>
   </div>
 </div>
 
@@ -698,10 +743,42 @@ function anchored(arr, idx){
   const t=(idx-ANCHOR_IDX[i])/(ANCHOR_IDX[i+1]-ANCHOR_IDX[i]);
   return growthLerp(arr[i],arr[i+1],t);
 }
+/* === Бесконечная сложность (треадмилл) ===
+   Якоря задают форму кривой до 50k, но упираются в потолок 1e7 — после него игра
+   кончалась. Поверх якорей — безграничная эскалация за каждый блок (50 этапов).
+
+   Равновесие выводится ИЗ САМИХ КОНСТАНТ, а не подбирается на глаз:
+     доход за блок      G   = idle.growth · idle.damp^0.4  ≈ 2.104
+     цена ATK за уровень g   = 1.35
+     уровней за блок    LPB = ln(G)/ln(g)                  ≈ 2.479
+     ATK за блок             = ATK_COMPOUND^LPB
+   Ставим HP за блок ровно равным росту ATK за блок → сек/жилу выходит на константу
+   на любой глубине: игра бесконечно сложная, статы качать нужно всегда.
+
+   Шмот растёт линейно от глубины (1+idx/60) — этот рост нейтрализуем множителем
+   gearComp, иначе игрок медленно уползал бы в ваншот.
+   resp (темп ответа породы) НЕ эскалируем — иначе энергия сгорала бы мгновенно. */
+const DEPTH={ escStart:300, rampBlocks:45, hpMul:88 };   // CALIB: ~6 сек/жилу у вкладывающегося, пик 8.5 на разгоне
+function atkLevelsPerBlock(){
+  const G=BALANCE.idle.growth*Math.pow(BALANCE.idle.damp,0.4);
+  const g=UPGRADES.find(u=>u.id==="atk").g;
+  return Math.log(G)/Math.log(g);
+}
+function escPerBlock(){ return Math.pow(ATK_COMPOUND, atkLevelsPerBlock()); }
+function depthEsc(idx){
+  if(idx<=DEPTH.escStart) return 1;
+  const blocks=(idx-DEPTH.escStart)/BALANCE.venueStride;
+  const gearComp=(1+idx/60)/(1+DEPTH.escStart/60);           // гасим линейный рост шмота
+  const ramp=1+(DEPTH.hpMul-1)*Math.min(1,blocks/DEPTH.rampBlocks);
+  return Math.pow(escPerBlock(),blocks)*gearComp*ramp;
+}
 function rockStatsAt(idx, isBoss){
-  const m = isBoss?1.5:1;
-  return { hp:anchored(ANCHOR_HP,idx)*m, abr:anchored(ANCHOR_ABR,idx),
-           hard:anchored(ANCHOR_HARD,idx), resp:anchored(ANCHOR_RESP,idx) };
+  const m = isBoss?1.5:1, e = depthEsc(idx);
+  // до escStart работает якорная кривая (фиделити к боксёру), после — её форма
+  // замораживается и сложность целиком ведёт эскалация (иначе треадмилл кривится)
+  const a = Math.min(idx, DEPTH.escStart);
+  return { hp:anchored(ANCHOR_HP,a)*m*e, abr:anchored(ANCHOR_ABR,a)*e,
+           hard:anchored(ANCHOR_HARD,a)*e, resp:anchored(ANCHOR_RESP,idx) };
 }
 const DMG_HARD_K=0.5, DRAIN_K=0.08, CRIT_MULT=BALANCE.combat.critMul;   // критмножитель из BALANCE
 
@@ -892,9 +969,11 @@ function gearSum(statId){
   if((S.sets||{}).mythic) s*=1.4;
   return s;
 }
+const ATK_COMPOUND=1.12;   // CALIB: +12% ко ВСЕЙ атаке за уровень (плоский +3 тонул в лейте)
 function stat(id){
   const u=UPGRADES.find(x=>x.id===id);
   let v=BASE[id]+(u?u.step*S.lvls[id]:0)+gearSum(id);
+  if(id==="atk") v*=Math.pow(ATK_COMPOUND,S.lvls.atk||0);   // компаунд вместо плоского шага
   if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+GEO_TYPES[S.geo.t].pct[S.geo.r]/100);
   if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
   for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
@@ -1201,7 +1280,36 @@ function exhausted(){
   $("ovTitle").textContent=ko[0]; $("ovText").textContent=ko[1];
   $("overlay").style.display="flex";
 }
-function closeOverlay(){ $("overlay").style.display="none"; dead=false; S.durab=MINE_DURAB.max; durabTimer=0; lastDurabWarn=MINE_DURAB.max; newRock(); }
+function closeOverlay(){
+  $("overlay").style.display="none"; dead=false;
+  if((S.speed||1)>3){ S.speed=1; sayQuip("Сбавили до ×1 — переведём дух.",3); }   // после усталости на разгоне
+  S.durab=MINE_DURAB.max; durabTimer=0; lastDurabWarn=MINE_DURAB.max; newRock(); save();
+}
+/* эль на экране усталости: показываем пьяную реплику прямо в тексте оверлея */
+function overlayAle(){
+  sipAle();
+  const pool=Math.random()<0.55?EX_QUIPS:ALE_QUIPS;
+  $("ovText").textContent="🍺 "+pool[Math.floor(Math.random()*pool.length)];
+}
+/* быстрые апгрейды статов — работают поверх экрана усталости */
+function buyStat(id){
+  const u=UPGRADES.find(x=>x.id===id); if(!u) return;
+  if(statCapped(id)) return;
+  const c=upCost(u);
+  if((S.gold||0)>=c){ S.gold-=c; S.lvls[id]++;
+    if(id==="energy") S.energy=Math.min(S.energy+u.step,stat("energy"));
+    sfxGear(); save(); render(); openUpgradesModal(); }
+}
+function openUpgradesModal(){
+  const rows=UPGRADES.map(u=>{
+    const capped=statCapped(u.id), c=upCost(u), cur=u.fmt(stat(u.id));
+    const btn=capped
+      ? `<button class="buy" disabled style="opacity:.4">МАКС</button>`
+      : `<button class="buy" onclick="buyStat('${u.id}')" ${(S.gold||0)<c?"disabled":""}>+ ${fmt(c)}🪙</button>`;
+    return `<div class="metarow"><span>${u.k} · <b>${cur}</b></span>${btn}</div>`;
+  }).join("");
+  metaOpen("Апгрейды забоя","Золото "+fmt(S.gold)+" 🪙 · качай статы, чтобы одолеть породу.",rows);
+}
 
 /* ---------- дроп деталей ---------- */
 /* скалярная «сила» детали: все статы слота масштабируются одним
@@ -1550,13 +1658,21 @@ if($("logNext")&&$("logNext").addEventListener){
 $("colBtn").onclick=()=>{
   const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
   $("colTitle").textContent="Коллекция: "+m.n;
+  // дубликаты камней можно превращать в лутбоксы соответствующей редкости
   const got=Object.keys(col).length;
   const bonusLine=`<div class="col-item"><span>Пассив: +2% STONE за камень</span><span class="cnt">сейчас +${2*uniqueStones()}%</span></div>`
     +`<div class="col-item"><span>Сет чертога (8/8): <b>${SET_BONUS[mineKey].label}</b></span><span class="cnt">${setDone(mineKey)?"АКТИВЕН ✓":got+"/8"}</span></div>`;
   $("colList").innerHTML=bonusLine+m.stones.map((s,i)=>{
     const c=col[i]||0;
     const ic=c?`<img src="${ORE_ICONS[i]}" class="oreimg">`:`<span style="display:inline-block;width:26px;height:26px;margin-right:6px;text-align:center;opacity:.4">?</span>`;
-    return `<div class="col-item"><span class="${c?"found":"notfound"}">${ic}<b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"не найден"}</span></div>`;
+    let craft="";
+    if(i>=1){
+      const need=craftBoxCost(i), have=dupStones(i), ok=have>=need;
+      craft=`<button class="buy" style="width:auto;padding:5px 8px;font-size:7px;margin-left:8px"
+        onclick="craftBoxFromStones(${i})" ${ok?"":"disabled"} ${ok?"":'style="width:auto;padding:5px 8px;font-size:7px;margin-left:8px;opacity:.4"'}
+        title="дубликаты: ${have}/${need}">📦 ${need}</button>`;
+    }
+    return `<div class="col-item"><span class="${c?"found":"notfound"}">${ic}<b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"не найден"}${craft}</span></div>`;
   }).join("");
   $("colModal").style.display="flex";
 };
@@ -2110,7 +2226,86 @@ $("minerRank").onclick=()=>{
 /* ============================================================
    ЛУТБОКСЫ и СЕТЫ ПОДЗЕМЕЛЬЯ (билды)
    ============================================================ */
+/* Графика Сетов Подземелья: цвет, эмблема и глиф на каждый из 4 фрагментов. */
+const SET_ART={
+  berserk: {c:"#e05555", em:"⚔", fi:["🦷","😬","📣","🔥"]},
+  greed:   {c:"#e8b93c", em:"💰", fi:["🪙","⚖️","🏷️","🎒"]},
+  guardian:{c:"#5aa7e8", em:"🛡", fi:["🛡️","🪖","🌿","🔏"]},
+  lucky:   {c:"#5fd068", em:"🍀", fi:["🍀","🧲","🪙","☄️"]},
+  mythic:  {c:"#b97ae8", em:"⚒", fi:["🔨","💨","🪨","✨"]}
+};
+function openSetCard(id){
+  const s=BALANCE.dungeonSets.find(x=>x.id===id); if(!s) return;
+  const art=SET_ART[id]||{c:"#8a93a3",em:"⚒",fi:["▢","▢","▢","▢"]};
+  const fr=(S.frags||{})[id]||{};
+  const have=s.frags.filter((f,i)=>fr[i]).length;
+  const done=!!(S.sets||{})[id];
+  const pct=Math.round(have/s.frags.length*100);
+
+  const frags=s.frags.map((f,i)=>{
+    const on=!!fr[i];
+    return `<div class="frag${on?" on":""}" style="${on?`border-color:${art.c}`:""}">
+      ${on?'<span class="tick">✓</span>':""}
+      <div class="fi">${on?art.fi[i]:"🔒"}</div>
+      <div class="fn">${f}</div>
+    </div>`;
+  }).join("");
+
+  $("setCard").innerHTML=`
+    <div class="setHead">
+      <div class="setEmblem" style="color:${art.c};border-color:${art.c};background:${art.c}1a">${art.em}</div>
+      <div style="min-width:0">
+        <div class="sh-n" style="color:${art.c}">${s.n}</div>
+        <div class="sh-s">${done?"БИЛД АКТИВЕН ✓":"СОБРАНО "+have+" ИЗ "+s.frags.length}</div>
+      </div>
+    </div>
+    <div class="setBar"><div style="width:${pct}%;background:${art.c}"></div></div>
+    <div class="setFrags">${frags}</div>
+    <div class="setBonus">
+      <div class="bl">УНИКАЛЬНОЕ СВОЙСТВО</div>
+      <div class="bv" style="color:${done?art.c:"#4a5261"}">${s.bonus}</div>
+    </div>
+    <div class="setNote">${done
+      ? "Свойство работает постоянно, пока билд собран."
+      : "Фрагменты падают из лутбоксов. Осталось найти: "+(s.frags.length-have)+"."}</div>`;
+  $("setModal").style.display="flex";
+  Platform.logEvent("set_view",{id});
+}
 function boxCount(t){ return (S.boxes||[]).filter(x=>x===t).length; }
+/* Апгрейд лутбокса за камни коллекции: 1 бокс тира T + дубликаты камней редкости T → 1 бокс T+1.
+   Тратятся ТОЛЬКО дубликаты — по одному камню каждой редкости всегда остаётся в коллекции
+   (иначе сломался бы пассив +2% STONE за камень и сет чертога 8/8). */
+function stoneFuseCost(t){ return 4+t; }
+function dupStones(r){ let n=0; for(const k in S.col){ const c=(S.col[k]||{})[r]||0; if(c>1) n+=c-1; } return n; }
+function spendStones(r,n){
+  for(const k in S.col){ if(n<=0) break;
+    const c=(S.col[k]||{})[r]||0, can=Math.max(0,c-1), take=Math.min(can,n);
+    if(take>0){ S.col[k][r]=c-take; n-=take; } }
+  return n<=0;
+}
+/* Крафт лутбокса с нуля за дубликаты камней его редкости (тиры 1..7). */
+function craftBoxCost(r){ return 25+25*r; }
+function craftBoxFromStones(r){
+  if(r<1||r>7){ showToast("⚒","Нельзя","","Común не превращается в бокс"); return; }
+  const need=craftBoxCost(r), have=dupStones(r);
+  if(have<need){ showToast("⚒","Мало камней","",need+"× "+RAR_NAMES[r]+" (дубликаты)","есть "+have); return; }
+  spendStones(r,need);
+  S.boxes=S.boxes||[]; S.boxes.push(r);
+  showToast("⚒","Лутбокс собран!","r"+r,"📦 тир "+r+" ("+RAR_NAMES[r]+")","−"+need+"× камней",true);
+  Platform.logEvent("lootbox_craft",{r}); sfxGear(); save(); render();
+  if($("colModal")&&$("colModal").style.display==="flex") $("colBtn").onclick();
+}
+function upgradeBoxWithStones(tier){
+  if(tier>=7){ showToast("⚗","Предел","","Cosmic — выше некуда"); return; }
+  if(boxCount(tier)<1){ showToast("⚗","Нет бокса","","Нужен 1× тир "+tier); return; }
+  const need=stoneFuseCost(tier), have=dupStones(tier);
+  if(have<need){ showToast("⚗","Мало камней","",need+"× "+RAR_NAMES[tier]+" (дубликаты)","есть "+have); return; }
+  let removed=0; S.boxes=S.boxes.filter(x=>{ if(x===tier&&removed<1){removed++;return false;} return true; });
+  spendStones(tier,need);
+  S.boxes.push(Math.min(7,tier+1));
+  showToast("⚗","Бокс улучшен!","r"+(tier+1),"тир "+tier+" → "+(tier+1),"−"+need+"× "+RAR_NAMES[tier],true);
+  Platform.logEvent("lootbox_stone_upgrade",{tier}); sfxGear(); save(); render(); openLoot();
+}
 function grantFragment(){
   const sets=BALANCE.dungeonSets;
   const incomplete=sets.map((s,si)=>({si,s})).filter(o=>!(S.sets||{})[o.s.id]);
@@ -2146,7 +2341,9 @@ function openAllBoxes(){
 }
 function fuseBoxes(tier){
   const cost=BALANCE.fuseCost(tier);
-  if(boxCount(tier)<3 || (S.shards||0)<cost) return;
+  const have=boxCount(tier), sh=S.shards||0;
+  if(have<3){ showToast("⚗","Мало боксов","","Нужно 3× тир "+tier,"есть "+have); return; }
+  if(sh<cost){ showToast("⚗","Мало осколков","","Нужно "+fmt(cost)+" 💠","есть "+fmt(sh)); return; }
   let removed=0; S.boxes=S.boxes.filter(x=>{ if(x===tier&&removed<3){removed++;return false;} return true; });
   S.boxes.push(Math.min(7,tier+1)); S.shards-=cost;
   showToast("⚗","Сплав!","","3× тир "+tier+" → 1× тир "+(tier+1),"−"+cost+" 💠");
@@ -2156,21 +2353,41 @@ function openLoot(){
   const boxes=S.boxes||[];
   const byTier={}; boxes.forEach(t=>byTier[t]=(byTier[t]||0)+1);
   let boxRows=Object.keys(byTier).sort((a,b)=>a-b).map(t=>{
-    t=+t; const c=byTier[t], fc=BALANCE.fuseCost(t), canFuse=c>=3&&(S.shards||0)>=fc;
-    return `<div class="metarow"><span>📦 Тир ${t} (<b class="r${t}">${RAR_NAMES[t]}</b>) ×${c}</span>
-      <button onclick="fuseBoxes(${t})" ${canFuse?"":"disabled"}>Сплав 3→${t+1} · ${fc}💠</button></div>`;
+    t=+t; const c=byTier[t], fc=BALANCE.fuseCost(t);
+    const needBox=Math.max(0,3-c), needSh=Math.max(0,fc-(S.shards||0));
+    const canFuse=needBox===0&&needSh===0;
+    const why=canFuse?"" :
+      `<div class="sub" style="margin:2px 0 0;color:#e8a24a">не хватает: ${[
+        needBox?needBox+"× бокса":"",
+        needSh?fmt(needSh)+" 💠":""].filter(Boolean).join(" · ")}</div>`;
+    const sNeed=stoneFuseCost(t), sHave=dupStones(t), canStone=t<7&&sHave>=sNeed;
+    const stoneBtn = t<7
+      ? `<button class="buy" onclick="upgradeBoxWithStones(${t})" ${canStone?"":"disabled"} ${canStone?"":'style="opacity:.45"'}>Улучшить · ${sNeed}× <span class="r${t}">${RAR_NAMES[t]}</span></button>`
+      : "";
+    const stoneWhy = (t<7&&!canStone)
+      ? `<div class="sub" style="margin:2px 0 0;color:#8a93a3">камней (дубликаты): ${sHave}/${sNeed}</div>` : "";
+    return `<div class="metarow"><span>📦 Тир ${t} (<b class="r${t}">${RAR_NAMES[t]}</b>) ×${c}${why}${stoneWhy}</span>
+      <span style="display:flex;flex-direction:column;gap:6px;flex:none">
+        <button onclick="fuseBoxes(${t})" ${canFuse?"":"disabled"} ${canFuse?"":'style="opacity:.45"'}>Сплав 3→${t+1} · ${fc}💠</button>
+        ${stoneBtn}
+      </span></div>`;
   }).join("")||'<div class="sub">Лутбоксов нет. Надень во все 8 слотов детали одной редкости — упадёт лутбокс.</div>';
   const openBtns=boxes.length?`<div class="btnrow"><button class="buy" onclick="openOneBox()">Открыть 1</button><button class="gold" onclick="openAllBoxes()">Открыть все (${boxes.length})</button></div>`:"";
   const setRows=BALANCE.dungeonSets.map(s=>{
     const fr=(S.frags||{})[s.id]||{}; const have=s.frags.filter((f,i)=>fr[i]).length;
     const done=(S.sets||{})[s.id];
-    const chips=s.frags.map((f,i)=>`<span style="color:${fr[i]?"var(--gold)":"#4a5261"}">${fr[i]?f:"▢"}</span>`).join(" · ");
-    return `<div class="metarow"><span>${done?"⚒ ":""}<b class="${done?"r5":""}">${s.n}</b> (${have}/4)<br>
-      <span style="font-size:7px">${chips}</span><br><span style="color:var(--gold)">${s.bonus}</span></span>
-      <span>${done?"✓":""}</span></div>`;
+    const art=SET_ART[s.id]||{c:"var(--gold)",em:"⚒"};
+    const chips=s.frags.map((f,i)=>`<span style="color:${fr[i]?art.c:"#4a5261"}">${fr[i]?f:"▢"}</span>`).join(" · ");
+    return `<div class="metarow setrow" onclick="openSetCard('${s.id}')">
+      <span class="setline">
+        <span class="sl-t"><span style="color:${art.c}">${art.em}</span> <b style="color:${done?art.c:"inherit"}">${s.n}</b> (${have}/4)</span>
+        <span class="sl-f">${chips}</span>
+        <span class="sl-b">${s.bonus}</span>
+      </span>
+      <span style="flex:none;color:${done?"var(--green)":"var(--dim)"}">${done?"✓":"›"}</span></div>`;
   }).join("");
   metaOpen("Лутбоксы и Сеты Подземелья",
-    "Осколки 💠 "+fmt(S.shards||0)+" · комплект одной редкости роняет лутбокс, сплав 3→1 за осколки.",
+    "Осколки 💠 "+fmt(S.shards||0)+" · сплав 3→1 за осколки, либо улучшай один бокс за дубликаты камней коллекции.",
     boxRows+openBtns+"<div style='height:10px'></div><div class='sub'>Билды (4 фрагмента → уникальное свойство):</div>"+setRows);
   Platform.logEvent("loot_view",{});
 }
