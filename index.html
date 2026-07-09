@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.73 «Копай глубже»</title>
+<title>ORE DEEP — v0.74 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -214,6 +214,39 @@
   .setline .sl-t{font-size:9px;line-height:1.4;}
   .setline .sl-f{font-size:7px;line-height:1.5;}
   .setline .sl-b{font-size:7px;line-height:1.5;color:var(--gold);}
+  /* --- единая строка валют --- */
+  .curbar{display:flex;justify-content:space-between;gap:2px;padding:7px 12px;background:#0d0f14;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+  .curbar .cur{font-size:9px;color:#8a93a3;white-space:nowrap;display:flex;align-items:center;gap:3px;}
+  .curbar .cur b{color:#e8e6df;font-weight:700;font-size:10px;}
+
+  /* --- вкладки --- */
+  .tabbar{display:flex;gap:6px;padding:10px 12px 0;}
+  .tabbtn{position:relative;flex:1;background:#141821;border:1px solid var(--line);color:var(--dim);
+    border-radius:8px 8px 0 0;padding:10px 4px;font-size:8px;font-weight:700;cursor:pointer;}
+  .tabbtn.on{background:var(--panel);color:var(--gold);border-bottom-color:var(--panel);}
+  .tab{display:none;}
+  .tab.on{display:block;}
+  .dot{position:absolute;top:5px;right:7px;width:7px;height:7px;border-radius:50%;
+    background:var(--red);display:none;box-shadow:0 0 6px var(--red);}
+  .dot.on{display:block;animation:pulseDot 1.2s ease-in-out infinite;}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
+  button .dot{top:3px;right:4px;}
+  .metabar button{position:relative;}
+
+  /* --- аура активных сетов на дворфе + метка престижа --- */
+  #setAura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:150px;height:150px;border-radius:50%;pointer-events:none;z-index:1;opacity:.55;
+    background:radial-gradient(circle, var(--auraC,transparent) 0%, transparent 68%);
+    animation:auraPulse 2.8s ease-in-out infinite;display:none;}
+  @keyframes auraPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}
+                        50%{transform:translate(-50%,-50%) scale(1.12);opacity:.7}}
+  #setRing{position:absolute;left:2%;bottom:96px;display:flex;gap:3px;z-index:6;pointer-events:none;}
+  #setRing span{font-size:11px;filter:drop-shadow(0 0 3px #000);animation:bob 2.6s ease-in-out infinite;}
+  #prestigeMark{position:absolute;right:10px;top:8px;z-index:6;font-size:9px;color:var(--gold);
+    background:#12151dcc;border:1px solid var(--gold);border-radius:6px;padding:3px 7px;display:none;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
   #logWrap{margin:6px 12px 2px;}
   #logWrap #log{margin:0;}
   #logPager{display:flex;align-items:center;justify-content:flex-end;gap:6px;
@@ -346,10 +379,20 @@
       <div class="gold">🪙 <span id="gold">0</span></div>
       <div class="gps">+<span id="gps">0</span>/с</div>
       <div class="gps" id="streakLine" style="color:#ff9d5c"></div>
-      <div id="gemLine">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span> · 🍺 <span id="protein">0</span> · 💠 <span id="shards">0</span></div>
+      <div id="gemLine" style="display:none">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span> · 🍺 <span id="protein">0</span> · 💠 <span id="shards">0</span></div>
     </div>
     <div class="right">ORE DEEP<br><b>копай глубже. ещё.</b></div>
     <button id="musicBtn" title="музыка">🔊</button>
+  </div>
+
+  <div class="curbar">
+    <span class="cur" title="Кристаллы">💎 <b id="curGems">0</b></span>
+    <span class="cur" title="Осколки">💠 <b id="curShards">0</b></span>
+    <span class="cur" title="Пиво">🍺 <b id="curProtein">0</b></span>
+    <span class="cur" title="Сумки">🎒 <b id="curBags">0</b></span>
+    <span class="cur" title="Ключи ивентов">🗝 <b id="curKeys">0</b></span>
+    <span class="cur" title="Ключи от ларей">🎴 <b id="curChestKeys">0</b></span>
+    <span class="cur" title="Кубки">🏆 <b id="curTrophies">0</b></span>
   </div>
 
   <div class="minebar">
@@ -358,19 +401,7 @@
     <div>ГЛУБИНА<br><b id="stageLabel">3 м</b></div>
   </div>
 
-  <div class="gearwrap">
-    <div class="gearttl">Снаряжение дворфа · что выпало, то надето (если лучше)</div>
-    <div class="gear" id="gearGrid"></div>
-  </div>
 
-  <div class="stats">
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAdElEQVR4nGNgIBMwInNExGT+I/PfvHrCyIADsCBrKgvRRJHsWsPwH5dmJnQBaQlRBmkJUYJOZUEXePriNUFNtLURFmDofsXQiAyQA6trDQOKAUwwU2GKcDkVPcTJDhy4xgMXHhKlAQbgHkZPNdgAvpREewAAKKsooD3mqhMAAAAASUVORK5CYII=" alt=""><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABHklEQVR4nO2UsUrDUBSGv0jHDg61U8BZRETpU3RKCTiE9g18IlelQ+DS+xqCKCLiC2SqHRzENQ7mlHtzb26KSbf+U7jn3u/8nP8QOKhStMul0Tgu62ebdRF8GywKMElvrPPFPCOdJcFGgxBUrTQA9w9Lpy61x7tbis8vlk9xacK9jgX6/PoBwPvbi1U/v7gC4PryDIB0ljiOj9qgIckdtdJODlYXE1p3qVUOQDYZ8nM6tdz7nEd1qDlPgcFfOKNxXGaTIfHJcTXX722wi3lmwa3wBCpAc24+6GZdRFrl2xEIHDxboVXuBNEENZubDcAIr+reuvhNqr9vhYTchuSsWx/QILgLtNVxF3nBXd16wX1AGx33oca/m3z/d6/3pl+bK8sX9TWzBwAAAABJRU5ErkJggg==" alt=""><div class="k">Mining</div><div class="v" id="sMin"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAlklEQVR4nGNgwAFExGT+45LDqVBETOb//+tx/9HFkNUzwRhvXj1hxGWLiJjM/zevnjAStPn/9bj/D0JDMWxFBozIGhgYGBheH3RieFj3Ha5AvomTQdR+H9xVKBpFxGT+vz7oxMDAwADX1Pf1MkMRty5cMwMDA4Oo/T64ZrJtJNuPGJqQNSPz0dUyIWvC5RR8UYXT9mEAANdAWxJm6EJAAAAAAElFTkSuQmCC" alt=""><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAvklEQVR4nKWQvQ2DMBSEPxAjWK4YIBIVbaSIPlKWyACpPQJTZIlMgCKldeUNqBA7vFRGz4ZQkKuss+7dDxxEER/G1tL0LQDD/bXw3fMmAMF55mlc+EqLuvMFgGC9zNNYGFtL5OghOCSKK20/fN6rSFscQAkwT2MRnE8+jK0lOaDiJx3znhp5v0SoRdpdc1pc/nLKHZq+TeIn4yyr4ldcPlIVrweH0K/domCr5wrG1vK4niRfVqPcvXAEe25/4Qv6iln+XowdZAAAAABJRU5ErkJggg==" alt=""><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAjElEQVR4nGNgIBMwoguIiMn8Rxd78+oJhjoWdE1OHiFwvqqaJsPMSc1wOWQDGLFpUlXTZGBgYGC4fes6AwMDA8O+HWswbGXEpgmmARmga2aCMZ48vINiCyHAhMyBaUYH2MSZGBggoXbr+gW4ImSFuAxD8bCImMx/NU0DDEW3rl/AHjjomtHFsMXjSAAAbHZC43qoeTUAAAAASUVORK5CYII=" alt=""><div class="k">Stone</div><div class="v" id="sStone"></div></div>
-  </div>
 
   <div class="scene t0" id="scene">
     <svg id="decor" viewBox="0 0 430 240" preserveAspectRatio="none">
@@ -451,6 +482,9 @@
         <button id="reinfBtn" class="reinf">Укрепить</button>
       </div>
     </div>
+    <div id="setAura"></div>
+    <div id="setRing"></div>
+    <div id="prestigeMark"></div>
     <div class="bubble" id="bubble"></div>
     <div class="miner" id="miner">
       <img class="ml" id="mlPack" alt="">
@@ -519,8 +553,33 @@
     </div>
   </div>
 
-  <div class="upg" id="upgrades"></div>
+  <div class="tabbar">
+    <button class="tabbtn on" id="tabMineBtn">⛏ ЗАБОЙ<i class="dot" id="dotMine"></i></button>
+    <button class="tabbtn" id="tabHeroBtn">🧔 ГЕРОЙ<i class="dot" id="dotHero"></i></button>
+    <button class="tabbtn" id="tabMetaBtn">⛰ МЕТА<i class="dot" id="dotMeta"></i></button>
+  </div>
 
+  <div class="tab on" id="tabMine">
+  <div class="upg" id="upgrades"></div>
+  </div>
+
+  <div class="tab" id="tabHero">
+  <div class="gearwrap">
+    <div class="gearttl">Снаряжение дворфа · что выпало, то надето (если лучше)</div>
+    <div class="gear" id="gearGrid"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAdElEQVR4nGNgIBMwInNExGT+I/PfvHrCyIADsCBrKgvRRJHsWsPwH5dmJnQBaQlRBmkJUYJOZUEXePriNUFNtLURFmDofsXQiAyQA6trDQOKAUwwU2GKcDkVPcTJDhy4xgMXHhKlAQbgHkZPNdgAvpREewAAKKsooD3mqhMAAAAASUVORK5CYII=" alt=""><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABHklEQVR4nO2UsUrDUBSGv0jHDg61U8BZRETpU3RKCTiE9g18IlelQ+DS+xqCKCLiC2SqHRzENQ7mlHtzb26KSbf+U7jn3u/8nP8QOKhStMul0Tgu62ebdRF8GywKMElvrPPFPCOdJcFGgxBUrTQA9w9Lpy61x7tbis8vlk9xacK9jgX6/PoBwPvbi1U/v7gC4PryDIB0ljiOj9qgIckdtdJODlYXE1p3qVUOQDYZ8nM6tdz7nEd1qDlPgcFfOKNxXGaTIfHJcTXX722wi3lmwa3wBCpAc24+6GZdRFrl2xEIHDxboVXuBNEENZubDcAIr+reuvhNqr9vhYTchuSsWx/QILgLtNVxF3nBXd16wX1AGx33oca/m3z/d6/3pl+bK8sX9TWzBwAAAABJRU5ErkJggg==" alt=""><div class="k">Mining</div><div class="v" id="sMin"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAlklEQVR4nGNgwAFExGT+45LDqVBETOb//+tx/9HFkNUzwRhvXj1hxGWLiJjM/zevnjAStPn/9bj/D0JDMWxFBozIGhgYGBheH3RieFj3Ha5AvomTQdR+H9xVKBpFxGT+vz7oxMDAwADX1Pf1MkMRty5cMwMDA4Oo/T64ZrJtJNuPGJqQNSPz0dUyIWvC5RR8UYXT9mEAANdAWxJm6EJAAAAAAElFTkSuQmCC" alt=""><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAvklEQVR4nKWQvQ2DMBSEPxAjWK4YIBIVbaSIPlKWyACpPQJTZIlMgCKldeUNqBA7vFRGz4ZQkKuss+7dDxxEER/G1tL0LQDD/bXw3fMmAMF55mlc+EqLuvMFgGC9zNNYGFtL5OghOCSKK20/fN6rSFscQAkwT2MRnE8+jK0lOaDiJx3znhp5v0SoRdpdc1pc/nLKHZq+TeIn4yyr4ldcPlIVrweH0K/domCr5wrG1vK4niRfVqPcvXAEe25/4Qv6iln+XowdZAAAAABJRU5ErkJggg==" alt=""><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
+    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAjElEQVR4nGNgIBMwoguIiMn8Rxd78+oJhjoWdE1OHiFwvqqaJsPMSc1wOWQDGLFpUlXTZGBgYGC4fes6AwMDA8O+HWswbGXEpgmmARmga2aCMZ48vINiCyHAhMyBaUYH2MSZGBggoXbr+gW4ImSFuAxD8bCImMx/NU0DDEW3rl/AHjjomtHFsMXjSAAAbHZC43qoeTUAAAAASUVORK5CYII=" alt=""><div class="k">Stone</div><div class="v" id="sStone"></div></div>
+  </div>
+  </div>
+
+  <div class="tab" id="tabMeta">
   <div class="row">
     <div class="card">
       <div class="t">Сундук находок</div>
@@ -557,22 +616,29 @@
     </div>
   </div>
 
-
   <div class="metabar">
-    <button id="navSkills">✦ НАВЫКИ</button>
-    <button id="navPets">🐕 ПИТОМЦЫ</button>
+    <button id="navSkills">✦ НАВЫКИ<i class="dot" id="dotSkills"></i></button>
+    <button id="navPets">🐕 ПИТОМЦЫ<i class="dot" id="dotPets"></i></button>
     <button id="navWheel">◎ КОЛЕСО</button>
-    <button id="navWork">💪 ТРЕНИР.</button>
-    <button id="navDaily">✓ ДЕЙЛИКИ</button>
+    <button id="navWork">💪 ТРЕНИР.<i class="dot" id="dotWork"></i></button>
+    <button id="navDaily">✓ ДЕЙЛИКИ<i class="dot" id="dotDaily"></i></button>
     <button id="navShop">🛒 МАГАЗИН</button>
     <button id="navPvp">⚔ PvP</button>
     <button id="navEvents">★ ИВЕНТЫ</button>
-    <button id="navLoot">📦 СЕТЫ</button>
+    <button id="navLoot">📦 СЕТЫ<i class="dot" id="dotLoot"></i></button>
   </div>
+
   <div class="toolbar">
     <button id="prestigeBtn" class="gold">⛰️ Глубинный Зов</button>
     <button id="resetBtn" class="red">↺ Всё сначала (клянусь бородой)</button>
   </div>
+  </div>
+
+
+
+
+
+
 
   <div class="modal" id="metaModal">
     <div class="box">
@@ -1631,6 +1697,12 @@ function render(){
   $("gps").textContent=fmt(idlePerSec());
   $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"";
   $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0); $("protein").textContent=fmt(Math.floor(S.protein||0)); $("shards").textContent=fmt(S.shards||0);
+  { const set=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
+    set("curGems",fmt(S.gems||0)); set("curShards",fmt(S.shards||0));
+    set("curProtein",fmt(Math.floor(S.protein||0))); set("curBags",fmt(S.bags||0));
+    set("curKeys",String(S.keys||0)); set("curChestKeys",String(S.chestKeys||0));
+    set("curTrophies",fmt(S.trophies||0)); }
+  renderBadges(); renderSetFx();
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
   $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
   $("minerRank").textContent=beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):"");
@@ -1775,6 +1847,7 @@ function toastMine(){
 $("shareBtn").onclick=()=>{ try{ shareCard(); }catch(e){} };
 if($("reinfBtn")) $("reinfBtn").onclick=()=>reinforceMine();
 if($("prestigeBtn")) $("prestigeBtn").onclick=openPrestige;
+["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
 if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
 if($("geoName")) $("geoName").onclick=openGeoGuild;
 if($("geoDesc")) $("geoDesc").onclick=openGeoGuild;
@@ -2687,6 +2760,60 @@ function fuseBoxes(tier){
   showToast("⚗","Сплав!","","3× тир "+tier+" → 1× тир "+(tier+1),"−"+cost+" 💠");
   Platform.logEvent("lootbox_fuse",{tier}); save(); render(); openLoot();
 }
+/* ---------- Вкладки, бейджи «есть что забрать», аура сетов ---------- */
+var TABS=["Mine","Hero","Meta"];
+function switchTab(name){
+  if(!TABS.includes(name)) name="Mine";
+  for(const t of TABS){
+    const panel=$("tab"+t), btn=$("tab"+t+"Btn");
+    if(panel&&panel.classList) panel.classList.toggle("on", t===name);
+    if(btn&&btn.classList) btn.classList.toggle("on", t===name);
+  }
+  if(S){ S.tab=name; save(); }
+  Platform.logEvent("tab",{t:name});
+}
+/* Что сейчас требует внимания игрока — по одному признаку на вкладку. */
+function badges(){
+  const skillReady = SKILL_DEFS.some(d=>canUpSkill(d.id)) || (S.chestKeys||0)>0;
+  const petReady   = Object.keys(S.petBox||{}).some(k=>{ const [t,r]=k.split("_").map(Number); return canMergePet(t,r); });
+  const geoReady   = !!S.geo && (geoMaterials()>0 || canAscendGeo());
+  const lootReady  = (S.boxes||[]).length>0;
+  const workReady  = !!S.wkActive && Date.now()>=S.wkActive.end;
+  const dailyReady = (function(){ try{ dailyReset();
+      return BALANCE.dailyTrack.some(([need],i)=>(S.daily.tok||0)>=need && !(S.daily.claimed||[]).includes(i)); }catch(e){ return false; } })();
+  const bagsReady  = (S.bags||0)>0 && !S.autoRoll;
+  const upgReady   = UPGRADES.some(u=>!statCapped(u.id) && S.gold>=upCost(u));
+  return { skillReady, petReady, geoReady, lootReady, workReady, dailyReady, bagsReady, upgReady,
+    prestigeReady: canPrestige(),
+    mine: upgReady,
+    hero: bagsReady,
+    meta: skillReady||petReady||geoReady||lootReady||workReady||dailyReady||canPrestige() };
+}
+function renderBadges(){
+  const b=badges();
+  const setDot=(id,on)=>{ const el=$(id); if(el&&el.classList) el.classList.toggle("on",!!on); };
+  setDot("dotMine",b.mine); setDot("dotHero",b.hero); setDot("dotMeta",b.meta);
+  setDot("dotSkills",b.skillReady); setDot("dotPets",b.petReady||b.geoReady);
+  setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotLoot",b.lootReady);
+}
+/* Аура и эмблемы активных Сетов Подземелья прямо на дворфе. */
+function renderSetFx(){
+  const active=BALANCE.dungeonSets.filter(s=>(S.sets||{})[s.id]);
+  const aura=$("setAura"), ring=$("setRing");
+  if(aura&&aura.style){
+    if(active.length){ aura.style.display="block";
+      aura.style.setProperty("--auraC",(SET_ART[active[0].id]||{}).c||"#e8b93c"); }
+    else aura.style.display="none";
+  }
+  if(ring) ring.innerHTML=active.map(s=>{
+    const a=SET_ART[s.id]||{c:"var(--gold)",em:"⚒"};
+    return `<span style="color:${a.c}" title="${s.n}">${a.em}</span>`;
+  }).join("");
+  const pm=$("prestigeMark");
+  if(pm){ const lv=S.prestigeLv||0;
+    if(lv>0){ pm.style.display="block"; pm.textContent="⛰ ПРЕСТИЖ "+lv+" · ×"+fmt(prestigeMult()); }
+    else pm.style.display="none"; }
+}
 function openPrestige(){
   const gain=prestigeGain(), lv=S.prestigeLv||0, ok=canPrestige();
   const now=prestigeMult(), next=Math.pow(BALANCE.prestige.powPerLevel, lv+gain);
@@ -2759,7 +2886,7 @@ function openLoot(){
 $("navLoot").onclick=openLoot;
 
 /* ---------- старт ---------- */
-load(); buildUpgrades(); renderGear(); newRock(); render(); renderCart(); checkOffline(); checkStreak();
+load(); switchTab((S&&S.tab)||"Mine"); buildUpgrades(); renderGear(); newRock(); render(); renderCart(); checkOffline(); checkStreak();
 $("musicBtn").textContent=musicOn?"🔊":"🔇";
 $("musicBtn").onclick=toggleMusic;
 const SPEEDS=[1,2,3,10,100];

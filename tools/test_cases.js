@@ -569,5 +569,40 @@ T("тренировка выдаёт ключ от ларя", S.chestKeys===1);
   T("дейлик выдаёт оба вида ключей", S.keys===1 && S.chestKeys===1); }
 T("миграция даёт стартовый ключ ларя", (function(){ const d={}; ensureCards(d); return d.chestKeys===1; })());
 
+console.log("\n[31] Интерфейс: вкладки, бейджи, аура сетов");
+localStorage.removeItem("oredeep_v3"); load();
+switchTab("Hero");
+T("вкладка переключается и подсвечивает кнопку",
+  __ids.tabHero.classList.contains("on") && !__ids.tabMine.classList.contains("on") && __ids.tabHeroBtn.classList.contains("on"));
+switchTab("Meta"); T("вкладка запоминается в сейве", S.tab==="Meta");
+switchTab("МУСОР"); T("неизвестная вкладка падает в Забой", S.tab==="Mine");
+S.gold=0; S.chestKeys=0; S.petBox={}; S.geo=null; S.boxes=[]; S.wkActive=null; S.bags=0; S.autoRoll=false;
+S.skills={}; S.skillCards={}; S.protein=0; S.prestigeLv=0; S.stageIdx=1;
+S.daily={day:todayStr(),prog:{},tok:0,claimed:[]};
+S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
+T("нечего делать — бейджи погашены", (function(){ const b=badges(); return !b.mine && !b.hero && !b.meta; })());
+S.gold=1e9; T("хватает золота на апгрейд — бейдж Забоя", badges().mine===true);
+S.bags=3; T("накопились сумки — бейдж Героя", badges().hero===true);
+S.autoRoll=true; T("Auto Roll включён — бейдж Героя гаснет", badges().hero===false);
+S.autoRoll=false;
+S.chestKeys=1; T("ключ от ларя — бейджи Меты и Навыков", badges().meta && badges().skillReady);
+S.chestKeys=0;
+S.daily={day:todayStr(),prog:{},tok:999,claimed:[]};
+T("жетоны дейликов зажигают бейдж (dailyTrack — пары [порог,награда])", badges().dailyReady===true);
+S.daily={day:todayStr(),prog:{},tok:0,claimed:[]};
+S.boxes=[1]; T("лутбокс — бейдж Сетов", badges().lootReady===true); S.boxes=[];
+S.petBox={}; boxAdd(S.petBox,0,0,3); T("3 копии питомца — бейдж Питомцев", badges().petReady===true); S.petBox={};
+S.stageIdx=1200; T("готов престиж — бейдж Меты", badges().prestigeReady===true); S.stageIdx=1;
+S.sets={}; renderSetFx();
+T("без сетов аура и эмблемы скрыты", __ids.setAura.style.display==="none" && __ids.setRing.innerHTML==="");
+S.sets={berserk:true,lucky:true}; renderSetFx();
+T("активные сеты дают ауру и эмблемы на дворфе",
+  __ids.setAura.style.display==="block" && (__ids.setRing.innerHTML.match(/<span/g)||[]).length===2);
+S.sets={};
+S.prestigeLv=0; renderSetFx(); T("без престижа метка скрыта", __ids.prestigeMark.style.display==="none");
+S.prestigeLv=3; renderSetFx();
+T("метка престижа показывает уровень и множитель", /ПРЕСТИЖ 3/.test(__ids.prestigeMark.textContent));
+S.prestigeLv=0;
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

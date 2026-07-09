@@ -28,7 +28,8 @@ console.log("      " + uniq.join(", "));
 console.log("\n[B] Обработчики .onclick привязаны");
 for (const id of ["prestigeBtn", "openBagBtn", "autoRollBtn", "autoTierBtn",
                   "geoName", "geoDesc", "reinfBtn", "bagBtn", "geoBtn",
-                  "navSkills", "navPets", "navLoot", "colBtn", "speedBtn"]) {
+                  "navSkills", "navPets", "navLoot", "colBtn", "speedBtn",
+                  "tabMineBtn", "tabHeroBtn", "tabMetaBtn"]) {
   const el = document.getElementById(id);
   T("#" + id + " имеет onclick", !!(el && typeof el.onclick === "function"));
 }
@@ -47,6 +48,16 @@ function modalButtons() {
 }
 /* Клик по модальной кнопке = выполнить её onclick-выражение */
 const click = expr => { try { eval(expr); return true; } catch (e) { return "ERR: " + e.message; } };
+
+/* ---------- 2b. Вкладки переключаются кликом ---------- */
+console.log("\n[B2] Вкладки");
+document.getElementById("tabHeroBtn").onclick();
+T("клик по «Герой» открывает панель героя",
+  document.getElementById("tabHero").classList.contains("on") && !document.getElementById("tabMine").classList.contains("on"));
+document.getElementById("tabMetaBtn").onclick();
+T("клик по «Мета» открывает мету", document.getElementById("tabMeta").classList.contains("on"));
+document.getElementById("tabMineBtn").onclick();
+T("клик по «Забой» возвращает забой", document.getElementById("tabMine").classList.contains("on"));
 
 /* ---------- 3. Престиж ---------- */
 console.log("\n[C] Престиж: кнопка и защита от преждевременного клика");
