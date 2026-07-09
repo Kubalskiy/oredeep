@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.69 «Копай глубже»</title>
+<title>ORE DEEP — v0.72 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -526,6 +526,12 @@
       <div class="t">Сундук находок</div>
       <div class="n" id="bagTier">Дырявый мешок</div>
       <div class="d">BAG LVL <span id="bagLvl">1</span> · дроп <span id="dropCh">35</span>%<br><span id="bagNext"></span></div>
+      <div class="n" style="margin:8px 0 2px">🎒 <span id="bagCount">0</span></div>
+      <div class="btnrow" style="margin-top:6px">
+        <button class="buy" id="openBagBtn">Открыть</button>
+        <button id="autoRollBtn">Auto</button>
+      </div>
+      <button id="autoTierBtn" style="margin-top:6px;font-size:7px">порог: —</button>
       <button class="gold" id="bagBtn" style="margin-top:6px"></button>
     </div>
     <div class="card">
@@ -564,6 +570,7 @@
     <button id="navLoot">📦 СЕТЫ</button>
   </div>
   <div class="toolbar">
+    <button id="prestigeBtn" class="gold">⛰️ Глубинный Зов</button>
     <button id="resetBtn" class="red">↺ Всё сначала (клянусь бородой)</button>
   </div>
 
@@ -671,6 +678,29 @@ const BALANCE = {
   noAdsPrice:"49.99",
   shardYield:[0,0,5,15,40,100,250,600],
   fuseCost:(t)=>Math.round(15*Math.pow(3,t)),
+  /* Престиж «Глубинный Зов» (док «Основные механики» §Престиж).
+     Сбрасывает забой, сохраняет мету, даёт вечный множитель силы.
+     Побочный, но важный эффект: обнуляет глубину, а значит и экспоненты,
+     которые иначе упираются в потолок double около этапа 45000. */
+  prestige:{ minStage:400, div:300, powPerLevel:2.5, echoFrac:0.05 },
+  /* Сумки (док §Экипировка и сумки): 1 сумка = 1 предмет, падают за победы.
+     Auto Roll тратит сумку раз в autoSec: ниже порога — скупщику, с порога и
+     выше — в очередь на решение игрока. */
+  bags:{ perVein:1, perBoss:3, autoSec:2, cap:9999 },
+  /* Merge (док §Питомцы, §Девушки).
+     Питомцы: 3 одинаковых → 1 СЛУЧАЙНЫЙ следующей редкости (не «тот же выше»).
+     Старейшины: целевой поглощает материалы равной/меньшей редкости и растёт
+     в уровне; восхождение доступно легендарному с ур. ascendLv за кристаллы. */
+  merge:{ petCost:3, geoLvPct:20, ascendLv:5, ascendGems:500, ascendPct:100 },
+  /* Скиллы как карточки (док §Скиллы): копии копятся, апгрейд с ур.L на L+1
+     требует L копий и пиво (протеин). Сундуки: чем реже — тем больше карт и
+     тем выше гарантированная редкость. */
+  skillChests:[
+    { id:"wood",  n:"Дощатый ларь",  cards:1, minR:0, keyCost:1, gemCost:0   },
+    { id:"iron",  n:"Окованный ларь",cards:3, minR:1, keyCost:0, gemCost:150 },
+    { id:"mith",  n:"Мифриловый ларь",cards:5, minR:2, keyCost:0, gemCost:600 }
+  ],
+  skillCardProtein:[0,20,45,80,130,200,300,440,620,850],   // пиво за апгрейд на уровень L
   dungeonSets:[
     {id:"berserk", n:"Ярость Забоя",  frags:["Клык","Оскал","Рёв","Гнев"],       bonus:"+50% ATK, +20% CRIT"},
     {id:"greed",   n:"Жадность Недр",  frags:["Слиток","Весы","Клеймо","Мешок"],   bonus:"×2 STONE (золото за жилу)"},
@@ -973,8 +1003,10 @@ const ATK_COMPOUND=1.12;   // CALIB: +12% ко ВСЕЙ атаке за уров
 function stat(id){
   const u=UPGRADES.find(x=>x.id===id);
   let v=BASE[id]+(u?u.step*S.lvls[id]:0)+gearSum(id);
+  if(id==="atk") v+=(S.echo||0);                              // эхо прежних кирок (престиж)
   if(id==="atk") v*=Math.pow(ATK_COMPOUND,S.lvls.atk||0);   // компаунд вместо плоского шага
-  if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+GEO_TYPES[S.geo.t].pct[S.geo.r]/100);
+  if(id==="atk"||id==="energy"||id==="tough") v*=prestigeMult();   // вечный множитель престижа
+  if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+geoPct(S.geo)/100);
   if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
   for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
   if(id==="luck") v+=beardWisdom().luckAdd;                              // Мудрость Бороды
@@ -993,6 +1025,42 @@ function stat(id){
   if(id==="spd") v=Math.max(BALANCE.combat.baseAPS,Math.min(STAT_CAPS.spd,v));
   if(STAT_CAPS[id] && id!=="spd") v=Math.min(STAT_CAPS[id],v);
   return v;
+}
+
+/* ---------- Престиж «Глубинный Зов» ---------- */
+/* Уровни начисляются по глубине с квадратным корнем: сотый метр стоит дешевле
+   тысячного. Множитель — вечный, эхо — «постоянно сохранённая сила от прошлой
+   экипировки» (док). Равновесие треадмилла не трогаем: escPerBlock зависит
+   только от ATK_COMPOUND, поэтому престиж даёт фору, а не ломает кривую. */
+function prestigeLevelsFor(stageIdx){ return Math.floor(Math.sqrt(stageIdx/BALANCE.prestige.div)); }
+function prestigeGain(){ return Math.max(0, prestigeLevelsFor(S.stageIdx)-(S.prestigeLv||0)); }
+function canPrestige(){ return S.stageIdx>=BALANCE.prestige.minStage && prestigeGain()>0; }
+function prestigeMult(){ return Math.pow(BALANCE.prestige.powPerLevel, S.prestigeLv||0); }
+function echoFromGear(){
+  let p=0; for(const k in S.gear){ if(S.gear[k]) p+=itemPower(S.gear[k]); }
+  return p*BALANCE.prestige.echoFrac;
+}
+function doPrestige(){
+  if(!canPrestige()){
+    showToast("⛰️","Рано","","Глубинный Зов не слышен","нужен этап "+BALANCE.prestige.minStage+"+ и хотя бы 1 уровень");
+    return false;
+  }
+  const gain=prestigeGain(), addEcho=echoFromGear();
+  S.prestigeLv=(S.prestigeLv||0)+gain;
+  S.prestigeRuns=(S.prestigeRuns||0)+1;
+  S.echo=(S.echo||0)+addEcho;
+  // сбрасывается: забой и всё, что куплено за софт-валюту
+  S.gold=0; S.gear={}; S.stageIdx=1; S.stage=1; S.mine=0; S.bag=1;
+  S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
+  S.loadoutTier=0; S.cartFill=0; S.durab=MINE_DURAB.max; durabTimer=0; lastDurabWarn=MINE_DURAB.max;
+  // сохраняется: навыки, старейшины, питомцы, коллекция, сеты, борода, валюты меты
+  dead=false; if($("overlay")) $("overlay").style.display="none";
+  Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
+  showToast("⛰️","ГЛУБИННЫЙ ЗОВ!","","Престиж "+S.prestigeLv,"+"+gain+" ур. · сила ×"+fmt(prestigeMult()),true);
+  sayQuip("Гора зовёт заново. Борода помнит всё.",5);
+  try{ jingleSet(); }catch(e){}
+  newRock(); save(); render();
+  return true;
 }
 
 /* ---------- экономика: привязана к кривой породы ---------- */
@@ -1066,7 +1134,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1259,6 +1327,7 @@ function breakVein(){
   sfxBreak();
   addCartOre();
   S.gold+=veinReward()*(rock.isBoss?1.5:1);              // ролл 1 — всегда
+  grantBags(rock.isBoss?BALANCE.bags.perBoss:BALANCE.bags.perVein);   // сумка за победу (док)
   // выскакивает торчащий кусок: достаём полностью
   const pk=$("peek");
   if(rock.buried && pk.dataset.on==="1"){ pk.classList.add("pop"); setTimeout(()=>pk.classList.remove("pop"),560); }
@@ -1316,6 +1385,42 @@ function openUpgradesModal(){
    множителем, поэтому сравнение корректно по одному числу */
 function itemPower(it){ return RAR_POW[it.r]*(1+it.i/60)*it.m; }
 function dropGear(){ dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id)); }
+/* ---------- Сумки: 1 сумка = 1 предмет (док §Экипировка и сумки) ---------- */
+let autoRollAcc=0;
+function grantBags(n){ S.bags=Math.min(BALANCE.bags.cap,(S.bags||0)+n); }
+/* Открыть сумку вручную: обычный поток дропа (авто-надеть/авто-продать). */
+function openBag(){
+  if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
+  S.bags--;
+  dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id));
+  Platform.logEvent("bag_open",{}); save(); render();
+  return true;
+}
+/* Auto Roll: ниже порога — сразу скупщику, с порога и выше — обычный поток. */
+function autoOpenBag(){
+  if((S.bags||0)<1) return false;
+  S.bags--;
+  const it=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
+  if(it.r < (S.autoRollTier||0)){
+    const p=sellPrice(it); S.gold+=p;
+    showToast("🎒",RAR_NAMES[it.r],"r"+it.r,"авто-продажа","+"+fmt(p)+" 🪙");
+  } else {
+    dropGearItem(it);
+  }
+  return true;
+}
+function toggleAutoRoll(){
+  S.autoRoll=!S.autoRoll; autoRollAcc=0;
+  Platform.logEvent("auto_roll",{on:S.autoRoll,tier:S.autoRollTier});
+  showToast("🎒",S.autoRoll?"Auto Roll включён":"Auto Roll выключен","",
+    S.autoRoll?("порог: "+RAR_NAMES[S.autoRollTier]):"Дворф разбирает сумки сам");
+  save(); render();
+}
+function cycleAutoTier(){
+  S.autoRollTier=((S.autoRollTier||0)+1)%8;
+  showToast("🎒","Порог Auto Roll","r"+S.autoRollTier,RAR_NAMES[S.autoRollTier]+" и выше","ниже — скупщику");
+  save(); render();
+}
 function dropGearItem(it){
   const slot=SLOTS.find(s=>s.id===it.s);
   const old=S.gear[slot.id];
@@ -1352,12 +1457,12 @@ $("geoBtn").onclick=()=>{
   const t=Math.floor(Math.random()*GEO_TYPES.length);
   const name=GEO_TYPES[t].names[Math.floor(Math.random()*GEO_TYPES[t].names.length)];
   if(!S.geo || (r>S.geo.r) || (r===S.geo.r && GEO_TYPES[t].pct[r]>GEO_TYPES[S.geo.t].pct[S.geo.r])){
-    S.geo={t,r,n:name};
+    if(S.geo) boxAdd(S.geoBox,S.geo.t,S.geo.r,1);   // прежний уходит в артель материалом
+    S.geo={t,r,n:name,lv:1,asc:0};
     showToast("👷",GEO_RAR[r],"r"+r,name,"нанят! +"+GEO_TYPES[t].pct[r]+"% "+GEO_TYPES[t].stat.toUpperCase());
   } else {
-    const refund=Math.round(c*0.4);
-    S.gold+=refund;
-    showToast("👷",GEO_RAR[r],"r"+r,name,"слабее — отправлен варить эль +"+fmt(refund)+" 🪙");
+    boxAdd(S.geoBox,t,r,1);                          // дубликат — материал для слияния
+    showToast("👷",GEO_RAR[r],"r"+r,name,"в артель · материал для слияния");
   }
   save();
 };
@@ -1398,6 +1503,13 @@ function loop(now){
       showToast("🪵","Крепь ослабла","","Пора укрепить своды"); lastDurabWarn=S.durab; }
     else if(S.durab>lastDurabWarn) lastDurabWarn=S.durab;
     // редкий шанс обвала ниже порога безопасности
+    if(S.autoRoll && (S.bags||0)>0){
+      autoRollAcc+=dt;
+      while(autoRollAcc>=BALANCE.bags.autoSec && (S.bags||0)>0){
+        autoRollAcc-=BALANCE.bags.autoSec; autoOpenBag();
+      }
+      if((S.bags||0)===0) autoRollAcc=0;
+    }
     durabTimer+=dt;
     while(durabTimer>=MINE_DURAB.checkSec){
       durabTimer-=MINE_DURAB.checkSec;
@@ -1521,7 +1633,10 @@ function render(){
   $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0); $("protein").textContent=fmt(Math.floor(S.protein||0)); $("shards").textContent=fmt(S.shards||0);
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
   $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
-  $("minerRank").textContent=beardWisdom().title;
+  $("minerRank").textContent=beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):"");
+  { const pb=$("prestigeBtn"); if(pb&&"disabled"in pb){ const ok=canPrestige();
+      pb.textContent=ok?("⛰️ Глубинный Зов +"+prestigeGain()):"⛰️ Глубинный Зов";
+      pb.style.opacity=ok?"1":"0.55"; } }
   $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
   $("cracks").style.opacity=(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2);
   $("hpTxt").textContent=fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
@@ -1561,10 +1676,19 @@ function render(){
   const bb=$("bagBtn");
   if(S.bag<50){ bb.textContent="LVL "+(S.bag+1)+": "+fmt(bagCost())+" 🪙"; bb.disabled=S.gold<bagCost(); }
   else { bb.textContent="MAX"; bb.disabled=true; }
+  if($("bagCount")) $("bagCount").textContent=fmt(S.bags||0);
+  { const ob=$("openBagBtn"); if(ob&&"disabled"in ob) ob.disabled=(S.bags||0)<1; }
+  { const ar=$("autoRollBtn");
+    if(ar){ ar.textContent=S.autoRoll?"Auto ✓":"Auto";
+      if(ar.classList) ar.classList.toggle("gold",!!S.autoRoll); } }
+  { const at=$("autoTierBtn");
+    if(at) at.innerHTML='порог: <span class="r'+(S.autoRollTier||0)+'">'+RAR_NAMES[S.autoRollTier||0]+'</span>+'; }
   if(S.geo){
     const g=GEO_TYPES[S.geo.t];
-    $("geoName").innerHTML=`<span class="r${S.geo.r}">${S.geo.n||g.names[0]}</span>`;
-    $("geoDesc").innerHTML=GEO_RAR[S.geo.r]+" · +"+g.pct[S.geo.r]+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat]);
+    const asc=(S.geo.asc||0)?(" ✦"+S.geo.asc):"";
+    $("geoName").innerHTML=`<span class="r${S.geo.r}">${S.geo.n||g.names[0]}${asc}</span>`;
+    $("geoDesc").innerHTML=GEO_RAR[S.geo.r]+" ур."+(S.geo.lv||1)+" · +"+Math.round(geoPct(S.geo))+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat])
+      +'<br><span style="color:var(--dim);font-size:7px">артель: '+geoMaterials()+' на слияние</span>';
   }
   $("geoBtn").textContent="Нанять: "+fmt(geoCost())+" 🪙";
   $("geoBtn").disabled=S.gold<geoCost();
@@ -1650,6 +1774,12 @@ function toastMine(){
 }
 $("shareBtn").onclick=()=>{ try{ shareCard(); }catch(e){} };
 if($("reinfBtn")) $("reinfBtn").onclick=()=>reinforceMine();
+if($("prestigeBtn")) $("prestigeBtn").onclick=openPrestige;
+if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
+if($("geoName")) $("geoName").onclick=openGeoGuild;
+if($("geoDesc")) $("geoDesc").onclick=openGeoGuild;
+if($("autoRollBtn")) $("autoRollBtn").onclick=toggleAutoRoll;
+if($("autoTierBtn")) $("autoTierBtn").onclick=cycleAutoTier;
 if($("logNext")&&$("logNext").addEventListener){
   $("logNext").onclick=()=>{ logPage--; renderLog(); };
   $("logPrev").onclick=()=>{ logPage++; renderLog(); };
@@ -1684,7 +1814,26 @@ $("resetBtn").onclick=()=>{
 function save(){ try{ S.lastSeen=Date.now(); localStorage.setItem("oredeep_v3",JSON.stringify(S)); }catch(e){} }
 const SAVE_VER=2;
 function ensureDurab(d){ if(d && d.durab==null) d.durab=MINE_DURAB.max; return d; }
-function migrate(d){ ensureDurab(d);
+function ensureCards(d){ if(!d) return d;
+  if(!d.skillCards) d.skillCards={};
+  return d; }
+function ensureMerge(d){ if(!d) return d;
+  if(!d.petBox) d.petBox={};
+  if(!d.geoBox) d.geoBox={};
+  if(d.geo && d.geo.lv==null) d.geo.lv=1;
+  if(d.geo && d.geo.asc==null) d.geo.asc=0;
+  return d; }
+function ensureBags(d){ if(!d) return d;
+  if(d.bags==null) d.bags=0;
+  if(d.autoRoll==null) d.autoRoll=false;
+  if(d.autoRollTier==null) d.autoRollTier=4;
+  return d; }
+function ensurePrestige(d){ if(!d) return d;
+  if(d.prestigeLv==null) d.prestigeLv=0;
+  if(d.prestigeRuns==null) d.prestigeRuns=0;
+  if(d.echo==null) d.echo=0;
+  return d; }
+function migrate(d){ ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d); ensureCards(d);
   if(!d.v||d.v<2){                       // v1→v2: новые поля Фазы 1
     if(!d.ftue) d.ftue={u:1,b:1};        // старым игрокам подсказки не нужны
     if(!d.streak) d.streak={n:0,last:""};
@@ -1959,39 +2108,98 @@ function claimOffline(mult){
 function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub").innerHTML=sub;
   $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
 const SKILL_DEFS=[
-  {id:"crit_up",n:"Точный удар",stat:"crit",per:1.5},
-  {id:"atk_up",n:"Сила забоя",stat:"atk",per:8},
-  {id:"luck_up",n:"Нюх на камни",stat:"luck",per:1.2},
-  {id:"stone_up",n:"Жадность",stat:"stone",per:12},
-  {id:"energy_up",n:"Второе дыхание",stat:"energy",per:15}
+  {id:"crit_up",  n:"Точный удар",    stat:"crit",  per:1.5, r:1},
+  {id:"atk_up",   n:"Сила забоя",     stat:"atk",   per:8,   r:0},
+  {id:"luck_up",  n:"Нюх на камни",   stat:"luck",  per:1.2, r:2},
+  {id:"stone_up", n:"Жадность",       stat:"stone", per:12,  r:0},
+  {id:"energy_up",n:"Второе дыхание", stat:"energy",per:15,  r:1},
+  {id:"mining_up",n:"Чутьё пласта",   stat:"mining",per:2,   r:2},
+  {id:"tough_up", n:"Дубовая крепь",  stat:"tough", per:6,   r:3}
 ];
+const SKILL_RAR=["Common","Rare","Epic","Legendary"];
 function skillBonus(id){ const lv=(S.skills&&S.skills[id])||0; if(!lv) return 0;
   const d=SKILL_DEFS.find(s=>s.id===id); return d?d.per*lv:0; }
 function openSkills(){
-  let rows=SKILL_DEFS.map(d=>{
-    const lv=(S.skills&&S.skills[d.id])||0;
-    const c=BALANCE.skillCosts[Math.min(lv,BALANCE.skillCosts.length-1)]*10;
-    const cap=STAT_CAPS[d.stat];                       // вероятностный потолок, если есть
-    const cur=stat(d.stat);
+  const chests=BALANCE.skillChests.map(ch=>{
+    const ok = ch.keyCost ? (S.keys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
+    const price = ch.keyCost ? (ch.keyCost+" 🗝") : (ch.gemCost+" 💎");
+    return `<div class="metarow"><span>${ch.n}<br><span class="sub">${ch.cards} карт · гарантия <b class="r${ch.minR}">${SKILL_RAR[ch.minR]}</b>+</span></span>
+      <button class="${ch.keyCost?"buy":"gold"}" onclick="openSkillChest('${ch.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${price}</button></div>`;
+  }).join("");
+  const rows=SKILL_DEFS.map(d=>{
+    const lv=skillLv(d.id), cards=cardsOf(d.id), need=cardsNeeded(d.id), pro=proteinNeeded(d.id);
+    const cap=STAT_CAPS[d.stat], cur=stat(d.stat);
     const pct=(d.stat==="crit"||d.stat==="luck"||d.stat==="mining");
-    const curTxt=pct?(Math.round(cur)+"%"):Math.round(cur);
+    const curTxt=pct?(Math.round(cur)+"%"):fmt(cur);
     const maxed=cap!=null && cur>=cap-1e-9;
     const capTxt=cap!=null?` / макс ${cap}${pct?"%":""}`:"";
+    const ok=canUpSkill(d.id);
     const sub=maxed
       ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} на максимуме · ${curTxt}${capTxt}</span>`
-      : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}</span>`;
+      : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}<br>карты ${cards}/${need} · пиво ${pro} 🍺</span>`;
     const btn=maxed
       ? `<button class="buy" disabled style="opacity:.4">макс</button>`
-      : `<button class="buy" onclick="upSkill('${d.id}',${c})">прокачать · ${c}💎</button>`;
-    return `<div class="metarow"><span>${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
+      : `<button class="buy" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"открыть":"ур."+(lv+1)}</button>`;
+    return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
   }).join("");
-  metaOpen("Навыки добычи","Косты 1…75 ×10 (BALANCE §6). Навыки — пассивы к статам; шансовые статы капятся.",rows);
+  metaOpen("Навыки добычи",
+    "Карты копятся из ларей. Новая карта открывает ур.1; апгрейд с ур.L требует L карт и пива. Пиво 🍺 "+Math.floor(S.protein||0)+" · ключи 🗝 "+(S.keys||0),
+    `<div class="sub" style="margin-bottom:6px">Лари со скилл-картами:</div>${chests}
+     <div class="sub" style="margin:12px 0 6px">Навыки:</div>${rows}`);
 }
-function upSkill(id,c){ if((S.gems||0)<c) return;
-  const sd=SKILL_DEFS.find(s=>s.id===id), cap=sd&&STAT_CAPS[sd.stat];
-  if(cap!=null && stat(sd.stat)>=cap-1e-9){ showToast("🔒",sd.stat.toUpperCase()+" на максимуме","","Дальше некуда","потолок "+cap+"%"); return; }
-  S.gems-=c; S.skills=S.skills||{}; S.skills[id]=(S.skills[id]||0)+1;
-  dailyProgress("skill",1); Platform.logEvent("skill_up",{id}); sfxGear(); save(); render(); openSkills(); }
+/* ---------- Скиллы как карточки (док §Скиллы) ---------- */
+function cardsOf(id){ return (S.skillCards||{})[id]||0; }
+function skillLv(id){ return (S.skills||{})[id]||0; }
+/* Новая карта открывает скилл Lv1. Дальше апгрейд L→L+1 требует L копий. */
+function cardsNeeded(id){ const lv=skillLv(id); return lv===0?1:lv; }
+function proteinNeeded(id){
+  const lv=skillLv(id), t=BALANCE.skillCardProtein;
+  return t[Math.min(lv,t.length-1)];
+}
+function canUpSkill(id){
+  const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
+  const cap=STAT_CAPS[sd.stat];
+  if(cap!=null && stat(sd.stat)>=cap-1e-9) return false;
+  return cardsOf(id)>=cardsNeeded(id) && (S.protein||0)>=proteinNeeded(id);
+}
+function upSkill(id){
+  const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
+  const cap=STAT_CAPS[sd.stat];
+  if(cap!=null && stat(sd.stat)>=cap-1e-9){ showToast("🔒",sd.stat.toUpperCase()+" на максимуме","","Дальше некуда","потолок "+cap+"%"); return false; }
+  const need=cardsNeeded(id), pro=proteinNeeded(id);
+  if(cardsOf(id)<need){ showToast("🃏","Мало карт","",sd.n,"нужно "+need+", есть "+cardsOf(id)); return false; }
+  if((S.protein||0)<pro){ showToast("🍺","Мало пива","",sd.n,"нужно "+pro+" 🍺, есть "+Math.floor(S.protein||0)); return false; }
+  S.skillCards[id]=cardsOf(id)-need;
+  S.protein-=pro;
+  S.skills=S.skills||{}; S.skills[id]=skillLv(id)+1;
+  dailyProgress("skill",1); Platform.logEvent("skill_up",{id,lv:S.skills[id]}); sfxGear();
+  showToast("🃏","Навык прокачан","r"+sd.r,sd.n+" ур."+S.skills[id],"−"+need+" карт · −"+pro+" 🍺");
+  save(); render(); openSkills();
+  return true;
+}
+/* Сундуки: гарантируют минимальную редкость карты, остальное — случайно. */
+function grantSkillCard(minR){
+  const pool=SKILL_DEFS.filter(s=>s.r>=minR);
+  const sd=(pool.length?pool:SKILL_DEFS)[Math.floor(Math.random()*(pool.length||SKILL_DEFS.length))];
+  S.skillCards=S.skillCards||{};
+  S.skillCards[sd.id]=cardsOf(sd.id)+1;
+  return sd;
+}
+function openSkillChest(chestId){
+  const ch=BALANCE.skillChests.find(c=>c.id===chestId); if(!ch) return false;
+  if(ch.keyCost && (S.keys||0)<ch.keyCost){ showToast("🗝","Нет ключей","",ch.n,"нужен "+ch.keyCost+" 🗝"); return false; }
+  if(ch.gemCost && (S.gems||0)<ch.gemCost){ showToast("💎","Мало кристаллов","",ch.n,"нужно "+ch.gemCost+" 💎"); return false; }
+  if(ch.keyCost) S.keys-=ch.keyCost;
+  if(ch.gemCost) S.gems-=ch.gemCost;
+  const got=[];
+  for(let i=0;i<ch.cards;i++){
+    const minR = i===0?ch.minR:0;      // первая карта — гарантия редкости
+    got.push(grantSkillCard(minR).n);
+  }
+  showToast("🎴","Ларь открыт","",ch.n,got.join(" · "),true);
+  Platform.logEvent("skill_chest",{id:chestId}); sfxGear(); save(); render(); openSkills();
+  return true;
+}
 function openWheel(){
   const spin=S.wheelSpins||0;
   const cost=BALANCE.wheel.cost[Math.min(spin,BALANCE.wheel.cost.length-1)];
@@ -2100,19 +2308,145 @@ const PET_TYPES=[
 const PET_RAR=["Common","Rare","Epic","Legendary"];
 function petBonus(id){ if(!S.pet||PET_TYPES[S.pet.t].stat!==id) return 0;
   return PET_TYPES[S.pet.t].pct[S.pet.r]; }   // множитель %, применяется в stat()
+function openGeoGuild(){
+  if(!S.geo){ metaOpen("Артель старейшин","Сначала найми хоть кого-то.",'<div class="sub">Пусто.</div>'); return; }
+  const g=GEO_TYPES[S.geo.t], mats=geoMaterials();
+  const isLeg=S.geo.r===GEO_RAR.length-1;
+  const ascOk=canAscendGeo();
+  const B=BALANCE.merge;
+  const ascWhy = !isLeg ? `нужен ${GEO_RAR[GEO_RAR.length-1]}`
+    : ((S.geo.lv||1)<B.ascendLv ? `нужен ур.${B.ascendLv} (есть ${S.geo.lv||1})`
+    : ((S.gems||0)<B.ascendGems ? `нужно ${B.ascendGems} 💎 (есть ${fmt(S.gems||0)})` : ""));
+  const box=Object.keys(S.geoBox||{}).filter(k=>S.geoBox[k]>0)
+    .sort((a,b)=>Number(b.split("_")[1])-Number(a.split("_")[1]))
+    .map(k=>{ const [t,r]=k.split("_").map(Number);
+      const usable=r<=S.geo.r;
+      return `<div class="metarow"><span><b class="r${r}">${GEO_RAR[r]}</b> · ${GEO_TYPES[t].names[0]} ×${S.geoBox[k]}</span>
+        <span class="sub" style="color:${usable?"var(--green)":"var(--dim)"}">${usable?"годен":"слишком редкий"}</span></div>`;
+    }).join("")||'<div class="sub">Дубликатов нет — крути гачу.</div>';
+  metaOpen("Артель старейшин",
+    "Целевой поглощает материал равной или меньшей редкости и растёт в уровне. Восхождение — для легендарных.",
+    `<div class="metarow"><span>В деле: <b class="r${S.geo.r}">${S.geo.n}</b>${(S.geo.asc||0)?' <span style="color:var(--gold)">✦'+S.geo.asc+'</span>':''}
+       <br><span class="sub">ур.${S.geo.lv||1} · +${Math.round(geoPct(S.geo))}% ${g.stat.toUpperCase()}</span></span></div>
+     <div class="metarow"><span>Материал в артели</span>
+       <button class="buy" onclick="mergeGeo()" ${mats>0?"":"disabled"} ${mats>0?"":'style="opacity:.45"'}>Слить ${mats} → +${mats} ур.</button></div>
+     <div class="metarow"><span>Восхождение ✦${(S.geo.asc||0)+1}<br><span class="sub">+${B.ascendPct}% к бонусу, уровень в 1</span></span>
+       <button class="gold" onclick="ascendGeo()" ${ascOk?"":"disabled"} ${ascOk?"":'style="opacity:.45"'}>${B.ascendGems}💎</button></div>
+     ${ascWhy?`<div class="sub" style="color:#e8a24a;margin-bottom:8px">Восхождение: ${ascWhy}</div>`:""}
+     <div class="sub" style="margin-top:10px">Коллекция дубликатов:</div>${box}`);
+  Platform.logEvent("geo_guild",{});
+}
 function openPets(){
   const cost=Math.round(veinReward()*10);
-  let cur=S.pet?`<div class="metarow"><span>Питомец: <b class="r${S.pet.r}">${PET_TYPES[S.pet.t].n}</b> · +${PET_TYPES[S.pet.t].pct[S.pet.r]}% ${PET_TYPES[S.pet.t].stat.toUpperCase()}</span></div>`:"";
-  metaOpen("Питомцы","Гача с жалостью Горы (§8), роллов: "+(S.petRolls||0)+". Пассив к добыче.",
-    cur+`<div style="text-align:center;padding:10px 0"><button class="gold" onclick="rollPet(${cost})" ${(S.gold||0)<cost?"disabled":""}>Яйцо за ${fmt(cost)} 🪙</button></div>`);
+  const cur=S.pet?`<div class="metarow"><span>В деле: <b class="r${S.pet.r}">${PET_TYPES[S.pet.t].n}</b> (${PET_RAR[S.pet.r]}) · +${PET_TYPES[S.pet.t].pct[S.pet.r]}% ${PET_TYPES[S.pet.t].stat.toUpperCase()}</span></div>`:"";
+  const keys=Object.keys(S.petBox||{}).filter(k=>S.petBox[k]>0)
+    .sort((a,b)=>Number(b.split("_")[1])-Number(a.split("_")[1]));
+  const rows=keys.map(k=>{
+    const [t,r]=k.split("_").map(Number), c=S.petBox[k];
+    const maxed=r>=PET_RAR.length-1;
+    const ok=canMergePet(t,r);
+    const btn=maxed
+      ? `<button class="buy" disabled style="opacity:.4">предел</button>`
+      : `<button class="buy" onclick="mergePet(${t},${r})" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>Слить 3 → ${PET_RAR[r+1]}</button>`;
+    const need=maxed?"":`<div class="sub" style="margin:2px 0 0">копий ${c}/${BALANCE.merge.petCost}</div>`;
+    return `<div class="metarow"><span><b class="r${r}">${PET_RAR[r]}</b> · ${PET_TYPES[t].n} ×${c}${need}</span>${btn}</div>`;
+  }).join("")||'<div class="sub">Коллекция пуста. Крути яйца.</div>';
+  metaOpen("Питомцы","Гача с жалостью Горы (§8), роллов: "+(S.petRolls||0)+". 3 одинаковых → 1 случайный следующей редкости.",
+    cur+rows+`<div style="text-align:center;padding:10px 0"><button class="gold" onclick="rollPet(${cost})" ${(S.gold||0)<cost?"disabled":""}>Яйцо за ${fmt(cost)} 🪙</button></div>`);
 }
+/* ---------- Merge питомцев и старейшин (док §Питомцы, §Девушки) ---------- */
+const boxKey=(t,r)=>t+"_"+r;
+function boxAdd(box,t,r,n){ const k=boxKey(t,r); box[k]=(box[k]||0)+(n||1); }
+function boxCountAt(box,t,r){ return box[boxKey(t,r)]||0; }
+
+/* Питомцы: 3 одинаковых (тип+редкость) → 1 случайный питомец следующей редкости.
+   На максимальной редкости merge заблокирован. */
+function canMergePet(t,r){
+  return r < PET_RAR.length-1 && boxCountAt(S.petBox,t,r) >= BALANCE.merge.petCost;
+}
+function mergePet(t,r){
+  if(r>=PET_RAR.length-1){ showToast("🐕","Предел","",PET_RAR[r]+" — выше некуда"); return false; }
+  if(boxCountAt(S.petBox,t,r)<BALANCE.merge.petCost){
+    showToast("🐕","Мало копий","","Нужно "+BALANCE.merge.petCost+"× "+PET_TYPES[t].n,"есть "+boxCountAt(S.petBox,t,r));
+    return false;
+  }
+  S.petBox[boxKey(t,r)]-=BALANCE.merge.petCost;
+  if(S.petBox[boxKey(t,r)]<=0) delete S.petBox[boxKey(t,r)];
+  const nt=Math.floor(Math.random()*PET_TYPES.length), nr=r+1;   // СЛУЧАЙНЫЙ тип, не тот же
+  boxAdd(S.petBox,nt,nr,1);
+  equipBestPet();
+  showToast("🐕","Слияние!","r"+nr,PET_TYPES[nt].n+" ("+PET_RAR[nr]+")","3× "+PET_TYPES[t].n+" ушли в Гору",true);
+  Platform.logEvent("pet_merge",{from:r,to:nr}); sfxGear(); save(); render();
+  return true;
+}
+/* Экипирован всегда сильнейший питомец из коллекции. */
+function equipBestPet(){
+  let best=null;
+  for(const k in S.petBox){ if(S.petBox[k]<=0) continue;
+    const [t,r]=k.split("_").map(Number);
+    if(!best || r>best.r || (r===best.r && PET_TYPES[t].pct[r]>PET_TYPES[best.t].pct[best.r])) best={t,r};
+  }
+  if(best) S.pet=best;
+  return best;
+}
+
+/* Старейшины: целевой поглощает материалы равной или меньшей редкости → +уровень.
+   Процент растёт от уровня и восхождения. */
+function geoPct(g){
+  if(!g) return 0;
+  const base=GEO_TYPES[g.t].pct[g.r];
+  const lv=(g.lv||1)-1, asc=g.asc||0;
+  return base*(1+lv*BALANCE.merge.geoLvPct/100)*(1+asc*BALANCE.merge.ascendPct/100);
+}
+function geoMaterials(){   // сколько дубликатов можно скормить (редкость ≤ текущей)
+  if(!S.geo) return 0;
+  let n=0;
+  for(const k in S.geoBox){ const r=Number(k.split("_")[1]); if(r<=S.geo.r) n+=S.geoBox[k]; }
+  return n;
+}
+function mergeGeo(){
+  if(!S.geo){ showToast("👷","Некого качать","","Сначала найми старейшину"); return false; }
+  const have=geoMaterials();
+  if(have<1){ showToast("👷","Нет материала","","Нужны дубликаты редкости ≤ "+GEO_RAR[S.geo.r]); return false; }
+  let eaten=0;
+  for(const k in S.geoBox){
+    const r=Number(k.split("_")[1]);
+    if(r>S.geo.r) continue;
+    eaten+=S.geoBox[k]; delete S.geoBox[k];
+  }
+  S.geo.lv=(S.geo.lv||1)+eaten;
+  showToast("👷","Слияние!","r"+S.geo.r,S.geo.n+" ур."+S.geo.lv,"поглощено "+eaten+" · +"+geoPct(S.geo).toFixed(0)+"% "+GEO_TYPES[S.geo.t].stat.toUpperCase(),true);
+  Platform.logEvent("geo_merge",{lv:S.geo.lv,eaten}); sfxGear(); save(); render();
+  return true;
+}
+function canAscendGeo(){
+  return !!S.geo && S.geo.r===GEO_RAR.length-1
+    && (S.geo.lv||1)>=BALANCE.merge.ascendLv
+    && (S.gems||0)>=BALANCE.merge.ascendGems;
+}
+function ascendGeo(){
+  if(!S.geo || S.geo.r!==GEO_RAR.length-1){ showToast("👷","Нужен легендарный","","Восхождение только с "+GEO_RAR[GEO_RAR.length-1]); return false; }
+  if((S.geo.lv||1)<BALANCE.merge.ascendLv){ showToast("👷","Мало уровня","","Нужен ур."+BALANCE.merge.ascendLv,"есть "+(S.geo.lv||1)); return false; }
+  if((S.gems||0)<BALANCE.merge.ascendGems){ showToast("👷","Мало кристаллов","","Нужно "+BALANCE.merge.ascendGems+" 💎","есть "+fmt(S.gems||0)); return false; }
+  S.gems-=BALANCE.merge.ascendGems;
+  S.geo.asc=(S.geo.asc||0)+1;
+  S.geo.lv=1;
+  showToast("👷","ВОСХОЖДЕНИЕ!","r5",S.geo.n,"ступень "+S.geo.asc+" · +"+geoPct(S.geo).toFixed(0)+"%",true);
+  Platform.logEvent("geo_ascend",{asc:S.geo.asc}); try{ jingleSet(); }catch(e){}
+  save(); render();
+  return true;
+}
+
 function rollPet(cost){
   if((S.gold||0)<cost) return; S.gold-=cost;
   const r=rollRarity(geoWeights(S.petRolls||0)); S.petRolls=(S.petRolls||0)+1;
-  const t=Math.floor(Math.random()*PET_TYPES.length); const cand={t,r};
-  if(!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r])){
-    S.pet=cand; showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,"приручён! +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase());
-  } else { const rf=Math.round(cost*0.4); S.gold+=rf; showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,"слабее — отпущен +"+fmt(rf)+" 🪙"); }
+  const t=Math.floor(Math.random()*PET_TYPES.length);
+  boxAdd(S.petBox,t,r,1);                 // дубликаты копятся — материал для слияния
+  const wasBetter=!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r]);
+  equipBestPet();
+  showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,
+    wasBetter?("приручён! +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase())
+             :("в коллекцию · копий: "+boxCountAt(S.petBox,t,r)));
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
 }
 
@@ -2348,6 +2682,33 @@ function fuseBoxes(tier){
   S.boxes.push(Math.min(7,tier+1)); S.shards-=cost;
   showToast("⚗","Сплав!","","3× тир "+tier+" → 1× тир "+(tier+1),"−"+cost+" 💠");
   Platform.logEvent("lootbox_fuse",{tier}); save(); render(); openLoot();
+}
+function openPrestige(){
+  const gain=prestigeGain(), lv=S.prestigeLv||0, ok=canPrestige();
+  const now=prestigeMult(), next=Math.pow(BALANCE.prestige.powPerLevel, lv+gain);
+  const echoAdd=echoFromGear();
+  const nextLvStage=Math.pow(lv+1,2)*BALANCE.prestige.div;
+  metaOpen("⛰️ Глубинный Зов (престиж "+lv+")",
+    "Гора отпускает дворфа наверх, чтобы он спустился заново — сильнее.",
+    `<div class="metarow"><span>Текущая сила престижа</span><span><b style="color:var(--gold)">×${fmt(now)}</b></span></div>
+     <div class="metarow"><span>Эхо прежних кирок</span><span><b>+${fmt(S.echo||0)} ATK</b></span></div>
+     <div class="metarow"><span>Спусков совершено</span><span>${S.prestigeRuns||0}</span></div>
+     <div class="sub" style="margin-top:12px">${ok
+       ? `Готово к спуску: <b style="color:var(--gold)">+${gain} ур.</b> · сила станет <b style="color:var(--gold)">×${fmt(next)}</b> · эхо <b>+${fmt(echoAdd)} ATK</b>`
+       : `Следующий уровень — на этапе <b>${fmt(nextLvStage)}</b> (сейчас ${fmt(S.stageIdx)}).`}</div>
+     <div class="metarow" style="margin-top:12px"><span style="color:#e05555">Сбрасывается</span>
+       <span class="sub" style="text-align:right">глубина · золото · снаряжение · апгрейды · сумка</span></div>
+     <div class="metarow"><span style="color:var(--green)">Остаётся навсегда</span>
+       <span class="sub" style="text-align:right">навыки · старейшина · питомец · коллекция · сеты · борода · кристаллы</span></div>
+     <div style="text-align:center;padding:12px 0">
+       <button class="gold" onclick="confirmPrestige()" ${ok?"":"disabled"} style="max-width:260px">
+         ${ok?("Спуститься заново (+"+gain+" ур.)"):"Ещё не время"}</button>
+     </div>`);
+  Platform.logEvent("prestige_view",{lv});
+}
+function confirmPrestige(){
+  if(!canPrestige()) return;
+  if(doPrestige()){ const m=$("metaModal"); if(m) m.style.display="none"; }
 }
 function openLoot(){
   const boxes=S.boxes||[];

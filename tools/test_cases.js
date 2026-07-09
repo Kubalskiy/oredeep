@@ -307,10 +307,13 @@ T("провизия имеет кап 8ч×5", S.protein===40);
 console.log("\n[19] Мета-системы boxer→miner");
 localStorage.removeItem("oredeep_v3"); load();
 // навыки влияют на статы
-S.gems=100000; S.skills={}; S.gear={}; S.geo=null; S.col={};
-const atkB=stat("atk"); upSkill("atk_up",10);
-T("навык повышает стат", stat("atk")>atkB && S.skills.atk_up===1);
-{ const g0=S.gems; upSkill("atk_up",999999); T("нет кристаллов — навык не качается", S.gems===g0 || S.skills.atk_up===1); }
+S.gems=100000; S.skills={}; S.skillCards={}; S.protein=5000; S.gear={}; S.geo=null; S.col={};
+const atkB=stat("atk");
+S.skillCards.atk_up=1; upSkill("atk_up");
+T("новая карта открывает навык ур.1", stat("atk")>atkB && S.skills.atk_up===1 && S.skillCards.atk_up===0);
+{ const l0=S.skills.atk_up; upSkill("atk_up"); T("без карт навык не качается", S.skills.atk_up===l0); }
+{ S.skillCards.atk_up=1; S.protein=0; const l0=S.skills.atk_up; upSkill("atk_up");
+  T("без пива навык не качается", S.skills.atk_up===l0); }
 // Колесо: списывает по кривой
 S.gems=100000; S.wheelSpins=0; { const g0=S.gems; const _r=Math.random; Math.random=()=>0.1;
   spinWheel(BALANCE.wheel.cost[0]); Math.random=_r;
@@ -467,6 +470,91 @@ openSetCard("guardian");
   T("собранный сет: активен, бар 100%, без замков",
     h.includes("БИЛД АКТИВЕН") && h.includes("width:100%") && !h.includes("🔒")); }
 S.frags={}; S.sets={};
+
+console.log("\n[26] Престиж «Глубинный Зов» (док §Престиж)");
+localStorage.removeItem("oredeep_v3"); load();
+T("уровни по глубине через корень", prestigeLevelsFor(300)===1 && prestigeLevelsFor(1200)===2 && prestigeLevelsFor(2700)===3);
+S.stageIdx=100; T("рано: престиж недоступен", canPrestige()===false);
+S.stageIdx=1200; S.gold=1e9; S.bag=30; S.lvls.atk=50;
+SLOTS.forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:5,m:1,i:1200}; });
+S.skills={atk_up:3}; S.col={0:{1:2}}; S.gems=500; S.beardXP=999;
+const echoExp=echoFromGear();
+T("gain=2 на этапе 1200", prestigeGain()===2);
+doPrestige();
+T("престиж начислен, множитель растёт", S.prestigeLv===2 && Math.abs(prestigeMult()-Math.pow(BALANCE.prestige.powPerLevel,2))<1e-9);
+T("эхо прежних кирок сохранено", Math.abs(S.echo-echoExp)<1e-6 && S.echo>0);
+T("забой сброшен", S.stageIdx===1 && S.gold===0 && S.bag===1 && Object.keys(S.gear).length===0 && S.lvls.atk===0);
+T("мета уцелела", S.skills.atk_up===3 && S.col[0][1]===2 && S.gems===500 && S.beardXP===999);
+S.stageIdx=1200; T("повторно на той же глубине gain=0", prestigeGain()===0);
+S.stageIdx=2700; T("глубже — снова есть уровень", prestigeGain()===1);
+T("миграция старого сейва", (function(){ const d={}; ensurePrestige(d); return d.prestigeLv===0 && d.echo===0; })());
+
+console.log("\n[27] Сумки как ресурс + Auto Roll (док §Экипировка и сумки)");
+localStorage.removeItem("oredeep_v3"); load(); S.bag=50; S.gear={};
+S.bags=0; T("без сумок открыть нельзя", openBag()===false);
+S.bags=3; { const b0=S.bags; openBag(); T("открытие тратит ровно 1 сумку", S.bags===b0-1); }
+S.bags=0; S.stageIdx=10; newRock();
+{ const boss=rock.isBoss; breakVein();
+  T("жила выдаёт сумку", S.bags===(boss?BALANCE.bags.perBoss:BALANCE.bags.perVein)); }
+S.autoRollTier=7; S.gear={}; S.gold=0; S.bags=150;
+while(S.bags>0) autoOpenBag();
+T("Auto Roll ниже порога: продажа, золото пришло", S.gold>0);
+S.autoRollTier=0; S.gear={}; S.bags=30;
+while(S.bags>0) autoOpenBag();
+T("Auto Roll с порога и выше: предметы в слоты", Object.keys(S.gear).length>0);
+S.autoRollTier=7; cycleAutoTier(); T("порог циклится 7→0", S.autoRollTier===0);
+T("миграция сумок", (function(){ const d={}; ensureBags(d); return d.bags===0 && d.autoRoll===false && d.autoRollTier===4; })());
+
+console.log("\n[28] Merge питомцев и старейшин (док §Питомцы, §Девушки)");
+S.petBox={}; S.pet=null;
+boxAdd(S.petBox,0,0,2); T("2 копий мало для слияния", mergePet(0,0)===false);
+boxAdd(S.petBox,0,0,1); T("3 копии — слияние доступно", canMergePet(0,0)===true);
+mergePet(0,0);
+T("слияние съело 3 и выдало 1 следующей редкости",
+  boxCountAt(S.petBox,0,0)===0 && Object.keys(S.petBox).some(k=>Number(k.split("_")[1])===1));
+T("экипирован сильнейший питомец", S.pet && S.pet.r===1);
+S.petBox={}; boxAdd(S.petBox,1,3,9);
+T("на максимальной редкости merge заблокирован", mergePet(1,3)===false && canMergePet(1,3)===false);
+S.geo={t:0,r:1,n:"Тан",lv:1,asc:0}; S.geoBox={};
+T("без материала слияния нет", mergeGeo()===false);
+boxAdd(S.geoBox,0,0,2); boxAdd(S.geoBox,1,1,1); boxAdd(S.geoBox,2,3,1);
+T("материал только равной/меньшей редкости", geoMaterials()===3);
+{ const p0=geoPct(S.geo); mergeGeo();
+  T("старейшина растёт в уровне и бонусе", S.geo.lv===4 && geoPct(S.geo)>p0);
+  T("слишком редкий материал не съеден", boxCountAt(S.geoBox,2,3)===1); }
+S.geo={t:0,r:2,n:"X",lv:9,asc:0}; S.gems=1000;
+T("восхождение только для легендарного", ascendGeo()===false);
+S.geo={t:0,r:3,n:"Дед",lv:4,asc:0};
+T("восхождение требует уровня", ascendGeo()===false);
+S.geo.lv=5; { const p0=geoPct(S.geo); ascendGeo();
+  T("восхождение: ступень+1, уровень в 1, гемы списаны, бонус вырос",
+    S.geo.asc===1 && S.geo.lv===1 && S.gems===1000-BALANCE.merge.ascendGems && geoPct(S.geo)>p0); }
+
+console.log("\n[29] Скиллы как карточки + лари (док §Скиллы)");
+localStorage.removeItem("oredeep_v3"); load();
+S.skills={}; S.skillCards={}; S.protein=5000; S.keys=5; S.gems=5000;
+T("новая карта требует 1 копию", cardsNeeded("atk_up")===1);
+S.skillCards.atk_up=1; upSkill("atk_up");
+T("первая карта открывает ур.1", skillLv("atk_up")===1 && cardsOf("atk_up")===0);
+T("апгрейд с ур.L требует L карт", cardsNeeded("atk_up")===1);
+S.skills.atk_up=3; S.skillCards.atk_up=2;
+T("на ур.3 нужно 3 карты, а есть 2", canUpSkill("atk_up")===false);
+S.skillCards.atk_up=3; T("3 карты — можно качать", canUpSkill("atk_up")===true);
+{ const pr=proteinNeeded("atk_up"); const p0=S.protein; upSkill("atk_up");
+  T("апгрейд съел карты и пиво", skillLv("atk_up")===4 && cardsOf("atk_up")===0 && S.protein===p0-pr); }
+{ S.skillCards.atk_up=99; S.protein=0; const l0=skillLv("atk_up"); upSkill("atk_up");
+  T("без пива навык не качается", skillLv("atk_up")===l0); }
+S.protein=5000; S.skillCards={}; S.keys=1;
+{ const k0=S.keys; openSkillChest("wood");
+  const total=Object.values(S.skillCards).reduce((a,b)=>a+b,0);
+  T("дощатый ларь: ключ списан, карта выдана", S.keys===k0-1 && total===1); }
+S.skillCards={}; S.gems=1000;
+{ const g0=S.gems; openSkillChest("iron");
+  const total=Object.values(S.skillCards).reduce((a,b)=>a+b,0);
+  T("окованный ларь: гемы списаны, 3 карты", S.gems===g0-150 && total===3); }
+S.keys=0; S.gems=0; S.skillCards={};
+T("нет ключей — ларь не открыть", openSkillChest("wood")===false);
+T("миграция карт", (function(){ const d={}; ensureCards(d); return !!d.skillCards; })());
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
