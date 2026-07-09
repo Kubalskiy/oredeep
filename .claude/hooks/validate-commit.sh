@@ -32,13 +32,23 @@ BLOCKERS=""
 if echo "$STAGED" | grep -qE '^(index\.html|tools/)'; then
     if command -v node >/dev/null 2>&1 && [ -f tools/run_tests.js ]; then
         TEST_OUT="$(node tools/run_tests.js 2>&1)"
-        if echo "$TEST_OUT" | grep -q "FAIL"; then
-            FAILED="$(echo "$TEST_OUT" | grep -E '^\s*FAIL' | head -5)"
+        # ВАЖНО: якорим на начало строки — иначе строка итога «0 FAIL» блокирует зелёный коммит
+        if echo "$TEST_OUT" | grep -qE '^[[:space:]]+FAIL'; then
+            FAILED="$(echo "$TEST_OUT" | grep -E '^[[:space:]]+FAIL' | head -5)"
             SUMMARY="$(echo "$TEST_OUT" | grep 'ИТОГ' | tail -1)"
             BLOCKERS="$BLOCKERS
 ТЕСТЫ КРАСНЫЕ — коммит заблокирован.
 $SUMMARY
 $FAILED"
+        fi
+        if [ -f tools/audit_buttons.js ]; then
+            AUDIT_OUT="$(node tools/audit_buttons.js 2>&1)"
+            if echo "$AUDIT_OUT" | grep -qE '^[[:space:]]+FAIL'; then
+                BAD="$(echo "$AUDIT_OUT" | grep -E '^[[:space:]]+FAIL' | head -5)"
+                BLOCKERS="$BLOCKERS
+АУДИТ КНОПОК КРАСНЫЙ — коммит заблокирован.
+$BAD"
+            fi
         fi
     else
         WARNINGS="$WARNINGS

@@ -532,7 +532,7 @@ S.geo.lv=5; { const p0=geoPct(S.geo); ascendGeo();
 
 console.log("\n[29] Скиллы как карточки + лари (док §Скиллы)");
 localStorage.removeItem("oredeep_v3"); load();
-S.skills={}; S.skillCards={}; S.protein=5000; S.keys=5; S.gems=5000;
+S.skills={}; S.skillCards={}; S.protein=5000; S.keys=5; S.chestKeys=5; S.gems=5000;
 T("новая карта требует 1 копию", cardsNeeded("atk_up")===1);
 S.skillCards.atk_up=1; upSkill("atk_up");
 T("первая карта открывает ур.1", skillLv("atk_up")===1 && cardsOf("atk_up")===0);
@@ -544,17 +544,30 @@ S.skillCards.atk_up=3; T("3 карты — можно качать", canUpSkill(
   T("апгрейд съел карты и пиво", skillLv("atk_up")===4 && cardsOf("atk_up")===0 && S.protein===p0-pr); }
 { S.skillCards.atk_up=99; S.protein=0; const l0=skillLv("atk_up"); upSkill("atk_up");
   T("без пива навык не качается", skillLv("atk_up")===l0); }
-S.protein=5000; S.skillCards={}; S.keys=1;
-{ const k0=S.keys; openSkillChest("wood");
+S.protein=5000; S.skillCards={}; S.chestKeys=1;
+{ const k0=S.chestKeys; openSkillChest("wood");
   const total=Object.values(S.skillCards).reduce((a,b)=>a+b,0);
-  T("дощатый ларь: ключ списан, карта выдана", S.keys===k0-1 && total===1); }
+  T("дощатый ларь: ключ от ларя списан, карта выдана", S.chestKeys===k0-1 && total===1); }
 S.skillCards={}; S.gems=1000;
 { const g0=S.gems; openSkillChest("iron");
   const total=Object.values(S.skillCards).reduce((a,b)=>a+b,0);
   T("окованный ларь: гемы списаны, 3 карты", S.gems===g0-150 && total===3); }
-S.keys=0; S.gems=0; S.skillCards={};
-T("нет ключей — ларь не открыть", openSkillChest("wood")===false);
+S.keys=5; S.chestKeys=0; S.gems=0; S.skillCards={};
+T("нет ключей от ларей — ларь не открыть (ключи ивентов не тратятся)", openSkillChest("wood")===false && S.keys===5);
 T("миграция карт", (function(){ const d={}; ensureCards(d); return !!d.skillCards; })());
+
+console.log("\n[30] Ключи ларей отделены от ключей ивентов");
+localStorage.removeItem("oredeep_v3"); load();
+S.keys=2; S.chestKeys=2; S.skillCards={};
+openSkillChest("wood"); openSkillChest("wood");
+T("лари тратят только свои ключи", S.keys===2 && S.chestKeys===0);
+T("без ключей ларей ларь не открыть, ключи ивентов целы", openSkillChest("wood")===false && S.keys===2);
+S.chestKeys=0; S.wkActive={path:"atk",end:Date.now()-1}; claimWorkout();
+T("тренировка выдаёт ключ от ларя", S.chestKeys===1);
+{ S.keys=0; S.chestKeys=0; S.daily={day:todayStr(),prog:{},tok:99,claimed:[]};
+  claimDaily(0,1);
+  T("дейлик выдаёт оба вида ключей", S.keys===1 && S.chestKeys===1); }
+T("миграция даёт стартовый ключ ларя", (function(){ const d={}; ensureCards(d); return d.chestKeys===1; })());
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

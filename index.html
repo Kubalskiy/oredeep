@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.72 «Копай глубже»</title>
+<title>ORE DEEP — v0.73 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -1134,7 +1134,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1816,6 +1816,7 @@ const SAVE_VER=2;
 function ensureDurab(d){ if(d && d.durab==null) d.durab=MINE_DURAB.max; return d; }
 function ensureCards(d){ if(!d) return d;
   if(!d.skillCards) d.skillCards={};
+  if(d.chestKeys==null) d.chestKeys=1;   // ключи от ларей — свой ресурс, не ключи ивентов
   return d; }
 function ensureMerge(d){ if(!d) return d;
   if(!d.petBox) d.petBox={};
@@ -2121,7 +2122,7 @@ function skillBonus(id){ const lv=(S.skills&&S.skills[id])||0; if(!lv) return 0;
   const d=SKILL_DEFS.find(s=>s.id===id); return d?d.per*lv:0; }
 function openSkills(){
   const chests=BALANCE.skillChests.map(ch=>{
-    const ok = ch.keyCost ? (S.keys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
+    const ok = ch.keyCost ? (S.chestKeys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
     const price = ch.keyCost ? (ch.keyCost+" 🗝") : (ch.gemCost+" 💎");
     return `<div class="metarow"><span>${ch.n}<br><span class="sub">${ch.cards} карт · гарантия <b class="r${ch.minR}">${SKILL_RAR[ch.minR]}</b>+</span></span>
       <button class="${ch.keyCost?"buy":"gold"}" onclick="openSkillChest('${ch.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${price}</button></div>`;
@@ -2143,7 +2144,7 @@ function openSkills(){
     return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
   }).join("");
   metaOpen("Навыки добычи",
-    "Карты копятся из ларей. Новая карта открывает ур.1; апгрейд с ур.L требует L карт и пива. Пиво 🍺 "+Math.floor(S.protein||0)+" · ключи 🗝 "+(S.keys||0),
+    "Карты копятся из ларей. Новая карта открывает ур.1; апгрейд с ур.L требует L карт и пива. Пиво 🍺 "+Math.floor(S.protein||0)+" · ключи от ларей 🗝 "+(S.chestKeys||0),
     `<div class="sub" style="margin-bottom:6px">Лари со скилл-картами:</div>${chests}
      <div class="sub" style="margin:12px 0 6px">Навыки:</div>${rows}`);
 }
@@ -2187,9 +2188,9 @@ function grantSkillCard(minR){
 }
 function openSkillChest(chestId){
   const ch=BALANCE.skillChests.find(c=>c.id===chestId); if(!ch) return false;
-  if(ch.keyCost && (S.keys||0)<ch.keyCost){ showToast("🗝","Нет ключей","",ch.n,"нужен "+ch.keyCost+" 🗝"); return false; }
+  if(ch.keyCost && (S.chestKeys||0)<ch.keyCost){ showToast("🗝","Нет ключей от ларей","",ch.n,"дают тренировки и дейлики"); return false; }
   if(ch.gemCost && (S.gems||0)<ch.gemCost){ showToast("💎","Мало кристаллов","",ch.n,"нужно "+ch.gemCost+" 💎"); return false; }
-  if(ch.keyCost) S.keys-=ch.keyCost;
+  if(ch.keyCost) S.chestKeys-=ch.keyCost;
   if(ch.gemCost) S.gems-=ch.gemCost;
   const got=[];
   for(let i=0;i<ch.cards;i++){
@@ -2475,7 +2476,10 @@ function startWorkout(path,cost){
 function claimWorkout(){
   if(!S.wkActive||Date.now()<S.wkActive.end) return;
   const p=S.wkActive.path; S.workouts=S.workouts||{}; S.workouts[p]=(S.workouts[p]||0)+1;
-  S.wkActive=null; sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); openWorkouts();
+  S.wkActive=null;
+  S.chestKeys=(S.chestKeys||0)+1;            // док: тренировки в зале выдают ключи
+  showToast("🗝","Ключ от ларя","","Тренировка окончена","всего: "+S.chestKeys);
+  sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); openWorkouts();
 }
 function skipWorkout(){ if(!S.wkActive) return; if((S.gems||0)<5) return; S.gems-=5; S.wkActive.end=Date.now(); render(); openWorkouts(); }
 function workoutBonus(id){ const lv=(S.workouts&&S.workouts[id])||0; if(!lv) return 0;
@@ -2503,7 +2507,7 @@ function openDaily(){
 }
 function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.claimed||[]).includes(i)) return;
   S.daily.claimed.push(i);
-  if(i===0) S.keys=(S.keys||0)+1; else if(i===2) S.gems+=50; else S.gold+=veinReward()*50;
+  if(i===0){ S.keys=(S.keys||0)+1; S.chestKeys=(S.chestKeys||0)+1; } else if(i===2) S.gems+=50; else S.gold+=veinReward()*50;
   Platform.logEvent("daily_claim",{i}); save(); render(); openDaily(); }
 
 /* --- Магазин: паки, comeback, no-ads (§13) --- */
