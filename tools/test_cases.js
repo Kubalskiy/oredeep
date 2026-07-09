@@ -604,5 +604,35 @@ S.prestigeLv=3; renderSetFx();
 T("метка престижа показывает уровень и множитель", /ПРЕСТИЖ 3/.test(__ids.prestigeMark.textContent));
 S.prestigeLv=0;
 
+console.log("\n[32] Provably-fair гача (SHA-256)");
+localStorage.removeItem("oredeep_v3"); load();
+{ const crypto=require("crypto");
+  T("SHA-256 совпадает с эталоном", SHA256("дворф:копай")===crypto.createHash("sha256").update("дворф:копай","utf8").digest("hex")); }
+S.fair={server:"deadbeef",serverHash:SHA256("deadbeef"),client:"cafe",nonce:5,on:true};
+{ const got=fairFloat();
+  const manual=parseInt(SHA256("deadbeef:cafe:5").slice(0,8),16)/0x100000000;
+  T("ролл воспроизводится по (server,client,nonce)", Math.abs(got-manual)<1e-12 && S.fair.nonce===6); }
+{ S.fair.on=false; const _r=Math.random; Math.random=()=>0.37;
+  T("честность выкл — grandom это Math.random", grandom()===0.37); Math.random=_r; }
+{ S.fair={server:"aaa",serverHash:SHA256("aaa"),client:"c",nonce:9,on:true};
+  const r=rotateFairSeed();
+  T("ротация раскрывает старый сид и коммит валиден",
+    r.revealed==="aaa" && r.revealedHash===SHA256("aaa") && S.fair.serverHash===SHA256(S.fair.server) && S.fair.nonce===0); }
+T("миграция создаёт честный сид с коммитом", (function(){ const d={}; ensureFair(d); return d.fair && d.fair.serverHash===SHA256(d.fair.server) && d.fair.on===false; })());
+
+console.log("\n[33] Стена Горы (лидерборд)");
+localStorage.removeItem("oredeep_lb");
+{ const lb=Platform.getLeaderboard();
+  T("сид рейтинга: 8 записей по убыванию престижа", lb.length===8 && lb[0].prestige>=lb[7].prestige); }
+Platform.submitScore({name:"Балрог",depth:999999,prestige:99});
+T("новый рекорд встаёт первым", Platform.getLeaderboard()[0].name==="Балрог");
+Platform.submitScore({name:"Балрог",depth:1200000,prestige:99});
+{ const lb=Platform.getLeaderboard();
+  T("один игрок — одна лучшая запись", lb.filter(e=>e.name==="Балрог").length===1 && lb[0].depth===1200000); }
+S.playerName="Ihor"; S.bestDepth=0; S.bestPrestige=0; S.prestigeLv=2; S.stageIdx=1000; submitMyScore();
+T("мой рекорд попадает на стену", (function(){ const e=Platform.getLeaderboard().find(x=>x.name==="Ihor"); return e && e.depth===3000 && e.prestige===2; })());
+S.stageIdx=50; submitMyScore();
+T("откат по глубине не портит рекорд", Platform.getLeaderboard().find(e=>e.name==="Ihor").depth===3000);
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

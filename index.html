@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.74 «Копай глубже»</title>
+<title>ORE DEEP — v0.75 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -242,6 +242,21 @@
     animation:auraPulse 2.8s ease-in-out infinite;display:none;}
   @keyframes auraPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}
                         50%{transform:translate(-50%,-50%) scale(1.12);opacity:.7}}
+  /* --- Paperdoll: слоты прямо на дворфе (по мотивам Ultima Online) --- */
+  #paperdoll{position:absolute;inset:0;z-index:7;}
+  .pdm{position:absolute;width:19px;height:19px;transform:translate(-50%,-50%);
+    border-radius:50%;border:1.5px solid #ffffff55;background:#0d0f14cc;
+    display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;
+    box-shadow:0 1px 4px #000a;transition:transform .1s,border-color .2s;}
+  .pdm:hover,.pdm:active{transform:translate(-50%,-50%) scale(1.25);}
+  .pdm.empty{opacity:.5;filter:grayscale(1);}
+  .pdm.r0{border-color:#8f96a3}.pdm.r1{border-color:#5fd068}.pdm.r2{border-color:#5aa7e8}
+  .pdm.r3{border-color:#b97ae8}.pdm.r4{border-color:#e87a7a}.pdm.r5{border-color:#e8b93c}
+  .pdm.r6{border-color:#7ae8dc}.pdm.r7{border-color:#ff9d5c}
+  .pdm img{width:15px;height:15px;image-rendering:pixelated;}
+  .pdm .pdt{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+    font-size:6px;font-weight:700;white-space:nowrap;padding:0 2px;border-radius:3px;
+    background:#0d0f14cc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
   #setRing{position:absolute;left:2%;bottom:96px;display:flex;gap:3px;z-index:6;pointer-events:none;}
   #setRing span{font-size:11px;filter:drop-shadow(0 0 3px #000);animation:bob 2.6s ease-in-out infinite;}
   #prestigeMark{position:absolute;right:10px;top:8px;z-index:6;font-size:9px;color:var(--gold);
@@ -496,6 +511,7 @@
       <img class="ml" id="mlHelm" alt="">
       <img id="pickHand" alt="">
       <img id="aleMug" alt="">
+      <div id="paperdoll"></div>
     </div>
     <div class="pet" id="petBox" style="display:none">
       <svg viewBox="0 0 40 30" width="46" height="35">
@@ -630,6 +646,8 @@
 
   <div class="toolbar">
     <button id="prestigeBtn" class="gold">⛰️ Глубинный Зов</button>
+    <button id="fairBtn">🔐 Честность гачи</button>
+    <button id="lbBtn" class="gold">🏔 Стена Горы</button>
     <button id="resetBtn" class="red">↺ Всё сначала (клянусь бородой)</button>
   </div>
   </div>
@@ -819,7 +837,38 @@ function eventReward(spec, level){
 const Platform={
   logEvent:(name,params)=>{ try{ console.log("[analytics]",name,params||{}); }catch(e){} },
   showRewarded:(cb)=>{ cb(true); },
-  buy:(productId)=>Promise.resolve({ok:false,stub:true})
+  buy:(productId)=>Promise.resolve({ok:false,stub:true}),
+  /* Лидерборд «Стена Горы». Web-стаб на localStorage; в проде метод подменяется
+     на серверный вызов (submit -> POST, fetch -> GET рейтинга). */
+  LB_KEY:"oredeep_lb",
+  _seedLB(){
+    const seed=[
+      {name:"Балин Камнерук",depth:186000,prestige:41},
+      {name:"Двалин Седобород",depth:97200,prestige:33},
+      {name:"Торин Молот",depth:52800,prestige:27},
+      {name:"Гимли из Мории",depth:23400,prestige:19},
+      {name:"Нори Штрек",depth:9600,prestige:12},
+      {name:"Бомбур Пивной",depth:4200,prestige:7},
+      {name:"Оин Фонарщик",depth:1800,prestige:3},
+      {name:"Пушок-подмастерье",depth:300,prestige:0}
+    ];
+    try{ localStorage.setItem(Platform.LB_KEY,JSON.stringify(seed)); }catch(e){}
+    return seed;
+  },
+  getLeaderboard(){
+    try{ const raw=localStorage.getItem(Platform.LB_KEY);
+      if(raw) return JSON.parse(raw); }catch(e){}
+    return Platform._seedLB();
+  },
+  submitScore(entry){   // entry: {name, depth, prestige}
+    let lb=Platform.getLeaderboard();
+    lb=lb.filter(e=>e.name!==entry.name);       // один рекорд на игрока (лучший)
+    lb.push(entry);
+    lb.sort((a,b)=> b.prestige-a.prestige || b.depth-a.depth);
+    lb=lb.slice(0,50);
+    try{ localStorage.setItem(Platform.LB_KEY,JSON.stringify(lb)); }catch(e){}
+    return lb;
+  }
 };
 
 /* ---------- кривая породы (GDD §2.2, §4) ---------- */
@@ -895,9 +944,74 @@ function bagWeights(lvl){
   const s=w.reduce((a,b)=>a+b,0);
   return w.map(v=>v/s*100);
 }
+/* ---------- Provably-fair: синхронный SHA-256 + честный рандом ----------
+   Схема как у provably-fair казино: серверный сид (коммит-хэш известен заранее)
+   + клиентский сид (задаёт игрок) + nonce (растёт на каждый ролл) → SHA-256 →
+   первые 8 hex превращаются в число [0,1). Игрок может пересчитать любой ролл.
+   Это НЕ майнинг: ни один хэш никуда не «сдаётся», считается только исход гачи. */
+const SHA256=(function(){
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  function rr(x,n){return (x>>>n)|(x<<(32-n));}
+  return function(msg){
+    const bytes=[]; for(let i=0;i<msg.length;i++){ let c=msg.charCodeAt(i);
+      if(c<128) bytes.push(c);
+      else if(c<2048){ bytes.push(192|(c>>6),128|(c&63)); }
+      else { bytes.push(224|(c>>12),128|((c>>6)&63),128|(c&63)); } }
+    const l=bytes.length; bytes.push(0x80);
+    while(bytes.length%64!==56) bytes.push(0);
+    const bl=l*8;
+    for(let i=7;i>=0;i--) bytes.push((bl/Math.pow(2,i*8))&0xff);
+    let h=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    for(let j=0;j<bytes.length;j+=64){
+      const w=new Array(64);
+      for(let i=0;i<16;i++) w[i]=(bytes[j+i*4]<<24)|(bytes[j+i*4+1]<<16)|(bytes[j+i*4+2]<<8)|(bytes[j+i*4+3]);
+      for(let i=16;i<64;i++){ const s0=rr(w[i-15],7)^rr(w[i-15],18)^(w[i-15]>>>3);
+        const s1=rr(w[i-2],17)^rr(w[i-2],19)^(w[i-2]>>>10);
+        w[i]=(w[i-16]+s0+w[i-7]+s1)|0; }
+      let [a,b,c,d,e,f,g,hh]=h;
+      for(let i=0;i<64;i++){ const S1=rr(e,6)^rr(e,11)^rr(e,25); const ch=(e&f)^(~e&g);
+        const t1=(hh+S1+ch+K[i]+w[i])|0; const S0=rr(a,2)^rr(a,13)^rr(a,22);
+        const mj=(a&b)^(a&c)^(b&c); const t2=(S0+mj)|0;
+        hh=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0; }
+      h=[(h[0]+a)|0,(h[1]+b)|0,(h[2]+c)|0,(h[3]+d)|0,(h[4]+e)|0,(h[5]+f)|0,(h[6]+g)|0,(h[7]+hh)|0];
+    }
+    return h.map(x=>("00000000"+(x>>>0).toString(16)).slice(-8)).join("");
+  };
+})();
+function randSeed(){ let s=""; for(let i=0;i<16;i++) s+=Math.floor(Math.random()*16).toString(16); return s; }
+function ensureFair(d){ if(!d) return d;
+  if(!d.fair){ const server=randSeed();
+    d.fair={ server, serverHash:SHA256(server), client:randSeed(), nonce:0, on:false }; }
+  return d; }
+/* Исход одного честного ролла [0,1). */
+function fairFloat(){
+  const f=S.fair;
+  const hex=SHA256(f.server+":"+f.client+":"+f.nonce);
+  f.nonce++;
+  return parseInt(hex.slice(0,8),16)/0x100000000;
+}
+/* Единая точка рандома гачи. Выключен режим честности → обычный Math.random
+   (значит функциональные тесты, подменяющие Math.random, работают как прежде). */
+function grandom(){ return (S.fair && S.fair.on) ? fairFloat() : Math.random(); }
+/* Раскрыть текущий серверный сид (для проверки) и выдать новый коммит. */
+function rotateFairSeed(){
+  const revealed=S.fair.server, revealedHash=S.fair.serverHash;
+  const server=randSeed();
+  S.fair.server=server; S.fair.serverHash=SHA256(server); S.fair.nonce=0;
+  save();
+  return { revealed, revealedHash };
+}
+
 function rollRarity(w){
   const sum=w.reduce((a,b)=>a+b,0);
-  let r=Math.random()*sum;
+  let r=grandom()*sum;
   for(let i=0;i<w.length;i++){ r-=w[i]; if(r<=0) return i; }
   return 0;
 }
@@ -1200,7 +1314,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1215,6 +1329,14 @@ const DEPTH_MARKS=[
   [15000,"ОНО слышит тебя","Копаем ти-и-ихо."],
   [150000,"Дно мира","Дальше только вверх. Шутка. Копаем."]
 ];
+function playerName(){ return S.playerName || ("Дворф-"+(S.look!=null?S.look:0)); }
+function submitMyScore(){
+  const depth=S.stageIdx*3;
+  if(depth<=(S.bestDepth||0) && (S.prestigeLv||0)===(S.bestPrestige||0)) return;
+  S.bestDepth=Math.max(S.bestDepth||0,depth);
+  S.bestPrestige=Math.max(S.bestPrestige||0,S.prestigeLv||0);
+  try{ Platform.submitScore({name:playerName(),depth:S.bestDepth,prestige:S.bestPrestige}); }catch(e){}
+}
 function checkDepthMark(prevIdx){
   const d0=prevIdx*3, d1=S.stageIdx*3;
   for(const [m,title,quip] of DEPTH_MARKS){
@@ -1402,7 +1524,7 @@ function breakVein(){
   S.stageIdx++; S.stage++;
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
-  checkDepthMark(prevIdx);
+  checkDepthMark(prevIdx); submitMyScore();
   if(rock.isBoss) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
   if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
   newRock(); save();
@@ -1702,7 +1824,7 @@ function render(){
     set("curProtein",fmt(Math.floor(S.protein||0))); set("curBags",fmt(S.bags||0));
     set("curKeys",String(S.keys||0)); set("curChestKeys",String(S.chestKeys||0));
     set("curTrophies",fmt(S.trophies||0)); }
-  renderBadges(); renderSetFx();
+  renderBadges(); renderSetFx(); renderPaperdoll();
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
   $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
   $("minerRank").textContent=beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):"");
@@ -1847,6 +1969,8 @@ function toastMine(){
 $("shareBtn").onclick=()=>{ try{ shareCard(); }catch(e){} };
 if($("reinfBtn")) $("reinfBtn").onclick=()=>reinforceMine();
 if($("prestigeBtn")) $("prestigeBtn").onclick=openPrestige;
+if($("fairBtn")) $("fairBtn").onclick=openFairness;
+if($("lbBtn")) $("lbBtn").onclick=openWall;
 ["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
 if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
 if($("geoName")) $("geoName").onclick=openGeoGuild;
@@ -1907,7 +2031,7 @@ function ensurePrestige(d){ if(!d) return d;
   if(d.prestigeRuns==null) d.prestigeRuns=0;
   if(d.echo==null) d.echo=0;
   return d; }
-function migrate(d){ ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d); ensureCards(d);
+function migrate(d){ ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d); ensureCards(d); ensureFair(d);
   if(!d.v||d.v<2){                       // v1→v2: новые поля Фазы 1
     if(!d.ftue) d.ftue={u:1,b:1};        // старым игрокам подсказки не нужны
     if(!d.streak) d.streak={n:0,last:""};
@@ -2797,6 +2921,43 @@ function renderBadges(){
   setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotLoot",b.lootReady);
 }
 /* Аура и эмблемы активных Сетов Подземелья прямо на дворфе. */
+/* ---------- Paperdoll: слоты на теле дворфа (Ultima Online) ---------- */
+const PD_POS={  // проценты внутри спрайта дворфа (117×135)
+  helm:  [50,10], glove:[86,52], pick:[16,44], robe:[50,50],
+  pack:  [15,30], boots:[38,92], lamp:[84,86], pet:[92,90]
+};
+function openGearSlot(id){
+  const sl=SLOTS.find(s=>s.id===id); if(!sl) return;
+  const it=S.gear[id];
+  const statLines=Object.keys(sl.st).map(k=>{
+    const base=sl.st[k]; const v=it?itemStat(it,k):0;
+    const nm={atk:"ATK",energy:"Энергия",tough:"Крепёж",crit:"CRIT",luck:"LUCK",
+      mining:"MINING",stone:"STONE",spd:"SPD"}[k]||k.toUpperCase();
+    return `<div class="metarow"><span>${nm}</span><span>${it?("+"+(v>=100?fmt(v):v.toFixed(1))):"—"}</span></div>`;
+  }).join("");
+  const head=it
+    ? `<div class="metarow"><span>Надето: <b class="r${it.r}">${RAR_NAMES[it.r]}</b>${(id==="pick"&&it.n)?(" «"+it.n+"»"):""}</span><span>сила ${fmt(itemPower(it))}</span></div>`
+    : `<div class="sub">Слот пуст. Открывай сумки — что выпадет лучше, дворф наденет сам.</div>`;
+  metaOpen(sl.ic+" "+sl.n,
+    "Что выпало, то надето — если лучше текущего."+(sl.extra?(" Особое: "+sl.extra+"."):""),
+    head+statLines);
+  Platform.logEvent("paperdoll_slot",{id});
+}
+function renderPaperdoll(){
+  const pd=$("paperdoll"); if(!pd||!pd.appendChild) return;
+  while(pd.firstChild && pd.removeChild) pd.removeChild(pd.firstChild);
+  for(const sl of SLOTS){
+    const pos=PD_POS[sl.id]; if(!pos) continue;
+    const it=S.gear[sl.id];
+    const m=document.createElement("div");
+    m.className="pdm "+(it?("r"+it.r):"empty");
+    m.style.left=pos[0]+"%"; m.style.top=pos[1]+"%";
+    const ic=(sl.id==="pick"&&it)?`<img src="${PICK_ICONS[it.r]}">`:sl.ic;
+    m.innerHTML=ic+(it?`<span class="pdt r${it.r}">${RAR_NAMES[it.r].slice(0,4)}</span>`:"");
+    m.onclick=()=>openGearSlot(sl.id);
+    pd.appendChild(m);
+  }
+}
 function renderSetFx(){
   const active=BALANCE.dungeonSets.filter(s=>(S.sets||{})[s.id]);
   const aura=$("setAura"), ring=$("setRing");
@@ -2814,6 +2975,70 @@ function renderSetFx(){
     if(lv>0){ pm.style.display="block"; pm.textContent="⛰ ПРЕСТИЖ "+lv+" · ×"+fmt(prestigeMult()); }
     else pm.style.display="none"; }
 }
+function openWall(){
+  const me=playerName();
+  submitMyScore();
+  const lb=Platform.getLeaderboard();
+  const myRank=lb.findIndex(e=>e.name===me);
+  const rows=lb.slice(0,20).map((e,i)=>{
+    const mine=e.name===me;
+    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":("#"+(i+1));
+    return `<div class="metarow" ${mine?'style="background:#1c2230;border-radius:6px"':''}>
+      <span>${medal} ${mine?"<b style=\"color:var(--gold)\">":""}${e.name}${mine?"</b>":""}
+        <br><span class="sub">⛰${e.prestige} · ${fmt(e.depth)} м</span></span></div>`;
+  }).join("");
+  metaOpen("🏔 Стена Горы",
+    "Кто глубже пробился и выше вознёсся. Твоя глубина: "+fmt(S.stageIdx*3)+" м · престиж "+(S.prestigeLv||0)
+      +(myRank>=0?(" · место #"+(myRank+1)):""),
+    `<div class="btnrow" style="margin-bottom:10px">
+       <input id="lbName" value="${me}" maxlength="18"
+         style="flex:1;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px;font-size:9px">
+       <button class="buy" onclick="setPlayerName()">Имя</button></div>
+     ${rows}
+     <div class="sub" style="margin-top:10px">Список демонстрационный (локальный). В релизе — общий рейтинг с сервера.</div>`);
+  Platform.logEvent("wall_view",{});
+}
+function setPlayerName(){ const el=$("lbName"); if(!el) return;
+  const v=(el.value||"").trim().slice(0,18); if(!v) return;
+  const old=playerName(); S.playerName=v;
+  try{ const lb=Platform.getLeaderboard().filter(e=>e.name!==old);
+    localStorage.setItem(Platform.LB_KEY,JSON.stringify(lb)); }catch(e){}
+  submitMyScore();
+  showToast("🏔","Имя на Стене","",v); save(); openWall();
+}
+function openFairness(){
+  const f=S.fair;
+  const lastNonce=Math.max(0,f.nonce-1);
+  metaOpen("🔐 Честность гачи",
+    "Каждый ролл гачи считается хэшем SHA-256 от сервера+клиента+счётчика. Проверяемо, ничего не майнится.",
+    `<div class="metarow"><span>Режим честности</span>
+       <button class="${f.on?"gold":"buy"}" onclick="toggleFair()">${f.on?"ВКЛ ✓":"выкл"}</button></div>
+     <div class="metarow"><span>Коммит сервера (SHA-256)</span></div>
+     <div class="sub" style="word-break:break-all;color:#7ae8dc">${f.serverHash}</div>
+     <div class="metarow" style="margin-top:8px"><span>Твой клиентский сид</span></div>
+     <div class="btnrow"><input id="fairClient" value="${f.client}"
+        style="flex:1;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px;font-size:9px">
+       <button class="buy" onclick="setFairClient()">Задать</button></div>
+     <div class="metarow" style="margin-top:8px"><span>Роллов сделано (nonce)</span><span><b>${f.nonce}</b></span></div>
+     <div class="sub" style="margin-top:10px">Проверить прошлый ролл: пересчитай
+       <br><code style="color:#e8b93c">SHA256("сид_сервера:${f.client}:${lastNonce}")</code>
+       <br>первые 8 hex ÷ 2³² = число ролла в [0,1).</div>
+     <div style="text-align:center;padding:12px 0">
+       <button class="gold" onclick="revealFair()" style="max-width:280px">Раскрыть сид и сменить (проверка)</button>
+     </div>
+     <div class="sub">Раскрытие показывает старый серверный сид — сверь его хэш с коммитом выше — и выдаёт новый.</div>`);
+  Platform.logEvent("fair_view",{on:f.on});
+}
+function toggleFair(){ S.fair.on=!S.fair.on;
+  showToast("🔐",S.fair.on?"Честность ВКЛ":"Честность выкл","",S.fair.on?"гача считается по хэшам":"обычный рандом");
+  save(); openFairness(); }
+function setFairClient(){ const el=$("fairClient"); if(!el) return;
+  const v=(el.value||"").trim().slice(0,64)||randSeed();
+  S.fair.client=v; S.fair.nonce=0;
+  showToast("🔐","Клиентский сид задан","",v,"счётчик сброшен"); save(); openFairness(); }
+function revealFair(){ const r=rotateFairSeed();
+  showToast("🔐","Сид раскрыт","","старый сервер: "+r.revealed,"хэш совпадает с прежним коммитом",true);
+  openFairness(); }
 function openPrestige(){
   const gain=prestigeGain(), lv=S.prestigeLv||0, ok=canPrestige();
   const now=prestigeMult(), next=Math.pow(BALANCE.prestige.powPerLevel, lv+gain);
