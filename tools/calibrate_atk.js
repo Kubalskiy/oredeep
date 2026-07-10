@@ -20,7 +20,7 @@ const ids = [...html.replace(game, "").matchAll(/id="([A-Za-z_]+)"/g)].map(m => 
 globalThis.__HTML_IDS = ids;
 
 const BUDGET_H = 1;                                   // игрок вкладывает 1 час дохода в ATK
-const STAGES = [400, 800, 1500, 3000, 6000, 12000, 20000];   // глубже double переполняется
+const STAGES = [350, 500, 650, 800, 900, 1000];   // внутри ограниченного прогона (run.len)
 const TARGET_T = 6;   // целевые сек/жилу у вкладывающегося                                   // целевые сек/жилу
 
 const patched = game
@@ -74,7 +74,7 @@ console.log("уровней за блок LPB = ln(G)/ln(g) = " + lpb.toFixed(4)
 
 // геом. среднее tInv по глубоким стадиям + мера «плоскости»
 function evaluate(rows) {
-  const deep = rows.filter(r => r.s >= 3000 && isFinite(r.tInv) && r.tInv > 0);
+  const deep = rows.filter(r => r.s >= 600 && isFinite(r.tInv) && r.tInv > 0);
   if (deep.length < 3) return null;
   const logs = deep.map(r => Math.log(r.tInv));
   const mean = logs.reduce((a, b) => a + b, 0) / logs.length;
@@ -93,7 +93,7 @@ for (const c of [1.08, 1.10, 1.12, 1.15, 1.18, 1.20, 1.25]) {
   rows = globalThis.__run(c, esc, hpMul);
   const ev = evaluate(rows);
   if (!ev) continue;
-  const lazyRatio = Math.min(...rows.filter(r => r.s >= 3000).map(r => r.tLazy / r.tInv));
+  const lazyRatio = Math.min(...rows.filter(r => r.s >= 600).map(r => r.tLazy / r.tInv));
   const scoreV = ev.flat;                             // чем ровнее, тем лучше
   if (!best || scoreV < best.flat) best = { c, esc, hpMul, flat: ev.flat, geo: ev.geo, lazyRatio, rows };
 }

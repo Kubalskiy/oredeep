@@ -428,10 +428,14 @@ T("сет чертога 4: +15% LUCK (с капом 45)", stat("luck")===Math.m
 S.col={};
 
 
-console.log("\n[16] Бесконечная сложность + компаунд ATK");
-// HP больше не упирается в потолок 1e7
-{ const h1=rockStatsAt(50000,false).hp, h2=rockStatsAt(60000,false).hp, h3=rockStatsAt(80000,false).hp;
-  T("HP породы растёт без предела", h2>h1*2 && h3>h2*2, h1.toExponential(1)+" -> "+h3.toExponential(1)); }
+console.log("\n[16] Ограниченный прогон + компаунд ATK");
+// HP растёт ВНУТРИ прогона, но упирается в свод (числа держатся читаемыми)
+{ const h1=rockStatsAt(300,false).hp, h2=rockStatsAt(600,false).hp, h3=rockStatsAt(BALANCE.run.len,false).hp;
+  T("HP растёт внутри прогона", h2>h1*2 && h3>h2*2, h1.toExponential(1)+" -> "+h3.toExponential(1)); }
+{ const atWall=rockStatsAt(BALANCE.run.len,false).hp, past=rockStatsAt(BALANCE.run.len+5000,false).hp;
+  T("за сводом прогона HP не растёт", Math.abs(atWall-past)<1e-6, fmt(atWall)); }
+{ const peak=rockStatsAt(BALANCE.run.len,false).hp;
+  T("пиковая HP прогона читаема (< 1e9, без экспоненты)", peak<1e9 && !fmt(peak).includes("e"), fmt(peak)); }
 T("до escStart кривая не тронута", Math.abs(rockStatsAt(200,false).hp-anchored(ANCHOR_HP,200))<1e-6);
 T("resp не эскалируем", rockStatsAt(90000,false).resp===anchored(ANCHOR_RESP,90000));
 // равновесие треадмилла выводится из констант
@@ -807,6 +811,32 @@ T("load() сбрасывает hitTimer", hitTimer===0);
 { S.bag=16; S.autoRoll=true; S.autoRollTier=7; S.speed=100; S.bags=0; S.lvls.atk=200; newRock(); dead=false;
   frame(16);
   T("первый кадр не прокручивает бесконечные удары (предохранитель)", S.bags<=50, "сумок "+S.bags); }
+
+console.log("\n[41] Ограниченный прогон: свод, ворота престижа, читаемость");
+localStorage.removeItem("oredeep_v3"); load();
+T("свод прогона задан", BALANCE.run.len>0);
+S.stageIdx=BALANCE.run.len-1; S.prestigeLv=0; S.lvls.atk=1e6; newRock();
+S.rockHP=1; breakVein();
+T("доходит до свода", S.stageIdx===BALANCE.run.len);
+S.rockHP=1; breakVein();
+T("на своде глубже не пускает", S.stageIdx===BALANCE.run.len && S.runDone===true);
+T("на своде Зов доступен (gain>=1)", canPrestige() && prestigeGain()>=1);
+// высокий престиж тоже упирается и проходит
+S.prestigeLv=8; S.runDone=true;
+T("высокий престиж на своде: gain>=1", prestigeGain()>=1 && canPrestige());
+// после Зова свод сброшен, глубина в 1
+S.stageIdx=BALANCE.run.len; SLOTS.forEach(sl=>{S.gear[sl.id]={s:sl.id,r:5,m:1,i:500};});
+doPrestige();
+T("Зов сбрасывает свод и глубину", S.stageIdx===1 && S.runDone===false && S._wallShown===false);
+// числа читаемы весь прогон
+{ let maxHP=0; for(let s=1;s<=BALANCE.run.len;s+=50) maxHP=Math.max(maxHP,rockStatsAt(s,false).hp);
+  T("HP весь прогон < 1e9 и без экспоненты", maxHP<1e9 && !fmt(maxHP).includes("e"), "пик "+fmt(maxHP)); }
+{ const past=rockStatsAt(BALANCE.run.len+9999,false).hp, wall=rockStatsAt(BALANCE.run.len,false).hp;
+  T("доход и HP заморожены за сводом", Math.abs(past-wall)<1e-6); }
+{ S.stageIdx=BALANCE.run.len; const i1=idleGoldPerDay(); S.stageIdx=BALANCE.run.len+5000; const i2=idleGoldPerDay();
+  T("доход не растёт за сводом", Math.abs(i1-i2)<1e-6); }
+// равновесие треадмилла не тронуто ретюном
+T("esc всё ещё = ATK_COMPOUND^LPB", Math.abs(escPerBlock()-Math.pow(ATK_COMPOUND,atkLevelsPerBlock()))<1e-9);
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

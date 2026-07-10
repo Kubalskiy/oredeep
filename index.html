@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.81 «Копай глубже»</title>
+<title>ORE DEEP — v0.82 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -811,6 +811,10 @@ const BALANCE = {
      которые иначе упираются в потолок double около этапа 45000. */
   /* minStage ОБЯЗАН равняться div: первый уровень начисляется на этапе div,
      и если порог входа выше — игрок видит «+1 ур.», а кнопка заблокирована. */
+  /* Ограниченный прогон: числа держатся читаемыми (пик HP ~66M, доход ~290B на
+     конце прогона длиной run.len). Глубже свода Гора не пускает — только
+     Глубинный Зов. Прогресс живёт в ЦЕЛОМ уровне престижа, а не в экспоненте. */
+  run:{ len:1000, wallMsg:"Свод Прогона" },
   prestige:{ minStage:300, div:300, powPerLevel:2.5, echoFrac:0.05 },
   /* Сумки (док §Экипировка и сумки): 1 сумка = 1 предмет, падают за победы.
      Auto Roll тратит сумку раз в autoSec: ниже порога — скупщику, с порога и
@@ -996,7 +1000,7 @@ function anchored(arr, idx){
    Шмот растёт линейно от глубины (1+idx/60) — этот рост нейтрализуем множителем
    gearComp, иначе игрок медленно уползал бы в ваншот.
    resp (темп ответа породы) НЕ эскалируем — иначе энергия сгорала бы мгновенно. */
-const DEPTH={ escStart:300, rampBlocks:45, hpMul:88 };   // CALIB: ~6 сек/жилу у вкладывающегося, пик 8.5 на разгоне
+const DEPTH={ escStart:200, rampBlocks:20, hpMul:22 };   // CALIB: ограниченный прогон (run.len), ~6 сек/жилу, дуга сигма 0.23
 function atkLevelsPerBlock(){
   const G=BALANCE.idle.growth*Math.pow(BALANCE.idle.damp,0.4);
   const g=UPGRADES.find(u=>u.id==="atk").g;
@@ -1004,6 +1008,7 @@ function atkLevelsPerBlock(){
 }
 function escPerBlock(){ return Math.pow(ATK_COMPOUND, atkLevelsPerBlock()); }
 function depthEsc(idx){
+  idx=Math.min(idx, BALANCE.run.len);   // за сводом прогона сложность не растёт
   if(idx<=DEPTH.escStart) return 1;
   const blocks=(idx-DEPTH.escStart)/BALANCE.venueStride;
   const gearComp=(1+idx/60)/(1+DEPTH.escStart/60);           // гасим линейный рост шмота
@@ -1312,8 +1317,15 @@ function stat(id){
    экипировки» (док). Равновесие треадмилла не трогаем: escPerBlock зависит
    только от ATK_COMPOUND, поэтому престиж даёт фору, а не ломает кривую. */
 function prestigeLevelsFor(stageIdx){ return Math.floor(Math.sqrt(stageIdx/BALANCE.prestige.div)); }
-function prestigeGain(){ return Math.max(0, prestigeLevelsFor(S.stageIdx)-(S.prestigeLv||0)); }
-function canPrestige(){ return S.stageIdx>=BALANCE.prestige.minStage && prestigeGain()>0; }
+function prestigeGain(){
+  // дошёл до свода — гарантированный шаг вперёд (+1), плюс добор по формуле для раннего входа
+  const byDepth=Math.max(0, prestigeLevelsFor(S.stageIdx)-(S.prestigeLv||0));
+  return S.runDone ? Math.max(1, byDepth) : byDepth;
+}
+function canPrestige(){
+  if(S.runDone) return true;                         // свод пройден — Зов доступен всегда
+  return S.stageIdx>=BALANCE.prestige.minStage && prestigeGain()>0;
+}
 function prestigeMult(){ return Math.pow(BALANCE.prestige.powPerLevel, S.prestigeLv||0); }
 function echoFromGear(){
   let p=0; for(const k in S.gear){ if(S.gear[k]) p+=itemPower(S.gear[k]); }
@@ -1331,7 +1343,7 @@ function doPrestige(){
   // сбрасывается: забой и всё, что куплено за софт-валюту
   S.gold=0; S.gear={}; S.stageIdx=1; S.stage=1; S.mine=0; S.bag=1;
   S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
-  S.loadoutTier=0; S.cartFill=0; S.durab=MINE_DURAB.max; resetTimers();
+  S.loadoutTier=0; S.cartFill=0; S.durab=MINE_DURAB.max; S.runDone=false; S._wallShown=false; resetTimers();
   // сохраняется: навыки, старейшины, питомцы, коллекция, сеты, борода, валюты меты
   dead=false; if($("overlay")) $("overlay").style.display="none";
   Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
@@ -1345,8 +1357,9 @@ function doPrestige(){
 /* ---------- экономика: привязана к кривой породы ---------- */
 /* idle-доход: точная формула боксёра (§1) 100000·2.5^A·0.65^B. */
 function idleGoldPerDay(){
-  const block=Math.floor(S.stageIdx/BALANCE.venueStride);
-  const within=(S.stageIdx%BALANCE.venueStride)/BALANCE.venueStride;
+  const idx=Math.min(S.stageIdx, BALANCE.run.len);   // доход тоже упирается в свод
+  const block=Math.floor(idx/BALANCE.venueStride);
+  const within=(idx%BALANCE.venueStride)/BALANCE.venueStride;
   const A=block+within, B=block*0.4;
   return BALANCE.idle.base*Math.pow(BALANCE.idle.growth,A)*Math.pow(BALANCE.idle.damp,B);
 }
@@ -1415,7 +1428,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1629,7 +1642,13 @@ function breakVein(){
   if(rock.buried && pk.dataset.on==="1"){ pk.classList.add("pop"); setTimeout(()=>pk.classList.remove("pop"),560); }
   if(rock.buried && rock.buried.stoneR>=0) onFind(rock.buried.stoneR);   // ролл 2 — камень (решён заранее)
   if(rock.buried && rock.buried.item) dropGearItem(rock.buried.item);    // ролл 3 — деталь (решена заранее)
-  S.stageIdx++; S.stage++;
+  if(S.stageIdx>=BALANCE.run.len){
+    // достигнут свод прогона — глубже нельзя, нужен Глубинный Зов
+    S.runDone=true;
+    if(!S._wallShown){ S._wallShown=true;
+      showToast("⛰️",BALANCE.run.wallMsg+"!","","Дальше — только Глубинный Зов","этап "+BALANCE.run.len+" · жми ⛰️",true);
+      sayQuip("Свод. Дальше Гора не пускает. Пора звать заново.",6); }
+  } else { S.stageIdx++; S.stage++; }
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
   checkDepthMark(prevIdx); submitMyScore();
@@ -1966,11 +1985,15 @@ function render(){
     set("curTrophies",fmt(S.trophies||0)); }
   renderBadges(); renderSetFx(); renderPaperdoll();
   $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
-  $("stageLabel").textContent=fmt(S.stageIdx*3)+" м";
+  $("stageLabel").textContent = S.runDone
+    ? "⛰ СВОД"
+    : Math.min(S.stageIdx,BALANCE.run.len)+" / "+BALANCE.run.len;
   $("minerRank").textContent=beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):"");
   { const pb=$("prestigeBtn"); if(pb&&"disabled"in pb){ const ok=canPrestige();
-      pb.textContent=ok?("⛰️ Глубинный Зов +"+prestigeGain()):"⛰️ Глубинный Зов";
-      pb.style.opacity=ok?"1":"0.55"; } }
+      pb.textContent = S.runDone ? ("⛰️ СВОД! Зов +"+prestigeGain())
+        : (ok?("⛰️ Глубинный Зов +"+prestigeGain()):"⛰️ Глубинный Зов");
+      pb.style.opacity=ok?"1":"0.55";
+      if(pb.classList) pb.classList.toggle("pulse", !!S.runDone); } }
   $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
   $("cracks").style.opacity=(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2);
   $("hpTxt").textContent=fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);

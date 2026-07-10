@@ -71,8 +71,8 @@ OK("нищий: все экраны открылись");
 
 // богач на глубине
 S.gold = 1e30; S.gems = 1e9; S.shards = 1e9; S.protein = 1e6; S.keys = 99; S.chestKeys = 99;
-S.bags = 500; S.stageIdx = 12000; S.prestigeLv = 12; S.boxes = [1,1,1,7]; S.bag = 50;
-SLOTS.forEach(sl => { S.gear[sl.id] = { s: sl.id, r: 7, m: 1.1, i: 12000 }; });
+S.bags = 500; S.stageIdx = BALANCE.run.len; S.prestigeLv = 12; S.boxes = [1,1,1,7]; S.bag = 50;
+SLOTS.forEach(sl => { S.gear[sl.id] = { s: sl.id, r: 7, m: 1.1, i: BALANCE.run.len }; });
 S.geo = { t: 0, r: 3, n: "Дед", lv: 9, asc: 2 }; S.pet = { t: 0, r: 3 };
 newRock(); render(); tryScreens("богач на глубине");
 OK("богач: все экраны открылись");
@@ -235,6 +235,24 @@ for (const raw of ['{"gold":"много"}', '{"lvls":null}', '{"gear":{"pick":nu
 }
 OK("битые сейвы обработаны");
 localStorage.removeItem("oredeep_v3");
+
+/* ---- 11. Ограниченный прогон: числа читаемы, свод держит ---- */
+console.log("\n[11] Ограниченный прогон");
+{
+  const peakHP = rockStatsAt(BALANCE.run.len, false).hp;
+  if (peakHP >= 1e9 || fmt(peakHP).includes("e")) BUG("прогон", `пиковая HP нечитаема: ${fmt(peakHP)}`);
+  else OK(`пик HP прогона ${fmt(peakHP)} (читаемо, без экспоненты)`);
+  const past = rockStatsAt(BALANCE.run.len + 5000, false).hp;
+  if (Math.abs(peakHP - past) > 1e-6) BUG("прогон", "за сводом HP продолжает расти");
+  else OK("за сводом HP заморожена");
+  // симулируем полный прогон и смотрим максимум золота
+  localStorage.removeItem("oredeep_v3"); load();
+  S.speed = 100; dead = false;
+  let maxGold = 0;
+  for (let i = 0; i < 4000; i++) { if (dead) closeOverlay(); frame(16); maxGold = Math.max(maxGold, S.gold); if (S.runDone) break; }
+  if (!Number.isFinite(maxGold) || maxGold >= 1e15) BUG("прогон", `золото за прогон нечитаемо: ${fmt(maxGold)}`);
+  else OK(`золото за прогон ≤ ${fmt(maxGold)}, этап ${S.stageIdx}, свод ${S.runDone ? "достигнут" : "нет"}`);
+}
 
 /* ---- ИТОГ ---- */
 console.log("\n========== СВИП: " + (issues.length ? issues.length + " БАГ(ОВ)" : "БАГОВ НЕ НАЙДЕНО") + " ==========");
