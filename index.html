@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.79 «Копай глубже»</title>
+<title>ORE DEEP — v0.80 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -809,7 +809,9 @@ const BALANCE = {
      Сбрасывает забой, сохраняет мету, даёт вечный множитель силы.
      Побочный, но важный эффект: обнуляет глубину, а значит и экспоненты,
      которые иначе упираются в потолок double около этапа 45000. */
-  prestige:{ minStage:400, div:300, powPerLevel:2.5, echoFrac:0.05 },
+  /* minStage ОБЯЗАН равняться div: первый уровень начисляется на этапе div,
+     и если порог входа выше — игрок видит «+1 ур.», а кнопка заблокирована. */
+  prestige:{ minStage:300, div:300, powPerLevel:2.5, echoFrac:0.05 },
   /* Сумки (док §Экипировка и сумки): 1 сумка = 1 предмет, падают за победы.
      Auto Roll тратит сумку раз в autoSec: ниже порога — скупщику, с порога и
      выше — в очередь на решение игрока. */
@@ -1531,7 +1533,7 @@ function minerHit(){
 function rockRespond(){
   if(Math.random()*100<stat("luck")) return;
   const drain=Math.max(1, rock.abr*DRAIN_K-stat("tough"));
-  S.energy-=drain;
+  S.energy=Math.max(0,S.energy-drain);   // не показываем игроку отрицательную энергию
   if(S.energy<=0) exhausted();
 }
 function cartCapacity(){ return 8; }   // жил на полную вагонетку
@@ -2127,6 +2129,42 @@ function ensurePrestige(d){ if(!d) return d;
   if(d.prestigeRuns==null) d.prestigeRuns=0;
   if(d.echo==null) d.echo=0;
   return d; }
+/* Санитайзер сейва. Битый или подделанный сейв не должен ни ронять игру,
+   ни молча её портить: `gold:"много"` превращал арифметику в конкатенацию строк
+   ("много10"), а fmt() рисовал ∞. `lvls:null` ронял stat().
+   Правило: тип поля обязан совпадать с типом в freshState(), иначе берём дефолт. */
+const NON_NEGATIVE=["gold","gems","shards","protein","trophies","keys","chestKeys",
+                    "bags","echo","beardXP","prestigeLv","prestigeRuns","bestDepth"];
+function sanitizeState(d){
+  const f=freshState();
+  for(const k in f){
+    const fv=f[k], dv=d[k];
+    if(fv===null) continue;                    // pet/geo/best/fair/science — их чинят ensure*
+    if(dv===undefined){ d[k]=fv; continue; }
+    if(typeof fv==="number"){
+      if(typeof dv!=="number" || !isFinite(dv)) d[k]=fv;
+    } else if(typeof fv==="boolean"){
+      if(typeof dv!=="boolean") d[k]=fv;
+    } else if(typeof fv==="string"){
+      if(typeof dv!=="string") d[k]=fv;
+    } else if(Array.isArray(fv)){
+      if(!Array.isArray(dv)) d[k]=fv;
+    } else if(typeof fv==="object"){
+      if(!dv || typeof dv!=="object" || Array.isArray(dv)) d[k]=fv;
+    }
+  }
+  // уровни апгрейдов: каждый стат обязан быть конечным неотрицательным числом
+  if(!d.lvls || typeof d.lvls!=="object") d.lvls=f.lvls;
+  for(const u of UPGRADES){
+    const v=d.lvls[u.id];
+    if(typeof v!=="number" || !isFinite(v) || v<0) d.lvls[u.id]=0;
+  }
+  for(const k of NON_NEGATIVE) if(typeof d[k]==="number" && d[k]<0) d[k]=0;
+  if(typeof d.durab==="number") d.durab=Math.max(0,Math.min(MINE_DURAB.max,d.durab));
+  if(typeof d.speed!=="number" || !SPEEDS.includes(d.speed)) d.speed=1;
+  return d;
+}
+
 /* Доинициализация полей. ВАЖНО: применяется и к свежему состоянию тоже —
    иначе у нового игрока fair/science остаются null и экраны падают. */
 function ensureAll(d){
@@ -2157,7 +2195,10 @@ function migrate(d){ ensureAll(d); ensureIntro(d);
 function load(){
   try{
     const raw=localStorage.getItem("oredeep_v3");
-    if(raw){ S=Object.assign(freshState(),migrate(JSON.parse(raw))); ensureAll(S); return; }
+    if(raw){
+      S=Object.assign(freshState(),migrate(JSON.parse(raw)));
+      sanitizeState(S); ensureAll(S); return;
+    }
   }catch(e){}
   S=ensureAll(freshState());        // новый игрок тоже должен получить fair/science
 }

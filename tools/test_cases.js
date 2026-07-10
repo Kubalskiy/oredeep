@@ -746,5 +746,39 @@ S.science={on:true,done:0,goldOk:0,goldTotal:0};
   for(let i=0;i<30;i++){ const t=sciNextTask(); if(prev && t.id===prev) repeat=true; prev=t.id; }
   T("образец не повторяется два раза подряд (30 переходов)", !repeat); }
 
+console.log("\n[39] Битые сейвы, энергия, порог престижа");
+// gold строкой: раньше "много"+10 давало "много10", а fmt() рисовал ∞
+localStorage.setItem("oredeep_v3", JSON.stringify({gold:"много"}));
+load();
+T("строка в gold заменена числом", typeof S.gold==="number" && isFinite(S.gold));
+{ S.gold+=10; T("арифметика по gold не ломается", typeof S.gold==="number" && !Number.isNaN(S.gold)); }
+// lvls:null роняло stat()
+localStorage.setItem("oredeep_v3", JSON.stringify({lvls:null}));
+load();
+T("lvls:null восстановлен объектом", !!S.lvls && typeof S.lvls==="object");
+{ let ok=true; try{ stat("stone"); stat("atk"); }catch(e){ ok=false; } T("stat() не падает после битого сейва", ok); }
+// отрицательные валюты
+localStorage.setItem("oredeep_v3", JSON.stringify({gold:-500,gems:-1,bags:-9}));
+load();
+T("отрицательные валюты обнулены", S.gold===0 && S.gems===0 && S.bags===0);
+// мусорные типы
+localStorage.setItem("oredeep_v3", JSON.stringify({durab:999,speed:77,lvls:{atk:"пять",crit:-3}}));
+load();
+T("крепь зажата в [0,100]", S.durab>=0 && S.durab<=MINE_DURAB.max);
+T("скорость приведена к допустимой", SPEEDS.includes(S.speed));
+T("мусор в уровнях апгрейдов обнулён", S.lvls.atk===0 && S.lvls.crit===0);
+localStorage.setItem("oredeep_v3", "не json вовсе");
+{ let ok=true; try{ load(); }catch(e){ ok=false; } T("не-JSON сейв не роняет load()", ok && S.gold===0); }
+localStorage.removeItem("oredeep_v3"); load();
+// энергия не уходит в минус
+S.stageIdx=3000; newRock(); S.energy=1; S.lvls.luck=0; S.gear={};
+for(let i=0;i<50;i++) rockRespond();
+T("энергия не бывает отрицательной", S.energy>=0);
+// порог престижа согласован
+T("minStage === div (иначе кнопка врёт)", BALANCE.prestige.minStage===BALANCE.prestige.div);
+localStorage.removeItem("oredeep_v3"); load();
+S.stageIdx=BALANCE.prestige.div;
+T("на этапе первого уровня престиж уже доступен", prestigeGain()>=1 && canPrestige());
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
