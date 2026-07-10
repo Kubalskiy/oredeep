@@ -308,6 +308,10 @@ localStorage.removeItem("oredeep_v3"); load(); render();
     && modalButtons().some(x => x.call.startsWith("sciAnswer")));
   const opts = modalButtons().filter(x => x.call.startsWith("sciAnswer"));
   T("вариантов ответа не меньше двух", opts.length >= 2);
+  T("на экране есть образец и кнопка пропуска",
+    document.getElementById("metaBody").innerHTML.includes("specImg")
+    && modalButtons().some(x => x.call.startsWith("sciSkip")));
+  T("контрольные не помечены (антифрод)", !document.getElementById("metaBody").innerHTML.includes("контрольн"));
   const done0 = S.science.done, sh0 = S.shards || 0;
   click(opts[0].call);
   T("ответ засчитан и награда начислена", S.science.done === done0 + 1 && (S.shards || 0) >= sh0);

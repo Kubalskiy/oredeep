@@ -716,5 +716,35 @@ localStorage.setItem("oredeep_v3", JSON.stringify({gold:5,stageIdx:9}));
 load();
 T("древний сейв доинициализируется, данные целы", !!S.fair && !!S.science && S.gold===5 && S.stageIdx===9);
 
+console.log("\n[38] Гильдия: понятный экран и скрытые контрольные");
+localStorage.removeItem("oredeep_v3"); load();
+S.science={on:true,done:0,goldOk:0,goldTotal:0};
+{ const tasks=Platform.scienceTasks();
+  T("у каждого задания есть образец-картинка", tasks.every(t=>!!SPECIMENS[t.id]));
+  T("у каждого задания есть подсказка что искать", tasks.every(t=>t.hint && t.hint.length>10));
+  sciTask=tasks.find(t=>t.gold!=null); openGuild();
+  const h=__ids.metaBody.innerHTML;
+  T("экран показывает образец", h.includes("specImg"));
+  T("АНТИФРОД: контрольное задание ничем не помечено", !h.includes("контрольн"));
+  T("есть честный пропуск «не могу определить»", h.includes("sciSkip"));
+  T("виден прогресс и надёжность", h.includes("Размечено") && h.includes("Надёжность"));
+  sciTask=tasks.find(t=>t.gold==null); openGuild();
+  T("открытое задание тоже без пометки", !__ids.metaBody.innerHTML.includes("контрольн")); }
+{ S.shards=0; S.protein=0; const r0=sciReliability(), d0=S.science.done;
+  sciTask=Platform.scienceTasks()[0]; sciSkip();
+  T("пропуск не даёт награды и не бьёт по надёжности",
+    S.shards===0 && S.protein===0 && sciReliability()===r0 && S.science.done===d0);
+  T("пропуск выдаёт следующий образец", !!sciTask); }
+{ S.science={on:true,done:0,goldOk:0,goldTotal:0};
+  sciTask=Platform.scienceTasks().find(t=>t.id==="g1"); sciLastId="g1"; sciAnswer(2);
+  T("после ответа выдаётся другой образец", sciTask && sciTask.id!=="g1");
+  T("верный ответ на контрольное поднимает надёжность", S.science.goldOk===1); }
+{ // 30 переходов подряд: образец никогда не повторяется дважды подряд
+  Platform._sci={votes:{},retired:{}};
+  S.science={on:true,done:0,goldOk:0,goldTotal:0};
+  let prev=null, repeat=false;
+  for(let i=0;i<30;i++){ const t=sciNextTask(); if(prev && t.id===prev) repeat=true; prev=t.id; }
+  T("образец не повторяется два раза подряд (30 переходов)", !repeat); }
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
