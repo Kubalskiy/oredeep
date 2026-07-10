@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.80 «Копай глубже»</title>
+<title>ORE DEEP — v0.81 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -778,7 +778,7 @@
    ============================================================ */
 const BALANCE = {
   idle:{ base:100000, growth:2.5, damp:0.65, capSec:7200, minSec:60 },
-  combat:{ baseAPS:1.0, maxAPS:4.5, comboInner:0.1, maxCombo:4,
+  combat:{ maxHitsPerFrame:250, baseAPS:1.0, maxAPS:4.5, comboInner:0.1, maxCombo:4,
            bossEvery:20, critMul:2.2, hitChance:1.0 },
   venueStride:50, startProtein:200, shardRollCost:10, autoQueueMax:15,
   bagAnchors:[1,2,3,4,5,10,15,20,25,30,35,40,45,50],
@@ -815,7 +815,12 @@ const BALANCE = {
   /* Сумки (док §Экипировка и сумки): 1 сумка = 1 предмет, падают за победы.
      Auto Roll тратит сумку раз в autoSec: ниже порога — скупщику, с порога и
      выше — в очередь на решение игрока. */
-  bags:{ perVein:1, perBoss:3, autoSec:2, cap:9999 },
+  /* autoSec — ритм разбора, а НЕ пропускная способность. Раньше Auto Roll брал
+     ровно 1 сумку за autoSec, и если жила ломалась быстрее (переусиленный дворф,
+     ×100), очередь росла бесконечно: приход 5.1 сумки за кадр против разбора 0.80.
+     Теперь за тик разбирается вся очередь, но не больше maxPerTick за раз —
+     чтобы не ронять кадр. */
+  bags:{ perVein:1, perBoss:3, autoSec:2, cap:9999, maxPerTick:400 },
   /* Гильдия Рудознатцев — человеческая разметка (модель Zooniverse/Foldit).
      Ценен не процессор игрока (игра ест ~1.3% ядра), а его глаз и суждение.
      goldRate — доля контрольных заданий с известным ответом: по ним считаем
@@ -1326,7 +1331,7 @@ function doPrestige(){
   // сбрасывается: забой и всё, что куплено за софт-валюту
   S.gold=0; S.gear={}; S.stageIdx=1; S.stage=1; S.mine=0; S.bag=1;
   S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
-  S.loadoutTier=0; S.cartFill=0; S.durab=MINE_DURAB.max; durabTimer=0; lastDurabWarn=MINE_DURAB.max;
+  S.loadoutTier=0; S.cartFill=0; S.durab=MINE_DURAB.max; resetTimers();
   // сохраняется: навыки, старейшины, питомцы, коллекция, сеты, борода, валюты меты
   dead=false; if($("overlay")) $("overlay").style.display="none";
   Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
@@ -1379,8 +1384,10 @@ function onFind(forceR){
   S.col[mineKey][ri]=had+1;
   let extra;
   if(had>0){ S.gold+=val; const sh=BALANCE.shardYield[ri]||0;
-    if(sh){ S.shards=(S.shards||0)+sh; extra="дубликат → +"+fmt(val)+" 🪙 · +"+sh+" 💠"; }
-    else extra="дубликат → скупщику +"+fmt(val)+" 🪙"; }
+    if(sh) S.shards=(S.shards||0)+sh;
+    if(FAST()){ dupN++; dupGold+=val; dupShards+=sh; return; }   // на разгоне — одной строкой
+    extra = sh ? ("дубликат → +"+fmt(val)+" 🪙 · +"+sh+" 💠")
+               : ("дубликат → скупщику +"+fmt(val)+" 🪙"); }
   else if(setDone(mineKey)){
     extra="СЕТ СОБРАН! НАВСЕГДА: "+SET_BONUS[mineKey].label;
     Platform.logEvent("set_complete",{mine:mineKey});
@@ -1471,6 +1478,13 @@ function sayQuip(t,dur){ const b=$("bubble"); b.innerHTML="<b>Борин:</b> "+
 
 /* ---------- боевой тик (§5) ---------- */
 let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null, durabTimer=0, lastDurabWarn=100;
+/* Таймеры цикла — глобальные. Если их не сбрасывать при загрузке/престиже,
+   накопленный hitTimer прокручивает тысячи ударов в первом же кадре. */
+function resetTimers(){
+  hitTimer=0; respTimer=0; durabTimer=0; autoRollAcc=0; logAcc=0;
+  autoSoldN=0; autoSoldGold=0; dupN=0; dupGold=0; dupShards=0; sellN=0; sellGold=0; equipN=0;
+  lastDurabWarn=MINE_DURAB.max;
+}
 function newRock(){
   const isBoss=(S.stageIdx % BALANCE.combat.bossEvery)===0;   // босс каждый 20-й бой
   rock=rockStatsAt(S.stageIdx,isBoss);
@@ -1678,18 +1692,39 @@ function openBag(){
   Platform.logEvent("bag_open",{}); save(); render();
   return true;
 }
-/* Auto Roll: ниже порога — сразу скупщику, с порога и выше — обычный поток. */
-function autoOpenBag(){
+/* Auto Roll: ниже порога — сразу скупщику, с порога и выше — обычный поток.
+   Авто-продажи копятся и выводятся ОДНОЙ строкой: иначе на ×100 лог захлёбывался
+   (3183 сообщения за 600 кадров). */
+let autoSoldN=0, autoSoldGold=0;   // сумки
+let dupN=0, dupGold=0, dupShards=0;  // дубликаты камней -> скупщику
+let sellN=0, sellGold=0;             // слабый дроп -> скупщику
+let equipN=0;                        // авто-надевания
+let logAcc=0;
+const FAST=()=>((S&&S.speed)||1)>3;  // на разгоне сворачиваем, на ×1..×3 пишем как раньше
+function flushSales(){
+  if(dupN){ showToast("💎","Дубликаты","",dupN+"× камней",
+    "+"+fmt(dupGold)+" 🪙"+(dupShards?(" · +"+fmt(dupShards)+" 💠"):"")); dupN=0;dupGold=0;dupShards=0; }
+  if(sellN){ showToast("🎒","Скупщику","",sellN+"× слабый дроп","+"+fmt(sellGold)+" 🪙"); sellN=0;sellGold=0; }
+  if(equipN){ showToast("⚙","Авто-экипировка","",equipN+"× надето лучшее"); equipN=0; }
+  flushAutoSold();
+}
+function autoOpenBag(quiet){
   if((S.bags||0)<1) return false;
   S.bags--;
   const it=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
   if(it.r < (S.autoRollTier||0)){
     const p=sellPrice(it); S.gold+=p;
-    showToast("🎒",RAR_NAMES[it.r],"r"+it.r,"авто-продажа","+"+fmt(p)+" 🪙");
+    if(quiet){ autoSoldN++; autoSoldGold+=p; }
+    else showToast("🎒",RAR_NAMES[it.r],"r"+it.r,"авто-продажа","+"+fmt(p)+" 🪙");
   } else {
-    dropGearItem(it);
+    dropGearItem(it);            // редкое и важное — своя строка
   }
   return true;
+}
+function flushAutoSold(){
+  if(!autoSoldN) return;
+  showToast("🎒","Авто-продажа","",autoSoldN+"× ниже "+RAR_NAMES[S.autoRollTier||0],"+"+fmt(autoSoldGold)+" 🪙");
+  autoSoldN=0; autoSoldGold=0;
 }
 function toggleAutoRoll(){
   S.autoRoll=!S.autoRoll; autoRollAcc=0;
@@ -1719,12 +1754,14 @@ function dropGearItem(it){
     }
     S.gear[slot.id]=it;
     S.energy=Math.min(S.energy,stat("energy"));
-    showToast(slot.ic,RAR_NAMES[it.r],"r"+it.r,(it.s==="pick"&&it.n)?("Кирка «"+it.n+"»"):slot.n,extra);
+    if(FAST()) equipN++;                                          // на разгоне — одной строкой
+    else showToast(slot.ic,RAR_NAMES[it.r],"r"+it.r,(it.s==="pick"&&it.n)?("Кирка «"+it.n+"»"):slot.n,extra);
     sfxGear();
     renderGear();
   } else {
     const p=sellPrice(it);
     S.gold+=p;
+    if(FAST()){ sellN++; sellGold+=p; return; }                  // на разгоне — одной строкой
     showToast(slot.ic,RAR_NAMES[it.r],"r"+it.r,slot.n,"слабее надетого — скупщику +"+fmt(p)+" 🪙");
   }
 }
@@ -1773,7 +1810,10 @@ function loop(now){
   if(!paused){
     hitTimer+=dt; respTimer+=dt;
     const hitInt=1/stat("spd"), respInt=1/rock.resp;
-    while(hitTimer>=hitInt&&S.rockHP>0){ hitTimer-=hitInt; minerHit(); }
+    // предохранитель: даже при аномально большом dt не прокручиваем кадр бесконечно
+    let hits=0;
+    while(hitTimer>=hitInt && S.rockHP>0 && hits++<BALANCE.combat.maxHitsPerFrame){ hitTimer-=hitInt; minerHit(); }
+    if(hits>=BALANCE.combat.maxHitsPerFrame) hitTimer=0;
     while(respTimer>=respInt&&!dead&&S.rockHP>0){ respTimer-=respInt; rockRespond(); }
     // крепь падает во время активной добычи
     if(S.durab==null) S.durab=MINE_DURAB.max;
@@ -1787,11 +1827,17 @@ function loop(now){
     // редкий шанс обвала ниже порога безопасности
     if(S.autoRoll && (S.bags||0)>0){
       autoRollAcc+=dt;
-      while(autoRollAcc>=BALANCE.bags.autoSec && (S.bags||0)>0){
-        autoRollAcc-=BALANCE.bags.autoSec; autoOpenBag();
+      if(autoRollAcc>=BALANCE.bags.autoSec){
+        autoRollAcc=0;
+        // разбираем всю накопленную очередь, но не больше maxPerTick за кадр
+        let n=Math.min(S.bags||0, BALANCE.bags.maxPerTick);
+        while(n-- > 0 && (S.bags||0)>0) autoOpenBag(true);
+        // НЕ флашим здесь: flushSales раз в реальную секунду сам выведет свёрнутое,
+        // иначе на ×100 (тик каждые ~1.25 кадра) лог захлёбывался
       }
-      if((S.bags||0)===0) autoRollAcc=0;
-    }
+    } else if(!S.autoRoll) autoRollAcc=0;
+    logAcc+=rawDt;                       // реальные секунды, не игровые:
+    if(logAcc>=1){ logAcc=0; flushSales(); }   // иначе на ×100 флаш шёл каждый кадр
     durabTimer+=dt;
     while(durabTimer>=MINE_DURAB.checkSec){
       durabTimer-=MINE_DURAB.checkSec;
@@ -1965,7 +2011,11 @@ function render(){
   if(S.bag<50){ bb.textContent="LVL "+(S.bag+1)+": "+fmt(bagCost())+" 🪙"; bb.disabled=S.gold<bagCost(); }
   else { bb.textContent="MAX"; bb.disabled=true; }
   if($("bagCount")) $("bagCount").textContent=fmt(S.bags||0);
-  { const ob=$("openBagBtn"); if(ob&&"disabled"in ob) ob.disabled=(S.bags||0)<1; }
+  { const ob=$("openBagBtn");
+    if(ob){ const noBags=(S.bags||0)<1;
+      if("disabled"in ob) ob.disabled = noBags || !!S.autoRoll;
+      ob.textContent = S.autoRoll ? "Auto разбирает" : "Открыть";
+      if(ob.style) ob.style.opacity = (noBags||S.autoRoll) ? "0.55" : "1"; } }
   { const ar=$("autoRollBtn");
     if(ar){ ar.textContent=S.autoRoll?"Auto ✓":"Auto";
       if(ar.classList) ar.classList.toggle("gold",!!S.autoRoll); } }
@@ -2197,10 +2247,11 @@ function load(){
     const raw=localStorage.getItem("oredeep_v3");
     if(raw){
       S=Object.assign(freshState(),migrate(JSON.parse(raw)));
-      sanitizeState(S); ensureAll(S); return;
+      sanitizeState(S); ensureAll(S); resetTimers(); return;
     }
   }catch(e){}
   S=ensureAll(freshState());        // новый игрок тоже должен получить fair/science
+  resetTimers();
 }
 
 /* ---------- музыка подгорных чертогов (WebAudio, без файлов) ---------- */
@@ -3443,6 +3494,7 @@ $("speedBtn").onclick=()=>{
   if(next>1){ Platform.showRewarded(ok=>{ if(!ok) return; }); }
   Platform.logEvent("speed_toggle",{speed:next});
   S.speed=next;
+  flushSales();                                                  // хвост батча не теряем
   const q={1:"Спокойный темп. Медитируем.",2:"Двойной темп! Борода развевается!",
     3:"ТРОЙНОЙ! Держите шлем!",10:"×10! Кирка плавится!",100:"×100! ГОРА ДРОЖИТ!!!"};
   sayQuip(q[S.speed]||("×"+S.speed+"!"),3);

@@ -780,5 +780,33 @@ localStorage.removeItem("oredeep_v3"); load();
 S.stageIdx=BALANCE.prestige.div;
 T("на этапе первого уровня престиж уже доступен", prestigeGain()>=1 && canPrestige());
 
+console.log("\n[40] Auto Roll: пропускная способность, лог, кнопка");
+localStorage.removeItem("oredeep_v3"); load();
+S.bag=16; S.autoRoll=true; S.autoRollTier=7; S.speed=100; S.bags=0;
+S.stageIdx=300; S.lvls.atk=200; S.lvls.energy=500; S.lvls.luck=200; newRock(); dead=false;
+{ let peak=0, lines=0; const _st=showToast; showToast=function(){ lines++; };
+  for(let i=0;i<600;i++){ if(dead) closeOverlay(); frame(16); peak=Math.max(peak,S.bags); }
+  showToast=_st;
+  T("очередь Auto Roll не растёт у переусиленного дворфа (пик ≤ потолка)", peak<=BALANCE.bags.maxPerTick && S.bags<50, "пик "+peak);
+  T("лог свёрнут на ×100 (не спамит каждой продажей)", lines<250, lines+" строк"); }
+localStorage.removeItem("oredeep_v3"); load();
+S.bag=16; S.bags=495; S.autoRoll=true; S.autoRollTier=7; S.speed=1; dead=false; newRock();
+for(let i=0;i<400;i++) frame(50);
+T("накопленные 495 сумок разбираются", S.bags===0);
+S.bags=100; S.autoRoll=true; render();
+T("при Auto ON ручная «Открыть» заблокирована", __ids.openBagBtn.disabled===true);
+S.autoRoll=false; render();
+T("при Auto OFF «Открыть» активна", __ids.openBagBtn.disabled===false);
+{ const b0=S.bags; __ids.openBagBtn.onclick(); T("«Открыть» открывает ровно одну сумку", S.bags===b0-1); }
+// таймеры сбрасываются при load: первый кадр не прокручивает тысячи ударов
+localStorage.removeItem("oredeep_v3"); load();
+S.stageIdx=1; S.lvls.atk=999; newRock();
+hitTimer=999;                    // симулируем «зависший» таймер
+load();                          // load обязан его обнулить
+T("load() сбрасывает hitTimer", hitTimer===0);
+{ S.bag=16; S.autoRoll=true; S.autoRollTier=7; S.speed=100; S.bags=0; S.lvls.atk=200; newRock(); dead=false;
+  frame(16);
+  T("первый кадр не прокручивает бесконечные удары (предохранитель)", S.bags<=50, "сумок "+S.bags); }
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

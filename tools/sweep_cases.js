@@ -162,20 +162,29 @@ S.durab = MINE_DURAB.max; dead = false;
 if (collapseRiskPerMin() !== 0) BUG("крепь", "при полной крепи риск обвала не нулевой");
 else OK("при 100% крепи риск обвала = 0");
 
-/* ---- 7. Auto Roll: темп разбора совпадает с BALANCE.bags.autoSec ---- */
-console.log("\n[7] Auto Roll: темп разбора сумок");
+/* ---- 7. Auto Roll обязан УСПЕВАТЬ за приходом сумок ---- */
+console.log("\n[7] Auto Roll: очередь не растёт даже у переусиленного дворфа");
 localStorage.removeItem("oredeep_v3"); load();
-S.bag = 50; S.autoRoll = true; S.autoRollTier = 4; S.bags = 60; S.gold = 0; dead = false;
+S.bag = 16; S.autoRoll = true; S.autoRollTier = 7; S.speed = 100; S.bags = 0; S.gold = 0;
+S.stageIdx = 300; S.lvls.atk = 200; S.lvls.energy = 500; S.lvls.luck = 200; newRock(); dead = false;
 {
-  const start = S.bags, seconds = 60;               // одна виртуальная минута
-  for (let i = 0; i < seconds / 0.05; i++) { frame(50); if (pendingDrop) __ids.dropSell.onclick(); }
-  const used = start - S.bags;
-  const expected = seconds / BALANCE.bags.autoSec;  // 1 сумка на autoSec
-  if (Math.abs(used - expected) > 2)
-    BUG("AutoRoll", `за минуту разобрано ${used} сумок, ожидалось ~${expected}`);
-  else OK(`за минуту разобрано ${used} сумок (ожидалось ~${expected}), золото ${fmt(S.gold)}`);
-  S.bags = 0; S.autoRoll = false;
+  let peak = 0, lines = 0;
+  const _st = showToast; showToast = function () { lines++; };
+  for (let i = 0; i < 600; i++) { if (dead) closeOverlay(); frame(16); peak = Math.max(peak, S.bags); }
+  showToast = _st;
+  if (S.bags > 50) BUG("AutoRoll", `очередь не разбирается: осталось ${S.bags} сумок`);
+  else if (peak > BALANCE.bags.maxPerTick) BUG("AutoRoll", `очередь разрослась до ${peak} (потолок ${BALANCE.bags.maxPerTick})`);
+  else OK(`очередь удержана: пик ${peak}, осталось ${S.bags}, золото ${fmt(S.gold)}`);
+  if (lines > 200) BUG("лог", `на ×100 за 10 секунд ${lines} строк — авто-продажи не свёрнуты`);
+  else OK(`лог свёрнут: ${lines} строк за 600 кадров ×100`);
 }
+// накопленная очередь разбирается после включения Auto
+localStorage.removeItem("oredeep_v3"); load();
+S.bag = 16; S.bags = 495; S.autoRoll = true; S.autoRollTier = 7; S.speed = 1; dead = false; newRock();
+for (let i = 0; i < 400; i++) frame(50);
+if (S.bags !== 0) BUG("AutoRoll", `накопленные 495 сумок не разобраны за 20 сек: осталось ${S.bags}`);
+else OK("накопленные 495 сумок разобраны");
+S.bags = 0; S.autoRoll = false;
 checkState("после Auto Roll");
 
 /* ---- 8. Гильдия: 200 ответов ---- */
