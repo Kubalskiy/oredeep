@@ -29,7 +29,8 @@ console.log("\n[B] Обработчики .onclick привязаны");
 for (const id of ["prestigeBtn", "openBagBtn", "autoRollBtn", "autoTierBtn",
                   "geoName", "geoDesc", "reinfBtn", "bagBtn", "geoBtn",
                   "navSkills", "navPets", "navLoot", "colBtn", "speedBtn",
-                  "tabMineBtn", "tabHeroBtn", "tabMetaBtn", "fairBtn", "lbBtn"]) {
+                  "tabMineBtn", "tabHeroBtn", "tabMetaBtn", "fairBtn", "lbBtn",
+                  "guildBtn", "codexBtn", "introGo", "miner"]) {
   const el = document.getElementById(id);
   T("#" + id + " имеет onclick", !!(el && typeof el.onclick === "function"));
 }

@@ -655,5 +655,53 @@ renderPaperdoll();
   kids[0].onclick({stopPropagation(){}});
   T("клик по маркеру открывает карточку слота", __ids.metaModal.style.display==="flex"); }
 
+console.log("\n[35] Интро «Устав Горы»");
+localStorage.removeItem("oredeep_v3"); load();
+T("новый игрок интро ещё не видел", S.introSeen===false);
+showIntro();
+T("интро открывается и рисует все 10 пунктов",
+  __ids.introOv.classList.contains("on") && (__ids.introList.innerHTML.match(/class="iitem"/g)||[]).length===CODEX.length);
+closeIntro();
+T("после прочтения интро закрыто и помечено", !__ids.introOv.classList.contains("on") && S.introSeen===true);
+T("старым сейвам интро не показываем", (function(){ const d={}; ensureIntro(d); return d.introSeen===true; })());
+
+console.log("\n[36] Гильдия Рудознатцев (краудсорсинг)");
+localStorage.removeItem("oredeep_v3"); load();
+S.science={on:false,done:0,goldOk:0,goldTotal:0};
+openGuild();
+T("без согласия показывается экран согласия", __ids.metaBody.innerHTML.includes("Согласен, вступаю"));
+sciConsent(); T("согласие включает гильдию", S.science.on===true);
+S.science={on:true,done:0,goldOk:0,goldTotal:0};
+T("новичок: надёжность 0.5 (сглаживание Лапласа)", Math.abs(sciReliability()-0.5)<1e-9);
+S.science.goldOk=9; S.science.goldTotal=10;
+T("контрольные поднимают надёжность", sciReliability()>0.8);
+S.science.goldOk=0; S.science.goldTotal=20;
+T("провал контрольных обнуляет вес голоса", sciReliability()<0.1 && sciWeight()===0);
+Platform._sci={votes:{},retired:{}};
+T("одного голоса мало для консенсуса", Platform.scienceSubmit("o1",1,0.9).consensus===false);
+Platform.scienceSubmit("o1",1,0.9);
+{ const r=Platform.scienceSubmit("o1",1,0.9);
+  T("накопленный вес >= порога закрывает задание", r.consensus===true && r.label===1); }
+Platform._sci={votes:{},retired:{}};
+for(let i=0;i<50;i++) Platform.scienceSubmit("o2",0,0);
+T("50 голосов вредителя (вес 0) не закрывают задание", Platform._sci.retired["o2"]==null);
+Platform.scienceSubmit("o2",1,1.0); Platform.scienceSubmit("o2",1,1.0);
+T("честные голоса определяют метку, а не вредитель", Platform._sci.retired["o2"]===1);
+Platform._sci={votes:{},retired:{o1:1,o2:1,o3:1,o4:1}};
+S.science={on:true,done:0,goldOk:5,goldTotal:5};
+{ const _r=Math.random; Math.random=()=>0.99; const t=sciNextTask(); Math.random=_r;
+  T("закрытые задания больше не выдаются", t && t.gold!=null); }
+{ S.science={on:true,done:0,goldOk:0,goldTotal:20}; S.shards=0;
+  sciTask=Platform.scienceTasks().find(x=>x.gold==null); sciAnswer(0);
+  const low=S.shards;
+  S.science={on:true,done:0,goldOk:20,goldTotal:20}; S.shards=0;
+  sciTask=Platform.scienceTasks().find(x=>x.gold==null); sciAnswer(0);
+  T("награда масштабируется надёжностью", S.shards>low); }
+{ S.science={on:true,done:0,goldOk:0,goldTotal:0};
+  sciTask=Platform.scienceTasks().find(x=>x.gold!=null);
+  const g0=S.science.goldTotal; sciAnswer(sciTask.gold);
+  T("верный ответ на контрольное учтён", S.science.goldTotal===g0+1 && S.science.goldOk===1); }
+T("миграция создаёт гильдию выключенной", (function(){ const d={}; ensureScience(d); return d.science.on===false; })());
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
