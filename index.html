@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.77 «Копай глубже»</title>
+<title>ORE DEEP — v0.78 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -2105,7 +2105,14 @@ function ensurePrestige(d){ if(!d) return d;
   if(d.prestigeRuns==null) d.prestigeRuns=0;
   if(d.echo==null) d.echo=0;
   return d; }
-function migrate(d){ ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d); ensureCards(d); ensureFair(d); ensureIntro(d); ensureScience(d);
+/* Доинициализация полей. ВАЖНО: применяется и к свежему состоянию тоже —
+   иначе у нового игрока fair/science остаются null и экраны падают. */
+function ensureAll(d){
+  ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d);
+  ensureCards(d); ensureFair(d); ensureScience(d);
+  return d;
+}
+function migrate(d){ ensureAll(d); ensureIntro(d);
   if(!d.v||d.v<2){                       // v1→v2: новые поля Фазы 1
     if(!d.ftue) d.ftue={u:1,b:1};        // старым игрокам подсказки не нужны
     if(!d.streak) d.streak={n:0,last:""};
@@ -2128,9 +2135,9 @@ function migrate(d){ ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMer
 function load(){
   try{
     const raw=localStorage.getItem("oredeep_v3");
-    if(raw){ S=Object.assign(freshState(),migrate(JSON.parse(raw))); return; }
+    if(raw){ S=Object.assign(freshState(),migrate(JSON.parse(raw))); ensureAll(S); return; }
   }catch(e){}
-  S=freshState();
+  S=ensureAll(freshState());        // новый игрок тоже должен получить fair/science
 }
 
 /* ---------- музыка подгорных чертогов (WebAudio, без файлов) ---------- */

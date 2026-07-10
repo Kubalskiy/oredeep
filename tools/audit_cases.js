@@ -279,6 +279,81 @@ openLoot();
     /СОБРАНО 1 ИЗ 4/.test(document.getElementById("setCard").innerHTML));
 }
 
+/* ---------- 10. Тулбар: четыре кнопки открываются и работают ---------- */
+console.log("\n[J] Тулбар: Глубинный Зов / Гильдия / Устав / Честность");
+localStorage.removeItem("oredeep_v3"); load(); render();
+
+// --- Глубинный Зов ---
+{
+  document.getElementById("metaModal").style.display = "none";
+  document.getElementById("prestigeBtn").onclick();
+  T("«Глубинный Зов» открывает модалку", document.getElementById("metaModal").style.display === "flex");
+  const b = modalButtons().find(x => x.call.startsWith("confirmPrestige"));
+  T("внутри есть кнопка престижа", !!b);
+  T("на мелководье она заблокирована (но экран открылся)", b.disabled === true);
+  T("заголовок про престиж", /Глубинный Зов/.test(document.getElementById("metaTitle").textContent));
+}
+
+// --- Гильдия ---
+{
+  S.science = { on:false, done:0, goldOk:0, goldTotal:0 };
+  document.getElementById("metaModal").style.display = "none";
+  document.getElementById("guildBtn").onclick();
+  T("«Гильдия» открывает экран согласия", document.getElementById("metaModal").style.display === "flex"
+    && document.getElementById("metaBody").innerHTML.includes("Согласен, вступаю"));
+  const consent = modalButtons().find(x => x.call.startsWith("sciConsent"));
+  T("кнопка согласия есть и активна", consent && consent.disabled === false);
+  click(consent.call);
+  T("согласие включает гильдию и рисует задание", S.science.on === true
+    && modalButtons().some(x => x.call.startsWith("sciAnswer")));
+  const opts = modalButtons().filter(x => x.call.startsWith("sciAnswer"));
+  T("вариантов ответа не меньше двух", opts.length >= 2);
+  const done0 = S.science.done, sh0 = S.shards || 0;
+  click(opts[0].call);
+  T("ответ засчитан и награда начислена", S.science.done === done0 + 1 && (S.shards || 0) >= sh0);
+  T("после ответа выдано следующее задание", modalButtons().some(x => x.call.startsWith("sciAnswer")));
+}
+
+// --- Устав Горы ---
+{
+  document.getElementById("introOv").classList.remove("on");
+  document.getElementById("codexBtn").onclick();
+  T("«Устав Горы» открывает оверлей", document.getElementById("introOv").classList.contains("on"));
+  T("нарисованы все 10 пунктов",
+    (document.getElementById("introList").innerHTML.match(/class="iitem"/g) || []).length === CODEX.length);
+  document.getElementById("introGo").onclick();
+  T("кнопка «Спуститься в Гору» закрывает интро",
+    !document.getElementById("introOv").classList.contains("on") && S.introSeen === true);
+}
+
+// --- Честность гачи ---
+{
+  document.getElementById("metaModal").style.display = "none";
+  document.getElementById("fairBtn").onclick();
+  T("«Честность гачи» открывает модалку", document.getElementById("metaModal").style.display === "flex");
+  const h = document.getElementById("metaBody").innerHTML;
+  T("показан коммит серверного сида", h.includes(S.fair.serverHash));
+  const tg = modalButtons().find(x => x.call.startsWith("toggleFair"));
+  const rv = modalButtons().find(x => x.call.startsWith("revealFair"));
+  const sc = modalButtons().find(x => x.call.startsWith("setFairClient"));
+  T("есть кнопки: режим / сид / раскрытие", !!tg && !!sc && !!rv);
+  const was = S.fair.on;
+  click(tg.call);
+  T("переключатель честности работает", S.fair.on === !was);
+  document.getElementById("fairClient").value = "мойсид";
+  click(modalButtons().find(x => x.call.startsWith("setFairClient")).call);
+  T("клиентский сид задаётся и сбрасывает счётчик", S.fair.client === "мойсид" && S.fair.nonce === 0);
+  const oldServer = S.fair.server, oldHash = S.fair.serverHash;
+  click(modalButtons().find(x => x.call.startsWith("revealFair")).call);
+  T("раскрытие меняет сид и коммит валиден",
+    S.fair.server !== oldServer && S.fair.serverHash === SHA256(S.fair.server) && oldHash === SHA256(oldServer));
+  // при включённой честности гача реально идёт через хэш
+  S.fair.on = true; S.fair.server = "aaa"; S.fair.client = "bbb"; S.fair.nonce = 0;
+  const expect = parseInt(SHA256("aaa:bbb:0").slice(0, 8), 16) / 0x100000000;
+  T("гача считается по хэшу, а не Math.random", Math.abs(grandom() - expect) < 1e-12);
+  S.fair.on = false;
+}
+
 console.log("\n========== АУДИТ КНОПОК: " + pass + " PASS, " + fail + " FAIL ==========");
 
 console.log("\n========== АУДИТ КНОПОК: " + pass + " PASS, " + fail + " FAIL ==========");

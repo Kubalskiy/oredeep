@@ -703,5 +703,18 @@ S.science={on:true,done:0,goldOk:5,goldTotal:5};
   T("верный ответ на контрольное учтён", S.science.goldTotal===g0+1 && S.science.goldOk===1); }
 T("миграция создаёт гильдию выключенной", (function(){ const d={}; ensureScience(d); return d.science.on===false; })());
 
+console.log("\n[37] Свежая установка: все поля доинициализированы");
+localStorage.removeItem("oredeep_v3"); load();
+T("у нового игрока есть fair с валидным коммитом", !!S.fair && S.fair.serverHash===SHA256(S.fair.server));
+T("у нового игрока есть science (выключен)", !!S.science && S.science.on===false);
+T("у нового игрока есть durab/bags/chestKeys", S.durab===MINE_DURAB.max && S.bags===0 && S.chestKeys===1);
+{ let ok=true; try{ openFairness(); }catch(e){ ok=false; } T("«Честность гачи» не падает у нового игрока", ok); }
+{ let ok=true; try{ openGuild(); }catch(e){ ok=false; } T("«Гильдия» не падает у нового игрока", ok); }
+{ let ok=true; try{ openPrestige(); }catch(e){ ok=false; } T("«Глубинный Зов» не падает у нового игрока", ok); }
+{ let ok=true; try{ openWall(); }catch(e){ ok=false; } T("«Стена Горы» не падает у нового игрока", ok); }
+localStorage.setItem("oredeep_v3", JSON.stringify({gold:5,stageIdx:9}));
+load();
+T("древний сейв доинициализируется, данные целы", !!S.fair && !!S.science && S.gold===5 && S.stageIdx===9);
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
