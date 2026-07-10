@@ -634,5 +634,26 @@ T("мой рекорд попадает на стену", (function(){ const e=P
 S.stageIdx=50; submitMyScore();
 T("откат по глубине не портит рекорд", Platform.getLeaderboard().find(e=>e.name==="Ihor").depth===3000);
 
+console.log("\n[34] Paperdoll не перекрывает дворфа");
+localStorage.removeItem("oredeep_v3"); load();
+T("по умолчанию маркеры скрыты", !__ids.paperdoll.classList.contains("on"));
+__ids.miner.onclick();
+T("тап по дворфу показывает маркеры", __ids.paperdoll.classList.contains("on"));
+__ids.miner.onclick();
+T("повторный тап прячет", !__ids.paperdoll.classList.contains("on"));
+switchTab("Hero"); T("вкладка Герой показывает маркеры сама", __ids.paperdoll.classList.contains("on"));
+switchTab("Mine"); T("уход с Героя прячет маркеры", !__ids.paperdoll.classList.contains("on"));
+S.gear={}; SLOTS.slice(0,3).forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:2,m:1,i:1}; });
+renderPaperdoll();
+{ const kids=[...__ids.paperdoll.children];
+  T("маркеров ровно по числу слотов", kids.length===SLOTS.length);
+  const xs=kids.map(k=>parseFloat(k.style.left));
+  T("все маркеры вынесены за силуэт (не закрывают дворфа)", xs.every(x=>x<0||x>100));
+  T("текстовых подписей редкости нет", kids.every(k=>!(k.innerHTML||"").includes("pdt")));
+  T("надетые окрашены по редкости", kids.filter(k=>k.className.includes("r2")).length===3);
+  T("пустые слоты приглушены", kids.filter(k=>k.className.includes("empty")).length===SLOTS.length-3);
+  kids[0].onclick({stopPropagation(){}});
+  T("клик по маркеру открывает карточку слота", __ids.metaModal.style.display==="flex"); }
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

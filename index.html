@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.75 «Копай глубже»</title>
+<title>ORE DEEP — v0.76 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -243,20 +243,20 @@
   @keyframes auraPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}
                         50%{transform:translate(-50%,-50%) scale(1.12);opacity:.7}}
   /* --- Paperdoll: слоты прямо на дворфе (по мотивам Ultima Online) --- */
-  #paperdoll{position:absolute;inset:0;z-index:7;}
-  .pdm{position:absolute;width:19px;height:19px;transform:translate(-50%,-50%);
-    border-radius:50%;border:1.5px solid #ffffff55;background:#0d0f14cc;
-    display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;
-    box-shadow:0 1px 4px #000a;transition:transform .1s,border-color .2s;}
-  .pdm:hover,.pdm:active{transform:translate(-50%,-50%) scale(1.25);}
-  .pdm.empty{opacity:.5;filter:grayscale(1);}
+  /* Маркеры не лезут на дворфа: две колонки по бокам, скрыты пока не позовут */
+  #paperdoll{position:absolute;inset:0;z-index:7;display:none;}
+  #paperdoll.on{display:block;}
+  .pdm{position:absolute;width:13px;height:13px;transform:translate(-50%,-50%);
+    border-radius:50%;border:1.5px solid #ffffff44;background:#0d0f14e6;
+    display:flex;align-items:center;justify-content:center;font-size:7px;cursor:pointer;
+    box-shadow:0 1px 3px #000a;transition:transform .1s;}
+  .pdm:hover,.pdm:active{transform:translate(-50%,-50%) scale(1.35);}
+  .pdm.empty{opacity:.35;filter:grayscale(1);}
   .pdm.r0{border-color:#8f96a3}.pdm.r1{border-color:#5fd068}.pdm.r2{border-color:#5aa7e8}
   .pdm.r3{border-color:#b97ae8}.pdm.r4{border-color:#e87a7a}.pdm.r5{border-color:#e8b93c}
   .pdm.r6{border-color:#7ae8dc}.pdm.r7{border-color:#ff9d5c}
-  .pdm img{width:15px;height:15px;image-rendering:pixelated;}
-  .pdm .pdt{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
-    font-size:6px;font-weight:700;white-space:nowrap;padding:0 2px;border-radius:3px;
-    background:#0d0f14cc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  .pdm img{width:9px;height:9px;image-rendering:pixelated;}
+  #miner{cursor:pointer;}
   #setRing{position:absolute;left:2%;bottom:96px;display:flex;gap:3px;z-index:6;pointer-events:none;}
   #setRing span{font-size:11px;filter:drop-shadow(0 0 3px #000);animation:bob 2.6s ease-in-out infinite;}
   #prestigeMark{position:absolute;right:10px;top:8px;z-index:6;font-size:9px;color:var(--gold);
@@ -1971,6 +1971,7 @@ if($("reinfBtn")) $("reinfBtn").onclick=()=>reinforceMine();
 if($("prestigeBtn")) $("prestigeBtn").onclick=openPrestige;
 if($("fairBtn")) $("fairBtn").onclick=openFairness;
 if($("lbBtn")) $("lbBtn").onclick=openWall;
+if($("miner")) $("miner").onclick=()=>togglePaperdoll();
 ["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
 if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
 if($("geoName")) $("geoName").onclick=openGeoGuild;
@@ -2894,6 +2895,7 @@ function switchTab(name){
     if(btn&&btn.classList) btn.classList.toggle("on", t===name);
   }
   if(S){ S.tab=name; save(); }
+  togglePaperdoll(name==="Hero");
   Platform.logEvent("tab",{t:name});
 }
 /* Что сейчас требует внимания игрока — по одному признаку на вкладку. */
@@ -2922,9 +2924,10 @@ function renderBadges(){
 }
 /* Аура и эмблемы активных Сетов Подземелья прямо на дворфе. */
 /* ---------- Paperdoll: слоты на теле дворфа (Ultima Online) ---------- */
-const PD_POS={  // проценты внутри спрайта дворфа (117×135)
-  helm:  [50,10], glove:[86,52], pick:[16,44], robe:[50,50],
-  pack:  [15,30], boots:[38,92], lamp:[84,86], pet:[92,90]
+/* Колонки слева и справа от силуэта: маркер никогда не перекрывает дворфа. */
+const PD_POS={
+  helm: [-20, 10], robe: [-20, 36], pack: [-20, 62], boots:[-20, 88],
+  pick: [120, 10], glove:[120, 36], lamp: [120, 62], pet:  [120, 88]
 };
 function openGearSlot(id){
   const sl=SLOTS.find(s=>s.id===id); if(!sl) return;
@@ -2943,6 +2946,13 @@ function openGearSlot(id){
     head+statLines);
   Platform.logEvent("paperdoll_slot",{id});
 }
+function togglePaperdoll(force){
+  const pd=$("paperdoll"); if(!pd||!pd.classList) return;
+  const on=(force!==undefined)?force:!pd.classList.contains("on");
+  pd.classList.toggle("on",on);
+  Platform.logEvent("paperdoll_toggle",{on});
+  return on;
+}
 function renderPaperdoll(){
   const pd=$("paperdoll"); if(!pd||!pd.appendChild) return;
   while(pd.firstChild && pd.removeChild) pd.removeChild(pd.firstChild);
@@ -2953,8 +2963,9 @@ function renderPaperdoll(){
     m.className="pdm "+(it?("r"+it.r):"empty");
     m.style.left=pos[0]+"%"; m.style.top=pos[1]+"%";
     const ic=(sl.id==="pick"&&it)?`<img src="${PICK_ICONS[it.r]}">`:sl.ic;
-    m.innerHTML=ic+(it?`<span class="pdt r${it.r}">${RAR_NAMES[it.r].slice(0,4)}</span>`:"");
-    m.onclick=()=>openGearSlot(sl.id);
+    m.innerHTML=ic;
+    if(m.setAttribute) m.setAttribute("title", sl.n+(it?(" · "+RAR_NAMES[it.r]):" · пусто"));
+    m.onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); openGearSlot(sl.id); };
     pd.appendChild(m);
   }
 }
