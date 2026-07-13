@@ -37,14 +37,20 @@ for (const id of ["prestigeBtn", "openBagBtn", "autoRollBtn", "autoTierBtn",
 
 /* Собрать кнопки из отрендеренной модалки: [{fn, args, disabled}] */
 function modalButtons() {
-  const h = document.getElementById("metaBody").innerHTML || "";
   const out = [];
-  const re = /<button([^>]*)onclick="([^"]+)"([^>]*)>/g;
-  let m;
-  while ((m = re.exec(h))) {
-    const attrs = m[1] + m[3];
-    out.push({ call: m[2], disabled: /(^|\s)disabled(\s|=|>|$)/.test(attrs) });
-  }
+  const scan = (html) => {
+    const re = /<button([^>]*)onclick="([^"]+)"([^>]*)>/g;
+    let m;
+    while ((m = re.exec(html || ""))) {
+      const attrs = m[1] + m[3];
+      out.push({ call: m[2], disabled: /(^|\s)disabled(\s|=|>|$)/.test(attrs) });
+    }
+  };
+  const metaM = document.getElementById("metaModal");
+  if (metaM && metaM.style.display === "flex") scan(document.getElementById("metaBody")?.innerHTML);
+  const uiM = document.getElementById("uiScreen");
+  if (uiM && (uiM.style.display === "flex" || uiM.classList?.contains("open")))
+    scan(document.getElementById("uiBody")?.innerHTML);
   return out;
 }
 /* Клик по модальной кнопке = выполнить её onclick-выражение */
@@ -115,7 +121,7 @@ T("«Открыть» активна при сумках", document.getElementBy
 /* ---------- 5. Питомцы: merge ---------- */
 console.log("\n[E] Питомцы: кнопки слияния");
 S.gold = 0; S.petBox = {}; S.pet = null; boxAdd(S.petBox, 0, 0, 2);
-openPets();
+openPets("merge");
 {
   const mb = modalButtons().filter(b => b.call.startsWith("mergePet"));
   T("модалка питомцев рисует кнопку слияния", mb.length === 1);
@@ -123,7 +129,7 @@ openPets();
   const before = snap(); click(mb[0].call);
   T("клик по заблокированной не тратит копии", snap() === before);
 }
-boxAdd(S.petBox, 0, 0, 1); openPets();
+boxAdd(S.petBox, 0, 0, 1); openPets("merge");
 {
   const mb = modalButtons().find(b => b.call.startsWith("mergePet"));
   T("при 3 копиях слияние доступно", mb.disabled === false);
@@ -131,21 +137,21 @@ boxAdd(S.petBox, 0, 0, 1); openPets();
   T("слияние съело 3 и выдало следующую редкость",
     boxCountAt(S.petBox, 0, 0) === 0 && Object.keys(S.petBox).some(k => +k.split("_")[1] === 1));
 }
-S.petBox = {}; boxAdd(S.petBox, 1, 3, 5); openPets();
+S.petBox = {}; boxAdd(S.petBox, 1, 3, 5); openPets("merge");
 {
   const mb = modalButtons().find(b => b.call.startsWith("mergePet"));
   T("на Legendary кнопки слияния нет (предел)", !mb);
 }
-{ // кнопка ролла яйца
-  S.gold = 0; openPets();
+{ // кнопка ролла яйца (валюта — 🥚, не золото)
+  S.eggs = 0; openPets("gacha");
   const rb = modalButtons().find(b => b.call.startsWith("rollPet"));
-  T("«Яйцо» заблокировано без золота", rb && rb.disabled === true);
+  T("«Яйцо» заблокировано без яиц", rb && rb.disabled === true);
   const before = snap(); click(rb.call);
-  T("клик без золота не крутит гачу", snap() === before);
-  S.gold = 1e12; openPets();
+  T("клик без яиц не крутит гачу", snap() === before);
+  S.eggs = 5; openPets("gacha");
   const rb2 = modalButtons().find(b => b.call.startsWith("rollPet"));
   const r0 = S.petRolls; click(rb2.call);
-  T("«Яйцо» при золоте крутит ролл", S.petRolls === r0 + 1);
+  T("«Яйцо» при наличии яиц крутит ролл", S.petRolls === r0 + 1);
 }
 
 /* ---------- 6. Артель старейшин: merge + восхождение ---------- */

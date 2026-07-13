@@ -128,7 +128,7 @@ try { openBag(); } catch (e) { BUG("openBag при 0", e.message); }
 try { reinforceMine(); } catch (e) { BUG("reinforceMine при 0", e.message); }
 try { openSkillChest("wood"); openSkillChest("mith"); } catch (e) { BUG("openSkillChest при 0", e.message); }
 try { upSkill("atk_up"); } catch (e) { BUG("upSkill при 0", e.message); }
-try { rollPet(1000); } catch (e) { BUG("rollPet при 0", e.message); }
+try { S.eggs=0; rollPet(); } catch (e) { BUG("rollPet при 0", e.message); }
 try { mergeGeo(); ascendGeo(); } catch (e) { BUG("merge при 0", e.message); }
 try { craftBoxFromStones(1); upgradeBoxWithStones(1); fuseBoxes(1); } catch (e) { BUG("боксы при 0", e.message); }
 const snap1 = JSON.stringify({ g: S.gold, gm: S.gems, sh: S.shards, pr: S.protein, k: S.keys, ck: S.chestKeys });
