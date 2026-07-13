@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.86 «Копай глубже»</title>
+<title>ORE DEEP — v0.87 «Главный экран»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -42,7 +42,15 @@
   .navb .dot{top:4px;right:calc(50% - 16px);}
   .tabbar{display:none !important;}   /* заменён нижним навбаром */
 
-  .hud{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--panel);}
+  .hud{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;background:var(--panel);border-bottom:1px solid var(--line);}
+  .profChip{display:flex;align-items:center;gap:8px;background:#12151d;border:1px solid var(--line);border-radius:24px;padding:4px 10px 4px 4px;cursor:pointer;flex:none;}
+  .profChip .avatar{width:30px;height:30px;border-radius:50%;background:#1c2230;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;}
+  .profChip .pmeta{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0;}
+  .profChip .pmeta b{font-size:9px;color:var(--gold);white-space:nowrap;max-width:88px;overflow:hidden;text-overflow:ellipsis;}
+  .profChip .ptag{font-size:7px;color:#7ae8dc;}
+  .goldWrap{flex:1;min-width:0;text-align:right;}
+  .hudIcon{flex:none;width:34px;height:34px;border-radius:9px;background:#12151d;border:1px solid var(--line);color:var(--txt);font-size:15px;cursor:pointer;padding:0;}
+  .minebar.mb2{grid-template-columns:1fr 1fr;}
   .hud>div:first-child{min-width:0;flex:1;overflow:hidden;}
   .hud .gold{white-space:nowrap;}
   .hud .gold{font-weight:800;font-size:20px;color:var(--gold);}
@@ -53,6 +61,30 @@
 
   .minebar{display:flex;justify-content:space-around;padding:6px 0;background:#161a22;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
   .minebar b{display:block;color:var(--txt);font-size:13px;letter-spacing:0;}
+  .pwstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:6px 6px;background:#141821;border-top:1px solid #222836;border-bottom:1px solid #222836;}
+  .pwstrip .pw{display:flex;flex-direction:column;align-items:center;gap:1px;background:#1b202b;border-radius:5px;padding:5px 2px;}
+  .pwstrip .pwk{font-size:8px;color:var(--dim);letter-spacing:.3px;white-space:nowrap;}
+  .pwstrip .pw b{font-size:13px;color:var(--txt);line-height:1;}
+  .chDrop{border:1px solid;border-radius:8px;padding:10px;margin-top:10px;background:#161b24;}
+  .chDropTop{display:flex;align-items:center;gap:8px;}
+  .chDropTop .chIc{font-size:24px;}
+  .chSts{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;}
+  .chSt{display:flex;justify-content:space-between;background:#1b202b;border-radius:5px;padding:4px 7px;font-size:11px;}
+  .chSt b{color:#5fd068;}
+  .chUp{margin-top:12px;background:#141821;border:1px solid #222836;border-radius:8px;padding:10px;}
+  .chUpHead{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:6px;}
+  .chCols{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .chColT{text-align:center;margin-bottom:4px;}
+  .chRow{display:flex;align-items:center;gap:5px;margin:3px 0;font-size:10px;}
+  .chNm{width:52px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .chBar{flex:1;height:6px;background:#0d1016;border-radius:3px;overflow:hidden;}
+  .chFill{height:100%;border-radius:3px;}
+  .br0b{background:#7d8694}.br1b{background:#5fd068}.br2b{background:#5aa7e8}.br3b{background:#b97ae8}
+  .br4b{background:#e87a7a}.br5b{background:#e8b93c}.br6b{background:#7ae8dc}.br7b{background:#ff9d5c}
+  .chPc{width:34px;flex:none;text-align:right;color:var(--dim);}
+  .chTimer{display:flex;align-items:center;gap:8px;margin-top:8px;}
+  .chTimerBar{flex:1;height:5px;background:#0d1016;border-radius:3px;overflow:hidden;}
+  .chTimerFill{height:100%;background:#5aa7e8;border-radius:3px;}
   .minebar .mid b{color:var(--blue);}
 
   .scene{position:relative;height:240px;overflow:hidden;
@@ -445,14 +477,20 @@
 <div id="app">
 <div id="view">
   <div class="hud">
-    <div>
+    <button class="profChip" id="profChip">
+      <span class="avatar" id="hudAvatar">🧔</span>
+      <span class="pmeta">
+        <b id="minerRank">БЕЗБОРОДЫЙ</b>
+        <span id="hudPrestige" class="ptag"></span>
+      </span>
+    </button>
+    <div class="goldWrap">
       <div class="gold">🪙 <span id="gold">0</span></div>
       <div class="gps">+<span id="gps">0</span>/с</div>
       <div class="gps" id="streakLine" style="color:#ff9d5c"></div>
       <div id="gemLine" style="display:none">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span> · 🍺 <span id="protein">0</span> · 💠 <span id="shards">0</span></div>
     </div>
-    <div class="right">ORE DEEP<br><b>копай глубже. ещё.</b></div>
-    <button id="musicBtn" title="музыка">🔊</button>
+    <button id="settingsBtn" class="hudIcon" title="настройки">☰</button>
   </div>
 
   <div class="curbar">
@@ -465,10 +503,9 @@
     <span class="cur" title="Кубки">🏆 <b id="curTrophies">0</b></span>
   </div>
 
-  <div class="minebar">
-    <div>ДВОРФ<br><b id="minerRank">БЕЗБОРОДЫЙ</b></div>
-    <div class="mid">ЧЕРТОГ<br><b id="mineLabel">1-1</b></div>
-    <div>ГЛУБИНА<br><b id="stageLabel">3 м</b></div>
+  <div class="minebar mb2">
+    <div>ЧЕРТОГ<br><b id="mineLabel">1-1</b></div>
+    <div>ПРОГОН<br><b id="stageLabel">3 м</b></div>
   </div>
 
 
@@ -614,6 +651,14 @@
     <button id="speedBtn">×1 СКОРОСТЬ</button>
   </div>
 
+  <div class="pwstrip" id="pwStrip">
+    <div class="pw"><span class="pwk">⚔ АТК</span><b id="pAtk">—</b></div>
+    <div class="pw"><span class="pwk">⚡ СКОР</span><b id="pSpd">—</b></div>
+    <div class="pw"><span class="pwk">✷ КРИТ</span><b id="pCrit">—</b></div>
+    <div class="pw"><span class="pwk">⛏ ДОБ</span><b id="pMin">—</b></div>
+    <div class="pw"><span class="pwk">🍀 УДАЧ</span><b id="pLuck">—</b></div>
+  </div>
+
   <div id="logWrap">
     <div id="log"></div>
     <div id="logPager">
@@ -663,6 +708,7 @@
       </div>
       <button id="autoTierBtn" style="margin-top:6px;font-size:7px">порог: —</button>
       <button class="gold" id="bagBtn" style="margin-top:6px"></button>
+      <button id="chestWinBtn" style="margin-top:6px">🧰 Окно сундука</button>
     </div>
     <div class="card">
       <div class="t">Старейшина клана</div>
@@ -718,6 +764,31 @@
     <button class="navb" id="navTavBtn"><span class="ni">🍺</span><span class="nl">ТАВЕРНА</span></button>
     <button class="navb" data-nav="Meta"><span class="ni">☰</span><span class="nl">ЕЩЁ</span><i class="dot" id="ndotMeta"></i></button>
   </nav>
+
+  <div class="modal" id="setModal2">
+    <div class="box">
+      <h3>⚙ Настройки</h3>
+      <div class="metarow"><span>Музыка</span><button id="setMusic">🔊 вкл</button></div>
+      <div class="metarow"><span>Устав Горы</span><button onclick="showIntro()">📜 читать</button></div>
+      <div class="metarow"><span>Честность гачи</span><button onclick="openFairness()">🔐 открыть</button></div>
+      <div class="metarow"><span>Стена Горы</span><button onclick="openWall()">🏔 рейтинг</button></div>
+      <div class="sub" style="margin-top:12px">Версия ORE DEEP · копай глубже. ещё.</div>
+      <button class="red" style="margin-top:10px" onclick="document.getElementById('setModal2').style.display='none';document.getElementById('resetBtn').onclick&&document.getElementById('resetBtn').onclick()">↺ Всё сначала</button>
+      <button style="margin-top:8px" onclick="document.getElementById('setModal2').style.display='none'">Закрыть</button>
+    </div>
+  </div>
+
+  <div class="modal" id="profModal">
+    <div class="box"><div id="profCard"></div>
+      <button style="margin-top:12px" onclick="document.getElementById('profModal').style.display='none'">Закрыть</button>
+    </div>
+  </div>
+
+  <div class="modal" id="chestModal">
+    <div class="box"><div id="chestCard"></div>
+      <button style="margin-top:12px" onclick="document.getElementById('chestModal').style.display='none'">Закрыть</button>
+    </div>
+  </div>
 
   <div class="modal" id="metaModal">
     <div class="box">
@@ -2076,6 +2147,13 @@ function render(){
   $("sCrit").textContent=Math.round(stat("crit"))+"%";
   $("sLuck").textContent=Math.round(stat("luck"))+"%";
   { const st=stat("stone"); $("sStone").textContent=(st>=1000?fmt(st):Math.round(st))+"%"; }
+  if($("pAtk")){
+    $("pAtk").textContent=fmt(stat("atk"));
+    $("pSpd").textContent=stat("spd").toFixed(1);
+    $("pCrit").textContent=Math.round(stat("crit"))+"%";
+    $("pMin").textContent=Math.round(stat("mining"));
+    $("pLuck").textContent=Math.round(stat("luck"))+"%";
+  }
   $("findChance").textContent=Math.round(findChance());
   $("speedBtn").textContent="×"+(S.speed||1)+" СКОРОСТЬ";
   $("bagLvl").textContent=S.bag;
@@ -2204,6 +2282,9 @@ if($("miner")) $("miner").onclick=()=>togglePaperdoll();
 if($("codexBtn")) $("codexBtn").onclick=showIntro;
 if($("guildBtn")) $("guildBtn").onclick=()=>{ sciTask=null; openGuild(); };
 if($("gymBtn")) $("gymBtn").onclick=openGym;
+if($("profChip")) $("profChip").onclick=openProfile;
+if($("settingsBtn")) $("settingsBtn").onclick=function(){ $("setModal2").style.display="flex"; };
+if($("setMusic")) $("setMusic").onclick=function(){ const mb=$("musicBtn"); if(mb&&mb.onclick) mb.onclick(); };
 if($("stickBtn")) $("stickBtn").onclick=openStickers;
 if($("introGo")) $("introGo").onclick=closeIntro;
 ["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
@@ -2216,6 +2297,7 @@ if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
 if($("geoName")) $("geoName").onclick=openGeoGuild;
 if($("geoDesc")) $("geoDesc").onclick=openGeoGuild;
 if($("autoRollBtn")) $("autoRollBtn").onclick=toggleAutoRoll;
+if($("chestWinBtn")) $("chestWinBtn").onclick=openChest;
 if($("autoTierBtn")) $("autoTierBtn").onclick=cycleAutoTier;
 if($("logNext")&&$("logNext").addEventListener){
   $("logNext").onclick=()=>{ logPage--; renderLog(); };
@@ -3035,6 +3117,129 @@ function giftStickers(){
   Platform.logEvent("sticker_gift",{n:d}); save(); render(); openStickers();
   return true;
 }
+function openProfile(){
+  const w=beardWisdom(), depth=S.stageIdx*3;
+  const setName="var v=document.getElementById('profName').value.trim().slice(0,18); if(v){S.playerName=v; save(); openProfile();}";
+  $("profCard").innerHTML=
+    '<div style="text-align:center;margin-bottom:10px"><div style="font-size:40px">🧔</div>'+
+    '<h3 style="margin:4px 0">'+playerName()+'</h3>'+
+    '<div class="sub">'+w.title+((S.prestigeLv||0)?(" · ⛰ Престиж "+S.prestigeLv):"")+'</div></div>'+
+    '<div class="metarow"><span>Глубина прогона</span><span><b>'+Math.min(S.stageIdx,BALANCE.run.len)+'/'+BALANCE.run.len+'</b></span></div>'+
+    '<div class="metarow"><span>Рекорд глубины</span><span><b>'+fmt(S.bestDepth||depth)+' м</b></span></div>'+
+    '<div class="metarow"><span>Престиж · спусков</span><span>'+(S.prestigeLv||0)+' · '+(S.prestigeRuns||0)+'</span></div>'+
+    '<div class="metarow"><span>Мудрость Бороды</span><button class="buy" onclick="openBeard()">'+w.title+'</button></div>'+'<div class="metarow"><span>Зал</span><span>ур.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
+    '<div class="metarow"><span>Побед в PvP · кубков</span><span>'+(S.pvpWins||0)+' · '+fmt(S.trophies||0)+'</span></div>'+
+    '<div class="metarow"><span>Имя</span><span><input id="profName" value="'+playerName()+'" maxlength="18" style="width:110px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px;font-size:9px"><button class="buy" style="margin-left:6px" onclick="'+setName+'">✓</button></span></div>';
+  $("profModal").style.display="flex"; Platform.logEvent("profile_view",{});
+}
+
+
+/* ---------- Окно сундука: открыть (надеть/продать) + апгрейд (шансы/таймер/пропуск) ---------- */
+const CHEST_STAT_LBL={atk:"АТК",energy:"Энергия",tough:"Крепёж",crit:"Крит",luck:"Удача",
+  mining:"Добыча",stone:"Камни",spd:"Скорость",regen:"Реген",stamina:"Выносл."};
+let chestPending=null;   // предмет, ждущий решения игрока (надеть/продать)
+function chestStatVal(v){ return v>=100?Math.round(v):(v>=10?v.toFixed(1):v.toFixed(2)); }
+function chestChanceRows(lvl){
+  const w=bagWeights(lvl);
+  let h="";
+  for(let r=0;r<8;r++){
+    const p=w[r];
+    if(p<0.05) continue;
+    const pct=p>=10?Math.round(p):p.toFixed(1);
+    h+='<div class="chRow"><span class="chNm r'+r+'">'+RAR_NAMES[r]+'</span>'
+      +'<div class="chBar"><div class="chFill br'+r+'b" style="width:'+Math.min(100,p).toFixed(1)+'%"></div></div>'
+      +'<span class="chPc">'+pct+'%</span></div>';
+  }
+  return h;
+}
+function renderChestCard(){
+  const el=$("chestCard"); if(!el) return;
+  const lvl=S.bag, atCap=lvl>=50, c=bagCost(), canUp=!atCap&&(S.gold||0)>=c;
+  const nb=nextBagName(lvl);
+  // блок результата открытия
+  let pend="";
+  if(chestPending){
+    const it=chestPending, sl=SLOTS.find(s=>s.id===it.s);
+    let stats="";
+    for(const k in sl.st){ stats+='<div class="chSt"><span>'+(CHEST_STAT_LBL[k]||k)+'</span><b>+'+chestStatVal(itemStat(it,k))+'</b></div>'; }
+    const old=S.gear[it.s];
+    const better=!old||itemPower(it)>itemPower(old);
+    const cmp=old?('<div class="sub" style="margin-top:5px" class="'+(better?"r1":"r4")+'">'+(better?"▲ сильнее надетого":"▼ слабее надетого")+'</div>'):'<div class="sub" style="margin-top:5px">слот был пуст</div>';
+    pend='<div class="chDrop br'+it.r+'">'
+      +'<div class="chDropTop"><span class="chIc">'+sl.ic+'</span>'
+      +'<div><b class="r'+it.r+'">'+RAR_NAMES[it.r]+'</b><div class="sub">'+(it.n||sl.n)+'</div></div></div>'
+      +'<div class="chSts">'+stats+'</div>'+cmp
+      +'<div class="btnrow" style="margin-top:8px">'
+      +'<button class="buy" onclick="equipChestItem()">Надеть</button>'
+      +'<button class="gold" onclick="sellChestItem()">Продать · '+fmt(sellPrice(it))+' 🪙</button>'
+      +'</div></div>';
+  }
+  const openBtn=(S.bags||0)>0
+    ? '<button class="buy" onclick="chestOpenOne()">Открыть сундук · 🎒'+(S.bags||0)+'</button>'
+    : '<button class="buy" disabled>Нет сумок · 🎒0</button>';
+  // блок апгрейда: таблица шансов текущий → следующий уровень
+  let upBlock='';
+  if(atCap){
+    upBlock='<div class="chUp"><div class="sub" style="text-align:center">Предел жадности достигнут — сундук прокачан до конца.</div></div>';
+  } else {
+    upBlock='<div class="chUp">'
+      +'<div class="chUpHead"><span>Шансы дропа</span><span class="sub">ур.'+lvl+' → '+(lvl+1)+'</span></div>'
+      +'<div class="chCols"><div class="chCol"><div class="chColT sub">сейчас</div>'+chestChanceRows(lvl)+'</div>'
+      +'<div class="chCol"><div class="chColT sub">после</div>'+chestChanceRows(lvl+1)+'</div></div>'
+      +(nb?('<div class="sub" style="margin-top:6px;text-align:center">до «'+nb[1]+'»: '+(nb[0]-lvl)+' ур.</div>'):'')
+      +'<div class="chTimer"><div class="chTimerBar"><div class="chTimerFill" style="width:100%"></div></div>'
+      +'<span class="sub" id="chTimerLbl">апгрейд мгновенный</span></div>'
+      +'<div class="btnrow" style="margin-top:8px">'
+      +'<button class="gold" id="chUpBtn" onclick="chestUpgrade()" '+(canUp?'':'disabled')+'>Апгрейд · '+fmt(c)+' 🪙</button>'
+      +'<button id="chSkipBtn" onclick="chestSkip()" title="пропустить ожидание">Пропуск ⏩</button>'
+      +'</div></div>';
+  }
+  el.innerHTML='<h3 style="margin:0 0 2px">🧰 '+bagName(lvl)+'</h3>'
+    +'<div class="sub">Сундук находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
+    +'<div class="chOpen" style="margin-top:10px">'+openBtn
+    +'<button onclick="toggleAutoRoll()" style="margin-left:6px">'+(S.autoRoll?"Auto ✓":"Auto")+'</button></div>'
+    +pend+upBlock;
+}
+function openChest(){ chestPending=null; renderChestCard(); $("chestModal").style.display="flex"; Platform.logEvent("chest_view",{lv:S.bag}); }
+function chestOpenOne(){
+  if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return; }
+  S.bags--; dailyProgress("bag",1);
+  chestPending=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
+  Platform.logEvent("chest_open",{r:chestPending.r}); save(); renderChestCard();
+}
+function equipChestItem(){
+  if(!chestPending) return;
+  const it=chestPending, old=S.gear[it.s];
+  if(it.s==="pick"&&it.n){ S.pickLog=S.pickLog||{}; S.pickLog[it.n]=true; }
+  S.gear[it.s]=it;
+  if(old){ const p=sellPrice(old); S.gold+=p; showToast("⚙",SLOTS.find(s=>s.id===it.s).n,"","надето · старое скупщику","+"+fmt(p)+" 🪙"); }
+  else showToast("⚙",SLOTS.find(s=>s.id===it.s).n,"","надето. Дворф доволен.");
+  chestPending=null; save(); render(); renderChestCard();
+}
+function sellChestItem(){
+  if(!chestPending) return;
+  const it=chestPending, p=sellPrice(it); S.gold+=p;
+  showToast("🎒",RAR_NAMES[it.r],"r"+it.r,"продано скупщику","+"+fmt(p)+" 🪙");
+  chestPending=null; save(); render(); renderChestCard();
+}
+function chestUpgrade(){
+  const c=bagCost();
+  if(S.bag>=50||S.gold<c) return;
+  if(S.ftue&&!S.ftue.b){ S.ftue.b=1; if($("bagBtn"))$("bagBtn").classList.remove("pulse"); }
+  const oldName=bagName(S.bag);
+  S.gold-=c; S.bag++;
+  Platform.logEvent("bag_upgrade",{level:S.bag});
+  if(bagName(S.bag)!==oldName){
+    showToast("🧰","Новый сундук!","",bagName(S.bag),"редкости дропа сдвинулись вверх");
+    sayQuip("Ого, «"+bagName(S.bag)+"»! Дед бы одобрил.",4);
+  }
+  save(); render(); renderChestCard();
+}
+function chestSkip(){
+  /* апгрейд сундука мгновенный — пропускать нечего; интерфейс-заглушка под будущий таймер */
+  showToast("⏩","Пропуск","","апгрейд и так мгновенный","таймер появится позже");
+}
+
 function openGym(){
   const lv=gymLevel(), xp=S.gymXP||0;
   const nextAt=GYM_LEVELS[lv+1], atCur=GYM_LEVELS[lv]||0;
@@ -3193,7 +3398,7 @@ function sipAle(){
   jingleFind();
   Platform.logEvent("ale_sip",{});
 }
-$("minerRank").onclick=()=>{
+function openBeard(){
   const w=beardWisdom(); const need=beardNextXP(w.lv), have=S.beardXP||0;
   const isMax=w.lv>=BEARD_RANKS.length-1;
   metaOpen("Мудрость Бороды","Чем длиннее и седее борода — тем выше ранг и мощнее бонус.",
@@ -3202,7 +3407,7 @@ $("minerRank").onclick=()=>{
      <div class="metarow"><span>Прогресс</span><span>${isMax?"МАКСИМУМ ✓":fmt(have)+" / "+fmt(need)+" XP"}</span></div>
      <div class="sub" style="margin-top:10px">Борода растёт от добычи жил, вех глубины и дней стрика. Ранг виден в HUD и на карточке хвастовства.</div>`);
   Platform.logEvent("beard_view",{lv:w.lv});
-};
+}
 
 /* ============================================================
    ЛУТБОКСЫ и СЕТЫ ПОДЗЕМЕЛЬЯ (билды)

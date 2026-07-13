@@ -178,7 +178,7 @@ localStorage.removeItem("oredeep_v3"); load();
 console.log("\n[21] Бороды-стрижки и распитие эля");
 localStorage.removeItem("oredeep_v3"); load();
 T("5 стилей бород загружены", typeof BEARD_STYLES!=="undefined" && BEARD_STYLES.length===5);
-__ids.minerRank.onclick();
+openBeard();
 T("кнопка бороды открывает ранг", __ids.metaModal.style.display==="flex" && __ids.metaTitle.textContent.includes("Мудрость"));
 // эль восстанавливает энергию
 S.stageIdx=1; newRock(); S.energy=1; const before=S.energy;
@@ -947,6 +947,22 @@ T("кнопка навбара «Таверна» привязана", typeof __
 switchTab("Meta");
 T("switchTab прокручивает view наверх", __ids.view.scrollTop===0);
 T("switchTab подсвечивает вкладку Меты", __ids.tabMeta.classList.contains("on"));
+switchTab("Mine"); render();
+T("полоса боевых статов существует", !!__ids.pwStrip);
+T("полоса боевых статов заполнена АТК", __ids.pAtk.textContent!=="" && __ids.pAtk.textContent!=="—");
+
+console.log("\n[48] Окно сундука: открыть/надеть/продать/апгрейд");
+localStorage.removeItem("oredeep_v3"); load();
+openChest();
+T("окно сундука открывается", __ids.chestModal.style.display==="flex");
+T("карточка сундука отрендерена", __ids.chestCard.innerHTML.indexOf("Сундук находок")>=0);
+T("таблица шансов присутствует", __ids.chestCard.innerHTML.indexOf("Шансы дропа")>=0);
+S.bags=3; chestOpenOne();
+T("открытие сундука тратит сумку и готовит предмет", S.bags===2 && !!chestPending);
+{ const g0=S.gold; sellChestItem(); T("продажа даёт золото и сбрасывает предмет", S.gold>g0 && chestPending===null); }
+S.bags=1; chestOpenOne(); { const sl=chestPending.s; equipChestItem();
+  T("надевание кладёт предмет в слот", !!S.gear[sl] && chestPending===null); }
+{ S.bag=1; S.gold=bagCost()*3; const b0=S.bag; chestUpgrade(); T("апгрейд из окна повышает уровень сундука", S.bag===b0+1); }
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
