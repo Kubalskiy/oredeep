@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.85 «Копай глубже»</title>
+<title>ORE DEEP — v0.86 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -14,9 +14,33 @@
     --txt:#e8e6df; --dim:#8a93a3;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
-    font-family:-apple-system,"Segoe UI",Roboto,sans-serif; height:100%; overflow-x:hidden;}
-  #app{max-width:430px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+  html,body{margin:0;padding:0;background:#05060a;color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,sans-serif;height:100%;overflow:hidden;}
+  /* Мобильный телефон-фрейм: портрет, база 9:16, тянется до 9:20. На десктопе
+     центрируется с рамкой, на телефоне занимает весь экран. */
+  body{display:flex;align-items:center;justify-content:center;}
+  #app{
+    position:relative;
+    width:min(100vw, calc(100vh * 9 / 16));      /* ширина от высоты по 9:16 */
+    height:min(100vh, calc(100vw * 20 / 9));      /* высота до 9:20 */
+    max-width:480px;
+    background:var(--bg);
+    display:flex;flex-direction:column;overflow:hidden;   /* фрейм клипует */
+    box-shadow:0 0 0 1px #1a1f2a, 0 10px 60px -10px #000;
+  }
+  @media(min-width:520px){ #app{ border-radius:20px; height:min(96vh, 900px); } }
+  /* Прокручиваемая зона = всё, кроме нижнего навбара */
+  #view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overflow-x:hidden;}
+  /* Нижний навбар — фиксированный низ фрейма, всегда виден */
+  #bottomNav{display:flex;flex:none;background:#0d0f14;border-top:1px solid #1c2230;
+    padding:4px 4px calc(4px + env(safe-area-inset-bottom));}
+  .navb{position:relative;flex:1;background:none;border:0;color:var(--dim);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:10px;}
+  .navb .ni{font-size:19px;line-height:1;}
+  .navb .nl{font-size:7px;font-weight:800;letter-spacing:.5px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  .navb.on{color:var(--gold);background:#151a24;}
+  .navb .dot{top:4px;right:calc(50% - 16px);}
+  .tabbar{display:none !important;}   /* заменён нижним навбаром */
 
   .hud{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--panel);}
   .hud>div:first-child{min-width:0;flex:1;overflow:hidden;}
@@ -419,6 +443,7 @@
 </head>
 <body>
 <div id="app">
+<div id="view">
   <div class="hud">
     <div>
       <div class="gold">🪙 <span id="gold">0</span></div>
@@ -684,13 +709,15 @@
     <button id="lbBtn" class="gold">🏔 Стена Горы</button>
     <button id="resetBtn" class="red">↺ Всё сначала (клянусь бородой)</button>
   </div>
-  </div>
+  </div><!-- /view -->
 
-
-
-
-
-
+  <nav id="bottomNav">
+    <button class="navb" data-nav="Mine"><span class="ni">⛏</span><span class="nl">ЗАБОЙ</span><i class="dot" id="ndotMine"></i></button>
+    <button class="navb" data-nav="Hero"><span class="ni">🧔</span><span class="nl">ГЕРОЙ</span><i class="dot" id="ndotHero"></i></button>
+    <button class="navb" id="navPetsBtn"><span class="ni">🐕</span><span class="nl">ЗВЕРИ</span><i class="dot" id="ndotPets"></i></button>
+    <button class="navb" id="navTavBtn"><span class="ni">🍺</span><span class="nl">ТАВЕРНА</span></button>
+    <button class="navb" data-nav="Meta"><span class="ni">☰</span><span class="nl">ЕЩЁ</span><i class="dot" id="ndotMeta"></i></button>
+  </nav>
 
   <div class="modal" id="metaModal">
     <div class="box">
@@ -2180,6 +2207,11 @@ if($("gymBtn")) $("gymBtn").onclick=openGym;
 if($("stickBtn")) $("stickBtn").onclick=openStickers;
 if($("introGo")) $("introGo").onclick=closeIntro;
 ["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
+document.querySelectorAll&&document.querySelectorAll("#bottomNav .navb[data-nav]").forEach(b=>{
+  b.onclick=()=>switchTab(b.getAttribute("data-nav"));
+});
+if($("navPetsBtn")) $("navPetsBtn").onclick=()=>openPets();
+if($("navTavBtn")) $("navTavBtn").onclick=()=>openGym();
 if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
 if($("geoName")) $("geoName").onclick=openGeoGuild;
 if($("geoDesc")) $("geoDesc").onclick=openGeoGuild;
@@ -3307,6 +3339,10 @@ function switchTab(name){
     if(panel&&panel.classList) panel.classList.toggle("on", t===name);
     if(btn&&btn.classList) btn.classList.toggle("on", t===name);
   }
+  document.querySelectorAll&&document.querySelectorAll("#bottomNav .navb").forEach(b=>{
+    if(b.classList) b.classList.toggle("on", b.getAttribute&&b.getAttribute("data-nav")===name);
+  });
+  const v=$("view"); if(v) v.scrollTop=0;   // при смене экрана — наверх
   if(S){ S.tab=name; save(); }
   togglePaperdoll(name==="Hero");
   Platform.logEvent("tab",{t:name});
@@ -3332,6 +3368,8 @@ function renderBadges(){
   const b=badges();
   const setDot=(id,on)=>{ const el=$(id); if(el&&el.classList) el.classList.toggle("on",!!on); };
   setDot("dotMine",b.mine); setDot("dotHero",b.hero); setDot("dotMeta",b.meta);
+  setDot("ndotMine",b.mine); setDot("ndotHero",b.hero); setDot("ndotMeta",b.meta);
+  setDot("ndotPets",b.petReady||b.geoReady);
   setDot("dotSkills",b.skillReady); setDot("dotPets",b.petReady||b.geoReady);
   setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotLoot",b.lootReady);
 }

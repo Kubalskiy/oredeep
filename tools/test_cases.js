@@ -938,5 +938,15 @@ T("Gym XP поднимает уровень зала", gymLevel()===1 && gymPerk
 { let ok=true; try{ openGym(); openStickers(); }catch(e){ ok=false; } T("экраны Зала и Стикеров открываются", ok); }
 S.gymXP=0;
 
+console.log("\n[47] Мобильная оболочка: фрейм + нижний навбар");
+localStorage.removeItem("oredeep_v3"); load();
+T("зона прокрутки #view существует", !!__ids.view);
+T("нижний навбар существует", !!__ids.bottomNav);
+T("кнопка навбара «Звери» привязана", typeof __ids.navPetsBtn.onclick==="function");
+T("кнопка навбара «Таверна» привязана", typeof __ids.navTavBtn.onclick==="function");
+switchTab("Meta");
+T("switchTab прокручивает view наверх", __ids.view.scrollTop===0);
+T("switchTab подсвечивает вкладку Меты", __ids.tabMeta.classList.contains("on"));
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
