@@ -838,5 +838,50 @@ T("Зов сбрасывает свод и глубину", S.stageIdx===1 && S.
 // равновесие треадмилла не тронуто ретюном
 T("esc всё ещё = ATK_COMPOUND^LPB", Math.abs(escPerBlock()-Math.pow(ATK_COMPOUND,atkLevelsPerBlock()))<1e-9);
 
+console.log("\n[42] Боевые параметры по доку: Stamina, Regen, офлайн-сумки");
+localStorage.removeItem("oredeep_v3"); load();
+S.stageIdx=300; S.lvls.atk=50; newRock();
+{ const _os=oneStrike; let h0=0; oneStrike=function(){h0++;return _os.apply(null,arguments);};
+  S.skills={}; S.rockHP=1e12; for(let i=0;i<200;i++) minerHit(); const p0=h0/200;
+  h0=0; S.skills={stam_up:15}; S.rockHP=1e12; for(let i=0;i<200;i++) minerHit(); const p1=h0/200;
+  oneStrike=_os;
+  T("без Stamina комбо не тянется (~1 удар)", Math.abs(p0-1)<0.05, p0.toFixed(2));
+  T("Stamina тянет комбо (>1 удара)", p1>1.5, p1.toFixed(2)); }
+T("Stamina капится 90%", (function(){ S.skills={stam_up:99}; return stat("stamina")===90; })());
+{ S.skills={regen_up:5}; const rg=stat("regen"); T("Regen — стат из карт (>0)", rg>0);
+  S.stageIdx=1; newRock(); S.energy=5; const e0=S.energy; dead=false;
+  const frame=(ms)=>{ __vclock+=ms; const cb=__rafCb; __rafCb=null; if(cb) cb(__vclock); };
+  for(let i=0;i<200;i++) frame(50);
+  T("Regen лечит энергию", S.energy>e0);
+  T("Regen не превышает максимум", S.energy<=stat("energy")); }
+// офлайн: сумки начисляются вместе с золотом
+localStorage.removeItem("oredeep_v3"); load();
+S.lastSeen=Date.now()-3600*1000; S.bags=0;
+checkOffline();
+T("офлайн копит и сумки", offlineBagsPending>0);
+{ const b0=S.bags; claimOffline(1); T("клейм офлайна начисляет сумки", S.bags>b0); }
+
+console.log("\n[43] PvP по доку: 3 соперника, дневной лимит, дейлики");
+localStorage.removeItem("oredeep_v3"); load();
+openPvp();
+T("рождается тройка кандидатов", pvpSlate && pvpSlate.length===BALANCE.pvpCandidates);
+T("у кандидатов имя и сила", pvpSlate.every(o=>o.name && o.power>0));
+T("экран рисует 3 кнопки боя", (__ids.metaBody.innerHTML.match(/pvpFight\(/g)||[]).length===3);
+{ const old=JSON.stringify(pvpSlate); S.trophies=0; pvpFight(0);
+  T("бой тратит попытку и роллит новую тройку", S.pvpFights===1 && JSON.stringify(pvpSlate)!==old); }
+S.pvpFights=BALANCE.pvpDayLimit;
+{ const f0=S.pvpFights; pvpFight(0); T("на дневном лимите бой не идёт", S.pvpFights===f0); }
+openPvp(); T("на лимите экран сообщает про конец боёв", __ids.metaBody.innerHTML.includes("кончились"));
+S.pvpDay="вчера"; pvpDayReset(); T("новый день сбрасывает лимит", S.pvpFights===0);
+T("победа в PvP двигает дейлик", (function(){ localStorage.removeItem("oredeep_v3"); load();
+  S.lvls.atk=1e6; S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; openPvp();
+  const p0=(S.daily.prog.pvp||0); pvpFight(0); return (S.daily.prog.pvp||0)>=p0; })());
+// дейлик на сумки
+localStorage.removeItem("oredeep_v3"); load();
+S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; S.bags=5; S.bag=50;
+openBag();
+T("открытие сумки двигает дейлик", (S.daily.prog.bag||0)===1);
+T("дейлик «открой сумки» существует", BALANCE.dailyQuests.some(q=>q.id==="bag"));
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.82 «Копай глубже»</title>
+<title>ORE DEEP — v0.83 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -800,6 +800,7 @@ const BALANCE = {
     {id:"break",n:"Разбей 30 жил",need:30,tok:10},
     {id:"find",n:"Найди 5 камней",need:5,tok:10},
     {id:"pvp",n:"Выиграй 2 PvP",need:2,tok:10},
+    {id:"bag",n:"Открой 20 сумок",need:20,tok:10},
     {id:"skill",n:"Прокачай навык",need:1,tok:10}],
   dailyTrack:[[25,"ключ ×1"],[50,"яйцо ×3"],[100,"кристаллы ×50"],[150,"образец ×1"]],
   noAdsPrice:"49.99",
@@ -860,6 +861,7 @@ const BALANCE = {
     pityW:[[80,20,0,0],[65,30,5,0],[50,35,13,2],[40,35,20,5],[15,20,45,20]] },
   wheel:{ cost:[30,50,70,100,140,190,250,320,400,490,590,700,820], centerMul:1500 },
   workouts:{ paths:7, step:50, weeklyCapMin:10080, proteinPerHour:5, proteinCapH:8 },
+  pvpDayLimit:10, pvpCandidates:3,   // PDF: выбор из 3 соперников, лимит боёв в день
   pvp:{ thresholds:[100,150,200,250,300,350,400,450,500,1000],
         rewards:[0,200,500,1000,2000,3500,5000,7500,10000,12500],
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },
@@ -1131,7 +1133,7 @@ const SLOTS=[
   {id:"glove", n:"Перчатки", ic:"🧤", st:{crit:1.6}},
   {id:"lamp",  n:"Фонарь",   ic:"🏮", st:{mining:2,luck:1}}
 ];
-const STAT_CAPS={crit:60,luck:100,mining:80,spd:BALANCE.combat.maxAPS};    // CALIB: вероятностные капы (luck — шанс, макс 100%)
+const STAT_CAPS={crit:60,luck:100,mining:80,stamina:90,spd:BALANCE.combat.maxAPS};    // CALIB: вероятностные капы (luck — шанс, макс 100%)
 /* === Крепь шахты (Mine Timbering) — юнит-экономика обвала ===
    max 100 → 0% обвала. Падает ~0.08/с активной добычи → полный бар ≈ 21 мин.
    Риск только ниже safe=50, квадратично растёт к нулю; даже у 0 ~8%/мин — очень редко.
@@ -1172,6 +1174,9 @@ const ORE_SPRITES=[["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAA
 const MINER_BASES=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABT0lEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/6uqQhkYGBgYtBQkCRqmkzYJp6/o5iMWYhXy2EfA2V8OrsDgEwIk+cjI2IbByNgGJ59qFp07e4Th3NkjOPn4ANFBBwueaw+eQwQe9BOVQGCAJB89efWegY+LA46fvHpPtF6ifcTAwMAgIyZIinIUgJHmkYubcG9LBgYGBob7P+UZGBgYGBTZH2IYgC63cutxuBxynkLxkYiYzH+Y4TBNyHxCAF39yq3H/8Mso1uGHTwlAywO0NnY1R3HKY9hUa2/KZyNHLHEAlz6B66aQE7eyrrWJBt49/JROBtn8kaWFBGT+S8sLkuGRdir9cFTw2ILvruXj2IN1ruXjw58DTvwQSciJvPfSIYNq9y5J78Y8MkNaGKgm0UAfjh80MYeCPAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABUUlEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP/0rDyCjpk5bRJey5gImkAlgNdHImIy/1dVhTIwMDAwaClIEjRMJw23r+jmIxZiFfLYR8DZXw6uwOATAiT5yMjYhsHI2AYnn2oWnTt7hOHc2SM4+fgA0UEHC55rD55DBB70E5VAYIAkHz159Z6Bj4sDjp+8ek+0XqJ9xMDAwCAjJkiKchSAkeaRi5tMJzkGBgYGhrNMVgwMDAwMxv+OYRiALjd93yO4HHKeQvGRiJjMf5jhME3IfEIAXf30fQz/YZbRLcMOnpIBFgfobOzqHuGUx7AoOyIAzp6+bxIhd2AAXPoHrppATt7KutYkG3j38lE4G2fyRpYUEZP5LywuS4ZF2Kv1wVPDYgu+u5ePYg3Wu5ePDnwNO/BBJyIm899Ihg2r3LknvxjwyQ1oYqCbRQA2j3jnBMGCvgAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABUklEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/6uqQhkYGBgYtBQkCRqmkzYJp6/o5iMWYhXy2EfA2V8OrsDgEwIk+cjI2IbByNgGJ59qFp07e4Th3NkjOPn4ANFBBwueaw+eQwQe9BOVQGCAJB89efWegY+LA46fvHpPtF6ifcTAwMAgIyZIinIUgJHmkYubTCc5BgYGBoazTFYMDAwMDMb/jmEYgC43fd8juBxynkLxkYiYzH+Y4TBNyHxCAF399H0M/2GW0S3DDp6SARYH6Gzs6h7hlMewKDsiAM6evm8SIXdgAFz6B66aQE7eyrrWJBt49/JROBtn8kaWFBGT+S8sLkuGRdir9cFTw2ILvruXj2IN1ruXjw58DTvwQSciJvPfSIYNq9y5J78Y8MkNaGKgm0UAJht45zbrmIsAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABT0lEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8oIx6Cjll27gtey5gImkAlgNdHImIy/1dVhTIwMDAwaClIEjRMJ20STl/RzUcsxCrksY+As78cXIHBJwRI8pGRsQ2DkbENTj7VLDp39gjDubNHcPLxAaKDDhY81x48hwg86CcqgcAAST568uo9Ax8XBxw/efWeaL1E+4iBgYFBRkyQFOUoACPNIxc34d6WDAwMDAz3f8ozMDAwMCiyP8QwAF1u5dbjcDnkPIXiIxExmf8ww2GakPmEALr6lVuP/4dZRrcMO3hKBlgcoLOxqzuOUx7Dolp/UzgbOWKJBbj0D1w1gZy8lXWtSTbw7uWjcDbO5I0sKSIm819YXJYMi7BX64OnhsUWfHcvH8UarHcvHx34Gnbgg05ETOa/kQwbVrlzT34x4JMb0MRAN4sAdzB80JMDBxsAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABTklEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/70R2gwMDAwMKpICBA3z7z+K01d08xELsQr1M7rh7IszSjH4hABJPjIytmEwMrbByaeaRefOHmE4d/YITj4+QHTQwYLnzvMPELo+lagEAgMk+ejF+68MPByscPzi/Vei9RLtIwYGBgYJQW5SlKMAjDSPXNx4hloyMDAwMLx9L8/AwMDAICz4EMMAdLntq4/D5ZDzFIqPRMRk/sMMh2lC5hMC6Oq3rz7+H2YZ3TLs4CkZYHGAzsau7jhOeQyLMmQQntxOyBVYAC79A1dNICdvZV1rkg28e/konI0zeSNLiojJ/BcWlyXDIuzV+uCpYbEF393LR7EG693Lg6CGHfigExGT+W8kw4ZV7tyTXwz45AY0MdDNIgDKrHjWAfSkLAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAABUUlEQVR4nGNgGAVkAkZiFImIyfwnpObNqyd4zSJokYiYzP8eS1aCjik5/huvZUwETaASwOsjETGZ/3MzbRgYGBgYNGRECBpmXb0Bp6/o5iMWYhVKh5TB2U/XdGHwCQGSfGRkbMNgZGyDk081i86dPcJw7uwRnHx8gOiggwXPjSdvIPSEMqISCAyQ5KOnbz8z8HKyw/HTt5+J1ku0jxgYGBikhXlJUY4CMNI8cnET7m3JwMDAwHD/pzwDAwMDgyL7QwwD0OVWbj0Ol0POUyg+EhGT+Q8zHKYJmU8IoKtfufX4f5hldMuwg6dkgMUBOhu7uuM45TEsyrMSh7NXbiXkDEyAS//AVRPIyVtZ15pkA+9ePgpn40zeyJIiYjL/hcVlybAIe7U+eGpYbMF39/JRrMF69/LRga9hBz7oRMRk/hvJsGGVO/fkFwM+uQFNDHSzCADrTHrq4BhwGgAAAABJRU5ErkJggg=="];
 const BEARD_STYLES=["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAfElEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMIEoRzIIOcxYMuYqTf4iykKBFImIy/2EW6IhxYchfefUNbiE+y5gIWUQtQDeLiI6jLb58OOV9Nn8iGEfDL+hGqEVvXj1h9Nn8CascMQmBaIuoAehW1o2CUUB/AACB6ClugBF67QAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAj0lEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMIEoRzIJwA24MuZUXvhJlIUGLRMRk/sMskBfhwamua89LvJYxEbKIWmDwWPTm1RPGlRe+UhRsRFlELTD8LGIhVUPXnpdwdpmLONH6yPIRsaUBxRaRA0Ytoi0QEZP5/2KnzX/kagKbGNUsI0Zs5AAAOSUvgX2nKKMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAfUlEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMIEoRzIKUtCwMuTmzphFlIUGLRMRk/sMsUFJRx6muqiwfr2VMhCyiFqCbRUTHUVvXRJzyhIKNgWE4Bh1ZFlWV5dPHInLAqEVkA6ILVeQC9c2rJ4zofGo7bBQMYwAAP0oid4zJKKYAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAe0lEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMYCHFEkdlZgzx/Qwy/4mxjCiLRMRk/keZ8OCQ/UKMEQxMRKmiAiA6jmDx46jMzCApyMnAwMDAsOzMF6LjiGgfEWsgxRZRCkYtIhuQHMHIpQOlCWQUjIJRQBoAAC7GGudqNF8dAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAkUlEQVR4nGNgGAWjYBSMggEDjKQoFhGT+Y8u9ubVE6LMINoiETGZ/0vm9WOIxyQVEmUZURYhW2JiYoghr6HnQNAyJmIsogagm0UkxdGNSwcwxIkJNgYGMnzEwsrBwMLKQaq2YRhHoxYNfotYSNXw5/cPWrgDFYiIyfx/8+IOHGMrzXGBwVcEwQCyL4iti4YnAAAX+S3GCHBs2QAAAABJRU5ErkJggg=="];
 const BEARD_NAMES=["Окладистая","Косы","Раздвоенная","Козлиная","Патриаршая"];
+const GEO_NAMES_POOL=["Грур Однорукий","Балин Каменщик","Тролль-в-законе","Дурин Забойщик",
+  "Гимли Задира","Фарин Молот","Нали Рудокоп","Оин Ворчун","Бифур Кувалда","Дори Скупой",
+  "Наин Глубокий","Фрар Пивной","Торин Хвастун","Кили Быстрый","Бомбур Тяжёлый"];
 /* ===== МУДРОСТЬ БОРОДЫ: престиж-ранг ===== */
 /* стили по длине (короткая→длинная) для авто-роста */
 const BEARD_LEN_ORDER=[3,2,0,1,4];   // Козлиная<Раздвоенная<Окладистая<Косы<Патриаршая
@@ -1262,7 +1267,7 @@ const RANKS=["БЕЗБОРОДЫЙ","ПОЧТИ ГНОМ","РУДОКОП","ЗА
   "ГРОЗА ГЛУБИН","МАГНАТ НЕДР","ПОДГОРНЫЙ КОРОЛЬ","ЛЕГЕНДА ГОРЫ"];
 
 /* ---------- игрок (GDD §3, базы 1:1) ---------- */
-const BASE={atk:10, spd:BALANCE.combat.baseAPS, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0};
+const BASE={atk:10, spd:BALANCE.combat.baseAPS, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0, regen:0, stamina:0};
 const UPGRADES=[
   {id:"atk",   k:"ATK",     step:3,  base:25, g:1.35, fmt:v=>fmt(v)},
   {id:"energy",k:"Энергия", step:20, base:20, g:1.32, fmt:v=>fmt(v)},
@@ -1428,7 +1433,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, pvpDay:'', pvpFights:0, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1490,7 +1495,7 @@ function sayQuip(t,dur){ const b=$("bubble"); b.innerHTML="<b>Борин:</b> "+
   quipHide=dur||3; quipNext=9+Math.random()*8; }
 
 /* ---------- боевой тик (§5) ---------- */
-let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null, durabTimer=0, lastDurabWarn=100;
+let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null, durabTimer=0, lastDurabWarn=100, regenAcc=0;
 /* Таймеры цикла — глобальные. Если их не сбрасывать при загрузке/престиже,
    накопленный hitTimer прокручивает тысячи ударов в первом же кадре. */
 function resetTimers(){
@@ -1548,14 +1553,28 @@ function updatePeek(){
   pk.style.clipPath="inset("+hidden+"% 0 0 0)";
   pk.style.transform="translateY("+Math.round(hidden*0.12)+"px)";
 }
-function minerHit(){
+function oneStrike(){
   let dmg=Math.max(stat("atk")*0.15, stat("atk")-rock.hard*DMG_HARD_K);
   let crit=false;
   if(Math.random()*100<stat("crit")){ dmg*=CRIT_MULT; crit=true; }
   if(Math.random()*100<stat("mining")) dmg*=2;
   S.rockHP-=dmg;
-  fxSwing(); fxDamage(dmg,crit); sfxHit(crit); updatePeek();
-  if(S.rockHP<=0) breakVein();
+  fxDamage(dmg,crit); sfxHit(crit);
+  return S.rockHP<=0;
+}
+function minerHit(){
+  fxSwing();
+  let broke=oneStrike();
+  // Комбо: базовый шанс серии, каждый доп.удар продлевается шансом Stamina (кап maxCombo)
+  if(!broke){
+    let extra=0;
+    while(extra<BALANCE.combat.maxCombo && Math.random()*100<stat("stamina")){
+      extra++;
+      if(oneStrike()){ broke=true; break; }
+    }
+  }
+  updatePeek();
+  if(broke) breakVein();
 }
 function rockRespond(){
   if(Math.random()*100<stat("luck")) return;
@@ -1706,7 +1725,7 @@ function grantBags(n){ S.bags=Math.min(BALANCE.bags.cap,(S.bags||0)+n); }
 /* Открыть сумку вручную: обычный поток дропа (авто-надеть/авто-продать). */
 function openBag(){
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
-  S.bags--;
+  S.bags--; dailyProgress("bag",1);
   dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id));
   Platform.logEvent("bag_open",{}); save(); render();
   return true;
@@ -1729,7 +1748,7 @@ function flushSales(){
 }
 function autoOpenBag(quiet){
   if((S.bags||0)<1) return false;
-  S.bags--;
+  S.bags--; dailyProgress("bag",1);
   const it=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
   if(it.r < (S.autoRollTier||0)){
     const p=sellPrice(it); S.gold+=p;
@@ -1857,6 +1876,9 @@ function loop(now){
     } else if(!S.autoRoll) autoRollAcc=0;
     logAcc+=rawDt;                       // реальные секунды, не игровые:
     if(logAcc>=1){ logAcc=0; flushSales(); }   // иначе на ×100 флаш шёл каждый кадр
+    regenAcc+=dt;                        // Regen: восстановление энергии (PDF)
+    if(regenAcc>=1){ const s=Math.floor(regenAcc); regenAcc-=s;
+      const rg=stat("regen"); if(rg>0) S.energy=Math.min(stat("energy"), S.energy+rg*s); }
     durabTimer+=dt;
     while(durabTimer>=MINE_DURAB.checkSec){
       durabTimer-=MINE_DURAB.checkSec;
@@ -2498,22 +2520,24 @@ function checkStreak(){
 
 /* ---------- офлайн-доход (кап 8ч, экран возврата) ---------- */
 const OFFLINE_CAP_H=BALANCE.idle.capSec/3600;   // 2ч (boxer 1:1)
-let offlinePending=0;
+let offlinePending=0, offlineBagsPending=0;
 function checkOffline(){
   if(!S.lastSeen) return;
   const sec=Math.min(OFFLINE_CAP_H*3600, (Date.now()-S.lastSeen)/1000);
   if(sec<120) return;                                   // <2 минут не считаем
   offlinePending=Math.floor(idlePerSec()*sec);
-  if(offlinePending<1) return;
+  offlineBagsPending=Math.min(BALANCE.bags.cap, Math.floor(sec/6));   // ~1 сумка на жилу (6с)
+  if(offlinePending<1 && offlineBagsPending<1) return;
   const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60);
   $("offTime").textContent="Тебя не было "+(h?h+" ч ":"")+m+" мин"+(sec>=OFFLINE_CAP_H*3600?" (кап "+OFFLINE_CAP_H+" ч)":"");
-  $("offGold").textContent="+"+fmt(offlinePending)+" 🪙";
+  $("offGold").textContent="+"+fmt(offlinePending)+" 🪙"+(offlineBagsPending?(" · +"+fmt(offlineBagsPending)+" 🎒"):"");
   $("offOverlay").style.display="flex";
   Platform.logEvent("offline_return",{sec:Math.round(sec)});
 }
 function claimOffline(mult){
-  const grant=()=>{ S.gold+=offlinePending*mult; offlinePending=0;
-    $("offOverlay").style.display="none"; save(); };
+  const grant=()=>{ S.gold+=offlinePending*mult; grantBags(offlineBagsPending*mult);
+    offlinePending=0; offlineBagsPending=0;
+    $("offOverlay").style.display="none"; save(); render(); };
   if(mult>1) Platform.showRewarded(ok=>{ if(ok) grant(); });
   else grant();
 }
@@ -2530,7 +2554,9 @@ const SKILL_DEFS=[
   {id:"stone_up", n:"Жадность",       stat:"stone", per:12,  r:0},
   {id:"energy_up",n:"Второе дыхание", stat:"energy",per:15,  r:1},
   {id:"mining_up",n:"Чутьё пласта",   stat:"mining",per:2,   r:2},
-  {id:"tough_up", n:"Дубовая крепь",  stat:"tough", per:6,   r:3}
+  {id:"tough_up", n:"Дубовая крепь",  stat:"tough", per:6,   r:3},
+  {id:"regen_up", n:"Второе сердце",  stat:"regen", per:3,   r:2},   // лечение энергии/с (PDF: Regen)
+  {id:"stam_up",  n:"Дыхалка",        stat:"stamina",per:6,  r:3}    // шанс продлить комбо (PDF: Stamina)
 ];
 const SKILL_RAR=["Common","Rare","Epic","Legendary"];
 function skillBonus(id){ const lv=(S.skills&&S.skills[id])||0; if(!lv) return 0;
@@ -2639,23 +2665,50 @@ function powerScore(){
     +stat("crit")*2+stat("luck")*2+stat("mining")*3+stat("stone"));
 }
 function pvpLeagueIdx(){ const t=S.trophies||0; let i=0; for(let k=0;k<BALANCE.pvp.thresholds.length;k++) if(t>=BALANCE.pvp.thresholds[k]) i=k; return i; }
-function openPvp(){
-  const li=pvpLeagueIdx(), me=powerScore();
-  metaOpen("PvP · дуэль забоя","Лига: "+BALANCE.pvp.names[li]+" · Power "+fmt(me)+" (§11)",
-    `<div class="metarow"><span>Кубки: ${fmt(S.trophies||0)} · побед: ${S.pvpWins||0}</span></div>
-     <div style="text-align:center;padding:10px 0">
-       <button class="buy" onclick="pvpFight()">В бой! (соперник ±Power)</button>
-     </div>`);
+let pvpSlate=null;
+function pvpDayReset(){ const t=todayStr();
+  if(S.pvpDay!==t){ S.pvpDay=t; S.pvpFights=0; pvpSlate=null; } }
+function pvpRollSlate(){
+  const me=powerScore();
+  pvpSlate=[];
+  for(let i=0;i<BALANCE.pvpCandidates;i++){
+    const k=0.75+Math.random()*0.6;                 // соперники разной силы
+    pvpSlate.push({ power:Math.max(1,Math.round(me*k)),
+      name:GEO_NAMES_POOL[Math.floor(Math.random()*GEO_NAMES_POOL.length)] });
+  }
 }
-function pvpFight(){
-  const me=powerScore(), opp=Math.round(me*(0.8+Math.random()*0.5));
+function openPvp(){
+  pvpDayReset();
+  if(!pvpSlate) pvpRollSlate();
+  const li=pvpLeagueIdx(), me=powerScore();
+  const left=Math.max(0, BALANCE.pvpDayLimit-(S.pvpFights||0));
+  const cards = left>0 ? pvpSlate.map((o,i)=>{
+    const fav=me>=o.power;
+    return `<div class="metarow"><span>${o.name}<br><span class="sub" style="color:${fav?"var(--green)":"#e8a24a"}">Power ${fmt(o.power)} · ${fav?"слабее тебя":"сильнее тебя"}</span></span>
+      <button class="buy" onclick="pvpFight(${i})">В бой</button></div>`;
+  }).join("") : '<div class="sub" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>';
+  metaOpen("⚔ PvP · дуэль забоя",
+    "Лига "+BALANCE.pvp.names[li]+" · Power "+fmt(me)+" · боёв осталось сегодня: "+left+"/"+BALANCE.pvpDayLimit,
+    `<div class="metarow"><span>Кубки: ${fmt(S.trophies||0)} · побед: ${S.pvpWins||0}</span></div>
+     <div class="sub" style="margin:6px 0">Выбери одного из ${BALANCE.pvpCandidates} претендентов:</div>
+     ${cards}
+     ${left>0?'<div style="text-align:center;padding:8px 0"><button onclick="pvpRerollSlate()">Сменить претендентов</button></div>':''}`);
+}
+function pvpRerollSlate(){ pvpRollSlate(); openPvp(); }
+function pvpFight(idx){
+  pvpDayReset();
+  if((S.pvpFights||0)>=BALANCE.pvpDayLimit){ showToast("⚔","Лимит боёв","","Возвращайся завтра"); return; }
+  if(!pvpSlate) pvpRollSlate();
+  const cand=pvpSlate[idx]||pvpSlate[0];
+  const me=powerScore(), opp=cand.power;
+  S.pvpFights=(S.pvpFights||0)+1;
   const win=me>=opp;
   if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1);
     const li=pvpLeagueIdx(); S.gold+=BALANCE.pvp.rewards[li]*100;
     showToast("⚔","ПОБЕДА!","","+30 🏆 · +"+fmt(BALANCE.pvp.rewards[li]*100)+" 🪙","Power "+fmt(me)+" vs "+fmt(opp),true); }
   else { S.trophies=Math.max(0,(S.trophies||0)-15);
     showToast("⚔","Поражение","","-15 🏆","Power "+fmt(me)+" vs "+fmt(opp)); }
-  Platform.logEvent("pvp_fight",{win}); save(); render(); openPvp();
+  Platform.logEvent("pvp_fight",{win}); pvpRollSlate(); save(); render(); openPvp();
 }
 const EVENT_LIST=[
   ["rockfall","Rockfall","волна валунов"],["lavaVein","Lava Vein","череда пластов"],
