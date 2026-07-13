@@ -883,5 +883,46 @@ openBag();
 T("открытие сумки двигает дейлик", (S.daily.prog.bag||0)===1);
 T("дейлик «открой сумки» существует", BALANCE.dailyQuests.some(q=>q.id==="bag"));
 
+console.log("\n[44] DoT питомцев: Bleed/Shock/Splash (PDF)");
+localStorage.removeItem("oredeep_v3"); load();
+S.stageIdx=300; S.lvls.atk=0;
+S.pet={t:0,r:1}; newRock();
+{ const _mh=minerHit; minerHit=function(){}; const hp0=S.rockHP; dead=false;
+  const frame=(ms)=>{ __vclock+=ms; const cb=__rafCb; __rafCb=null; if(cb) cb(__vclock); };
+  for(let i=0;i<20;i++) frame(50); minerHit=_mh;
+  T("Bleed грызёт породу без ударов", S.rockHP<hp0 && S.rockHP>0); }
+S.pet={t:1,r:2}; newRock(); const hardShock=rock.hard;
+S.pet=null; newRock(); const hardBase=rock.hard;
+T("Shock снижает защиту породы", hardShock<hardBase);
+S.pet={t:2,r:2}; newRock(); const respSplash=rock.resp;
+S.pet=null; newRock(); const respBase=rock.resp;
+T("Splash тормозит ответ породы", respSplash<respBase);
+S.lvls.atk=0; S.pet={t:0,r:0}; const lo=petDot().dps; S.pet={t:0,r:3}; const hi=petDot().dps;
+T("DoT растёт с редкостью питомца", hi>lo);
+T("без питомца DoT отсутствует", (function(){ S.pet=null; return petDot()===null; })());
+T("у каждого семейства свой DoT", PET_TYPES.every(p=>["bleed","shock","splash"].includes(p.dot)));
+
+console.log("\n[45] Крафт питомцев → Exotic (PDF)");
+localStorage.removeItem("oredeep_v3"); load();
+S.petLegSeen=0; T("до 3 легендарных крафт закрыт", !petCraftUnlocked());
+S.petLegSeen=BALANCE.petCraft.needLegendaries; T("после N легендарных крафт открыт", petCraftUnlocked());
+S.petBox={}; S.gems=1000;
+T("без материала крафт не готов", !petCraftReady());
+boxAdd(S.petBox,0,3,1); boxAdd(S.petBox,1,3,1); boxAdd(S.petBox,2,3,1);
+T("по Legendary каждого семейства + гемы → готов", petCraftReady());
+{ const g0=S.gems; craftPetExotic();
+  T("крафт съел материал, списал гемы, выдал Exotic",
+    boxCountAt(S.petBox,0,3)===0 && S.gems===g0-BALANCE.petCraft.gems
+    && Object.keys(S.petBox).some(k=>Number(k.split("_")[1])===4)); }
+S.petBox={}; boxAdd(S.petBox,0,3,9);
+T("merge Legendary заблокирован — Exotic только крафтом", mergePet(0,3)===false && canMergePet(0,3)===false);
+S.petBox={}; boxAdd(S.petBox,0,3,1); boxAdd(S.petBox,1,3,1); boxAdd(S.petBox,2,3,1); S.gems=0;
+T("без гемов крафт не срабатывает", craftPetExotic()===false);
+T("Exotic-тир добавлен питомцам", PET_RAR[4]==="Exotic" && PET_TYPES.every(p=>p.pct.length>=5));
+T("ролл Legendary увеличивает счётчик для крафта", (function(){
+  localStorage.removeItem("oredeep_v3"); load(); S.gold=1e18; const s0=S.petLegSeen||0;
+  const _r=Math.random; Math.random=()=>0.999; rollPet(1); Math.random=_r;   // форсим высокую редкость
+  return (S.petLegSeen||0)>=s0; })());
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

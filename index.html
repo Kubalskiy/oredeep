@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.83 «Копай глубже»</title>
+<title>ORE DEEP — v0.84 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -836,6 +836,10 @@ const BALANCE = {
      Старейшины: целевой поглощает материалы равной/меньшей редкости и растёт
      в уровне; восхождение доступно легендарному с ур. ascendLv за кристаллы. */
   merge:{ petCost:3, geoLvPct:20, ascendLv:5, ascendGems:500, ascendPct:100 },
+  /* DoT питомцев (PDF §Питомцы): семейство даёт периодику по породе + дебаф.
+     dpsFrac — доля ATK/сек; defCut/spdCut — снижение защиты/темпа ответа породы. */
+  petDot:{ dpsFrac:[0.06,0.14,0.30,0.60,1.10], defCut:[0.05,0.10,0.18,0.30,0.45], spdCut:[0.04,0.08,0.14,0.24,0.38] },
+  petCraft:{ needLegendaries:3, gems:400 },   // PDF: после 3 Legendary, крафт за конкретных питомцев + гемы → Exotic
   /* Скиллы как карточки (док §Скиллы): копии копятся, апгрейд с ур.L на L+1
      требует L копий и пиво (протеин). Сундуки: чем реже — тем больше карт и
      тем выше гарантированная редкость. */
@@ -1433,7 +1437,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, pvpDay:'', pvpFights:0, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, petLegSeen:0, pvpDay:'', pvpFights:0, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1507,6 +1511,9 @@ function newRock(){
   const isBoss=(S.stageIdx % BALANCE.combat.bossEvery)===0;   // босс каждый 20-й бой
   rock=rockStatsAt(S.stageIdx,isBoss);
   rock.isBoss=isBoss;
+  { const d=petDot();
+    if(d){ if(d.kind==="shock")  rock.hard*=(1-d.defCut);
+           if(d.kind==="splash") rock.resp*=(1-d.spdCut); } }
   S.rockHP=rock.hp;
   S.energy=stat("energy");
   const mk=S.mine%MINES.length, cycle=Math.floor(S.mine/MINES.length);
@@ -1879,6 +1886,8 @@ function loop(now){
     regenAcc+=dt;                        // Regen: восстановление энергии (PDF)
     if(regenAcc>=1){ const s=Math.floor(regenAcc); regenAcc-=s;
       const rg=stat("regen"); if(rg>0) S.energy=Math.min(stat("energy"), S.energy+rg*s); }
+    if(S.rockHP>0){ const d=petDot();   // DoT питомца грызёт породу (PDF)
+      if(d&&d.dps>0){ S.rockHP-=d.dps*dt; if(S.rockHP<=0) breakVein(); } }
     durabTimer+=dt;
     while(durabTimer>=MINE_DURAB.checkSec){
       durabTimer-=MINE_DURAB.checkSec;
@@ -2770,11 +2779,19 @@ $("navPvp").onclick=openPvp; $("navEvents").onclick=openEvents;
 
 /* --- Питомцы: гача с pity (§8), пассив к добыче --- */
 const PET_TYPES=[
-  {stat:"luck",  n:"Канарейка",pct:[8,24,72,216]},
-  {stat:"mining",n:"Рудный пёс",pct:[10,30,90,270]},
-  {stat:"stone", n:"Мул-тяжеловоз",pct:[12,36,108,324]}
+  {stat:"luck",  n:"Канарейка",     pct:[8,24,72,216,648], dot:"bleed"},   // кровотечение: чистый DoT
+  {stat:"mining",n:"Рудный пёс",    pct:[10,30,90,270,810],dot:"shock"},   // шок: DoT + режет защиту
+  {stat:"stone", n:"Мул-тяжеловоз", pct:[12,36,108,324,972],dot:"splash"}  // всплеск: DoT + тормозит ответ
 ];
-const PET_RAR=["Common","Rare","Epic","Legendary"];
+const DOT_NAMES={bleed:"Кровотечение",shock:"Шок",splash:"Всплеск"};
+const PET_RAR=["Common","Rare","Epic","Legendary","Exotic"];
+const PET_MERGE_MAX=3;   // merge доводит только до Legendary; Exotic — лишь крафт (PDF)
+function petDot(){
+  if(!S.pet) return null;
+  const t=PET_TYPES[S.pet.t], r=S.pet.r||0, D=BALANCE.petDot;
+  return { kind:t.dot, name:DOT_NAMES[t.dot],
+    dps:stat("atk")*D.dpsFrac[r], defCut:D.defCut[r], spdCut:D.spdCut[r] };
+}
 function petBonus(id){ if(!S.pet||PET_TYPES[S.pet.t].stat!==id) return 0;
   return PET_TYPES[S.pet.t].pct[S.pet.r]; }   // множитель %, применяется в stat()
 function openGeoGuild(){
@@ -2807,12 +2824,15 @@ function openGeoGuild(){
 }
 function openPets(){
   const cost=Math.round(veinReward()*10);
-  const cur=S.pet?`<div class="metarow"><span>В деле: <b class="r${S.pet.r}">${PET_TYPES[S.pet.t].n}</b> (${PET_RAR[S.pet.r]}) · +${PET_TYPES[S.pet.t].pct[S.pet.r]}% ${PET_TYPES[S.pet.t].stat.toUpperCase()}</span></div>`:"";
+  const cur=S.pet?(function(){ const d=petDot();
+    return `<div class="metarow"><span>В деле: <b class="r${S.pet.r}">${PET_TYPES[S.pet.t].n}</b> (${PET_RAR[S.pet.r]})
+      <br><span class="sub">+${PET_TYPES[S.pet.t].pct[S.pet.r]}% ${PET_TYPES[S.pet.t].stat.toUpperCase()} · ${d.name} по породе</span></span></div>`;
+  })():"";
   const keys=Object.keys(S.petBox||{}).filter(k=>S.petBox[k]>0)
     .sort((a,b)=>Number(b.split("_")[1])-Number(a.split("_")[1]));
   const rows=keys.map(k=>{
     const [t,r]=k.split("_").map(Number), c=S.petBox[k];
-    const maxed=r>=PET_RAR.length-1;
+    const maxed=r>=PET_MERGE_MAX;
     const ok=canMergePet(t,r);
     const btn=maxed
       ? `<button class="buy" disabled style="opacity:.4">предел</button>`
@@ -2820,8 +2840,12 @@ function openPets(){
     const need=maxed?"":`<div class="sub" style="margin:2px 0 0">копий ${c}/${BALANCE.merge.petCost}</div>`;
     return `<div class="metarow"><span><b class="r${r}">${PET_RAR[r]}</b> · ${PET_TYPES[t].n} ×${c}${need}</span>${btn}</div>`;
   }).join("")||'<div class="sub">Коллекция пуста. Крути яйца.</div>';
-  metaOpen("Питомцы","Гача с жалостью Горы (§8), роллов: "+(S.petRolls||0)+". 3 одинаковых → 1 случайный следующей редкости.",
-    cur+rows+`<div style="text-align:center;padding:10px 0"><button class="gold" onclick="rollPet(${cost})" ${(S.gold||0)<cost?"disabled":""}>Яйцо за ${fmt(cost)} 🪙</button></div>`);
+  const craftBtn = petCraftUnlocked()
+    ? `<div class="metarow"><span>⚗ Крафт Exotic<br><span class="sub">по Legendary каждого семейства + ${BALANCE.petCraft.gems} 💎</span></span>
+        <button class="gold" onclick="craftPetExotic()" ${petCraftReady()?"":"disabled"} ${petCraftReady()?"":'style="opacity:.45"'}>Крафт</button></div>`
+    : `<div class="sub" style="margin-top:8px">Крафт Exotic откроется после ${BALANCE.petCraft.needLegendaries} легендарных питомцев (есть ${S.petLegSeen||0}).</div>`;
+  metaOpen("Питомцы","Гача с жалостью Горы (§8), роллов: "+(S.petRolls||0)+". 3 одинаковых → 1 случайный следующей редкости; Exotic — только крафт.",
+    cur+rows+craftBtn+`<div style="text-align:center;padding:10px 0"><button class="gold" onclick="rollPet(${cost})" ${(S.gold||0)<cost?"disabled":""}>Яйцо за ${fmt(cost)} 🪙</button></div>`);
 }
 /* ---------- Merge питомцев и старейшин (док §Питомцы, §Девушки) ---------- */
 const boxKey=(t,r)=>t+"_"+r;
@@ -2831,10 +2855,10 @@ function boxCountAt(box,t,r){ return box[boxKey(t,r)]||0; }
 /* Питомцы: 3 одинаковых (тип+редкость) → 1 случайный питомец следующей редкости.
    На максимальной редкости merge заблокирован. */
 function canMergePet(t,r){
-  return r < PET_RAR.length-1 && boxCountAt(S.petBox,t,r) >= BALANCE.merge.petCost;
+  return r < PET_MERGE_MAX && boxCountAt(S.petBox,t,r) >= BALANCE.merge.petCost;
 }
 function mergePet(t,r){
-  if(r>=PET_RAR.length-1){ showToast("🐕","Предел","",PET_RAR[r]+" — выше некуда"); return false; }
+  if(r>=PET_MERGE_MAX){ showToast("🐕","Предел слияния","","Exotic только крафтом","3× Legendary + "+BALANCE.petCraft.gems+" 💎"); return false; }
   if(boxCountAt(S.petBox,t,r)<BALANCE.merge.petCost){
     showToast("🐕","Мало копий","","Нужно "+BALANCE.merge.petCost+"× "+PET_TYPES[t].n,"есть "+boxCountAt(S.petBox,t,r));
     return false;
@@ -2906,11 +2930,35 @@ function ascendGeo(){
   return true;
 }
 
+/* Крафт Exotic (PDF): открывается после 3 легендарных питомцев, рецепт —
+   по 1 Legendary каждого семейства + кристаллы, единственный путь к Exotic. */
+function petCraftUnlocked(){ return (S.petLegSeen||0)>=BALANCE.petCraft.needLegendaries; }
+function petCraftReady(){
+  if(!petCraftUnlocked()) return false;
+  if((S.gems||0)<BALANCE.petCraft.gems) return false;
+  for(let t=0;t<PET_TYPES.length;t++) if(boxCountAt(S.petBox,t,3)<1) return false;   // по Legendary каждого
+  return true;
+}
+function craftPetExotic(){
+  if(!petCraftUnlocked()){ showToast("⚗","Крафт закрыт","","Нужно "+BALANCE.petCraft.needLegendaries+" легендарных питомцев","есть "+(S.petLegSeen||0)); return false; }
+  if((S.gems||0)<BALANCE.petCraft.gems){ showToast("⚗","Мало кристаллов","","Крафт: "+BALANCE.petCraft.gems+" 💎"); return false; }
+  for(let t=0;t<PET_TYPES.length;t++) if(boxCountAt(S.petBox,t,3)<1){
+    showToast("⚗","Не хватает материала","","Нужен Legendary "+PET_TYPES[t].n); return false; }
+  for(let t=0;t<PET_TYPES.length;t++){ const k=boxKey(t,3); S.petBox[k]-=1; if(S.petBox[k]<=0) delete S.petBox[k]; }
+  S.gems-=BALANCE.petCraft.gems;
+  const nt=Math.floor(Math.random()*PET_TYPES.length);
+  boxAdd(S.petBox,nt,4,1); equipBestPet();
+  showToast("⚗","КРАФТ!","r4",PET_TYPES[nt].n+" (Exotic)","−по Legendary каждого · −"+BALANCE.petCraft.gems+" 💎",true);
+  Platform.logEvent("pet_craft",{}); try{ jingleSet(); }catch(e){}
+  save(); render(); openPets();
+  return true;
+}
 function rollPet(cost){
   if((S.gold||0)<cost) return; S.gold-=cost;
   const r=rollRarity(geoWeights(S.petRolls||0)); S.petRolls=(S.petRolls||0)+1;
   const t=Math.floor(Math.random()*PET_TYPES.length);
   boxAdd(S.petBox,t,r,1);                 // дубликаты копятся — материал для слияния
+  if(r===3) S.petLegSeen=(S.petLegSeen||0)+1;   // учёт легендарных для разблокировки крафта
   const wasBetter=!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r]);
   equipBestPet();
   showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,
