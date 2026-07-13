@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.84 «Копай глубже»</title>
+<title>ORE DEEP — v0.85 «Копай глубже»</title>
 <style>
   :root{
     --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
@@ -677,6 +677,8 @@
   <div class="toolbar">
     <button id="prestigeBtn" class="gold">⛰️ Глубинный Зов</button>
     <button id="guildBtn">🔬 Гильдия</button>
+    <button id="gymBtn">🏋 Зал</button>
+    <button id="stickBtn">🃏 Стикеры</button>
     <button id="codexBtn">📜 Устав Горы</button>
     <button id="fairBtn">🔐 Честность гачи</button>
     <button id="lbBtn" class="gold">🏔 Стена Горы</button>
@@ -1302,6 +1304,7 @@ function stat(id){
   if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+geoPct(S.geo)/100);
   if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
   for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
+  v+=stickerBonus(id);                                  // стикеры (PDF)
   if(id==="luck") v+=beardWisdom().luckAdd;                              // Мудрость Бороды
   const sets=S.sets||{};
   if(id==="atk"&&sets.berserk) v*=1.5;
@@ -1315,6 +1318,7 @@ function stat(id){
     if(SET_BONUS[k].stat===id && setDone(k))
       v = SET_BONUS[k].flat ? v+SET_BONUS[k].flat : v*(1+SET_BONUS[k].pct/100);
   }
+  { const gp=gymPerkPct(); if(gp) v*=(1+gp/100); }        // перк зала: % ко всем статам (PDF)
   if(id==="spd") v=Math.max(BALANCE.combat.baseAPS,Math.min(STAT_CAPS.spd,v));
   if(STAT_CAPS[id] && id!=="spd") v=Math.min(STAT_CAPS[id],v);
   return v;
@@ -1437,7 +1441,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:2, petLegSeen:0, pvpDay:'', pvpFights:0, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
+  return { v:2, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, pet:null, petRolls:0, workouts:{}, wkActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0}, streak:{n:0,last:""}, best:null,
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -2172,6 +2176,8 @@ if($("lbBtn")) $("lbBtn").onclick=openWall;
 if($("miner")) $("miner").onclick=()=>togglePaperdoll();
 if($("codexBtn")) $("codexBtn").onclick=showIntro;
 if($("guildBtn")) $("guildBtn").onclick=()=>{ sciTask=null; openGuild(); };
+if($("gymBtn")) $("gymBtn").onclick=openGym;
+if($("stickBtn")) $("stickBtn").onclick=openStickers;
 if($("introGo")) $("introGo").onclick=closeIntro;
 ["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
 if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
@@ -2215,6 +2221,8 @@ const SAVE_VER=2;
 function ensureDurab(d){ if(d && d.durab==null) d.durab=MINE_DURAB.max; return d; }
 function ensureCards(d){ if(!d) return d;
   if(!d.skillCards) d.skillCards={};
+  if(!d.stickers||typeof d.stickers!=='object') d.stickers={};
+  if(typeof d.gymXP!=='number'||!isFinite(d.gymXP)||d.gymXP<0) d.gymXP=0;
   if(d.chestKeys==null) d.chestKeys=1;   // ключи от ларей — свой ресурс, не ключи ивентов
   return d; }
 function ensureMerge(d){ if(!d) return d;
@@ -2712,7 +2720,7 @@ function pvpFight(idx){
   const me=powerScore(), opp=cand.power;
   S.pvpFights=(S.pvpFights||0)+1;
   const win=me>=opp;
-  if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1);
+  if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1); addGymXP(GYM_XP.perPvpWin);
     const li=pvpLeagueIdx(); S.gold+=BALANCE.pvp.rewards[li]*100;
     showToast("⚔","ПОБЕДА!","","+30 🏆 · +"+fmt(BALANCE.pvp.rewards[li]*100)+" 🪙","Power "+fmt(me)+" vs "+fmt(opp),true); }
   else { S.trophies=Math.max(0,(S.trophies||0)-15);
@@ -2784,6 +2792,41 @@ const PET_TYPES=[
   {stat:"stone", n:"Мул-тяжеловоз", pct:[12,36,108,324,972],dot:"splash"}  // всплеск: DoT + тормозит ответ
 ];
 const DOT_NAMES={bleed:"Кровотечение",shock:"Шок",splash:"Всплеск"};
+/* Зал (PDF §Тренажёрный зал): копится Gym XP, растёт уровень, открываются перки.
+   Соц-часть (клан, чат, войны) — сетевая, оставлена под будущий бэкенд. */
+const GYM_XP={ perGift:5, perWorkout:20, perPvpWin:8, perDaily:15 };
+const GYM_LEVELS=[0,50,150,350,700,1200,2000,3200,5000,8000,12000];   // порог XP на уровень
+const GYM_PERKS=[   // открываются по уровню зала, дают % ко всем статам и тренировкам
+  {lv:1,pct:5, n:"Разминка"}, {lv:3,pct:10,n:"Второе дыхание"},
+  {lv:5,pct:18,n:"Закалка"},  {lv:7,pct:28,n:"Мастерство"},
+  {lv:9,pct:42,n:"Подгорный дух"}, {lv:10,pct:60,n:"Наследие Горы"}
+];
+function gymLevel(){ let lv=0; for(let i=0;i<GYM_LEVELS.length;i++) if((S.gymXP||0)>=GYM_LEVELS[i]) lv=i; return lv; }
+function gymPerkPct(){ let p=0; const lv=gymLevel(); for(const pk of GYM_PERKS) if(lv>=pk.lv) p=pk.pct; return p; }
+function addGymXP(n){ if(!(n>0)) return; const before=gymLevel();
+  S.gymXP=(S.gymXP||0)+n; const after=gymLevel();
+  if(after>before){ showToast("🏋","ЗАЛ ВЫРОС!","","Уровень "+after,"+"+gymPerkPct()+"% ко всем статам",true); try{ jingleSet(); }catch(e){} } }
+/* Стикеры (PDF): отдельная коллекция, влияет на статы; паки за кристаллы;
+   дубликаты дарятся в зале (даёт Gym XP — соц-слой стабом). */
+const STICKERS=[
+  {id:"s_atk1",n:"Кирка-огонь",   ic:"⛏️",stat:"atk",   val:15,r:0},
+  {id:"s_atk2",n:"Золотой молот", ic:"🔨",stat:"atk",   val:40,r:2},
+  {id:"s_crit",n:"Меткий глаз",   ic:"🎯",stat:"crit",  val:3, r:1},
+  {id:"s_luck",n:"Клевер-4",      ic:"🍀",stat:"luck",  val:4, r:1},
+  {id:"s_min", n:"Нюхач руды",    ic:"👃",stat:"mining",val:4, r:2},
+  {id:"s_sto1",n:"Мешок золота",  ic:"💰",stat:"stone", val:20,r:0},
+  {id:"s_sto2",n:"Сундук предков",ic:"🧰",stat:"stone", val:60,r:3},
+  {id:"s_en",  n:"Второе дыхание",ic:"🫁",stat:"energy",val:30,r:1},
+  {id:"s_tou", n:"Дубовый щит",   ic:"🛡️",stat:"tough", val:8, r:2},
+  {id:"s_rgn", n:"Живая вода",    ic:"💧",stat:"regen", val:2, r:2},
+  {id:"s_stm", n:"Меха-лёгкие",   ic:"🌬️",stat:"stamina",val:5,r:3},
+  {id:"s_atk3",n:"Сердце Горы",   ic:"💎",stat:"atk",   val:120,r:4}
+];
+const STICKER_PACK_GEMS=250, STICKER_PACK_N=5;   // PDF: пак 5 случайных за алмазы
+function stickerBonus(id){ let v=0; const owned=S.stickers||{};
+  for(const s of STICKERS) if(s.stat===id && (owned[s.id]||0)>0) v+=s.val; return v; }
+function stickerDupes(){ let n=0; const o=S.stickers||{};
+  for(const k in o) if(o[k]>1) n+=o[k]-1; return n; }
 const PET_RAR=["Common","Rare","Epic","Legendary","Exotic"];
 const PET_MERGE_MAX=3;   // merge доводит только до Legendary; Exotic — лишь крафт (PDF)
 function petDot(){
@@ -2939,6 +2982,57 @@ function petCraftReady(){
   for(let t=0;t<PET_TYPES.length;t++) if(boxCountAt(S.petBox,t,3)<1) return false;   // по Legendary каждого
   return true;
 }
+/* Пак стикеров: 5 случайных за кристаллы. */
+function buyStickerPack(){
+  if((S.gems||0)<STICKER_PACK_GEMS){ showToast("🃏","Мало кристаллов","","Пак стикеров: "+STICKER_PACK_GEMS+" 💎"); return false; }
+  S.gems-=STICKER_PACK_GEMS; S.stickers=S.stickers||{};
+  const got=[];
+  for(let i=0;i<STICKER_PACK_N;i++){ const s=STICKERS[Math.floor(Math.random()*STICKERS.length)];
+    S.stickers[s.id]=(S.stickers[s.id]||0)+1; got.push(s.ic); }
+  showToast("🃏","Пак вскрыт","",STICKER_PACK_N+" стикеров",got.join(" "),true);
+  Platform.logEvent("sticker_pack",{}); sfxGear(); save(); render(); openStickers();
+  return true;
+}
+/* Подарить все дубликаты в зал: соц-слой стабом → даёт Gym XP. */
+function giftStickers(){
+  const d=stickerDupes();
+  if(d<1){ showToast("🃏","Нет дубликатов","","Дарить нечего"); return false; }
+  const o=S.stickers; for(const k in o) if(o[k]>1) o[k]=1;
+  addGymXP(d*GYM_XP.perGift);
+  showToast("🎁","Подарено в зал","",d+"× дубликатов","+"+(d*GYM_XP.perGift)+" Gym XP");
+  Platform.logEvent("sticker_gift",{n:d}); save(); render(); openStickers();
+  return true;
+}
+function openGym(){
+  const lv=gymLevel(), xp=S.gymXP||0;
+  const nextAt=GYM_LEVELS[lv+1], atCur=GYM_LEVELS[lv]||0;
+  const pct=nextAt!=null? Math.min(100, Math.round((xp-atCur)/(nextAt-atCur)*100)) : 100;
+  const perks=GYM_PERKS.map(pk=>{ const on=lv>=pk.lv;
+    return `<div class="metarow" style="${on?'':'opacity:.45'}"><span>${on?"✓":"🔒"} <b class="${on?'r5':''}">${pk.n}</b> · ур.${pk.lv}</span>
+      <span class="sub">+${pk.pct}% всем статам</span></div>`; }).join("");
+  metaOpen("🏋 Зал",
+    "Уровень "+lv+" · бонус ко всем статам +"+gymPerkPct()+"%. Gym XP: тренировки, победы в PvP, дейлики, дарение стикеров.",
+    `<div class="metarow"><span>Gym XP</span><span><b>${fmt(xp)}</b>${nextAt!=null?(" / "+fmt(nextAt)):""}</span></div>
+     <div class="setBar"><div style="width:${pct}%;background:var(--gold)"></div></div>
+     <div class="sub" style="margin:10px 0 4px">Перки зала:</div>${perks}
+     <div class="sub" style="margin-top:10px">Клан, чат и войны — в сетевой версии.</div>`);
+  Platform.logEvent("gym_view",{lv});
+}
+function openStickers(){
+  const owned=S.stickers||{};
+  const have=STICKERS.filter(s=>(owned[s.id]||0)>0).length;
+  const rows=STICKERS.map(s=>{ const c=owned[s.id]||0;
+    const nm={atk:"ATK",crit:"CRIT",luck:"LUCK",mining:"MINING",stone:"STONE",energy:"Энергия",tough:"Крепёж",regen:"Regen",stamina:"Stamina"}[s.stat]||s.stat.toUpperCase();
+    return `<div class="metarow" style="${c?'':'opacity:.4'}"><span>${s.ic} <b class="r${s.r}">${s.n}</b>${c>1?(" ×"+c):""}
+      <br><span class="sub">${c?"+"+s.val+" "+nm:"не найден"}</span></span></div>`;
+  }).join("");
+  metaOpen("🃏 Стикеры",
+    "Собрано "+have+"/"+STICKERS.length+" · дубликатов "+stickerDupes()+". Влияют на статы, дубликаты дарятся в зал.",
+    `<div class="btnrow"><button class="gold" onclick="buyStickerPack()" ${(S.gems||0)<STICKER_PACK_GEMS?"disabled":""}>Пак ${STICKER_PACK_N} · ${STICKER_PACK_GEMS} 💎</button>
+       <button onclick="giftStickers()" ${stickerDupes()<1?"disabled":""}>Подарить дубликаты</button></div>
+     <div style="margin-top:10px">${rows}</div>`);
+  Platform.logEvent("stickers_view",{});
+}
 function craftPetExotic(){
   if(!petCraftUnlocked()){ showToast("⚗","Крафт закрыт","","Нужно "+BALANCE.petCraft.needLegendaries+" легендарных питомцев","есть "+(S.petLegSeen||0)); return false; }
   if((S.gems||0)<BALANCE.petCraft.gems){ showToast("⚗","Мало кристаллов","","Крафт: "+BALANCE.petCraft.gems+" 💎"); return false; }
@@ -2994,6 +3088,7 @@ function claimWorkout(){
   const p=S.wkActive.path; S.workouts=S.workouts||{}; S.workouts[p]=(S.workouts[p]||0)+1;
   S.wkActive=null;
   S.chestKeys=(S.chestKeys||0)+1;            // док: тренировки в зале выдают ключи
+  addGymXP(GYM_XP.perWorkout);               // Gym XP за тренировку (PDF)
   showToast("🗝","Ключ от ларя","","Тренировка окончена","всего: "+S.chestKeys);
   sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); openWorkouts();
 }
@@ -3022,7 +3117,7 @@ function openDaily(){
   metaOpen("Дейлики","Жетонов сегодня: "+(S.daily.tok||0)+"/150 (§8)",qrows+"<div style='height:8px'></div>"+trows);
 }
 function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.claimed||[]).includes(i)) return;
-  S.daily.claimed.push(i);
+  S.daily.claimed.push(i); addGymXP(GYM_XP.perDaily);
   if(i===0){ S.keys=(S.keys||0)+1; S.chestKeys=(S.chestKeys||0)+1; } else if(i===2) S.gems+=50; else S.gold+=veinReward()*50;
   Platform.logEvent("daily_claim",{i}); save(); render(); openDaily(); }
 

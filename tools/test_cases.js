@@ -924,5 +924,19 @@ T("ролл Legendary увеличивает счётчик для крафта"
   const _r=Math.random; Math.random=()=>0.999; rollPet(1); Math.random=_r;   // форсим высокую редкость
   return (S.petLegSeen||0)>=s0; })());
 
+console.log("\n[46] Стикеры и Зал (PDF)");
+localStorage.removeItem("oredeep_v3"); load();
+{ const a0=stat("atk"); S.stickers={s_atk1:1}; T("стикер влияет на стат", stat("atk")>a0); }
+S.gems=STICKER_PACK_GEMS; S.stickers={};
+{ const g0=S.gems; buyStickerPack(); const total=Object.values(S.stickers).reduce((a,b)=>a+b,0);
+  T("пак: списаны гемы, выдано 5 стикеров", S.gems===g0-STICKER_PACK_GEMS && total===STICKER_PACK_N); }
+S.stickers={s_atk1:3}; { const x0=S.gymXP||0; giftStickers();
+  T("дарение дубликатов даёт Gym XP и оставляет по 1", (S.gymXP||0)>x0 && S.stickers.s_atk1===1); }
+S.gymXP=0; addGymXP(GYM_LEVELS[1]);
+T("Gym XP поднимает уровень зала", gymLevel()===1 && gymPerkPct()>0);
+{ const a0=stat("atk"); S.gymXP=GYM_LEVELS[5]; T("перк зала множит статы", stat("atk")>a0); }
+{ let ok=true; try{ openGym(); openStickers(); }catch(e){ ok=false; } T("экраны Зала и Стикеров открываются", ok); }
+S.gymXP=0;
+
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
