@@ -24,6 +24,9 @@ class FE {
   getAttribute(k){ return (this._attrs||{})[k]; }
   remove(){}
   querySelector(sel){ if(!this._q[sel]) this._q[sel]=new FE("q"); return this._q[sel]; }
+  getBoundingClientRect(){
+    return { left:40, top:120, right:100, bottom:180, width:60, height:60, x:40, y:120 };
+  }
 }
 const document={ getElementById:id=>{ if(!__ids[id]) __ids[id]=new FE("static"); return __ids[id]; },
   createElement:tag=>new FE(tag), addEventListener:()=>{} };

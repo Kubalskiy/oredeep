@@ -2,513 +2,600 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ORE DEEP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP — v0.88 «UI Shells»</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#12151d; --panel:#1b2029; --panel2:#232a36; --line:#2e3745;
-    --gold:#e8b93c; --green:#5fd068; --red:#e05555; --blue:#5aa7e8;
-    --txt:#e8e6df; --dim:#8a93a3;
-  }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;background:#05060a;color:var(--txt);
-    font-family:-apple-system,"Segoe UI",Roboto,sans-serif;height:100%;overflow:hidden;}
-  /* Мобильный телефон-фрейм: портрет, база 9:16, тянется до 9:20. На десктопе
-     центрируется с рамкой, на телефоне занимает весь экран. */
-  body{display:flex;align-items:center;justify-content:center;}
-  #app{
-    position:relative;
-    width:min(100vw, calc(100vh * 9 / 16));      /* ширина от высоты по 9:16 */
-    height:min(100vh, calc(100vw * 20 / 9));      /* высота до 9:20 */
-    max-width:480px;
-    background:var(--bg);
-    display:flex;flex-direction:column;overflow:hidden;   /* фрейм клипует */
-    box-shadow:0 0 0 1px #1a1f2a, 0 10px 60px -10px #000;
-  }
-  @media(min-width:520px){ #app{ border-radius:20px; height:min(96vh, 900px); } }
-  /* Прокручиваемая зона = всё, кроме нижнего навбара */
-  #view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overflow-x:hidden;position:relative;}
-  /* Нижний навбар — фиксированный низ фрейма, всегда виден */
-  #bottomNav{display:flex;flex:none;background:#0d0f14;border-top:1px solid #1c2230;
-    padding:4px 4px calc(4px + env(safe-area-inset-bottom));}
-  .navb{position:relative;flex:1;background:none;border:0;color:var(--dim);cursor:pointer;
-    display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:10px;}
-  .navb .ni{font-size:19px;line-height:1;}
-  .navb .nl{font-size:7px;font-weight:800;letter-spacing:.5px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  .navb.on{color:var(--gold);background:#151a24;}
-  .navb .dot{top:4px;right:calc(50% - 16px);}
-  .tabbar{display:none !important;}   /* заменён нижним навбаром */
+/* UI_SPEC.md — дизайн с нуля */
+:root{
+  --bg:#140f09;
+  --bgPanel:#1c150c;
+  --bgPanelAlt:#241a10;
+  --border:#3a2c1b;
+  --borderLight:#4a3822;
+  --gold:#f2d488;
+  --goldMuted:#c9974a;
+  --textPrimary:#f0e6d0;
+  --textBody:#e9dcc4;
+  --textMuted:#a89a7c;
+  --income:#6ea862;
+  --danger:#d4674a;
+  --gem:#c85a6a;
+  --petAccent:#7a6ec0;
+  --r-sm:8px; --r-md:12px; --r-lg:18px;
+  --font-display:"VT323", monospace;
+  --font-body:"Space Grotesk", sans-serif;
+  /* compat aliases used by remaining modal CSS snippets */
+  --panel:var(--bgPanel);
+  --panel2:var(--bgPanelAlt);
+  --line:var(--border);
+  --txt:var(--textPrimary);
+  --dim:var(--textMuted);
+  --green:var(--income);
+  --red:var(--danger);
+  --blue:#5aa7e8;
+  --c1:#2c2721; --c2:#171310; --gemc:#e8b93c;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;background:#0a0704;color:var(--textPrimary);
+  font-family:var(--font-body);overflow:hidden;}
+body{display:flex;align-items:center;justify-content:center;}
+button{font-family:inherit;border:0;cursor:pointer;color:inherit;background:transparent;}
+button:active{transform:scale(.97);}
+button:disabled{opacity:.45;cursor:default;}
 
-  .hud{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;background:var(--panel);border-bottom:1px solid var(--line);}
-  .profChip{display:flex;align-items:center;gap:8px;background:#12151d;border:1px solid var(--line);border-radius:24px;padding:4px 10px 4px 4px;cursor:pointer;flex:none;}
-  .profChip .avatar{width:30px;height:30px;border-radius:50%;background:#1c2230;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;}
-  .profChip .pmeta{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0;}
-  .profChip .pmeta b{font-size:9px;color:var(--gold);white-space:nowrap;max-width:88px;overflow:hidden;text-overflow:ellipsis;}
-  .profChip .ptag{font-size:7px;color:#7ae8dc;}
-  .goldWrap{flex:1;min-width:0;text-align:right;}
-  .hudIcon{flex:none;width:34px;height:34px;border-radius:9px;background:#12151d;border:1px solid var(--line);color:var(--txt);font-size:15px;cursor:pointer;padding:0;}
-  .minebar.mb2{grid-template-columns:1fr 1fr;}
-  .hud>div:first-child{min-width:0;flex:1;overflow:hidden;}
-  .hud .gold{white-space:nowrap;}
-  .hud .gold{font-weight:800;font-size:20px;color:var(--gold);}
-  .hud .gps{font-size:12px;color:var(--green);}
-  .hud .right{text-align:right;font-size:12px;color:var(--dim);}
-  #musicBtn{width:38px;margin-left:10px;padding:7px 0;font-size:15px;background:var(--panel2);}
-  .hud .right b{color:var(--txt);font-size:14px;}
+#app{
+  position:relative;
+  width:min(100vw, calc(100vh * 9 / 17));
+  height:min(100vh, calc(100vw * 17 / 9));
+  max-width:480px;
+  background:var(--bg);
+  display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 0 0 1px var(--border), 0 16px 60px #000a;
+}
+@media(min-width:520px){ #app{ border-radius:20px; height:min(96vh, 980px); } }
 
-  .minebar{display:flex;justify-content:space-around;padding:6px 0;background:#161a22;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
-  .minebar b{display:block;color:var(--txt);font-size:13px;letter-spacing:0;}
-  .pwstrip{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;padding:4px 4px;background:#0f1218;border-top:1px solid #222836;border-bottom:1px solid #222836;}
-  .pwstrip .pw{display:flex;flex-direction:column;align-items:center;gap:1px;background:#1b202b;border-radius:3px;padding:4px 1px;}
-  .pwstrip .pwk{font-size:6px;color:var(--dim);letter-spacing:.3px;white-space:nowrap;}
-  .pwstrip .pw b{font-size:9px;color:var(--txt);line-height:1;white-space:nowrap;}
-  .chDrop{border:1px solid;border-radius:8px;padding:10px;margin-top:10px;background:#161b24;}
-  .chDropTop{display:flex;align-items:center;gap:8px;}
-  .chDropTop .chIc{font-size:24px;}
-  .chSts{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px;}
-  .chSt{display:flex;justify-content:space-between;background:#1b202b;border-radius:5px;padding:4px 7px;font-size:11px;}
-  .chSt b{color:#5fd068;}
-  .chUp{margin-top:12px;background:#141821;border:1px solid #222836;border-radius:8px;padding:10px;}
-  .chUpHead{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:6px;}
-  .chCols{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .chColT{text-align:center;margin-bottom:4px;}
-  .chRow{display:flex;align-items:center;gap:5px;margin:3px 0;font-size:10px;}
-  .chNm{width:52px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .chBar{flex:1;height:6px;background:#0d1016;border-radius:3px;overflow:hidden;}
-  .chFill{height:100%;border-radius:3px;}
-  .br0b{background:#7d8694}.br1b{background:#5fd068}.br2b{background:#5aa7e8}.br3b{background:#b97ae8}
-  .br4b{background:#e87a7a}.br5b{background:#e8b93c}.br6b{background:#7ae8dc}.br7b{background:#ff9d5c}
-  .chPc{width:34px;flex:none;text-align:right;color:var(--dim);}
-  .chTimer{display:flex;align-items:center;gap:8px;margin-top:8px;}
-  .chTimerBar{flex:1;height:5px;background:#0d1016;border-radius:3px;overflow:hidden;}
-  .chTimerFill{height:100%;background:#5aa7e8;border-radius:3px;}
-  .minebar .mid b{color:var(--blue);}
+/* A. Шапка */
+#hud{
+  flex:none;display:flex;align-items:center;gap:10px;
+  padding:10px 12px;background:linear-gradient(180deg,#1f170d,#140f09);
+  border-bottom:2px solid var(--border);
+}
+#avatar{
+  width:44px;height:44px;min-width:44px;border-radius:50%;
+  background:var(--bgPanelAlt);border:2px solid var(--borderLight);
+  display:flex;align-items:center;justify-content:center;font-size:22px;padding:0;
+}
+#hud .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+#nickname{font-family:var(--font-display);font-size:22px;color:var(--gold);letter-spacing:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;}
+#hudPrestige{font-size:11px;color:var(--goldMuted);}
+#hud .money{text-align:right;line-height:1.15;}
+#gemsBtn{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;
+  background:var(--bgPanel);border:1px solid var(--border);min-height:28px;
+  font-family:var(--font-display);font-size:18px;color:#f0c0c8;
+}
+#gold{font-family:var(--font-display);font-size:28px;color:var(--gold);display:block;}
+#income{font-family:var(--font-display);font-size:16px;color:var(--income);}
+#menu{
+  width:44px;height:44px;min-width:44px;border-radius:var(--r-sm);
+  background:var(--bgPanelAlt);border:2px solid var(--borderLight);
+  font-size:20px;color:var(--textPrimary);
+}
 
-  .scene{position:relative;height:240px;overflow:hidden;
-    background:linear-gradient(180deg,var(--c1,#20242e) 0%,var(--c2,#171a21) 100%);}
+/* B. Статус */
+#statusBar{
+  flex:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;
+  padding:8px 10px;background:#100c08;border-bottom:1px solid var(--border);
+}
+#statusBar .cell{
+  background:var(--bgPanel);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:7px 6px;text-align:center;
+}
+#statusBar .k{font-size:10px;letter-spacing:1px;color:var(--textMuted);font-family:var(--font-display);}
+#statusBar .v{font-family:var(--font-display);font-size:18px;color:var(--textPrimary);margin-top:2px;}
+#statMine{color:#7eb6e8;}
+#statLoot{color:var(--goldMuted);}
+
+/* Скролл */
+#view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overflow-x:hidden;position:relative;}
+
+/* D+C. Сцена */
+#scene{
+  position:relative;height:280px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 60%, #2a2014 0%, #140f09 70%);
+  border-bottom:1px solid var(--border);
+}
+#scene.t0{--c1:#2c2721;--c2:#171310;--gemc:#e8b93c;}
+#scene.t1{--c1:#222b39;--c2:#131824;--gemc:#5aa7e8;}
+#scene.t2{--c1:#38221a;--c2:#1f110c;--gemc:#ff8a4a;}
+#scene.t3{--c1:#20313b;--c2:#121f28;--gemc:#7ae8dc;}
+#scene.t4{--c1:#272033;--c2:#151021;--gemc:#b97ae8;}
+#decor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+#sideMenu{position:absolute;left:8px;top:40px;display:flex;flex-direction:column;gap:6px;z-index:8;}
+#sideMenu .btn-side{
+  width:52px;min-height:52px;border-radius:var(--r-sm);
+  background:var(--bgPanelAlt);border:2px solid var(--borderLight);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:9px;color:var(--textMuted);padding:4px;position:relative;
+  font-family:var(--font-display);letter-spacing:.5px;
+}
+#sideMenu .btn-side b{font-size:18px;line-height:1;margin-bottom:2px;color:var(--gold);}
+#sideMenu .dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;
+  background:var(--danger);display:none;box-shadow:0 0 6px var(--danger);}
+#sideMenu .dot.on{display:block;}
+
+#boost2x{
+  position:absolute;right:8px;top:8px;z-index:8;min-height:44px;padding:6px 10px;
+  background:var(--bgPanel);border:2px solid var(--borderLight);border-radius:var(--r-sm);
+  font-family:var(--font-display);font-size:14px;color:var(--textMuted);line-height:1.2;text-align:center;
+}
+#boost2x.on{border-color:var(--income);color:var(--income);}
+#boost2x b{display:block;color:var(--gold);font-size:15px;}
+
+#enemyPane{position:absolute;right:8px;top:62px;width:54%;z-index:7;text-align:right;pointer-events:none;}
+#enemyName{font-family:var(--font-display);font-size:16px;color:var(--gold);letter-spacing:1px;
+  text-shadow:0 1px 3px #000;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hpTrack{height:12px;border-radius:6px;background:#0008;border:1px solid #000;overflow:hidden;position:relative;}
+.hpTrack .fill{height:100%;background:linear-gradient(180deg,#e07a5a,#d4674a);width:100%;transition:width .2s;}
+#hpTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:13px;color:#fff;text-shadow:0 1px 2px #000;}
+
+#bonusChest{
+  position:absolute;right:8px;bottom:10px;z-index:8;width:72px;min-height:64px;
+  background:var(--bgPanelAlt);border:2px solid var(--borderLight);border-radius:var(--r-sm);
+  padding:6px 4px;text-align:center;font-family:var(--font-display);
+}
+#bonusChest.ready{border-color:var(--gold);box-shadow:0 0 0 1px #f2d48855;}
+#bonusChest .ic{font-size:22px;line-height:1;}
+#bonusChest .t{font-size:12px;color:var(--goldMuted);margin-top:2px;}
+#bonusChest .tm{font-size:14px;color:var(--textPrimary);}
+
+#energyBox{
+  position:absolute;left:66px;bottom:calc(28px - 2mm);z-index:8;width:42%;
+  display:flex;align-items:center;gap:6px;cursor:pointer;
+}
+#energyBox.warn .enTrack{border-color:#e8a24a;}
+#energyBox.crit .enTrack{border-color:#e87a7a;box-shadow:0 0 0 1px #e87a7a55;}
+#energyBox .bolt{font-size:16px;}
+.enTrack{flex:1;height:10px;border-radius:5px;background:#0008;overflow:hidden;border:1px solid #0006;}
+.enTrack .fill{height:100%;background:linear-gradient(180deg,#7ec86f,#6ea862);width:100%;}
+#energyTxt{font-family:var(--font-display);font-size:13px;color:var(--textMuted);white-space:nowrap;}
+
+#miner{position:absolute;left:calc(16% + 1cm);bottom:42px;width:95px;height:110px;z-index:4;
+  transform-origin:70% 85%;animation:bob 2.6s ease-in-out infinite;}
+#miner.swing #pickHand{animation:chop .16s ease-in;}
+@keyframes chop{0%{transform:rotate(-22deg)}55%{transform:rotate(42deg)}100%{transform:rotate(-22deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.ml{position:absolute;left:0;top:0;width:95px;height:110px;image-rendering:pixelated;}
+#pickHand{position:absolute;left:60px;top:32px;width:40px;image-rendering:pixelated;
+  transform-origin:42% 90%;transform:rotate(-22deg);z-index:4;}
+#aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
+#petBox{position:absolute;left:calc(6% + 1cm);bottom:36px;z-index:5;animation:bob 2s ease-in-out infinite;display:none;}
+#rock{
+  position:absolute;right:4%;bottom:36px;width:148px;height:148px;z-index:3;cursor:pointer;
+  filter:drop-shadow(0 10px 12px #000a);
+}
+#rockImg{width:100%;height:100%;image-rendering:pixelated;display:block;}
+#crackOv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+#peekWrap{position:absolute;left:50%;top:24%;transform:translateX(-50%);width:46%;pointer-events:none;z-index:3;}
+#peek{width:100%;image-rendering:pixelated;display:none;filter:drop-shadow(0 0 5px #000a);}
+#rock.boss #rockImg{transform:scale(1.13);transform-origin:bottom center;}
+#rock.hitfx{animation:shake .12s;}
+@keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
+#bubble{
+  display:none;margin:6px 10px 0;padding:7px 12px;border-radius:8px;background:#0d1018f2;
+  border:1px solid var(--goldMuted);font-size:11px;line-height:1.35;color:var(--textBody);
+  text-align:center;box-shadow:0 4px 12px #000a;flex:none;
+}
+#bubble.show{display:block;}
+#bubble b{color:var(--gold);}
+#setAura,#setRing,#prestigeMark,#paperdoll{position:absolute;pointer-events:none;}
+#paperdoll{inset:0;z-index:7;display:none;}
+#paperdoll.on{display:block;pointer-events:auto;}
+.pdm{position:absolute;width:13px;height:13px;transform:translate(-50%,-50%);
+  border-radius:50%;border:1.5px solid #ffffff44;background:#0d0f14e6;
+  display:flex;align-items:center;justify-content:center;font-size:7px;cursor:pointer;}
+.pdm img{width:9px;height:9px;image-rendering:pixelated;}
+#cart{display:none;}
+#speedBtn{display:none;}
+
+.dmgnum{position:absolute;font-weight:800;font-size:15px;color:#ffd76a;text-shadow:0 1px 2px #000;
+  pointer-events:none;animation:rise .8s ease-out forwards;font-family:var(--font-display);}
+.dmgnum.crit{color:#ff8a4a;font-size:19px;}
+@keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
+.shard,.chip{position:absolute;pointer-events:none;animation:fly .7s ease-out forwards;}
+@keyframes fly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+.pulse{animation:pulseBtn 1.1s ease-in-out infinite;}
+@keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #f2d48888}50%{box-shadow:0 0 0 6px #f2d48800}}
+
+/* E. Статы */
+#statStrip{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:2px;
+  padding:6px 4px;background:#100c08;border-bottom:1px solid var(--border);
+}
+#statStrip .pw{text-align:center;padding:4px 0;}
+#statStrip .pwk{display:block;font-family:var(--font-display);font-size:12px;color:var(--textMuted);}
+#statStrip b{font-family:var(--font-display);font-size:16px;color:var(--textPrimary);}
+
+/* F. Экипировка */
+#gearSection{padding:10px 10px 0;}
+#gearGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.slot{
+  position:relative;min-height:78px;border-radius:var(--r-sm);padding:8px 4px;
+  background:linear-gradient(180deg,var(--bgPanelAlt),var(--bgPanel));
+  border:2px solid var(--borderLight);text-align:center;cursor:pointer;
+}
+.slot.petSlot{border-color:var(--petAccent);}
+.slot .ic{font-size:24px;filter:drop-shadow(0 2px 2px #0008);}
+.slot .sn{font-family:var(--font-display);font-size:13px;color:var(--textMuted);margin-top:4px;}
+.slot .sv{font-family:var(--font-display);font-size:14px;color:var(--gold);margin-top:2px;}
+.slot.empty .ic{opacity:.25;}
+.slot .up{position:absolute;top:3px;right:4px;color:var(--income);font-size:12px;display:none;}
+.slot.canUp .up{display:block;}
+.br0{border-color:#4a5261}.br1{border-color:#5fd068}.br2{border-color:#5aa7e8}.br3{border-color:#b97ae8}
+.br4{border-color:#e87a7a}.br5{border-color:#e8b93c}.br6{border-color:#7ae8dc}.br7{border-color:#ff9d5c}
+.r0{color:#b9c0cc}.r1{color:#5fd068}.r2{color:#5aa7e8}.r3{color:#b97ae8}.r4{color:#e87a7a}
+.r5{color:#e8b93c}.r6{color:#7ae8dc}.r7{color:#ff9d5c}
+
+/* G. Действия */
+#actionBar{
+  display:grid;grid-template-columns:1.4fr 1fr .7fr;gap:8px;align-items:center;
+  padding:12px 10px 14px;
+}
+#lootChest{
+  position:relative;min-height:72px;border-radius:var(--r-md);
+  background:linear-gradient(180deg,#4a3826,#2e2114);border:2px solid var(--borderLight);
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+}
+#bagBadge2{
+  position:absolute;top:6px;right:8px;min-width:28px;height:20px;border-radius:10px;
+  background:var(--danger);color:#fff;font-family:var(--font-display);font-size:14px;
+  display:none;align-items:center;justify-content:center;padding:0 6px;
+}
+#powerUp{
+  min-height:72px;border-radius:var(--r-md);background:var(--bgPanel);
+  border:2px solid var(--border);padding:8px;text-align:left;
+  font-family:var(--font-display);
+}
+#powerUp b{display:block;font-size:18px;color:var(--gold);}
+#powerUp span{font-size:14px;color:var(--goldMuted);}
+#auto{
+  min-height:72px;border-radius:var(--r-md);background:var(--bgPanelAlt);
+  border:2px solid var(--borderLight);font-family:var(--font-display);
+  font-size:16px;color:var(--textMuted);line-height:1.15;
+}
+#auto.on{border-color:var(--income);color:var(--income);}
+
+#upgrades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 10px 16px;}
+#upgrades .u{
+  background:var(--bgPanel);border:2px solid var(--border);border-radius:var(--r-sm);
+  padding:8px 4px;text-align:center;font-family:var(--font-display);
+}
+#upgrades .u .k{font-size:12px;color:var(--textMuted);}
+#upgrades .u .v{font-size:18px;color:var(--gold);margin:2px 0;}
+#upgrades .u .c{font-size:13px;color:var(--goldMuted);margin-bottom:4px;}
+#upgrades .u button{width:100%;min-height:32px;background:var(--bgPanelAlt);
+  border:1px solid var(--borderLight);border-radius:6px;color:var(--gold);font-family:var(--font-display);}
+/* Кнопки: единая схема .btn + роль (.btn-soft|hard|danger|nav|side|back|boost|tab) + модификаторы (.btn-wide|tiny) */
+.btn{font-family:inherit;border:0;cursor:pointer;color:inherit;}
+.btn-soft,button.buy{background:linear-gradient(180deg,#2f6b39,#25522d);color:#fff;border-radius:var(--r-sm);padding:9px 6px;font-weight:700;}
+.btn-hard,button.gold{background:linear-gradient(180deg,#8a6d1d,#6b5416);color:#fff;border-radius:var(--r-sm);padding:9px 6px;}
+.btn-danger,button.red{background:linear-gradient(180deg,#7a2f2f,#5e2222);color:#fff;border-radius:var(--r-sm);padding:9px 6px;}
+.btn:disabled,.btn[disabled]{opacity:.45;cursor:default;}
+
+/* H. Нижняя навигация */
+#bottomNav{
+  flex:none;display:flex;background:#100c08;border-top:2px solid var(--border);
+  padding:4px 4px calc(4px + env(safe-area-inset-bottom));
+}
+.btn-nav{
+  position:relative;flex:1;min-height:52px;border-radius:var(--r-sm);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--textMuted);padding:6px 2px;
+}
+.btn-nav .ni{font-size:20px;line-height:1;}
+.btn-nav .nl{font-family:var(--font-display);font-size:13px;letter-spacing:.5px;}
+.btn-nav.on{color:var(--gold);background:var(--bgPanel);}
+.btn-nav .dot{position:absolute;top:4px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;
+  background:var(--danger);display:none;}
+.btn-nav .dot.on{display:block;}
+.btn-nav .up{position:absolute;top:2px;right:calc(50% - 18px);color:var(--income);font-size:12px;display:none;}
+.btn-nav .up.on{display:block;}
+
+/* UI shells / modals (минимальный слой поверх) */
+#uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;}
+#uiScreen.open{display:flex;}
+.uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bgPanel);border-bottom:2px solid var(--border);flex:none;}
+.btn-back{width:36px;height:36px;padding:0;border:2px solid var(--border);background:var(--bgPanelAlt);color:var(--gold);font-size:16px;}
+.uiTitle{flex:1;font-family:var(--font-display);font-size:20px;color:var(--gold);}
+.uiPill{font-size:12px;font-family:var(--font-display);background:var(--bgPanelAlt);border:1px solid var(--border);border-radius:12px;padding:4px 8px;}
+.uiTabs{display:flex;gap:4px;padding:6px 8px;background:#100c08;border-bottom:1px solid var(--border);overflow-x:auto;flex:none;}
+.btn-tab,.uiTab{flex:none;padding:7px 10px;font-size:12px;font-family:var(--font-display);background:var(--bgPanel);border:1px solid var(--border);color:var(--textMuted);border-radius:6px;}
+.btn-tab.on,.uiTab.on{color:var(--gold);border-color:var(--gold);}
+.uiBody{flex:1;overflow-y:auto;padding:10px 12px 16px;-webkit-overflow-scrolling:touch;}
+.uiHero,.uiCard,.uiOpp,.uiMineCard,.uiBanner,.uiSlot,.uiRow{/* light stubs */}
+.uiHero{text-align:center;padding:14px 8px;background:var(--bgPanel);border:2px solid var(--border);border-radius:var(--r-sm);margin-bottom:10px;}
+.uiHeroArt{font-size:42px;}
+.uiSub{font-size:12px;color:var(--textMuted);line-height:1.5;}
+.uiRow{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.uiBar{height:8px;background:#0d1016;border:1px solid var(--border);border-radius:2px;overflow:hidden;margin-top:4px;}
+.uiBarFill{height:100%;}
+.uiCard{display:flex;gap:10px;padding:10px;background:var(--bgPanelAlt);border:2px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;}
+.uiCardIc{font-size:28px;}
+.uiGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.uiSlot{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;background:var(--bgPanel);border:2px solid var(--border);min-height:72px;border-radius:var(--r-sm);color:var(--textPrimary);}
+.uiSlot.lock{opacity:.45;}
+.btn-wide{width:100%;margin-top:6px;}
+.uiBtnStack{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.uiBanner{padding:8px 10px;border:2px solid var(--gold);background:var(--bgPanel);border-radius:var(--r-sm);font-size:13px;margin-bottom:8px;text-align:center;}
+.uiEmpty{text-align:center;padding:24px 12px;color:var(--textMuted);}
+.uiInp{width:110px;background:var(--bg);border:1px solid var(--border);color:var(--textPrimary);border-radius:4px;padding:6px;font-size:12px;}
+.uiInp.wide{width:100%;max-width:180px;}
+.btn-tiny{padding:6px 8px !important;font-size:11px !important;margin-left:4px;}
+.uiSec{font-family:var(--font-display);font-size:16px;color:var(--gold);margin:10px 0 6px;}
+.uiOpp{display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bgPanelAlt);border:2px solid var(--border);margin-bottom:6px;border-radius:var(--r-sm);}
+.uiOpp.fav{border-color:var(--income);}
+.uiTag{font-size:10px;padding:2px 6px;border:1px solid var(--border);color:var(--textMuted);border-radius:8px;}
+.uiTag.on{color:var(--income);border-color:var(--income);}
+.uiMineList{display:flex;flex-direction:column;gap:8px;}
+.uiMineCard{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bgPanelAlt);border:2px solid var(--border);text-align:left;color:var(--textPrimary);border-radius:var(--r-sm);}
+.uiMineCard.sel{border-color:var(--gold);}
+.uiMineIc{font-size:26px;}
+.uiMineCard b{font-size:14px;display:block;color:var(--gold);}
+.uiTavExt{position:relative;height:100px;background:linear-gradient(180deg,#2a1f14,#12151d);border:2px solid #5d4326;border-radius:var(--r-sm);margin-bottom:10px;}
+.uiTavRoof{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:32px;}
+.uiTavSign{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:14px;color:var(--gold);}
+.uiColPick{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--bgPanelAlt);border:2px solid var(--acc,#555);color:var(--textPrimary);border-radius:var(--r-sm);}
+.uiColEm{font-size:28px;}
+.uiColHead{display:flex;align-items:center;gap:8px;padding:10px;border:2px solid var(--acc);border-radius:var(--r-sm);margin-bottom:10px;color:var(--acc);}
+.uiRankRow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.uiRankN{width:18px;height:18px;display:flex;align-items:center;justify-content:center;background:var(--bgPanel);border:1px solid var(--border);font-size:11px;color:var(--textMuted);}
+.uiGachaStage{display:flex;justify-content:center;padding:16px 0;}
+.uiGachaEgg{font-size:56px;animation:bob 2s ease-in-out infinite;}
+.dot{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--danger);display:none;}
+.dot.on{display:block;}
+
+.modal{position:fixed;inset:0;background:#000b;z-index:80;display:none;align-items:flex-end;justify-content:center;}
+.modal .box{background:var(--bgPanel);width:100%;max-width:430px;max-height:80%;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;border:1px solid var(--border);}
+.modal h3{margin:0 0 4px;color:var(--gold);font-family:var(--font-display);font-size:22px;}
+.modal .sub{font-size:12px;color:var(--textMuted);margin-bottom:10px;}
+.metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--border);font-size:13px;gap:8px;}
+.metarow button{width:auto;padding:8px 10px;font-size:12px;background:var(--bgPanelAlt);border:1px solid var(--border);border-radius:8px;color:var(--textPrimary);}
+.col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--border);font-size:13px;}
+.oreimg{width:26px;height:26px;image-rendering:pixelated;vertical-align:middle;margin-right:6px;}
+.oreimg.big{width:44px;height:44px;}
+#toast{position:fixed;left:50%;top:15%;transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
+  border-radius:14px;padding:12px 20px;text-align:center;z-index:50;display:none;box-shadow:0 8px 30px #000a;min-width:230px;}
+#toast .big{font-size:30px;}
+#toast .r{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;}
+#toast .nm{font-size:15px;font-weight:700;margin:2px 0;}
+#toast .vl{color:var(--gold);font-size:12px;}
+#overlay{position:fixed;inset:0;background:#000c;z-index:70;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px;}
+#overlay .big{font-size:52px;}
+#overlay h2{color:var(--danger);margin:8px 0;font-family:var(--font-display);}
+#overlay p{color:var(--textMuted);font-size:13px;max-width:280px;}
+#ovActions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:300px;margin-top:16px;}
+#ovActions button{flex:1;min-width:130px;margin:0;background:var(--bgPanelAlt);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--textPrimary);}
+#introOv{position:fixed;inset:0;background:#07090c;z-index:100;display:none;overflow-y:auto;}
+#introOv.on{display:block;}
+.introBox{max-width:430px;margin:0 auto;}
+.introFoot{position:sticky;bottom:0;padding:12px 16px 22px;background:linear-gradient(180deg,transparent,#07090cf0 28%,#07090c);text-align:center;}
+#introArt{width:100%;display:block;image-rendering:pixelated;border-bottom:2px solid var(--border);}
+.introBox h2{color:var(--gold);text-align:center;margin:16px 0 4px;font-family:var(--font-display);font-size:28px;letter-spacing:2px;}
+.introBox .isub{text-align:center;color:var(--textMuted);font-size:12px;margin-bottom:16px;}
+.iitem{margin:0 16px 14px;padding:11px 13px;background:#0d0f14;border:1px solid var(--border);border-left:2px solid var(--gold);border-radius:6px;}
+.iitem b{display:block;color:var(--gold);font-size:12px;margin-bottom:5px;}
+.iitem span{font-size:12px;line-height:1.65;color:#c3cad6;}
+#introGo{display:block;max-width:280px;margin:0 auto;width:100%;}
+.ftueTip{position:fixed;z-index:85;max-width:min(210px,calc(100vw - 16px));width:max-content;
+  padding:8px 10px;background:#141821ee;border:1px solid var(--gold);border-radius:8px;
+  font-size:11px;color:#e8e6df;text-align:center;pointer-events:auto;cursor:pointer;
+  box-sizing:border-box;box-shadow:0 4px 18px #000a;line-height:1.35;user-select:none;}
+.ftueTip .ftueSkip{display:block;margin-top:4px;font-size:9px;color:var(--goldMuted);}
+.btnrow{display:flex;gap:8px;}
+.btnrow button{flex:1;}
+.chDrop,.chUp,.setHead,.setFrags,.specWrap,.curbar{/* kept class hooks */}
+.curbar{display:none;}
+.statimg{width:16px;height:16px;image-rendering:pixelated;}
+#legacy{display:none !important;}
+.tabbar{display:none !important;}
+.tab{display:none;}
+.tab.on{display:block;}
+.mote{display:none;}
+.rockname{display:none;}
+
+/* COMBAT FROM LEGACY */
   .scene.t0{--c1:#2c2721;--c2:#171310;--gemc:#e8b93c;--rockc:#4d453b;}
+
   .scene.t1{--c1:#222b39;--c2:#131824;--gemc:#5aa7e8;--rockc:#3e4a5c;}
+
   .scene.t2{--c1:#38221a;--c2:#1f110c;--gemc:#ff8a4a;--rockc:#54372a;}
+
   .scene.t3{--c1:#20313b;--c2:#121f28;--gemc:#7ae8dc;--rockc:#38505c;}
+
   .scene.t4{--c1:#272033;--c2:#151021;--gemc:#b97ae8;--rockc:#3e3450;}
-  #decor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
-  #lamp{animation:flick 3.5s ease-in-out infinite;filter:drop-shadow(0 0 12px #ffcf5e);}
+
   @keyframes flick{0%,100%{opacity:1}50%{opacity:.75}}
-  .mote{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffe9a855;pointer-events:none;
-    animation:mote 9s linear infinite;}
+
   @keyframes mote{0%{transform:translate(0,0);opacity:0}15%{opacity:.8}85%{opacity:.5}100%{transform:translate(26px,-120px);opacity:0}}
-  .miner{position:absolute;left:9%;bottom:20px;transform-origin:70% 85%;}
+
   .miner.swing #pickHand{animation:chop .16s ease-in;}
+
   @keyframes chop{0%{transform:rotate(-22deg)}55%{transform:rotate(42deg)}100%{transform:rotate(-22deg)}}
-  .pet{position:absolute;left:2%;bottom:14px;z-index:5;animation:bob 2s ease-in-out infinite;}
-  .rock{position:absolute;right:7%;bottom:24px;filter:drop-shadow(0 5px 7px #000a);}
-  .rock{width:132px;height:132px;}
+
   #rockImg{width:100%;height:100%;image-rendering:pixelated;display:block;}
+
   #crackOv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
-  #peekWrap{position:absolute;left:50%;top:24%;transform:translateX(-50%);width:46%;pointer-events:none;z-index:3;}
-  #peek{width:100%;image-rendering:pixelated;display:none;
-    filter:drop-shadow(0 0 5px #000a);transition:clip-path .15s, transform .15s;}
+
   #peek.pop{animation:peekPop .55s ease-out forwards;}
+
   @keyframes peekPop{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-30px) scale(1.35)}100%{transform:translateY(-64px) scale(.4);opacity:0}}
+
   .rock.boss #rockImg{transform:scale(1.13);transform-origin:bottom center;}
-  .rock.boss{--gemc:#ff5544;}
+
   .rock.hitfx{animation:shake .12s;}
-  .miner{width:117px;height:135px;animation:bob 2.6s ease-in-out infinite;}
-  .ml{position:absolute;left:0;top:0;width:117px;height:135px;image-rendering:pixelated;}
+
   #pickHand{position:absolute;left:74px;top:40px;width:50px;image-rendering:pixelated;
     transform-origin:42% 90%;transform:rotate(-22deg);z-index:4;}
+
   #aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
+
   #aleMug.sip{display:block;animation:drink 2.4s ease-in-out forwards;}
+
   @keyframes drink{0%{transform:translate(0,20px) rotate(0);opacity:0}
     15%{transform:translate(0,0) rotate(0);opacity:1}
     35%,65%{transform:translate(6px,-6px) rotate(-32deg);opacity:1}
     85%{transform:translate(0,0) rotate(0);opacity:1}
     100%{transform:translate(0,20px);opacity:0}}
+
   #minerRank{cursor:pointer;}
+
   #minerRank:active{opacity:.7;}
+
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-  .rock svg polygon{animation:gemPulse 3.2s ease-in-out infinite;}
+
   @keyframes gemPulse{0%,100%{opacity:1}50%{opacity:.7}}
-  .scene::after{content:"";position:absolute;inset:0;pointer-events:none;
-    box-shadow:inset 0 0 70px 18px rgba(0,0,0,0.55);}
-  .pulse{animation:pulseBtn 1.1s ease-in-out infinite;}
+
   @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #e8b93c88}50%{box-shadow:0 0 0 6px #e8b93c00}}
-  .shard{position:absolute;width:7px;height:7px;border-radius:2px;pointer-events:none;
-    background:var(--gemc,#e8b93c);animation:fly .7s ease-out forwards;}
+
   @keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
-  .chip{position:absolute;font-size:16px;pointer-events:none;animation:fly .7s ease-out forwards;}
+
   @keyframes fly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.5)}}
+
   .dmgnum{position:absolute;font-weight:800;font-size:15px;color:#ffd76a;text-shadow:0 1px 2px #000;pointer-events:none;animation:rise .8s ease-out forwards;}
+
   .dmgnum.crit{color:#ff8a4a;font-size:19px;}
+
   @keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
 
   #cart{position:absolute;left:120px;bottom:8px;z-index:3;image-rendering:pixelated;transition:none;}
+
   #cart.depart{animation:cartOut 1.4s ease-in forwards;}
+
   #cart.arrive{animation:cartIn .8s ease-out;}
+
   @keyframes cartOut{0%{transform:translateX(0)}100%{transform:translateX(420px);opacity:0}}
+
   @keyframes cartIn{0%{transform:translateX(-120px);opacity:0}100%{transform:translateX(0);opacity:1}}
+
   #cartOre rect{transition:none;}
+
   #speedBtn{position:absolute;right:10px;bottom:10px;width:auto;padding:6px 14px;z-index:6;
     background:#1b2029cc;border:1px solid var(--gold);color:var(--gold);font-size:12px;}
-  .bubble{position:absolute;bottom:8px;left:50%;transform:translate(-50%,4px);
-    max-width:56%;background:#12151dd0;color:#e8e6df;backdrop-filter:blur(2px);
-    font-size:8px;line-height:1.4;font-weight:500;padding:5px 12px;border-radius:20px;
-    text-align:center;opacity:0;transition:opacity .3s,transform .3s;
-    pointer-events:none;z-index:5;box-shadow:0 2px 8px #0009;border:1px solid #ffffff14;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .bubble.show{opacity:1;transform:translate(-50%,0);}
-  .bubble b{color:var(--gold);font-weight:700;}
-  .rockname{position:absolute;top:10px;left:50%;transform:translateX(-50%);
-    font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:2px;
-    white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;opacity:.85;}
-  .rockname b{color:var(--txt);font-weight:400;letter-spacing:1.5px;}
-  .bosslabel{color:#ff8a4a !important;}
-  .bars{position:absolute;top:32px;left:16px;right:16px;display:flex;flex-direction:column;gap:5px;z-index:2;}
-  .barwrap{position:relative;display:flex;align-items:center;gap:7px;}
-  .barwrap .lab{font-size:6.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);width:44px;flex:none;}
-  .barwrap .val{position:absolute;right:4px;top:50%;transform:translateY(-50%);
-    font-size:7px;color:#fff;text-shadow:0 1px 2px #000c;font-variant-numeric:tabular-nums;z-index:2;}
-  .bar{height:9px;border-radius:5px;background:#00000066;overflow:hidden;
-    box-shadow:inset 0 1px 2px #0006, inset 0 0 0 1px #ffffff0c; position:relative;}
-  .bar .fill{height:100%;border-radius:5px 2px 2px 5px;
-    transition:width .28s cubic-bezier(.4,0,.2,1);position:relative;}
-  .bar .fill::after{content:"";position:absolute;left:0;right:0;top:1px;height:2px;border-radius:2px;
-    background:#ffffff4d;}
-  .bar.hp .fill{background:linear-gradient(180deg,#e8654a,#c33e2a);}
-  .bar.en .fill{background:linear-gradient(180deg,#5fd07e,#2f9c54);}
-  .bar.du .fill{background:linear-gradient(180deg,#c9a24a,#8a6a24);transition:width .2s,background .3s;}
-  .bar.du.warn .fill{background:linear-gradient(180deg,#e8a24a,#c46a20);}
-  .bar.du.crit .fill{background:linear-gradient(180deg,#e86a4a,#c33020);animation:duflash .7s ease-in-out infinite;}
+
   @keyframes duflash{0%,100%{opacity:1}50%{opacity:.55}}
-  .reinf{flex:0 0 auto;width:auto !important;background:#1b2029;border:1px solid var(--gold);color:var(--gold);
-    font-size:9px;font-weight:700;border-radius:6px;padding:4px 9px;cursor:pointer;white-space:nowrap;}
-  .barwrap .bar.du{min-width:0;}
-  .reinf:hover{background:#242a35;}
-  .reinf:disabled{opacity:.4;cursor:default;border-color:var(--line);color:var(--dim);}
 
-  .stats{display:grid;grid-template-columns:repeat(6,1fr);background:#0f1218;padding:8px 6px;gap:2px;}
-  .stat{text-align:center;}
-  .stat .k{font-size:9px;color:var(--dim);text-transform:uppercase;}
-  .stat .v{font-size:13px;font-weight:700;}
-
-  .row{display:flex;gap:8px;padding:10px 12px 0;}
-  .card{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;}
-  .card .t{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
-  .card .n{font-weight:800;font-size:14px;margin:3px 0;}
-  .card .d{font-size:11px;color:var(--dim);}
-  button{font-family:inherit;border:0;border-radius:10px;padding:9px 6px;font-weight:700;font-size:12px;
-    background:var(--panel2);color:var(--txt);width:100%;cursor:pointer;}
-  button:active{transform:scale(.97);}
-  button.buy{background:linear-gradient(180deg,#2f6b39,#25522d);}
-  button:disabled{background:#252a33 !important;color:#5b6472;}
-  button.gold{background:linear-gradient(180deg,#8a6d1d,#6b5416);}
-  button.red{background:linear-gradient(180deg,#7a2f2f,#5e2222);}
-
-  /* gear grid */
-  .gearwrap{padding:10px 12px 0;}
-  .gearttl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-  .gear{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-  /* --- Bag area (Boxer-style, below equipment) --- */
-  .bagArea{display:flex;align-items:center;gap:10px;padding:10px 14px;justify-content:center;}
-  .bagMain{position:relative;cursor:pointer;font-size:36px;line-height:1;filter:drop-shadow(0 2px 6px #000a);}
-  .bagMain:active{transform:scale(.93);}
-  .bagBadge{position:absolute;top:-4px;right:-8px;background:var(--red);color:#fff;font-size:7px;
-    font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;
-    justify-content:center;padding:0 3px;box-shadow:0 1px 4px #000a;}
-  .bagInfo{display:flex;flex-direction:column;gap:2px;font-size:8px;}
-  .bagInfo b{color:var(--txt);font-size:9px;}
-  .bagTimer{font-size:7px;color:var(--gold);}
-  .bagAutoBtn{width:56px;padding:8px 4px !important;font-size:7px !important;line-height:1.3;
-    background:var(--panel2);border:2px solid var(--line);color:var(--dim);}
-  .bagAutoBtn.on{border-color:var(--green);color:var(--green);}
-  .upgSec{margin-top:4px;}
-  .upgSecH{font-size:7px;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;text-align:center;
-    padding:8px 0 2px;border-top:1px solid var(--line);}
-  .slot{background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:6px 3px;text-align:center;min-height:72px;}
-  .slot .ic{font-size:22px;}
-  .slot .sn{font-size:9px;color:var(--dim);}
-  .slot .sv{font-size:10px;font-weight:700;}
-  .slot.empty .ic{opacity:.25;}
-  .br0{border-color:#4a5261}.br1{border-color:#5fd068}.br2{border-color:#5aa7e8}.br3{border-color:#b97ae8}
-  .br4{border-color:#e87a7a}.br5{border-color:#e8b93c}.br6{border-color:#7ae8dc}.br7{border-color:#ff9d5c}
-  .r0{color:#b9c0cc}.r1{color:#5fd068}.r2{color:#5aa7e8}.r3{color:#b97ae8}.r4{color:#e87a7a}.r5{color:#e8b93c}.r6{color:#7ae8dc}.r7{color:#ff9d5c}
-
-  .upg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 12px;}
-  .upg .u{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;}
-  .upg .u .k{font-size:10px;color:var(--dim);}
-  .upg .u .v{font-size:13px;font-weight:800;margin:2px 0;}
-  .upg .u .c{font-size:10px;color:var(--gold);margin-bottom:5px;}
-  .toolbar{display:flex;gap:8px;padding:0 12px 14px;}
-  #log{margin:6px 12px 2px;background:#0b0e13;border:1px solid var(--line);border-radius:8px;
-    height:66px;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding:6px 10px;
-    display:flex;flex-direction:column;gap:3px;scrollbar-width:thin;scrollbar-color:#3a4454 #0b0e13;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-  #log::-webkit-scrollbar{width:6px;}
-  #log::-webkit-scrollbar-thumb{background:#3a4454;border-radius:3px;}
-  #log::-webkit-scrollbar-track{background:transparent;}
-  #log .li{font-size:11px;line-height:1.35;letter-spacing:0;text-transform:none;
-    color:#c3cad6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    display:flex;align-items:center;gap:6px;flex:0 0 auto;min-height:16px;}
-  #log .li b{color:#f2efe6;font-weight:600;}
-  #log .li .tail{color:#828b9c;}
-  #log .li.hot{color:var(--gold);}
-  #log .li.hot b{color:#ffe08a;}
-  #log .li img{height:15px;width:15px;image-rendering:pixelated;flex:none;vertical-align:middle;}
-  #log .li .ic{flex:none;font-size:12px;line-height:1;}
-  /* --- графическая карточка сета --- */
-  #setModal{z-index:90;}
-  .setHead{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-  .setEmblem{width:54px;height:54px;flex:none;border-radius:12px;display:flex;align-items:center;
-    justify-content:center;font-size:26px;border:2px solid;box-shadow:0 0 14px -2px currentColor;}
-  .setHead .sh-n{font-size:12px;font-weight:800;line-height:1.4;}
-  .setHead .sh-s{font-size:7px;color:var(--dim);margin-top:5px;letter-spacing:.5px;}
-  .setBar{height:8px;border-radius:5px;background:#00000066;overflow:hidden;margin:10px 0 14px;}
-  .setBar>div{height:100%;border-radius:5px;transition:width .3s;}
-  .setFrags{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
-  .frag{background:#12151d;border:2px solid var(--line);border-radius:8px;padding:9px 3px 7px;text-align:center;
-    min-width:0;position:relative;}
-  .frag .fi{font-size:20px;line-height:1.2;filter:grayscale(1) brightness(.45);}
-  .frag .fn{font-size:6px;margin-top:5px;color:#4a5261;letter-spacing:.3px;white-space:nowrap;
-    overflow:hidden;text-overflow:ellipsis;}
-  .frag.on .fi{filter:none;}
-  .frag.on .fn{color:var(--txt);}
-  .frag .tick{position:absolute;top:2px;right:3px;font-size:7px;color:var(--green);}
-  .setBonus{background:#12151d;border:1px solid var(--line);border-radius:8px;padding:11px 12px;text-align:center;}
-  .setBonus .bl{font-size:6px;color:var(--dim);letter-spacing:1px;margin-bottom:6px;}
-  .setBonus .bv{font-size:10px;line-height:1.6;font-weight:800;}
-  .setNote{font-size:7px;color:var(--dim);line-height:1.9;margin-top:10px;text-align:center;}
-  .metarow.setrow{cursor:pointer;}
-  .metarow.setrow:hover{background:#171b24;}
-  .setline{display:flex;flex-direction:column;gap:5px;min-width:0;}
-  .setline .sl-t{font-size:9px;line-height:1.4;}
-  .setline .sl-f{font-size:7px;line-height:1.5;}
-  .setline .sl-b{font-size:7px;line-height:1.5;color:var(--gold);}
-  /* --- единая строка валют --- */
-  .curbar{display:flex;justify-content:space-between;gap:2px;padding:7px 12px;background:#0d0f14;
-    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-  .curbar .cur{font-size:9px;color:#8a93a3;white-space:nowrap;display:flex;align-items:center;gap:3px;}
-  .curbar .cur b{color:#e8e6df;font-weight:700;font-size:10px;}
-
-  /* --- FTUE-подсказки (стрелка к элементу) --- */
-  .ftueTip{position:fixed;z-index:85;max-width:210px;padding:8px 10px;background:#141821ee;
-    border:1px solid var(--gold);border-radius:8px;font-size:8px;color:#e8e6df;text-align:center;
-    pointer-events:none;box-shadow:0 4px 18px #000a;line-height:1.35;}
+  .ftueTip{position:fixed;z-index:85;max-width:min(210px,calc(100vw - 16px));width:max-content;
+    padding:8px 10px;background:#141821ee;border:1px solid var(--gold);border-radius:8px;
+    font-size:8px;color:#e8e6df;text-align:center;pointer-events:auto;cursor:pointer;
+    box-sizing:border-box;box-shadow:0 4px 18px #000a;line-height:1.35;user-select:none;}
+  .ftueTip .ftueSkip{display:block;margin-top:4px;font-size:7px;color:var(--goldMuted);}
   .ftueTip b{color:var(--gold);display:block;margin-bottom:3px;font-size:7px;letter-spacing:1px;}
   .ftueArr{font-size:14px;line-height:1;margin-top:5px;color:var(--gold);}
 
-  /* --- вкладки --- */
-  .tabbar{display:flex;gap:6px;padding:10px 12px 0;}
-  .tabbtn{position:relative;flex:1;background:#141821;border:1px solid var(--line);color:var(--dim);
-    border-radius:8px 8px 0 0;padding:10px 4px;font-size:8px;font-weight:700;cursor:pointer;}
-  .tabbtn.on{background:var(--panel);color:var(--gold);border-bottom-color:var(--panel);}
-  .tab{display:none;}
-  .tab.on{display:block;}
-  .dot{position:absolute;top:5px;right:7px;width:7px;height:7px;border-radius:50%;
-    background:var(--red);display:none;box-shadow:0 0 6px var(--red);}
-  .dot.on{display:block;animation:pulseDot 1.2s ease-in-out infinite;}
   @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
-  button .dot{top:3px;right:4px;}
-  .metabar button{position:relative;}
 
-  /* --- аура активных сетов на дворфе + метка престижа --- */
   #setAura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:150px;height:150px;border-radius:50%;pointer-events:none;z-index:1;opacity:.55;
     background:radial-gradient(circle, var(--auraC,transparent) 0%, transparent 68%);
     animation:auraPulse 2.8s ease-in-out infinite;display:none;}
+
   @keyframes auraPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}
                         50%{transform:translate(-50%,-50%) scale(1.12);opacity:.7}}
-  /* --- Paperdoll: слоты прямо на дворфе (по мотивам Ultima Online) --- */
-  /* Маркеры не лезут на дворфа: две колонки по бокам, скрыты пока не позовут */
+
   #paperdoll{position:absolute;inset:0;z-index:7;display:none;}
+
   #paperdoll.on{display:block;}
-  .pdm{position:absolute;width:13px;height:13px;transform:translate(-50%,-50%);
-    border-radius:50%;border:1.5px solid #ffffff44;background:#0d0f14e6;
-    display:flex;align-items:center;justify-content:center;font-size:7px;cursor:pointer;
-    box-shadow:0 1px 3px #000a;transition:transform .1s;}
-  .pdm:hover,.pdm:active{transform:translate(-50%,-50%) scale(1.35);}
-  .pdm.empty{opacity:.35;filter:grayscale(1);}
-  .pdm.r0{border-color:#8f96a3}.pdm.r1{border-color:#5fd068}.pdm.r2{border-color:#5aa7e8}
-  .pdm.r3{border-color:#b97ae8}.pdm.r4{border-color:#e87a7a}.pdm.r5{border-color:#e8b93c}
-  .pdm.r6{border-color:#7ae8dc}.pdm.r7{border-color:#ff9d5c}
-  .pdm img{width:9px;height:9px;image-rendering:pixelated;}
+
   #miner{cursor:pointer;}
-  /* --- Гильдия: экран образца --- */
-  .specWrap{background:#0a0c10;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:10px;}
-  .specImg{width:100%;display:block;image-rendering:pixelated;border-radius:5px;}
-  .specCap{font-size:7px;color:var(--dim);text-align:center;margin-top:6px;letter-spacing:.5px;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  .specQ{font-size:11px;line-height:1.5;color:#f2efe6;font-weight:700;margin:2px 0 4px;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  .specHint{font-size:9px;line-height:1.5;color:#8a93a3;margin-bottom:10px;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  .relBar{height:6px;border-radius:4px;background:#00000066;overflow:hidden;margin:5px 0 2px;}
-  .relBar>div{height:100%;border-radius:4px;background:linear-gradient(90deg,#e05555,#e8b93c,#5fd068);}
-  .sciStat{display:flex;justify-content:space-between;font-size:8px;color:var(--dim);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  /* --- Интро «Устав Горы» --- */
+
   #introOv{position:fixed;inset:0;background:#07090c;z-index:100;display:none;
     overflow-y:auto;-webkit-overflow-scrolling:touch;}
+
   #introOv.on{display:block;}
+
   .introBox{max-width:430px;margin:0 auto;padding:0 0 0;}
+
   .introFoot{position:sticky;bottom:0;z-index:2;padding:12px 16px 22px;
     background:linear-gradient(180deg,transparent,#07090cf0 28%,#07090c);
     text-align:center;}
+
   #introArt{width:100%;display:block;image-rendering:pixelated;
     border-bottom:2px solid var(--line);}
+
   .introBox h2{color:var(--gold);text-align:center;margin:16px 0 4px;font-size:13px;letter-spacing:2px;}
+
   .introBox .isub{text-align:center;color:var(--dim);font-size:7px;margin-bottom:16px;letter-spacing:1px;}
-  .iitem{margin:0 16px 14px;padding:11px 13px;background:#0d0f14;border:1px solid var(--line);
-    border-left:2px solid var(--gold);border-radius:6px;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-  .iitem b{display:block;color:var(--gold);font-size:9px;margin-bottom:5px;letter-spacing:.5px;}
-  .iitem span{font-size:11px;line-height:1.65;color:#c3cad6;}
-  .iitem code{color:#7ae8dc;font-size:10px;}
+
   #introGo{display:block;max-width:280px;margin:0 auto;width:100%;position:relative;z-index:3;}
-  .icurtain{text-align:center;color:var(--dim);font-size:8px;margin-top:18px;letter-spacing:1px;}
-  #setRing{position:absolute;left:2%;bottom:96px;display:flex;gap:3px;z-index:6;pointer-events:none;}
-  #setRing span{font-size:11px;filter:drop-shadow(0 0 3px #000);animation:bob 2.6s ease-in-out infinite;}
+
   #prestigeMark{position:absolute;right:10px;top:8px;z-index:6;font-size:9px;color:var(--gold);
     background:#12151dcc;border:1px solid var(--gold);border-radius:6px;padding:3px 7px;display:none;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-  #logWrap{margin:6px 12px 2px;}
-  #logWrap #log{margin:0;}
-  #logPager{display:flex;align-items:center;justify-content:flex-end;gap:6px;
-    margin-top:3px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
-  #logPager .pgbtn{background:#141821;border:1px solid var(--line);color:#c3cad6;
-    width:22px;height:20px;border-radius:5px;font-size:12px;line-height:1;cursor:pointer;padding:0;}
-  #logPager .pgbtn:hover{background:#1c222e;}
-  #logPager .pgbtn:disabled{opacity:.35;cursor:default;}
-  #logPager #logPos{font-size:10px;color:#828b9c;min-width:38px;text-align:center;}
-  .metabar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px 12px 10px;}
-  .metabar button{padding:12px 2px;font-size:8px;background:linear-gradient(180deg,#2a3346,#1d2534);}
-  .metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line);font-size:9px;gap:8px}
-  .metarow button{width:auto;padding:8px 10px;font-size:8px}
-  #gemLine{color:#b97ae8;font-size:8px;white-space:nowrap;letter-spacing:0;margin-top:3px;overflow:hidden;text-overflow:ellipsis;}
 
   #toast{position:fixed;left:50%;top:15%;transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
     border-radius:14px;padding:12px 20px;text-align:center;z-index:50;display:none;box-shadow:0 8px 30px #000a;min-width:230px;}
+
   #toast .big{font-size:30px;}
+
   #toast .r{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;}
+
   #toast .nm{font-size:15px;font-weight:700;margin:2px 0;}
+
   #toast .vl{color:var(--gold);font-size:12px;}
 
   #overlay{position:fixed;inset:0;background:#000c;z-index:70;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px;}
+
   #overlay .big{font-size:52px;}
+
   #overlay h2{color:var(--red);margin:8px 0;}
+
   #overlay p{color:var(--dim);font-size:13px;max-width:280px;}
-  #ovActions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:300px;margin-top:16px;}
-  #ovActions button{flex:1;min-width:130px;margin:0;}
 
-  .modal{position:fixed;inset:0;background:#000b;z-index:80;display:none;align-items:flex-end;justify-content:center;}
-  .modal .box{background:var(--panel);width:100%;max-width:430px;max-height:80%;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;}
-  .modal h3{margin:0 0 4px;color:var(--gold);}
-  .modal .sub{font-size:11px;color:var(--dim);margin-bottom:10px;}
-  .col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--line);font-size:13px;}
-  .col-item .cnt{color:var(--dim);font-size:12px;}
-  .oreimg{width:26px;height:26px;image-rendering:pixelated;vertical-align:middle;margin-right:6px;}
-  .oreimg.big{width:44px;height:44px;}
-  .found{color:var(--txt);} .notfound{color:#4a5261;}
-  .cmp{display:flex;gap:10px;margin:10px 0;}
-  .cmp .side{flex:1;background:var(--panel2);border-radius:10px;padding:10px;text-align:center;font-size:12px;}
-  .cmp .side .ttl{font-size:10px;color:var(--dim);text-transform:uppercase;margin-bottom:4px;}
-  .btnrow{display:flex;gap:8px;margin-top:10px;}
-
-  /* ---------- PIXEL SKIN ---------- */
-  body,button{font-family:'Press Start 2P','Courier New',monospace;}
-  .statimg{width:22px;height:22px;image-rendering:pixelated;display:block;margin:0 auto 2px;}
   button,.card,.slot,.upg .u,.minebar,#toast,.modal .box,#speedBtn{border-radius:4px !important;}
-  .card,.slot,.upg .u{border-width:2px;}
-  .hud .gold{font-size:14px;} .hud .gps{font-size:8px;} .hud .right{font-size:8px;line-height:1.7;}
-  .hud .right b{font-size:9px;}
-  .minebar{font-size:8px;} .minebar b{font-size:10px;margin-top:2px;}
-  .rockname{font-size:8px;}
-  .stat .k{font-size:6px;} .stat .v{font-size:10px;}
-  .gearttl{font-size:7px;} .slot .sn{font-size:6px;margin-top:2px;} .slot .sv{font-size:7px;}
-  .card .t{font-size:7px;} .card .n{font-size:10px;line-height:1.5;} .card .d{font-size:7px;line-height:1.8;}
-  button{font-size:9px;line-height:1.5;}
-  .upg .u .k{font-size:6px;} .upg .u .v{font-size:10px;} .upg .u .c{font-size:7px;}
-  .bubble{font-size:8px;line-height:1.6;}
+
   .dmgnum{font-size:10px;} .dmgnum.crit{font-size:12px;}
+
   #toast .r{font-size:9px;} #toast .nm{font-size:10px;line-height:1.5;} #toast .vl{font-size:8px;line-height:1.6;}
-  .modal h3{font-size:11px;line-height:1.5;} .modal .sub{font-size:7px;line-height:1.8;}
-  .col-item{font-size:8px;line-height:1.6;} .col-item .cnt{font-size:7px;}
+
   #overlay h2{font-size:13px;} #overlay p{font-size:8px;line-height:1.9;}
+
   #speedBtn{font-size:8px;padding:8px 14px;}
 
-  /* ---------- SPACING PASS: единый вертикальный ритм ---------- */
-  .hud{padding:14px 16px;}
-  .hud .gps{margin-top:4px;}
-  .hud .right{line-height:2;}
-  .minebar{padding:10px 0;}
-  .minebar b{margin-top:5px;}
-  .rockname{top:10px;letter-spacing:.5px;}
-  .bars{top:34px;}
-  .bar{margin-bottom:8px;}
-  .stats{padding:12px 8px;gap:4px;}
-  .statimg{margin:0 auto 5px;}
-  .stat .k{margin-bottom:3px;letter-spacing:.5px;}
-  .gearwrap{padding:14px 14px 12px;}
-  .gearttl{margin-bottom:8px;letter-spacing:.5px;}
-  .gear{gap:10px;}
-  .slot{padding:10px 4px 9px;min-height:86px;}
-  .slot .ic{height:34px;display:flex;align-items:center;justify-content:center;}
-  .slot .sn{margin-top:5px;}
-  .slot .sv{margin-top:4px;}
-  .row{padding:12px 14px 0;gap:10px;}
-  .card{padding:14px 12px;}
-  .card .t{margin-bottom:7px;letter-spacing:.5px;}
-  .card .n{margin:0 0 7px;}
-  .card .d{line-height:2;}
-  .card button{margin-top:10px !important;}
-  .upg{padding:14px 14px;gap:10px;}
-  .upg .u{padding:11px 6px 10px;}
-  .upg .u .k{margin-bottom:5px;letter-spacing:.5px;}
-  .upg .u .v{margin:0 0 5px;}
-  .upg .u .c{margin-bottom:9px;}
-  .toolbar{padding:0 14px 18px;}
-  button{padding:11px 8px;}
+
   #toast{padding:16px 22px;}
+
   #toast .big{margin-bottom:6px;}
+
   #toast .r{margin:4px 0;}
+
   #toast .nm{margin:7px 0;}
+
   #toast .vl{margin-top:5px;line-height:1.8;}
-  .bubble{padding:9px 12px;}
-  .modal .box{padding:20px 16px;}
-  .modal h3{margin-bottom:9px;}
-  .modal .sub{margin-bottom:14px;}
-  .col-item{padding:9px 4px;}
-  .oreimg{margin-right:10px;}
+
   #overlay h2{margin:14px 0 10px;}
+
   #overlay p{line-height:2.1;}
+
   #overlay .big{margin-bottom:4px;}
 
-  /* ---------- LAYOUT FIT: длинные значения не рвут сетку ---------- */
-  .stat{min-width:0;overflow:hidden;}
-  .stat .v{font-size:9px;white-space:nowrap;}
-  .statimg{width:20px;height:20px;}
-  .slot{min-width:0;}
-  .slot .sv{line-height:1.7;}
-  .slot .svv{font-size:7px;margin-top:2px;white-space:nowrap;}
-  .upg .u{min-width:0;overflow:hidden;}
-  .upg .u .v,.upg .u .c{white-space:nowrap;}
-  .card{min-width:0;overflow:hidden;}
-  .card .n{word-break:break-word;}
 
-  /* ---------- UI SHELLS (Boxer-style fullscreen) ---------- */
-  #uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;pointer-events:none;}
+/* UIS FULL */
+#uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;pointer-events:none;}
   #uiScreen.open{display:flex;pointer-events:auto;}
   .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--panel);border-bottom:2px solid var(--line);flex:none;}
-  .uiBack{width:36px;height:36px;padding:0;border:2px solid var(--line);background:#12151d;color:var(--gold);font-size:16px;flex:none;}
+  .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--line);background:#12151d;color:var(--gold);font-size:16px;flex:none;}
   .uiTitle{flex:1;font-size:10px;color:var(--gold);line-height:1.4;}
   .uiHeadAct{flex:none;}
   .uiPill{font-size:7px;background:#12151d;border:1px solid var(--line);border-radius:12px;padding:4px 8px;color:var(--txt);}
   .uiTabs{display:flex;gap:4px;padding:6px 8px;background:#141821;border-bottom:1px solid var(--line);overflow-x:auto;flex:none;-webkit-overflow-scrolling:touch;}
-  .uiTab{flex:none;padding:7px 10px;font-size:7px;background:#1b2029;border:1px solid var(--line);color:var(--dim);}
-  .uiTab.on{color:var(--gold);border-color:var(--gold);background:#1a2030;}
+  .btn-tab,.uiTab{flex:none;padding:7px 10px;font-size:7px;background:#1b2029;border:1px solid var(--line);color:var(--dim);}
+  .btn-tab.on,.uiTab.on{color:var(--gold);border-color:var(--gold);background:#1a2030;}
   .uiBody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 16px;}
   .uiHero{text-align:center;padding:14px 8px 10px;background:linear-gradient(180deg,#1a2030,#12151d);border:2px solid var(--line);border-radius:4px;margin-bottom:10px;}
   .uiHero.compact{padding:10px 8px;}
@@ -529,7 +616,7 @@
   .uiSlotIc{font-size:22px;line-height:1;}
   .uiSlotNm{font-size:6px;text-align:center;line-height:1.5;}
   .uiSlotSub{font-size:6px;color:var(--dim);}
-  .uiWide{width:100%;margin-top:6px;}
+  .btn-wide{width:100%;margin-top:6px;}
   .uiBtnStack{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
   .uiBanner{padding:8px 10px;border:2px solid var(--gold);background:#1a2030;border-radius:4px;font-size:8px;margin-bottom:8px;text-align:center;}
   .uiGachaStage{display:flex;justify-content:center;padding:16px 0;}
@@ -537,7 +624,7 @@
   .uiEmpty{text-align:center;padding:24px 12px;color:var(--dim);font-size:8px;line-height:1.8;}
   .uiInp{width:110px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:4px;padding:6px;font-size:8px;}
   .uiInp.wide{width:100%;max-width:180px;}
-  .uiTiny{padding:6px 8px !important;font-size:7px !important;margin-left:4px;}
+  .btn-tiny{padding:6px 8px !important;font-size:7px !important;margin-left:4px;}
   .uiSec{font-size:8px;color:var(--gold);margin:10px 0 6px;letter-spacing:.5px;}
   .uiOpp{display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--panel2);border:2px solid var(--line);margin-bottom:6px;border-radius:4px;}
   .uiOpp.fav{border-color:var(--green);}
@@ -558,334 +645,243 @@
   .uiColHead span{font-size:24px;}
   .uiRankRow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:8px;}
   .uiRankN{width:18px;height:18px;display:flex;align-items:center;justify-content:center;background:#1b2029;border:1px solid var(--line);font-size:7px;color:var(--dim);flex:none;}
+
 </style>
 </head>
 <body>
 <div id="app">
-<div id="view">
-  <div class="hud">
-    <button class="profChip" id="profChip">
-      <span class="avatar" id="hudAvatar">🧔</span>
-      <span class="pmeta">
-        <b id="minerRank">БЕЗБОРОДЫЙ</b>
-        <span id="hudPrestige" class="ptag"></span>
-      </span>
-    </button>
-    <div class="goldWrap">
-      <div class="gold">🪙 <span id="gold">0</span></div>
-      <div class="gps">+<span id="gps">0</span>/с</div>
-      <div class="gps" id="streakLine" style="color:#ff9d5c"></div>
-      <div id="gemLine" style="display:none">💎 <span id="gems">0</span> · 🏆 <span id="trophies">0</span> · 🍺 <span id="protein">0</span> · 💠 <span id="shards">0</span></div>
+  <!-- A. Шапка -->
+  <header id="hud">
+    <button type="button" id="avatar" title="профиль">🧔</button>
+    <div class="who">
+      <div id="nickname">БЕЗБОРОДЫЙ</div>
+      <span id="hudPrestige"></span>
     </div>
-    <button id="settingsBtn" class="hudIcon" title="настройки">☰</button>
+    <div class="money">
+      <button type="button" id="gemsBtn" onclick="UIS.open('shop','gems')">💎 <span id="gems">0</span></button>
+      <span id="gold">0</span>
+      <div id="income">+<span id="gps">0</span>/ч</div>
+      <div id="streakLine" style="font-size:11px;color:#ff9d5c"></div>
+    </div>
+    <button type="button" id="menu" title="меню">☰</button>
+  </header>
+
+  <!-- B. Статус -->
+  <div id="statusBar">
+    <div class="cell"><div class="k">ШАХТЁР</div><div class="v" id="statMiner">—</div></div>
+    <div class="cell"><div class="k">ШТОЛЬНЯ</div><div class="v" id="statMine">1-1</div></div>
+    <div class="cell"><div class="k">ДОБЫЧА</div><div class="v" id="statLoot">—</div></div>
   </div>
 
-  <div class="curbar">
-    <span class="cur" title="Кристаллы">💎 <b id="curGems">0</b></span>
-    <span class="cur" title="Осколки">💠 <b id="curShards">0</b></span>
-    <span class="cur" title="Пиво">🍺 <b id="curProtein">0</b></span>
-    <span class="cur" title="Сумки">🎒 <b id="curBags">0</b></span>
-    <span class="cur" title="Ключи ивентов">🗝 <b id="curKeys">0</b></span>
-    <span class="cur" title="Ключи от ларей">🎴 <b id="curChestKeys">0</b></span>
-    <span class="cur" title="Кубки">🏆 <b id="curTrophies">0</b></span>
-    <span class="cur" title="Яйца питомцев">🥚 <b id="curEggs">0</b></span>
-    <span class="cur" title="Расчёски">🪮 <b id="curCombs">0</b></span>
-  </div>
+  <div id="bubble" class="bubble" aria-live="polite"></div>
 
-  <div class="minebar mb2">
-    <div>ЧЕРТОГ<br><b id="mineLabel">1-1</b></div>
-    <div>ПРОГОН<br><b id="stageLabel">3 м</b></div>
-  </div>
-
-
-
-  <div class="scene t0" id="scene">
-    <svg id="decor" viewBox="0 0 430 240" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="deep" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#0a0d12"/>
-        </linearGradient>
-        <radialGradient id="tunGlow" cx="0.5" cy="0.55" r="0.6">
-          <stop offset="0" stop-color="rgba(255,214,122,0.10)"/>
-          <stop offset="1" stop-color="rgba(255,214,122,0)"/>
-        </radialGradient>
-      </defs>
-      <!-- дальний тоннель: концентрические арки уходят вглубь -->
-      <rect x="0" y="0" width="430" height="240" fill="url(#deep)"/>
-      <ellipse cx="215" cy="150" rx="150" ry="120" fill="var(--c2,#171a21)"/>
-      <ellipse cx="215" cy="150" rx="112" ry="92" fill="#0e1116"/>
-      <ellipse cx="215" cy="150" rx="78" ry="66" fill="#090b0f"/>
-      <ellipse cx="215" cy="152" rx="46" ry="40" fill="#050608"/>
-      <ellipse cx="215" cy="150" rx="150" ry="120" fill="url(#tunGlow)"/>
-      <!-- слои породы по бокам (стены забоя) -->
-      <path d="M0 0 H120 Q60 60 40 130 Q30 200 0 240 Z" fill="var(--c1,#20242e)"/>
-      <path d="M430 0 H310 Q370 60 390 130 Q400 200 430 240 Z" fill="var(--c1,#20242e)"/>
-      <g opacity="0.5" fill="#00000040">
-        <path d="M0 40 Q50 55 70 100"/><path d="M0 90 Q40 100 55 150" stroke="#00000030" stroke-width="3" fill="none"/>
-        <path d="M430 40 Q380 55 360 100" stroke="#00000030" stroke-width="3" fill="none"/>
-      </g>
-      <!-- светящиеся жилы в породе -->
-      <g stroke="var(--gemc,#e8b93c)" stroke-width="1.4" fill="none" opacity="0.5">
-        <path d="M22 60 L40 78 L34 104 L52 120"/>
-        <path d="M408 66 L392 84 L400 108 L384 128"/>
-        <path d="M12 150 L30 168 L26 190"/>
-      </g>
-      <g fill="var(--gemc,#e8b93c)" opacity="0.7">
-        <circle cx="40" cy="78" r="1.4"/><circle cx="52" cy="120" r="1.2"/>
-        <circle cx="392" cy="84" r="1.4"/><circle cx="384" cy="128" r="1.2"/>
-        <circle cx="30" cy="168" r="1.2"/>
-      </g>
-      <!-- деревянная крепь: свод + две стойки -->
-      <rect x="0" y="8" width="430" height="12" fill="#5d4326"/>
-      <rect x="0" y="8" width="430" height="3" fill="#7a5a33"/>
-      <rect x="0" y="19" width="430" height="3" fill="rgba(0,0,0,0.4)"/>
-      <rect x="18" y="16" width="13" height="224" fill="#523a20"/>
-      <rect x="18" y="16" width="4" height="224" fill="#6b4a2a"/>
-      <rect x="399" y="16" width="13" height="224" fill="#523a20"/>
-      <rect x="399" y="16" width="4" height="224" fill="#6b4a2a"/>
-      <!-- средняя балка-стропило -->
-      <rect x="150" y="22" width="130" height="7" rx="2" fill="#4a3420"/>
-      <rect x="150" y="22" width="130" height="2" fill="#6b4a2a"/>
-      <!-- пол + рельсы + шпалы -->
-      <rect x="0" y="222" width="430" height="18" fill="#0d0f14" opacity="0.95"/>
-      <g fill="#3a2c19">
-        <rect x="12" y="227" width="26" height="5" rx="2"/><rect x="72" y="227" width="26" height="5" rx="2"/>
-        <rect x="132" y="227" width="26" height="5" rx="2"/><rect x="192" y="227" width="26" height="5" rx="2"/>
-        <rect x="252" y="227" width="26" height="5" rx="2"/><rect x="312" y="227" width="26" height="5" rx="2"/>
-        <rect x="372" y="227" width="26" height="5" rx="2"/>
-      </g>
-      <rect x="0" y="224" width="430" height="2.5" fill="#5c6572"/>
-      <rect x="0" y="234" width="430" height="2.5" fill="#474f5b"/>
-    </svg>
-    <span class="mote" style="left:30%;bottom:40px;animation-delay:0s"></span>
-    <span class="mote" style="left:55%;bottom:70px;animation-delay:3s"></span>
-    <span class="mote" style="left:75%;bottom:50px;animation-delay:6s"></span>
-    <div class="rockname">жила: <b id="rockName">Валун</b></div>
-    <div class="bars">
-      <div class="barwrap">
-        <span class="lab">Порода</span>
-        <div class="bar hp" style="flex:1"><div class="fill" id="hpFill" style="width:100%"></div></div>
-        <span class="val" id="hpTxt"></span>
-      </div>
-      <div class="barwrap">
-        <span class="lab">Энергия</span>
-        <div class="bar en" style="flex:1"><div class="fill" id="enFill" style="width:100%"></div></div>
-        <span class="val" id="enTxt"></span>
-      </div>
-      <div class="barwrap">
-        <span class="lab">Крепь</span>
-        <div class="bar du" id="duBar" style="flex:1"><div class="fill" id="duFill" style="width:100%"></div><span class="val" id="duTxt"></span></div>
-        <button id="reinfBtn" class="reinf">Укрепить</button>
-      </div>
-    </div>
-    <div id="setAura"></div>
-    <div id="setRing"></div>
-    <div id="prestigeMark"></div>
-    <div class="bubble" id="bubble"></div>
-    <div class="miner" id="miner">
-      <img class="ml" id="mlPack" alt="">
-      <img class="ml" id="mlBase" alt="">
-      <img class="ml" id="mlRobe" alt="">
-      <img class="ml" id="mlBoots" alt="">
-      <img class="ml" id="mlGlove" alt="">
-      <img class="ml" id="mlBeard" alt="">
-      <img class="ml" id="mlHelm" alt="">
-      <img id="pickHand" alt="">
-      <img id="aleMug" alt="">
-      <div id="paperdoll"></div>
-    </div>
-    <div class="pet" id="petBox" style="display:none">
-      <svg viewBox="0 0 40 30" width="46" height="35">
-        <ellipse cx="20" cy="27" rx="14" ry="3" fill="rgba(0,0,0,0.25)"/>
-        <ellipse cx="18" cy="19" rx="11" ry="7" fill="#c98d4f"/>
-        <circle cx="29" cy="13" r="6" fill="#c98d4f"/>
-        <path d="M26 8 L28 3 L31 8 Z" fill="#a5713a"/>
-        <path d="M31 8 L34 4 L35 9 Z" fill="#a5713a"/>
-        <circle cx="31" cy="12" r="1.3" fill="#26221e"/>
-        <circle cx="34.5" cy="14.5" r="1.6" fill="#3a2c1c"/>
-        <path d="M8 17 Q3 12 6 8" stroke="#c98d4f" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <rect x="11" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
-        <rect x="21" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
-        <rect id="petCollar" x="24" y="16" width="9" height="3" rx="1.5" fill="#5fd068"/>
+  <div id="view">
+    <!-- D. Сцена + C. боковое меню -->
+    <div id="scene" class="scene t0">
+      <svg id="decor" viewBox="0 0 430 240" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="deep" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#0a0d12"/>
+          </linearGradient>
+          <radialGradient id="tunGlow" cx="0.5" cy="0.55" r="0.6">
+            <stop offset="0" stop-color="rgba(255,214,122,0.10)"/>
+            <stop offset="1" stop-color="rgba(255,214,122,0)"/>
+          </radialGradient>
+        </defs>
+        <rect width="430" height="240" fill="url(#deep)"/>
+        <ellipse cx="215" cy="150" rx="150" ry="120" fill="var(--c2)"/>
+        <ellipse cx="215" cy="150" rx="112" ry="92" fill="#0e1116"/>
+        <ellipse cx="215" cy="150" rx="78" ry="66" fill="#090b0f"/>
+        <ellipse cx="215" cy="152" rx="46" ry="40" fill="#050608"/>
+        <ellipse cx="215" cy="150" rx="150" ry="120" fill="url(#tunGlow)"/>
+        <path d="M0 0 H120 Q60 60 40 130 Q30 200 0 240 Z" fill="var(--c1)"/>
+        <path d="M430 0 H310 Q370 60 390 130 Q400 200 430 240 Z" fill="var(--c1)"/>
+        <rect x="0" y="8" width="430" height="12" fill="#5d4326"/>
+        <rect x="18" y="16" width="13" height="224" fill="#523a20"/>
+        <rect x="399" y="16" width="13" height="224" fill="#523a20"/>
+        <rect x="0" y="222" width="430" height="18" fill="#0d0f14"/>
+        <rect x="0" y="224" width="430" height="2.5" fill="#5c6572"/>
+        <rect x="0" y="234" width="430" height="2.5" fill="#474f5b"/>
       </svg>
-    </div>
-    <div class="rock" id="rock">
-      <img id="rockImg" alt="">
-      <div id="peekWrap"><img id="peek" alt=""></div>
-      <svg id="crackOv" viewBox="0 0 24 24">
-        <g id="cracks" stroke="#0e0c12" stroke-width="1.4" fill="none" opacity="0" stroke-linecap="round">
-          <path d="M12 3 L10 9 L14 13 L11 18"/>
-          <path d="M6 8 L10 12 L8 17"/>
-          <path d="M18 8 L15 12 L17 17"/>
-        </g>
-      </svg>
-    </div>
-    <div id="cart">
-      <svg viewBox="0 0 46 34" width="60" height="44">
-        <ellipse cx="23" cy="31" rx="19" ry="3" fill="#00000040"/>
-        <!-- кузов -->
-        <path d="M4 12 L42 12 L39 26 L7 26 Z" fill="#4a3826"/>
-        <path d="M4 12 L42 12 L41 15 L5 15 Z" fill="#63492e"/>
-        <path d="M7 26 L39 26 L38 28 L8 28 Z" fill="#2e2114"/>
-        <rect x="6" y="15" width="34" height="2" fill="#00000030"/>
-        <!-- руда в кузове (наполнение) -->
-        <g id="cartOre"></g>
-        <!-- колёса + рама -->
-        <rect x="9" y="27" width="28" height="2" fill="#20160c"/>
-        <circle cx="13" cy="30" r="3.4" fill="#1a120a" stroke="#3a2a18" stroke-width="1"/>
-        <circle cx="33" cy="30" r="3.4" fill="#1a120a" stroke="#3a2a18" stroke-width="1"/>
-        <circle cx="13" cy="30" r="1" fill="#5a4630"/><circle cx="33" cy="30" r="1" fill="#5a4630"/>
-      </svg>
-    </div>
-    <button id="speedBtn">×1 СКОРОСТЬ</button>
-  </div>
 
-  <div class="pwstrip" id="pwStrip">
-    <div class="pw"><span class="pwk">HP</span><b id="pHP">—</b></div>
-    <div class="pw"><span class="pwk">ATK</span><b id="pAtk">—</b></div>
-    <div class="pw"><span class="pwk">DEF</span><b id="pDef">—</b></div>
-    <div class="pw"><span class="pwk">REG</span><b id="pReg">—</b></div>
-    <div class="pw"><span class="pwk">CRT</span><b id="pCrit">—</b></div>
-    <div class="pw"><span class="pwk">CMB</span><b id="pCmb">—</b></div>
-    <div class="pw"><span class="pwk">STA</span><b id="pSta">—</b></div>
-    <div class="pw"><span class="pwk">LCK</span><b id="pLck">—</b></div>
-  </div>
-
-  <div id="logWrap">
-    <div id="log"></div>
-    <div id="logPager">
-      <button id="logFirst" class="pgbtn" title="К свежим">⤓</button>
-      <button id="logPrev" class="pgbtn" title="Старее">‹</button>
-      <span id="logPos">1/1</span>
-      <button id="logNext" class="pgbtn" title="Новее">›</button>
-    </div>
-  </div>
-
-  <div class="tabbar">
-    <button class="tabbtn on" id="tabMineBtn">⛏ ЗАБОЙ<i class="dot" id="dotMine"></i></button>
-    <button class="tabbtn" id="tabHeroBtn">🧔 ГЕРОЙ<i class="dot" id="dotHero"></i></button>
-    <button class="tabbtn" id="tabMetaBtn">⛰ МЕТА<i class="dot" id="dotMeta"></i></button>
-  </div>
-
-  <div class="tab on" id="tabMine">
-  <!-- Экипировка 4×2 (как Boxer image14) -->
-  <div class="gearwrap">
-    <div class="gearttl">Снаряжение дворфа</div>
-    <div class="gear" id="gearGrid"></div>
-  </div>
-  <!-- Сундук / Bag area (Boxer-style) -->
-  <div class="bagArea">
-    <div class="bagMain" onclick="openChest()">
-      <span class="bagIc">🎒</span>
-      <span class="bagBadge" id="bagBadge2"></span>
-    </div>
-    <div class="bagInfo">
-      <b id="bagAreaLvl">СИЛА УР 1</b>
-      <span class="bagTimer" id="bagAreaTimer"></span>
-    </div>
-    <button class="bagAutoBtn" id="autoBtn2" onclick="toggleAutoRoll()">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
-  </div>
-  <!-- Апгрейды (ниже, как вторичный блок) -->
-  <div class="upgSec">
-    <div class="upgSecH">ПРОКАЧКА</div>
-    <div class="upg" id="upgrades"></div>
-  </div>
-  </div>
-
-  <div class="tab" id="tabHero">
-
-  <div class="stats">
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4nGNgIAOIiMn8FxGT+U+OXgYRMZn/V++++H/17gvSDcGmmYkUzQePn2G4efseiW5GsnndjmOkO31UMwWaX+y0IS+hUKRZREyGZM2MMM1RJjwMDAwMDMvOfGF48+oJI7EGoCRlUjWjAHKzJwCQN5JpOT7ZVQAAAABJRU5ErkJggg==" alt=""><div class="k">ATK</div><div class="v" id="sAtk"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAdElEQVR4nGNgIBMwInNExGT+I/PfvHrCyIADsCBrKgvRRJHsWsPwH5dmJnQBaQlRBmkJUYJOZUEXePriNUFNtLURFmDofsXQiAyQA6trDQOKAUwwU2GKcDkVPcTJDhy4xgMXHhKlAQbgHkZPNdgAvpREewAAKKsooD3mqhMAAAAASUVORK5CYII=" alt=""><div class="k">SPD</div><div class="v" id="sSpd"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAABHklEQVR4nO2UsUrDUBSGv0jHDg61U8BZRETpU3RKCTiE9g18IlelQ+DS+xqCKCLiC2SqHRzENQ7mlHtzb26KSbf+U7jn3u/8nP8QOKhStMul0Tgu62ebdRF8GywKMElvrPPFPCOdJcFGgxBUrTQA9w9Lpy61x7tbis8vlk9xacK9jgX6/PoBwPvbi1U/v7gC4PryDIB0ljiOj9qgIckdtdJODlYXE1p3qVUOQDYZ8nM6tdz7nEd1qDlPgcFfOKNxXGaTIfHJcTXX722wi3lmwa3wBCpAc24+6GZdRFrl2xEIHDxboVXuBNEENZubDcAIr+reuvhNqr9vhYTchuSsWx/QILgLtNVxF3nBXd16wX1AGx33oca/m3z/d6/3pl+bK8sX9TWzBwAAAABJRU5ErkJggg==" alt=""><div class="k">Mining</div><div class="v" id="sMin"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAlklEQVR4nGNgwAFExGT+45LDqVBETOb//+tx/9HFkNUzwRhvXj1hxGWLiJjM/zevnjAStPn/9bj/D0JDMWxFBozIGhgYGBheH3RieFj3Ha5AvomTQdR+H9xVKBpFxGT+vz7oxMDAwADX1Pf1MkMRty5cMwMDA4Oo/T64ZrJtJNuPGJqQNSPz0dUyIWvC5RR8UYXT9mEAANdAWxJm6EJAAAAAAElFTkSuQmCC" alt=""><div class="k">Crit</div><div class="v" id="sCrit"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAvklEQVR4nKWQvQ2DMBSEPxAjWK4YIBIVbaSIPlKWyACpPQJTZIlMgCKldeUNqBA7vFRGz4ZQkKuss+7dDxxEER/G1tL0LQDD/bXw3fMmAMF55mlc+EqLuvMFgGC9zNNYGFtL5OghOCSKK20/fN6rSFscQAkwT2MRnE8+jK0lOaDiJx3znhp5v0SoRdpdc1pc/nLKHZq+TeIn4yyr4ldcPlIVrweH0K/domCr5wrG1vK4niRfVqPcvXAEe25/4Qv6iln+XowdZAAAAABJRU5ErkJggg==" alt=""><div class="k">Luck</div><div class="v" id="sLuck"></div></div>
-    <div class="stat"><img class="statimg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAjElEQVR4nGNgIBMwoguIiMn8Rxd78+oJhjoWdE1OHiFwvqqaJsPMSc1wOWQDGLFpUlXTZGBgYGC4fes6AwMDA8O+HWswbGXEpgmmARmga2aCMZ48vINiCyHAhMyBaUYH2MSZGBggoXbr+gW4ImSFuAxD8bCImMx/NU0DDEW3rl/AHjjomtHFsMXjSAAAbHZC43qoeTUAAAAASUVORK5CYII=" alt=""><div class="k">Stone</div><div class="v" id="sStone"></div></div>
-  </div>
-  </div>
-
-  <div class="tab" id="tabMeta">
-  <div class="row">
-    <div class="card">
-      <div class="t">Сундук находок</div>
-      <div class="n" id="bagTier">Дырявый мешок</div>
-      <div class="d">BAG LVL <span id="bagLvl">1</span> · дроп <span id="dropCh">35</span>%<br><span id="bagNext"></span></div>
-      <div class="n" style="margin:8px 0 2px">🎒 <span id="bagCount">0</span></div>
-      <div class="btnrow" style="margin-top:6px">
-        <button class="buy" id="openBagBtn">Открыть</button>
-        <button id="autoRollBtn">Auto</button>
+      <div id="sideMenu">
+        <button type="button" class="btn btn-side" id="quests" onclick="openDaily()"><b>📕</b>КВЕСТЫ<i class="dot" id="dotDailySide"></i></button>
+        <button type="button" class="btn btn-side" id="offers" onclick="openEvents()"><b>◎</b>АКЦИИ</button>
+        <button type="button" class="btn btn-side" id="achievements" onclick="openWall()"><b>🏆</b>ДОСТИЖ.</button>
+        <button type="button" class="btn btn-side" id="artifacts" onclick="UIS.open('artifacts')"><b>💎</b>АРТЕФ.</button>
+        <button type="button" class="btn btn-side" id="friendsBtn" onclick="UIS.open('profile','growth')"><b>👥</b>ДРУЗЬЯ<i class="dot" id="dotGrowthSide" style="display:none"></i></button>
       </div>
-      <button id="autoTierBtn" style="margin-top:6px;font-size:7px">порог: —</button>
-      <button class="gold" id="bagBtn" style="margin-top:6px"></button>
-      <button id="chestWinBtn" style="margin-top:6px">🧰 Окно сундука</button>
+
+      <button type="button" id="boost2x" class="btn btn-boost" onclick="toggleLoot2x()"><b>2× ДОБЫЧА</b><span id="loot2xLbl">НЕАКТИВНО</span></button>
+
+      <div id="enemyPane">
+        <div id="enemyName">Порода</div><span id="refEnemyName" style="display:none"></span>
+        <div class="hpTrack" id="hpBar">
+          <div class="fill" id="hpFill" style="width:100%"></div>
+          <span id="hpTxt"></span>
+        </div>
+      </div>
+
+      <div id="energyBox">
+        <span class="bolt">⚡</span>
+        <div class="enTrack"><div class="fill" id="enFill" style="width:100%"></div></div>
+        <span id="energyTxt"><span id="enTxt">0/0</span></span>
+      </div>
+
+      <button type="button" id="bonusChest" onclick="claimBonusChest()">
+        <div class="ic">🧰</div>
+        <div class="t">БОНУС</div>
+        <div class="tm" id="refBonusTimer">—</div>
+      </button>
+
+      <div id="setAura"></div>
+      <div id="setRing"></div>
+      <div id="prestigeMark"></div>
+
+      <div id="miner" class="miner">
+        <img class="ml" id="mlPack" alt="">
+        <img class="ml" id="mlBase" alt="">
+        <img class="ml" id="mlRobe" alt="">
+        <img class="ml" id="mlBoots" alt="">
+        <img class="ml" id="mlGlove" alt="">
+        <img class="ml" id="mlBeard" alt="">
+        <img class="ml" id="mlHelm" alt="">
+        <img id="pickHand" alt="">
+        <img id="aleMug" alt="">
+        <div id="paperdoll"></div>
+      </div>
+      <div id="petBox" class="pet" style="display:none">
+        <svg viewBox="0 0 40 30" width="46" height="35">
+          <ellipse cx="20" cy="27" rx="14" ry="3" fill="rgba(0,0,0,0.25)"/>
+          <ellipse cx="18" cy="19" rx="11" ry="7" fill="#c98d4f"/>
+          <circle cx="29" cy="13" r="6" fill="#c98d4f"/>
+          <path d="M26 8 L28 3 L31 8 Z" fill="#a5713a"/>
+          <path d="M31 8 L34 4 L35 9 Z" fill="#a5713a"/>
+          <circle cx="31" cy="12" r="1.3" fill="#26221e"/>
+          <circle cx="34.5" cy="14.5" r="1.6" fill="#3a2c1c"/>
+          <path d="M8 17 Q3 12 6 8" stroke="#c98d4f" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="11" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
+          <rect x="21" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
+          <rect id="petCollar" x="24" y="16" width="9" height="3" rx="1.5" fill="#5fd068"/>
+        </svg>
+      </div>
+      <div id="rock" class="rock">
+        <img id="rockImg" alt="">
+        <div id="peekWrap"><img id="peek" alt=""></div>
+        <svg id="crackOv" viewBox="0 0 24 24">
+          <g id="cracks" stroke="#0e0c12" stroke-width="1.4" fill="none" opacity="0" stroke-linecap="round">
+            <path d="M12 3 L10 9 L14 13 L11 18"/>
+            <path d="M6 8 L10 12 L8 17"/>
+            <path d="M18 8 L15 12 L17 17"/>
+          </g>
+        </svg>
+      </div>
+      <div id="cart"><g id="cartOre"></g></div>
+      <button type="button" id="speedBtn">×1</button>
+      <div class="rockname">жила: <b id="rockName">Валун</b></div>
     </div>
-    <div class="card">
-      <div class="t">Старейшина клана</div>
-      <div class="n" id="geoName">— вакансия в клане —</div>
-      <div class="d" id="geoDesc">гача с жалостью Горы:<br>не везёт — повезёт сильнее</div>
-      <button class="gold" id="geoBtn" style="margin-top:6px"></button>
-      <div class="d" style="margin-top:4px">роллов: <span id="geoRolls">0</span></div>
+
+    <!-- E. Характеристики -->
+    <div id="statStrip">
+      <div class="pw"><span class="pwk">ATK</span><b id="pAtk">—</b></div>
+      <div class="pw"><span class="pwk">DEF</span><b id="pDef">—</b></div>
+      <div class="pw"><span class="pwk">СИЛ</span><b id="pStr">—</b></div>
+      <div class="pw"><span class="pwk">КРИТ</span><b id="pCrit">—</b></div>
+      <div class="pw"><span class="pwk">СМБ</span><b id="pCmb">—</b></div>
+      <div class="pw"><span class="pwk">УДАЧА</span><b id="pLck">—</b></div>
+      <div class="pw"><span class="pwk">СКОР</span><b id="pSpd">—</b></div>
+      <div class="pw"><span class="pwk">КРЕПЬ</span><b id="pTou">—</b></div>
+    </div>
+
+    <!-- F. Экипировка -->
+    <div id="gearSection">
+      <div id="gearGrid"></div>
+    </div>
+
+    <!-- G. Действия -->
+    <div id="actionBar">
+      <button type="button" id="lootChest" onclick="openChest()">📦<span id="bagBadge2"></span></button>
+      <button type="button" id="powerUp" onclick="tryBagUpgrade()">
+        <b id="bagAreaLvl">СИЛА УР 1</b>
+        <span id="bagAreaTimer"></span>
+      </button>
+      <button type="button" id="auto" onclick="toggleAutoRoll()">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
+    </div>
+
+    <div id="upgrades"></div>
+
+    <div id="uiScreen" style="display:none">
+      <div class="uiHead">
+        <button class="btn btn-back" onclick="UIS.close()">‹</button>
+        <div class="uiTitle" id="uiTitle"></div>
+        <div class="uiHeadAct" id="uiHeadAct"></div>
+      </div>
+      <div id="uiTabs"></div>
+      <div class="uiBody" id="uiBody"></div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="card">
-      <div class="t">Камень мечты</div>
-      <div class="n"><span id="findChance">8</span>%</div>
-      <div class="d">шанс находки — кирка решает</div>
-      <button class="gold" id="shareBtn" style="margin-top:8px">Похвастаться 📤</button>
-    </div>
-    <div class="card">
-      <div class="t">Коллекция чертога</div>
-      <div class="n" id="colCount">0/8</div>
-      <button id="colBtn" style="margin-top:6px">Открыть 💎</button>
-    </div>
-  </div>
-
-  <div class="metabar">
-    <button id="navSkills">✦ НАВЫКИ<i class="dot" id="dotSkills"></i></button>
-    <button id="navPets">🐕 ПИТОМЦЫ<i class="dot" id="dotPets"></i></button>
-    <button id="navWheel">◎ КОЛЕСО</button>
-    <button id="navWork">💪 ТРЕНИР.<i class="dot" id="dotWork"></i></button>
-    <button id="navDaily">✓ ДЕЙЛИКИ<i class="dot" id="dotDaily"></i></button>
-    <button id="navShop">🛒 МАГАЗИН</button>
-    <button id="navPvp">⚔ PvP</button>
-    <button id="navEvents">★ ИВЕНТЫ</button>
-    <button id="navMines">⛏ ШТОЛЬНИ</button>
-    <button id="navLoot">📦 СЕТЫ<i class="dot" id="dotLoot"></i></button>
-  </div>
-
-  <div class="toolbar">
-    <button id="prestigeBtn" class="gold">⛰️ Глубинный Зов</button>
-    <button id="guildBtn">🔬 Гильдия</button>
-    <button id="gymBtn">🏋 Зал</button>
-    <button id="stickBtn">🃏 Стикеры</button>
-    <button id="codexBtn">📜 Устав Горы</button>
-    <button id="fairBtn">🔐 Честность гачи</button>
-    <button id="lbBtn" class="gold">🏔 Стена Горы</button>
-    <button id="resetBtn" class="red">↺ Всё сначала (клянусь бородой)</button>
-  </div>
-
-  <div id="uiScreen" style="display:none">
-    <div class="uiHead">
-      <button class="uiBack" onclick="UIS.close()">‹</button>
-      <div class="uiTitle" id="uiTitle"></div>
-      <div class="uiHeadAct" id="uiHeadAct"></div>
-    </div>
-    <div id="uiTabs"></div>
-    <div class="uiBody" id="uiBody"></div>
-  </div>
-  </div><!-- /view -->
-
+  <!-- H. Нижняя навигация -->
   <nav id="bottomNav">
-    <button class="navb" data-nav="Mine"><span class="ni">⛏</span><span class="nl">ЗАБОЙ</span><i class="dot" id="ndotMine"></i></button>
-    <button class="navb" data-nav="Hero"><span class="ni">🧔</span><span class="nl">ГЕРОЙ</span><i class="dot" id="ndotHero"></i></button>
-    <button class="navb" id="navPetsBtn"><span class="ni">🐕</span><span class="nl">ЗВЕРИ</span><i class="dot" id="ndotPets"></i></button>
-    <button class="navb" id="navTavBtn"><span class="ni">🍺</span><span class="nl">ТАВЕРНА</span></button>
-    <button class="navb" data-nav="Meta"><span class="ni">☰</span><span class="nl">ЕЩЁ</span><i class="dot" id="ndotMeta"></i></button>
+    <button type="button" class="btn btn-nav" id="navShop"><span class="ni">🏪</span><span class="nl">РЫНОК</span></button>
+    <button type="button" class="btn btn-nav" id="navMines"><span class="ni">⛏</span><span class="nl">ШТОЛЬНИ</span></button>
+    <button type="button" class="btn btn-nav" id="navSkills"><span class="ni">✦</span><span class="nl">НАВЫКИ</span><span class="up" id="skillsUp">↑</span><i class="dot" id="dotSkills"></i></button>
+    <button type="button" class="btn btn-nav" id="navTavBtn"><span class="ni">🍺</span><span class="nl">ТАВЕРНА</span></button>
+    <button type="button" class="btn btn-nav" id="navPvp"><span class="ni">⚔</span><span class="nl">ПВП</span></button>
   </nav>
 
-  <div class="modal" id="setModal2">
+  <!-- Скрытый HUD/мост: только данные и вкладки (кнопки-дубли убраны) -->
+  <div id="legacy" aria-hidden="true">
+    <span id="minerRank"></span>
+    <span id="hudAvatar"></span>
+    <span id="mineLabel"></span>
+    <span id="stageLabel"></span>
+    <span id="refMinerName"></span>
+    <span id="refDifficulty"></span>
+    <span id="trophies"></span><span id="protein"></span><span id="shards"></span>
+    <span id="curGems"></span><span id="curShards"></span><span id="curProtein"></span>
+    <span id="curBags"></span><span id="curKeys"></span><span id="curChestKeys"></span>
+    <span id="curTrophies"></span><span id="curEggs"></span><span id="curCombs"></span>
+    <span id="duTxt"></span>
+    <div id="duBar"><div id="duFill"></div></div>
+    <span id="sAtk"></span><span id="sSpd"></span><span id="sMin"></span>
+    <span id="sCrit"></span><span id="sLuck"></span><span id="sStone"></span>
+    <span id="findChance"></span>
+    <span id="bagLvl"></span><span id="dropCh"></span><span id="bagTier"></span>
+    <span id="bagNext"></span><span id="bagCount"></span>
+    <span id="geoName"></span><span id="geoDesc"></span><span id="geoRolls"></span>
+    <span id="colCount"></span>
+    <i class="dot" id="dotMine"></i>
+    <i class="dot" id="dotHero"></i>
+    <i class="dot" id="dotMeta"></i>
+    <i class="dot" id="ndotMine"></i>
+    <i class="dot" id="ndotHero"></i>
+    <i class="dot" id="ndotMeta"></i>
+    <i class="dot" id="ndotPets"></i>
+    <i class="dot" id="dotPets"></i>
+    <i class="dot" id="dotWork"></i>
+    <i class="dot" id="dotDaily"></i>
+    <i class="dot" id="dotLoot"></i>
+    <div id="tabMine" class="tab on"></div>
+    <div id="tabHero" class="tab"></div>
+    <div id="tabMeta" class="tab"></div>
+    <button type="button" id="tabMineBtn" class="tabBtn"></button>
+    <button type="button" id="tabHeroBtn" class="tabBtn"></button>
+    <button type="button" id="tabMetaBtn" class="tabBtn"></button>
+    <div id="pwStrip"></div>
+    <div id="logWrap"><div id="log"></div>
+      <button type="button" id="logFirst"></button><button type="button" id="logPrev"></button>
+      <span id="logPos"></span><button type="button" id="logNext"></button>
+    </div>
+    <div id="gemLine"></div>
+    <div id="bagArea"></div>
+    <div id="refBonusBtn"></div>
+    <div id="loot2xBtn"></div>
+    <div id="autoBtn2"></div>
+    <span id="autoLbl2x"></span>
+  </div>
+
+<div class="modal" id="setModal2">
     <div class="box">
       <h3>⚙ Настройки</h3>
       <div class="metarow"><span>Музыка</span><button id="setMusic">🔊 вкл</button></div>
@@ -893,7 +889,7 @@
       <div class="metarow"><span>Честность гачи</span><button onclick="openFairness()">🔐 открыть</button></div>
       <div class="metarow"><span>Стена Горы</span><button onclick="openWall()">🏔 рейтинг</button></div>
       <div class="sub" style="margin-top:12px">Версия ORE DEEP · копай глубже. ещё.</div>
-      <button class="red" style="margin-top:10px" onclick="document.getElementById('setModal2').style.display='none';document.getElementById('resetBtn').onclick&&document.getElementById('resetBtn').onclick()">↺ Всё сначала</button>
+      <button class="btn btn-danger" style="margin-top:10px" onclick="document.getElementById('setModal2').style.display='none';resetProgress()">↺ Всё сначала</button>
       <button style="margin-top:8px" onclick="document.getElementById('setModal2').style.display='none'">Закрыть</button>
     </div>
   </div>
@@ -930,8 +926,8 @@
     <div class="sub" id="offTime"></div>
     <div style="font-size:14px;color:var(--gold);margin:10px 0" id="offGold"></div>
     <div class="btnrow">
-      <button class="buy" onclick="claimOffline(1)">Забрать</button>
-      <button class="gold" onclick="claimOffline(2)">×2 за рекламу</button>
+      <button class="btn btn-soft" onclick="claimOffline(1)">Забрать</button>
+      <button class="btn btn-hard" onclick="claimOffline(2)">×2 за рекламу</button>
     </div>
   </div>
 </div>
@@ -941,8 +937,8 @@
   <h2 id="ovTitle">ПЕРЕКУР В ЧЕРТОГАХ</h2>
   <p id="ovText">Дворф прилёг подумать о вечном.</p>
   <div id="ovActions">
-    <button class="buy" onclick="overlayAle()">🍺 Выпить эль</button>
-    <button class="gold" onclick="openShop()">🛒 Магазин</button>
+    <button class="btn btn-soft" onclick="overlayAle()">🍺 Выпить эль</button>
+    <button class="btn btn-hard" onclick="openShop()">🛒 Магазин</button>
     <button onclick="openUpgradesModal()">⚒ Апгрейды</button>
   </div>
   <button style="max-width:260px;margin-top:10px" onclick="closeOverlay()">Ещё разок, за Гору!</button>
@@ -965,12 +961,12 @@
     <div id="introList"></div>
   </div>
   <div class="introFoot">
-    <button class="gold" id="introGo">Спуститься в Гору</button>
+    <button class="btn btn-hard" id="introGo">Спуститься в Гору</button>
     <div class="icurtain">Занавес. Кирка на плечо.</div>
   </div>
 </div>
 
-<div id="ftueTip" class="ftueTip" style="display:none"><span id="ftueTipTxt"></span><div class="ftueArr">▼</div></div>
+<div id="ftueTip" class="ftueTip" style="display:none" role="button" tabindex="0" title="Тап — скрыть"></div>
 
 <div class="modal" id="setModal">
   <div class="box">
@@ -987,6 +983,7 @@
     <button style="margin-top:12px" onclick="document.getElementById('colModal').style.display='none'">Закрыть</button>
   </div>
 </div>
+
 
 <script>
 "use strict";
@@ -1094,10 +1091,30 @@ const BALANCE = {
     pityW:[[80,20,0,0],[65,30,5,0],[50,35,13,2],[40,35,20,5],[15,20,45,20]] },
   wheel:{ cost:[30,50,70,100,140,190,250,320,400,490,590,700,820], centerMul:1500 },
   workouts:{ paths:7, step:50, weeklyCapMin:10080, proteinPerHour:5, proteinCapH:8 },
-  pvpDayLimit:10, pvpCandidates:3,   // PDF: выбор из 3 соперников, лимит боёв в день
-  pvp:{ thresholds:[100,150,200,250,300,350,400,450,500,1000],
+  pvpDayLimit:10, pvpCandidates:5,   // 5 ИИ-ботов · дневной лимит гонок
+  pvp:{ raceSec:180, thresholds:[100,150,200,250,300,350,400,450,500,1000],
         rewards:[0,200,500,1000,2000,3500,5000,7500,10000,12500],
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },
+  /* Постоянные ИИ-агенты арены: mul — сила к Power игрока, grit 0..1 — стабильность темпа */
+  pvpBots:[
+    {id:"slag",  ic:"🪓", n:"Шлак Безбородый", tag:"новичок",  mul:0.72, grit:0.15, fluff:"копает быстро, устаёт рано"},
+    {id:"borin", ic:"📐", n:"Борин-Счётчик",   tag:"расчёт",   mul:0.95, grit:0.55, fluff:"ровный темп, без сюрпризов"},
+    {id:"grom",  ic:"🦷", n:"Гром Железозуб",  tag:"агрессор", mul:1.08, grit:0.30, fluff:"рвётся вперёд, ломает крепь"},
+    {id:"mira",  ic:"✦", n:"Мира Рунная",     tag:"технарь",  mul:1.22, grit:0.70, fluff:"редко промахивается по жиле"},
+    {id:"durin", ic:"⛰", n:"Дурин Глубинный", tag:"патриарх", mul:1.48, grit:0.85, fluff:"жила помнит его имя"}
+  ],
+  shopFreeN:2,   // бесплатных предложений/день; каждое = free + ad
+  /* Рост: плоский CPA (rewarded cap), D1 payback (starter), LTV≫CAC, органика ref/wl */
+  growth:{
+    cacTargetCents:150, ltvTargetCents:600, paybackDay:3,
+    ads:{ dailyCap:12, revCents:2 },
+    starterPack:{ price:4.99, cents:499, gems:600, gold:50000, bags:5, loot2xMin:180 },
+    referral:{
+      welcomeGems:25, welcomeProtein:30, coopBoostPct:15, coopBoostMin:120, inviterCap:50,
+      milestones:[{n:3,gems:50},{n:10,gems:150},{n:25,gems:400}]
+    },
+    waitlist:{ bonusGems:100, eggs:3, combs:3, loot2xMin:1440 }
+  },
   events:{
     rockfall:{ maxLvl:10, total:50000, first:200, currency:"осколки", res:"shards", ic:"💠", waveSize:5 },
     lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"пиво", res:"protein", ic:"🍺" },
@@ -1105,6 +1122,15 @@ const BALANCE = {
     crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", res:"gems", ic:"💎", flat:10 },
     critterDen:{ maxLvl:10, total:8000, first:100, currency:"золото", res:"gold", ic:"🪙", mult:50 } },
   keyMax:2, keyRefillSec:Math.round(3.8*3600),   // 2/2, рефилл ~3ч48м
+  /* Штольни 2–5 (Спринт 3): дополнительные ресурсы за жилу/босса.
+     Числа живут в BALANCE; логика — в breakVein(). */
+  minesExtra:[
+    null,
+    { res:"shards",    ic:"💠", name:"Осколки",     label:"💠", pct:18, vein:3, boss:10 },
+    { res:"protein",   ic:"🍺", name:"Пиво",        label:"🍺", pct:14, vein:5, boss:15 },
+    { res:"wheelSpins",ic:"◎",  name:"Крутка",      label:"◎",  pct:10, vein:1, boss:2  },
+    { res:"chestKeys", ic:"🗝", name:"Ключ от ларя", label:"🗝", pct:8,  vein:1, boss:2  }
+  ],
   shop:{ gemPacks:[250,900,3500],
     comeback:[[250,10000],[900,50000],[1500,100000],[2500,175000],[4000,300000],[10000,1000000]] }
 };
@@ -1130,6 +1156,9 @@ function eventReward(spec, level){
    AdMob (rewarded), Firebase Analytics, Play Billing / RevenueCat. */
 const Platform={
   logEvent:(name,params)=>{ try{ console.log("[analytics]",name,params||{}); }catch(e){} },
+  trackRevenue(cents,source,meta){ this.logEvent("revenue",{cents,source,...meta}); },
+  trackAttribution(channel,meta){ this.logEvent("attribution",{channel,...meta}); },
+  unitEcon(){ return (typeof growthUnitEcon==="function")?growthUnitEcon():{}; },
   showRewarded:(cb)=>{ cb(true); },
   buy:(productId)=>Promise.resolve({ok:false,stub:true}),
   /* Лидерборд «Стена Горы». Web-стаб на localStorage; в проде метод подменяется
@@ -1357,14 +1386,15 @@ function rollRarity(w){
 
 /* ---------- 8 слотов снаряжения (GDD §6.2) ---------- */
 const SLOTS=[
-  {id:"pick",  n:"Кирка",    ic:"⛏️", st:{atk:8},           extra:"находка"},
   {id:"helm",  n:"Каска",    ic:"⛑️", st:{energy:30,tough:2}},
-  {id:"pet",   n:"Питомец",  ic:"🐕", st:{luck:1.5,mining:3}},
-  {id:"robe",  n:"Роба",     ic:"🦺", st:{tough:2.5}},
-  {id:"pack",  n:"Рюкзак",   ic:"🎒", st:{stone:14}},
-  {id:"boots", n:"Ботинки",  ic:"🥾", st:{spd:0.35}},
   {id:"glove", n:"Перчатки", ic:"🧤", st:{crit:1.6}},
-  {id:"lamp",  n:"Фонарь",   ic:"🏮", st:{mining:2,luck:1}}
+  {id:"pick",  n:"Кирка",    ic:"⛏️", st:{atk:8},           extra:"находка"},
+  {id:"lamp",  n:"Фонарь",   ic:"🏮", st:{mining:2,luck:1}},
+  {id:"pants", n:"Штаны",    ic:"👖", st:{tough:2}},
+  {id:"boots", n:"Сапоги",   ic:"🥾", st:{spd:0.35}},
+  {id:"pack",  n:"Пояс",     ic:"🪢", st:{stone:14}},
+  {id:"robe",  n:"Роба",     ic:"🦺", st:{tough:2.5}},
+  {id:"pet",   n:"Питомец",  ic:"🐕", st:{luck:1.5,mining:3}}
 ];
 const STAT_CAPS={crit:60,luck:100,mining:80,stamina:90,spd:BALANCE.combat.maxAPS};    // CALIB: вероятностные капы (luck — шанс, макс 100%)
 /* === Крепь шахты (Mine Timbering) — юнит-экономика обвала ===
@@ -1491,7 +1521,9 @@ function startBagUpgrade(){
   if(S.bag>=50 || bagUpgrading()) return false;
   const c=bagCost();
   if((S.gold||0)<c) return false;
-  if(S.ftue&&!S.ftue.b){ S.ftue.b=1; if($("bagBtn"))$("bagBtn").classList.remove("pulse"); }
+  if(S.ftue&&!S.ftue.b){ S.ftue.b=1;
+    if($("powerUp")&&$("powerUp").classList) $("powerUp").classList.remove("pulse");
+    if($("powerUp")&&$("powerUp").classList) $("powerUp").classList.remove("pulse"); }
   S.gold-=c;
   S.bagActive={ end:Date.now()+(BALANCE.bags.upgradeSec||45)*1000 };
   Platform.logEvent("bag_upgrade_start",{next:S.bag+1});
@@ -1507,7 +1539,7 @@ function skipBagUpgrade(){
     finishBagUpgrade();
     return;
   }
-  Platform.showRewarded(()=>{ if(S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); } });
+  Platform.showRewarded(ok=>{ if(ok && S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); } });
 }
 function rollVeinExtras(isBoss){
   const G=BALANCE.gacha||{};
@@ -1654,7 +1686,7 @@ function idleGoldPerDay(){
   const A=block+within, B=block*0.4;
   return BALANCE.idle.base*Math.pow(BALANCE.idle.growth,A)*Math.pow(BALANCE.idle.damp,B);
 }
-const idlePerSec=()=>Math.max(1, idleGoldPerDay()/86400*(stat("stone")/100)*(1+beardWisdom().goldPct/100));
+const idlePerSec=()=>Math.max(1, idleGoldPerDay()/86400*(stat("stone")/100)*(1+beardWisdom().goldPct/100)*(typeof growthCoopMult==="function"?growthCoopMult():1));
 function veinReward(){ return Math.max(5, idlePerSec()*8); }   // idlePerSec уже с бонусом бороды
 
 /* ---------- слой находок камней (§6bis) ---------- */
@@ -1719,7 +1751,10 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:3, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
+    growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
+      waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
+      ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
     lvls:{atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0},
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
@@ -1778,8 +1813,11 @@ const KO_SCREENS=[
   ["БОРОДА ЗАПЫЛИЛАСЬ","Энергия кончилась раньше породы. Эль, отдых, апгрейды — и снова в забой."]
 ];
 let quipHide=0, quipNext=6;
-function sayQuip(t,dur){ const b=$("bubble"); b.innerHTML="<b>Борин:</b> "+t; b.classList.add("show");
-  quipHide=dur||3; quipNext=9+Math.random()*8; }
+function sayQuip(t,dur){
+  const b=$("bubble"); if(!b) return;
+  b.innerHTML="<b>Борин:</b> "+t; b.classList.add("show");
+  quipHide=dur||3; quipNext=9+Math.random()*8;
+}
 
 /* ---------- боевой тик (§5) ---------- */
 let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null, durabTimer=0, lastDurabWarn=100, regenAcc=0;
@@ -1936,7 +1974,7 @@ function caveIn(){
   S.gold-=lost; S.cartFill=0; S.energy=0;
   try{ jingleKO(); }catch(e){}
   $("ovTitle").textContent="⛰️ ОБВАЛ!";
-  $("ovText").textContent="Крепь не выдержала — своды рухнули. Дворфа завалило, откапываемся. Потеряно "+fmt(lost)+" 🪙. В другой раз — следи за крепью!";
+  $("ovText").textContent="Крепь не выдержала — своды рухнули. Дворфа завалило, откапываемся. Потеряно "+fmt(lost)+" 🪙. В другой раз — тапай по ⚡, когда крепь трещит!";
   $("overlay").style.display="flex";
   showToast("⛰️","ОБВАЛ!","","Шахту завалило","−"+fmt(lost)+" 🪙",true);
 }
@@ -1944,8 +1982,24 @@ function breakVein(){
   const prevIdx=S.stageIdx;
   sfxBreak();
   addCartOre();
-  S.gold+=veinReward()*(rock.isBoss?1.5:1);              // ролл 1 — всегда
+  S.gold+=veinReward()*(rock.isBoss?1.5:1)*activeLootMult();              // ролл 1 — всегда
   grantBags(rock.isBoss?BALANCE.bags.perBoss:BALANCE.bags.perVein);   // сумка за победу (док)
+  // дополнительные ресурсы по штольням (Спринт 3)
+  { const mk=S.mine%MINES.length, ex=(BALANCE.minesExtra||[])[mk];
+    if(ex && Math.random()*100<ex.pct){
+      const amt = rock.isBoss ? ex.boss : ex.vein;
+      if(amt>0){
+        S[ex.res]=(S[ex.res]||0)+amt;
+        if(FAST()){
+          if(!mineExtraAgg) mineExtraAgg={};
+          mineExtraAgg[ex.res]=(mineExtraAgg[ex.res]||0)+amt;
+        } else {
+          showToast(ex.ic, ex.name, "", "+"+amt+" "+ex.label);
+        }
+        Platform.logEvent("mine_extra",{mine:S.mine,res:ex.res,amt, boss:!!rock.isBoss});
+      }
+    }
+  }
   // выскакивает торчащий кусок: достаём полностью
   const pk=$("peek");
   if(rock.buried && pk.dataset.on==="1"){ pk.classList.add("pop"); setTimeout(()=>pk.classList.remove("pop"),560); }
@@ -1998,8 +2052,8 @@ function openUpgradesModal(){
   const rows=UPGRADES.map(u=>{
     const capped=statCapped(u.id), c=upCost(u), cur=u.fmt(stat(u.id));
     const btn=capped
-      ? `<button class="buy" disabled style="opacity:.4">МАКС</button>`
-      : `<button class="buy" onclick="buyStat('${u.id}')" ${(S.gold||0)<c?"disabled":""}>+ ${fmt(c)}🪙</button>`;
+      ? `<button class="btn btn-soft" disabled style="opacity:.4">МАКС</button>`
+      : `<button class="btn btn-soft" onclick="buyStat('${u.id}')" ${(S.gold||0)<c?"disabled":""}>+ ${fmt(c)}🪙</button>`;
     return `<div class="metarow"><span>${u.k} · <b>${cur}</b></span>${btn}</div>`;
   }).join("");
   metaOpen("Апгрейды забоя","Золото "+fmt(S.gold)+" 🪙 · качай статы, чтобы одолеть породу.",rows);
@@ -2014,10 +2068,12 @@ function dropGear(){ dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.
 let autoRollAcc=0;
 function grantBags(n){ S.bags=Math.min(BALANCE.bags.cap,(S.bags||0)+n); }
 /* Открыть сумку вручную: обычный поток дропа (авто-надеть/авто-продать). */
+function canOpenBag(){ return (S.bags||0)>=1 && !S.autoRoll; }
 function openBag(){
+  if(S.autoRoll){ showToast("🎒","Auto включён","","Выключи Auto, чтобы открывать вручную"); return false; }
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
   S.bags--; dailyProgress("bag",1);
-  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; if($("openBagBtn"))$("openBagBtn").classList.remove("pulse"); }
+  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; { const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }; }
   dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id));
   Platform.logEvent("bag_open",{}); save(); render();
   return true;
@@ -2029,13 +2085,27 @@ let autoSoldN=0, autoSoldGold=0;   // сумки
 let dupN=0, dupGold=0, dupShards=0;  // дубликаты камней -> скупщику
 let sellN=0, sellGold=0;             // слабый дроп -> скупщику
 let equipN=0;                        // авто-надевания
+let mineExtraAgg=null;               // доп.ресурсы штолен (на разгоне — одной строкой)
 let logAcc=0;
 const FAST=()=>((S&&S.speed)||1)>3;  // на разгоне сворачиваем, на ×1..×3 пишем как раньше
+function flushMineExtras(){
+  if(!mineExtraAgg) return;
+  const parts=[];
+  for(const k in mineExtraAgg){
+    const v=mineExtraAgg[k];
+    if(v>0) parts.push("+"+fmt(v)+" "+(k==="wheelSpins"?"◎":k==="chestKeys"?"🗝":k==="protein"?"🍺":"💠"));
+  }
+  if(parts.length){
+    showToast("⛏️","Штольня","",parts.length+"× бонус",parts.join(" · "));
+  }
+  mineExtraAgg=null;
+}
 function flushSales(){
   if(dupN){ showToast("💎","Дубликаты","",dupN+"× камней",
     "+"+fmt(dupGold)+" 🪙"+(dupShards?(" · +"+fmt(dupShards)+" 💠"):"")); dupN=0;dupGold=0;dupShards=0; }
   if(sellN){ showToast("🎒","Скупщику","",sellN+"× слабый дроп","+"+fmt(sellGold)+" 🪙"); sellN=0;sellGold=0; }
   if(equipN){ showToast("⚙","Авто-экипировка","",equipN+"× надето лучшее"); equipN=0; }
+  flushMineExtras();
   flushAutoSold();
 }
 function autoOpenBag(quiet){
@@ -2097,8 +2167,8 @@ function dropGearItem(it){
 }
 
 /* ---------- гача геолога (расчёски) ---------- */
-$("geoBtn").onclick=()=>{
-  if((S.combs||0)<1){ showToast("🪮","Нет расчёсок","","Падают с жил, дейликов и боссов"); return; }
+function hireGeo(){
+  if((S.combs||0)<1){ showToast("🪮","Нет расчёсок","","Падают с жил, дейликов и боссов"); return false; }
   S.combs--;
   const r=rollRarity(geoWeights(S.geoRolls));
   S.geoRolls++;
@@ -2112,16 +2182,22 @@ $("geoBtn").onclick=()=>{
     boxAdd(S.geoBox,t,r,1);                          // дубликат — материал для слияния
     showToast("👷",GEO_RAR[r],"r"+r,name,"в артель · материал для слияния");
   }
-  save();
-};
+  save(); render();
+  return true;
+}
 
 /* ---------- сумка (апгрейд с таймером — док §Экипировка) ---------- */
-$("bagBtn").onclick=()=>{
-  if(bagUpgrading()){ showToast("🧰","Идёт апгрейд","","Осталось "+bagUpgradeLeft()+"с"); return; }
-  if(S.bag>=50) return;
-  if((S.gold||0)<bagCost()) return;
+function tryBagUpgrade(){
+  if(bagUpgrading()){ showToast("🧰","Идёт апгрейд","","Осталось "+bagUpgradeLeft()+"с"); return false; }
+  if(S.bag>=50) return false;
+  if((S.gold||0)<bagCost()) return false;
   startBagUpgrade();
-};
+  return true;
+}
+if($("energyBox")) $("energyBox").onclick=()=>reinforceMine();
+if($("powerUp")) $("powerUp").onclick=()=>tryBagUpgrade();
+if($("auto")) $("auto").onclick=()=>toggleAutoRoll();
+if($("lootChest")) $("lootChest").onclick=()=>openChest();
 
 /* ---------- цикл ---------- */
 let last=performance.now(), idleAcc=0;
@@ -2142,9 +2218,9 @@ function loop(now){
     S.durab=Math.max(0,S.durab-MINE_DURAB.decayPerSec*durabDecayMult()*dt);
     // предупреждения при пересечении порогов
     if(S.durab<=MINE_DURAB.critAt && lastDurabWarn>MINE_DURAB.critAt){
-      showToast("⚠️","КРЕПЬ ТРЕЩИТ!","","Своды вот-вот рухнут","укрепи немедленно",true); lastDurabWarn=S.durab; }
+      showToast("⚠️","КРЕПЬ ТРЕЩИТ!","","Своды вот-вот рухнут","тап по ⚡ — укрепить",true); lastDurabWarn=S.durab; }
     else if(S.durab<=MINE_DURAB.warnAt && lastDurabWarn>MINE_DURAB.warnAt){
-      showToast("🪵","Крепь ослабла","","Пора укрепить своды"); lastDurabWarn=S.durab; }
+      showToast("🪵","Крепь ослабла","","Тап по полоске энергии — укрепить"); lastDurabWarn=S.durab; }
     else if(S.durab>lastDurabWarn) lastDurabWarn=S.durab;
     // редкий шанс обвала ниже порога безопасности
     if(S.bagActive && Date.now()>=S.bagActive.end) finishBagUpgrade();
@@ -2199,11 +2275,58 @@ function fmt(n){
   if(tier>=SUFFIX.length) return n.toExponential(2).replace("e+","e");
   return (n/Math.pow(10,tier*3)).toFixed(2)+SUFFIX[tier];
 }
+const BONUS_CD_MS=4*3600*1000;
+const LOOT2X_MS=30*60*1000;
+function fmtClock(ms){
+  ms=Math.max(0,Math.floor(ms/1000));
+  const h=Math.floor(ms/3600), m=Math.floor((ms%3600)/60), s=ms%60;
+  if(h>0) return h+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function ensureBonus(d){ if(!d) return d;
+  if(d.bonusReadyAt==null || typeof d.bonusReadyAt!=="number") d.bonusReadyAt=Date.now();
+  return d; }
+function activeLootMult(){
+  return (S.loot2xUntil&&S.loot2xUntil>Date.now()) ? 2 : 1;
+}
+function toggleLoot2x(){
+  const now=Date.now();
+  if(S.loot2xUntil&&S.loot2xUntil>now){
+    showToast("🎬","×2 добыча","","Активно ещё "+fmtClock(S.loot2xUntil-now));
+    return;
+  }
+  const apply=()=>{
+    S.loot2xUntil=now+LOOT2X_MS; save(); render();
+    showToast("🎬","×2 добыча!","","30 мин двойной добычи");
+    Platform.logEvent("loot2x_on",{});
+  };
+  try{
+    if(Platform&&typeof Platform.showRewarded==="function"){
+      Platform.showRewarded(ok=>{ if(ok) apply(); });
+      return;
+    }
+  }catch(e){}
+  apply();
+}
+function claimBonusChest(){
+  ensureBonus(S);
+  const now=Date.now();
+  if(now<S.bonusReadyAt){
+    showToast("🧰","Бонус","","Ещё "+fmtClock(S.bonusReadyAt-now));
+    return;
+  }
+  const g=Math.max(1, Math.round(veinReward()*3));
+  S.gold+=g; grantBags(1);
+  S.bonusReadyAt=now+BONUS_CD_MS;
+  showToast("🧰","Бонус!","","+"+fmt(g)+" 🪙 · +1 🎒");
+  Platform.logEvent("bonus_chest",{});
+  save(); render();
+}
 function buildUpgrades(){
   const box=$("upgrades"); box.innerHTML="";
   UPGRADES.forEach(u=>{
     const d=document.createElement("div"); d.className="u"; d.id="u_"+u.id;
-    d.innerHTML=`<div class="k">${u.k}</div><div class="v"></div><div class="c"></div><button class="buy">+</button>`;
+    d.innerHTML=`<div class="k">${u.k}</div><div class="v"></div><div class="c"></div><button class="btn btn-soft">+</button>`;
     d.querySelector("button").onclick=()=>{
       if(statCapped(u.id)) return;                       // кап: не тратить впустую
       const c=upCost(u);
@@ -2263,11 +2386,14 @@ function checkLoadout(){
   }
 }
 function renderGear(){
-  const g=$("gearGrid"); g.innerHTML="";
-  SLOTS.forEach(sl=>{
+  const g=$("gearGrid"); if(!g) return;
+  g.innerHTML="";
+  const REF_ORDER=["helm","glove","pick","lamp","pants","boots","pack","robe","pet"];
+  REF_ORDER.map(id=>SLOTS.find(s=>s.id===id)).filter(Boolean).forEach(sl=>{
     const item=S.gear[sl.id];
     const d=document.createElement("div");
-    d.className="slot "+(item?("br"+item.r):"empty");
+    const canUp=!!((S.bags||0)>0 && (!item || item.r < Math.min(7, 1+Math.floor((S.bag||1)/7))));
+    d.className="slot "+(item?("br"+item.r):"empty")+(canUp?" canUp":"")+(sl.id==="pet"?" petSlot":"");
     let sv="—";
     if(item){
       const firstStat=Object.keys(sl.st)[0];
@@ -2275,8 +2401,9 @@ function renderGear(){
       sv=`<div><span class="r${item.r}">${RAR_NAMES[item.r].slice(0,4)}</span></div><div class="svv">+${v>=100?fmt(v):v.toFixed(1)}</div>`;
     }
     const icon=(sl.id==="pick"&&item)?`<img src="${PICK_ICONS[item.r]}" class="oreimg" style="width:30px;height:30px;margin:0">`:sl.ic;
-    d.innerHTML=`<div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
+    d.innerHTML=`<span class="up">↑</span><div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
     if(sl.id==="pick") d.onclick=openPickGallery;
+    else d.onclick=()=>openGearSlot(sl.id);
     g.appendChild(d);
   });
   updateMiner();
@@ -2284,7 +2411,7 @@ function renderGear(){
 }
 function render(){
   $("gold").textContent=fmt(S.gold);
-  $("gps").textContent=fmt(idlePerSec());
+  $("gps").textContent=fmt(idlePerSec()*3600);
   $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"";
   $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0); $("protein").textContent=fmt(Math.floor(S.protein||0)); $("shards").textContent=fmt(S.shards||0);
   { const set=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
@@ -2297,40 +2424,69 @@ function render(){
   $("stageLabel").textContent = S.runDone
     ? "⛰ СВОД"
     : Math.min(S.stageIdx,BALANCE.run.len)+" / "+BALANCE.run.len;
+
   $("minerRank").textContent=beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):"");
-  { const pb=$("prestigeBtn"); if(pb&&"disabled"in pb){ const ok=canPrestige();
-      pb.textContent = S.runDone ? ("⛰️ СВОД! Зов +"+prestigeGain())
-        : (ok?("⛰️ Глубинный Зов +"+prestigeGain()):"⛰️ Глубинный Зов");
-      pb.style.opacity=ok?"1":"0.55";
-      if(pb.classList) pb.classList.toggle("pulse", !!S.runDone); } }
+  { const nick=$("nickname"); if(nick) nick.textContent=playerName().toUpperCase();
+    const sm=$("statMiner"); if(sm) sm.textContent=playerName().toUpperCase();
+    const sn=$("statMine"); if(sn) sn.textContent=(S.mine+1)+"-"+S.stage;
+    const hp=$("hudPrestige"); if(hp) hp.textContent=(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""; }
+
+  { const hp=$("hudPrestige"); if(hp) hp.textContent=(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""; }
   $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
   $("cracks").style.opacity=(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2);
   $("hpTxt").textContent=fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
   $("enFill").style.width=Math.max(0,S.energy/stat("energy")*100)+"%";
   $("enTxt").textContent=fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy"));
   { const d=S.durab==null?MINE_DURAB.max:S.durab;
-    $("duFill").style.width=Math.max(0,d)+"%";
+    const df=$("duFill"); if(df) df.style.width=Math.max(0,d)+"%";
     const bar=$("duBar"); if(bar&&bar.classList){ bar.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt); bar.classList.toggle("crit",d<MINE_DURAB.critAt); }
     const risk=collapseRiskPerMin();
-    $("duTxt").textContent=risk>0?("⚠ "+(risk*100<1?"<1":Math.round(risk*100))+"%/мин"):(Math.round(d)+"%");
-    const rb=$("reinfBtn");
-    if(rb){ const full=d>=MINE_DURAB.max-1e-6, c=reinforceCost();
-      rb.textContent=full?"Крепь цела":("Укрепить · "+fmt(c)+"🪙");
-      rb.disabled=full||(S.gold||0)<c; } }
+    const duTxtEl=$("duTxt"); if(duTxtEl) duTxtEl.textContent=risk>0?("⚠ "+(risk*100<1?"<1":Math.round(risk*100))+"%/мин"):(Math.round(d)+"%");
+    const eb=$("energyBox");
+    if(eb&&eb.classList){
+      eb.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt);
+      eb.classList.toggle("crit",d<MINE_DURAB.critAt);
+      eb.title=d>=MINE_DURAB.max-1e-6?"Крепь цела":("Тап — укрепить · "+fmt(reinforceCost())+" 🪙 · крепь "+Math.round(d)+"%");
+    }
+  }
   $("sAtk").textContent=fmt(stat("atk"));
   $("sSpd").textContent=stat("spd").toFixed(1);
   $("sMin").textContent=Math.round(stat("mining"));
   $("sCrit").textContent=Math.round(stat("crit"))+"%";
   $("sLuck").textContent=Math.round(stat("luck"))+"%";
   { const st=stat("stone"); $("sStone").textContent=(st>=1000?fmt(st):Math.round(st))+"%"; }
-  if($("pAtk")){
-    $("pAtk").textContent=fmt(stat("atk"));
-    $("pSpd").textContent=stat("spd").toFixed(1);
-    $("pCrit").textContent=Math.round(stat("crit"))+"%";
-    $("pMin").textContent=Math.round(stat("mining"));
-    $("pLuck").textContent=Math.round(stat("luck"))+"%";
+  { // строка статов как в референсе
+    const setPw=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
+    setPw("pAtk", fmt(stat("atk")));
+    setPw("pDef", fmt(Math.round(stat("tough"))));
+    setPw("pStr", fmt(Math.round(stat("mining"))));
+    setPw("pCrit", Math.round(stat("crit"))+"%");
+    setPw("pCmb", Math.round(stat("stamina"))+"%");
+    setPw("pLck", Math.round(stat("luck"))+"%");
+    setPw("pSpd", stat("spd").toFixed(1));
+    setPw("pTou", Math.round(S.durab==null?MINE_DURAB.max:S.durab)+"%");
   }
+  { const rn=$("rockName"), en=$("refEnemyName"), en2=$("enemyName");
+    const txt=(rn&&rn.textContent||"ПОРОДА").replace(/ \(босс\)$/i,"").toUpperCase();
+    if(en) en.textContent=txt; if(en2) en2.textContent=txt; }
+  { ensureBonus(S);
+    const bb=$("refBonusBtn"), bc=$("bonusChest"), bt=$("refBonusTimer");
+    const ready=Date.now()>=S.bonusReadyAt;
+    if(bb&&bb.classList) bb.classList.toggle("ready",ready);
+    if(bc&&bc.classList) bc.classList.toggle("ready",ready);
+    if(bt) bt.textContent=ready?"ГОТОВО!":fmtClock(S.bonusReadyAt-Date.now()); }
+  { const lb=$("loot2xBtn"), b2=$("boost2x"), ll=$("loot2xLbl");
+    const on=S.loot2xUntil&&S.loot2xUntil>Date.now();
+    if(lb&&lb.classList) lb.classList.toggle("on",!!on);
+    if(b2&&b2.classList) b2.classList.toggle("on",!!on);
+    if(ll) ll.textContent=on?fmtClock(S.loot2xUntil-Date.now()):"НЕАКТИВНО"; }
   $("findChance").textContent=Math.round(findChance());
+  { const mn=$("refMinerName"); if(mn) mn.textContent=playerName().toUpperCase(); }
+  { const df=$("refDifficulty"), sl=$("statLoot");
+    const dtxt=((rock&&rock.isBoss)?"БОСС":"БРУТАЛЬНАЯ");
+    if(df){ df.textContent=dtxt; if(df.classList) df.classList.toggle("tag", true); }
+    if(sl) sl.textContent=dtxt;
+  }
   $("speedBtn").textContent="×"+(S.speed||1)+" СКОРОСТЬ";
   $("bagLvl").textContent=S.bag;
   $("dropCh").textContent=DROP_CHANCE;
@@ -2340,38 +2496,39 @@ function render(){
   // FTUE-подсказки: пульс на первой доступной покупке
   if(S.ftue && !S.ftue.u){
     const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
-    const btn=$("u_"+cheapest.id).querySelector("button");
-    if(S.gold>=upCost(cheapest)) btn.classList.add("pulse"); else btn.classList.remove("pulse");
+    const row=$("u_"+cheapest.id), btn=row&&row.querySelector("button");
+    if(btn&&btn.classList){
+      if(S.gold>=upCost(cheapest)) btn.classList.add("pulse"); else btn.classList.remove("pulse");
+    }
   }
   if(S.ftue && !S.ftue.b){
-    if(!bagUpgrading() && S.bag<50 && S.gold>=bagCost()) $("bagBtn").classList.add("pulse");
-    else $("bagBtn").classList.remove("pulse");
+    if(!bagUpgrading() && S.bag<50 && S.gold>=bagCost()){ const pu=$("powerUp"); if(pu&&pu.classList) pu.classList.add("pulse"); }
+    else { const pu=$("powerUp"); if(pu&&pu.classList) pu.classList.remove("pulse"); }
   }
   if(S.ftue && !S.ftue.c && (S.bags||0)>0){
-    const ob=$("openBagBtn"); if(ob&&ob.classList) ob.classList.add("pulse");
-  } else { const ob=$("openBagBtn"); if(ob&&ob.classList) ob.classList.remove("pulse"); }
-  const bb=$("bagBtn");
-  if(bagUpgrading()){
-    bb.textContent="⏱ "+bagUpgradeLeft()+"с…"; bb.disabled=false;
-  } else if(S.bag<50){
-    bb.textContent="LVL "+(S.bag+1)+": "+fmt(bagCost())+" 🪙"; bb.disabled=S.gold<bagCost();
-  } else { bb.textContent="MAX"; bb.disabled=true; }
+    const ob=$("lootChest"); if(ob&&ob.classList) ob.classList.add("pulse");
+  } else { const ob=$("lootChest"); if(ob&&ob.classList) ob.classList.remove("pulse"); }
   if($("bagCount")) $("bagCount").textContent=fmt(S.bags||0);
-  { const ob=$("openBagBtn");
-    if(ob){ const noBags=(S.bags||0)<1;
-      if("disabled"in ob) ob.disabled = noBags || !!S.autoRoll;
-      ob.textContent = S.autoRoll ? "Auto разбирает" : "Открыть";
-      if(ob.style) ob.style.opacity = (noBags||S.autoRoll) ? "0.55" : "1"; } }
-  { const ar=$("autoRollBtn");
-    if(ar){ ar.textContent=S.autoRoll?"Auto ✓":"Auto";
-      if(ar.classList) ar.classList.toggle("gold",!!S.autoRoll); } }
-  { const at=$("autoTierBtn");
-    if(at) at.innerHTML='порог: <span class="r'+(S.autoRollTier||0)+'">'+RAR_NAMES[S.autoRollTier||0]+'</span>+';
   /* bag area on main screen */
   if($("bagBadge2")){ const n=S.bags||0; $("bagBadge2").textContent=n>99?"99+":n; $("bagBadge2").style.display=n>0?"flex":"none"; }
   if($("bagAreaLvl")) $("bagAreaLvl").textContent="СИЛА УР "+S.bag;
   if($("bagAreaTimer")){ const bt=$("bagAreaTimer"); bt.textContent=bagUpgrading()?(bagUpgradeLeft()+"с до ур."+(S.bag+1)):""; }
-  { const ab=$("autoBtn2"); if(ab){ ab.classList.toggle("on",!!S.autoRoll); const l=$("autoLbl2"); if(l) l.textContent=S.autoRoll?"ВКЛ":"ВЫКЛ"; } } }
+  { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){ ab.classList.toggle("on",!!S.autoRoll); const l=$("autoLbl2"); if(l) l.textContent=S.autoRoll?"ВКЛ":"ВЫКЛ"; } }
+  { const lc=$("lootChest");
+    if(lc){ const dim=(S.bags||0)<1;
+      /* модалку открываем всегда (апгрейд сундука), но приглушаем без сумок / при Auto */
+      if(lc.style) lc.style.opacity=(dim||!!S.autoRoll)?"0.55":"1";
+      if(lc.classList) lc.classList.toggle("off", dim||!!S.autoRoll);
+      if("disabled"in lc) lc.disabled=false; } }
+  { const pu=$("powerUp");
+    if(pu){
+      const busy=bagUpgrading(), maxed=S.bag>=50, poor=!busy&&!maxed&&(S.gold||0)<bagCost();
+      const off=maxed||poor;
+      if("disabled"in pu) pu.disabled=!!off;
+      if(pu.style) pu.style.opacity=off?"0.55":"1";
+      if(pu.classList) pu.classList.toggle("off",!!off);
+    }
+  }
   if(S.geo){
     const g=GEO_TYPES[S.geo.t];
     const asc=(S.geo.asc||0)?(" ✦"+S.geo.asc):"";
@@ -2379,9 +2536,7 @@ function render(){
     $("geoDesc").innerHTML=GEO_RAR[S.geo.r]+" ур."+(S.geo.lv||1)+" · +"+Math.round(geoPct(S.geo))+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat])
       +'<br><span style="color:var(--dim);font-size:7px">артель: '+geoMaterials()+' на слияние</span>';
   }
-  $("geoBtn").textContent="Нанять · 🪮1 (ост. "+(S.combs||0)+")";
-  $("geoBtn").disabled=(S.combs||0)<1;
-  $("geoRolls").textContent=S.geoRolls;
+  { const gr=$("geoRolls"); if(gr) gr.textContent=S.geoRolls; }
   const mineKey=S.mine%MINES.length;
   { const got=Object.keys(S.col[mineKey]||{}).length;
   $("colCount").textContent=got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":"")); }
@@ -2398,30 +2553,58 @@ function render(){
   updateFtueHint();
 }
 function updateFtueHint(){
-  const tip=$("ftueTip"), txt=$("ftueTipTxt"); if(!tip||!txt||!S||!S.ftue||S.introSeen===false) return;
-  let el=null, msg="";
+  const tip=$("ftueTip"); if(!tip||!S||!S.ftue||S.introSeen===false) return;
+  let el=null, msg="", step=null;
   const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
   if(!S.ftue.u && S.gold>=upCost(cheapest)){
-    el=$("u_"+cheapest.id); msg="<b>ПОДСКАЗКА</b>Прокачай ATK — жила ломается быстрее";
+    el=$("u_"+cheapest.id); step="u"; msg="<b>ПОДСКАЗКА</b>Прокачай ATK — жила ломается быстрее";
   } else if(!S.ftue.c && (S.bags||0)>0){
-    el=$("openBagBtn"); msg="<b>СУНДУК</b>Открой сумку — надень или продай находку";
-  } else if(!S.ftue.t && S.stageIdx>=3){
-    el=$("tabMetaBtn"); msg="<b>МЕТА</b>Старейшины, апгрейд сундука, расчёски";
+    el=$("lootChest"); step="c"; msg="<b>СУНДУК</b>Открой сундук — надень или продай";
   } else if(!S.ftue.b && !bagUpgrading() && S.bag<50 && S.gold>=bagCost()){
-    el=$("bagBtn"); msg="<b>СУНДУК+</b>Улучши сумку — шанс редкого дропа выше";
+    el=$("powerUp"); step="b"; msg="<b>СИЛА</b>Улучши сундук — шанс редкого выше";
+  } else if(!S.ftue.t && S.ftue.b && S.stageIdx>=5){
+    el=$("navTavBtn"); step="t"; msg="<b>ТАВЕРНА</b>Бороды, питомцы, застолья";
+  } else if(!S.ftue.g && S.ftue.t && S.stageIdx>=8){
+    el=$("friendsBtn"); step="g"; msg="<b>ДРУЗЬЯ</b>Пригласи — кооп-буст без рекламы";
   }
-  if(!el){ tip.style.display="none"; return; }
+  tip._ftueStep=step;
+  if(!el||!el.getBoundingClientRect||!step){ tip.style.display="none"; return; }
   const r=el.getBoundingClientRect();
+  if(r.width<1 && r.height<1){ tip.style.display="none"; return; }
+  tip.innerHTML=msg+'<span class="ftueSkip">тап — скрыть</span><div class="ftueArr">▼</div>';
   tip.style.display="block";
-  tip.style.left=Math.max(8,Math.min(window.innerWidth-218,r.left+r.width/2-105))+"px";
-  tip.style.top=Math.max(8,r.top-58)+"px";
-  txt.innerHTML=msg;
+  tip.style.visibility="hidden";
+  const tw=Math.min(tip.offsetWidth||210, window.innerWidth-16);
+  const th=tip.offsetHeight||56;
+  const pad=8;
+  let left=r.left+r.width/2-tw/2;
+  left=Math.max(pad, Math.min(window.innerWidth-tw-pad, left));
+  const preferAbove=r.top>window.innerHeight*0.45;
+  let top=preferAbove ? (r.top-th-10) : (r.bottom+10);
+  if(top<pad) top=Math.min(window.innerHeight-th-pad, r.bottom+10);
+  if(top+th>window.innerHeight-pad) top=Math.max(pad, r.top-th-10);
+  top=Math.max(pad, Math.min(window.innerHeight-th-pad, top));
+  tip.style.left=left+"px";
+  tip.style.top=top+"px";
+  tip.style.visibility="visible";
+  const arr=tip.querySelector(".ftueArr");
+  if(arr) arr.textContent=(top+th/2 < r.top)?"▼":"▲";
+}
+function dismissFtueHint(){
+  const tip=$("ftueTip"); if(!tip||!S||!S.ftue) return;
+  const step=tip._ftueStep;
+  if(step) S.ftue[step]=1;
+  tip.style.display="none"; tip._ftueStep=null;
+  save(); updateFtueHint();
+}
+if($("ftueTip")){
+  $("ftueTip").onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); dismissFtueHint(); };
 }
 
 /* эффекты */
 function fxSwing(){
-  const m=$("miner"); m.classList.remove("swing"); void m.offsetWidth; m.classList.add("swing");
-  const r=$("rock"); r.classList.remove("hitfx"); void r.offsetWidth; r.classList.add("hitfx");
+  const m=$("miner"); if(m&&m.classList){ m.classList.remove("swing"); void m.offsetWidth; m.classList.add("swing"); }
+  const r=$("rock"); if(r&&r.classList){ r.classList.remove("hitfx"); void r.offsetWidth; r.classList.add("hitfx"); }
   if(Math.random()<0.55){
     const c=document.createElement("div");
     if(Math.random()<0.55){ c.className="shard"; }
@@ -2488,41 +2671,42 @@ function toastMine(){
     sayQuip("Второй чертог! Кто дошёл сюда — обычно остаётся. Дед так говорил.",5);
   }
 }
-$("shareBtn").onclick=()=>{ try{ shareCard(); }catch(e){} };
-if($("reinfBtn")) $("reinfBtn").onclick=()=>reinforceMine();
-if($("prestigeBtn")) $("prestigeBtn").onclick=openPrestige;
-if($("fairBtn")) $("fairBtn").onclick=openFairness;
-if($("lbBtn")) $("lbBtn").onclick=openWall;
+
+/* Спринт 3: выбор штольни внутри текущего круга (5 чертогов).
+   Можно вернуться в уже пройденные (id <= текущего mineKey). */
+function switchMine(id){
+  if(!(id>=0 && id<MINES.length)) return false;
+  const curAbs=S.mine||0, cur=curAbs%MINES.length, cycle=Math.floor(curAbs/MINES.length);
+  if(id>cur){ showToast("⛏","Закрыто","","Дойди до этого чертога в круге","сейчас "+(cur+1)+"/5"); return false; }
+  const nextAbs=cycle*MINES.length + id;
+  if(nextAbs===curAbs){ switchTab("Mine"); return true; }
+  S.mine=nextAbs;
+  S.stage=1;
+  S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max;
+  toastMine();
+  newRock(); save(); render();
+  Platform.logEvent("mine_switch",{mine:S.mine});
+  switchTab("Mine");
+  return true;
+}
 if($("miner")) $("miner").onclick=()=>togglePaperdoll();
-if($("codexBtn")) $("codexBtn").onclick=showIntro;
-if($("guildBtn")) $("guildBtn").onclick=()=>{ sciTask=null; openGuild(); };
-if($("gymBtn")) $("gymBtn").onclick=openGym;
-if($("profChip")) $("profChip").onclick=openProfile;
-if($("settingsBtn")) $("settingsBtn").onclick=function(){ $("setModal2").style.display="flex"; };
-if($("setMusic")) $("setMusic").onclick=function(){ const mb=$("musicBtn"); if(mb&&mb.onclick) mb.onclick(); };
-if($("stickBtn")) $("stickBtn").onclick=openStickers;
+if($("rock")) $("rock").onclick=()=>{ if(!dead&&rock&&S.rockHP>0){ fxSwing(); hitTimer=Math.max(hitTimer, 1/stat("spd")-0.02); } };
+if($("setMusic")) $("setMusic").onclick=()=>toggleMusic();
 if($("introGo")) $("introGo").onclick=closeIntro;
 ["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
-document.querySelectorAll&&document.querySelectorAll("#bottomNav .navb[data-nav]").forEach(b=>{
+document.querySelectorAll&&document.querySelectorAll("#bottomNav .btn-nav[data-nav]").forEach(b=>{
   b.onclick=()=>switchTab(b.getAttribute("data-nav"));
 });
-if($("navPetsBtn")) $("navPetsBtn").onclick=()=>openPets();
-if($("navTavBtn")) $("navTavBtn").onclick=()=>openGym();
-if($("openBagBtn")) $("openBagBtn").onclick=()=>openBag();
 if($("geoName")) $("geoName").onclick=openGeoGuild;
 if($("geoDesc")) $("geoDesc").onclick=openGeoGuild;
-if($("autoRollBtn")) $("autoRollBtn").onclick=toggleAutoRoll;
-if($("chestWinBtn")) $("chestWinBtn").onclick=openChest;
-if($("autoTierBtn")) $("autoTierBtn").onclick=cycleAutoTier;
 if($("logNext")&&$("logNext").addEventListener){
   $("logNext").onclick=()=>{ logPage--; renderLog(); };
   $("logPrev").onclick=()=>{ logPage++; renderLog(); };
   $("logFirst").onclick=()=>{ logPage=0; renderLog(); };
 }
-$("colBtn").onclick=()=>{
+function openCollection(){
   const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
   $("colTitle").textContent="Коллекция: "+m.n;
-  // дубликаты камней можно превращать в лутбоксы соответствующей редкости
   const got=Object.keys(col).length;
   const bonusLine=`<div class="col-item"><span>Пассив: +2% STONE за камень</span><span class="cnt">сейчас +${2*uniqueStones()}%</span></div>`
     +`<div class="col-item"><span>Сет чертога (8/8): <b>${SET_BONUS[mineKey].label}</b></span><span class="cnt">${setDone(mineKey)?"АКТИВЕН ✓":got+"/8"}</span></div>`;
@@ -2532,17 +2716,19 @@ $("colBtn").onclick=()=>{
     let craft="";
     if(i>=1){
       const need=craftBoxCost(i), have=dupStones(i), ok=have>=need;
-      craft=`<button class="buy" style="width:auto;padding:5px 8px;font-size:7px;margin-left:8px"
+      craft=`<button class="btn btn-soft" style="width:auto;padding:5px 8px;font-size:7px;margin-left:8px"
         onclick="craftBoxFromStones(${i})" ${ok?"":"disabled"} ${ok?"":'style="width:auto;padding:5px 8px;font-size:7px;margin-left:8px;opacity:.4"'}
         title="дубликаты: ${have}/${need}">📦 ${need}</button>`;
     }
     return `<div class="col-item"><span class="${c?"found":"notfound"}">${ic}<b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"не найден"}${craft}</span></div>`;
   }).join("");
   $("colModal").style.display="flex";
-};
-$("resetBtn").onclick=()=>{
-  if(confirm("Точно всё сначала? Гора помнит, но простит.")){ localStorage.removeItem("oredeep_v3"); S=freshState(); newRock(); save(); renderGear(); }
-};
+}
+function resetProgress(){
+  if(confirm("Точно всё сначала? Гора помнит, но простит.")){
+    localStorage.removeItem("oredeep_v3"); S=freshState(); newRock(); save(); renderGear(); render();
+  }
+}
 
 /* ---------- save/load ---------- */
 function save(){ try{ S.lastSeen=Date.now(); localStorage.setItem("oredeep_v3",JSON.stringify(S)); }catch(e){} }
@@ -2564,6 +2750,29 @@ function ensureBags(d){ if(!d) return d;
   if(d.bags==null) d.bags=0;
   if(d.autoRoll==null) d.autoRoll=false;
   if(d.autoRollTier==null) d.autoRollTier=4;
+  if(!d.shopFree||typeof d.shopFree!=="object") d.shopFree={day:"",taken:{}};
+  if(!d.pvpBotRec||typeof d.pvpBotRec!=="object") d.pvpBotRec={};
+  return d; }
+function ensureGrowth(d){ if(!d) return d;
+  const f=freshState().growth;
+  if(!d.growth||typeof d.growth!=="object") d.growth=JSON.parse(JSON.stringify(f));
+  if(!d.growth.installId) d.growth.installId=randSeed();
+  if(!d.growth.installAt) d.growth.installAt=Date.now();
+  if(!d.growth.code) d.growth.code=SHA256("ore_inv_"+d.growth.installId).slice(0,6).toUpperCase();
+  if(!d.growth.waitlist||typeof d.growth.waitlist!=="object") d.growth.waitlist={joined:false,claimed:false,at:0};
+  if(!d.growth.ads||typeof d.growth.ads!=="object") d.growth.ads={day:"",count:0};
+  if(!Array.isArray(d.growth.milestones)) d.growth.milestones=[];
+  if(d.growth.adViewsLifetime==null) d.growth.adViewsLifetime=0;
+  if(d.growth.revenueCents==null) d.growth.revenueCents=0;
+  if(d.growth.organic==null) d.growth.organic=true; // реферал/вейтлист = органика без CPI
+  try{
+    if(d.growth.code){
+      const cap=BALANCE.growth.referral.inviterCap;
+      const n=Number(localStorage.getItem("oredeep_ref_"+d.growth.code)||0);
+      const fromLs=isFinite(n)?n:0;
+      d.growth.invites=Math.min(cap, Math.max(d.growth.invites||0, fromLs));
+    }
+  }catch(e){}
   return d; }
 function ensurePrestige(d){ if(!d) return d;
   if(d.prestigeLv==null) d.prestigeLv=0;
@@ -2610,7 +2819,7 @@ function sanitizeState(d){
    иначе у нового игрока fair/science остаются null и экраны падают. */
 function ensureAll(d){
   ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d);
-  ensureCards(d); ensureFair(d); ensureScience(d); ensureGacha(d);
+  ensureCards(d); ensureFair(d); ensureScience(d); ensureGacha(d); ensureBonus(d); ensureGrowth(d);
   return d;
 }
 function ensureGacha(d){ if(!d) return d;
@@ -2620,13 +2829,14 @@ function ensureGacha(d){ if(!d) return d;
   if(d.ftue){
     if(d.ftue.c==null) d.ftue.c=d.ftue.b?1:0;
     if(d.ftue.t==null) d.ftue.t=(d.stageIdx||1)>5?1:0;
+    if(d.ftue.g==null) d.ftue.g=(d.stageIdx||1)>8?1:0;
     if(d.ftue.m==null) d.ftue.m=(d.mine||0)>0?1:0;
   }
   return d; }
 function migrate(d){ ensureAll(d); ensureIntro(d); ensureGacha(d);
   if(!d.v||d.v<2){                       // v1→v2: новые поля Фазы 1
-    if(!d.ftue) d.ftue={u:1,b:1,c:1,t:1,m:1};
-    else { d.ftue.u=d.ftue.u||1; d.ftue.b=d.ftue.b||1; d.ftue.c=1; d.ftue.t=1; d.ftue.m=(d.mine||0)>0?1:0; }
+    if(!d.ftue) d.ftue={u:1,b:1,c:1,t:1,m:1,g:1};
+    else { d.ftue.u=d.ftue.u||1; d.ftue.b=d.ftue.b||1; d.ftue.c=1; d.ftue.t=1; d.ftue.g=1; d.ftue.m=(d.mine||0)>0?1:0; }
     if(!d.streak) d.streak={n:0,last:""};
     if(d.look===undefined) d.look=Math.floor(Math.random()*6);
     d.v=2;
@@ -2634,6 +2844,10 @@ function migrate(d){ ensureAll(d); ensureIntro(d); ensureGacha(d);
   if(!d.v||d.v<3){                       // v2→v3: яйца, расчёски, таймер сумки
     ensureGacha(d);
     d.v=3;
+  }
+  if(!d.v||d.v<4){                       // v3→v4: рост, рефералы, юнит-экономика
+    ensureGrowth(d);
+    d.v=4;
   }
   if(d.beard===undefined) d.beard=0;
   if(d.beardXP===undefined) d.beardXP=0;
@@ -2792,7 +3006,10 @@ function toggleMusic(){
   try{ localStorage.setItem("oredeep_music",musicOn?"on":"off"); }catch(e){}
   if(musicOn&&!AC) audioStart();
   if(MG) MG.gain.value=musicOn?0.22:0;
-  $("musicBtn").textContent=musicOn?"🔊":"🔇";
+  const sm=$("setMusic"), us=$("uiSetMusic");
+  const label=musicOn?"🔊 вкл":"🔇 выкл";
+  if(sm) sm.textContent=label;
+  if(us) us.textContent=label;
 }
 document.addEventListener("pointerdown",()=>{
   if(musicOn){ audioStart(); if(AC&&AC.state==="suspended") AC.resume(); }
@@ -2927,7 +3144,7 @@ function openSkills(){
     const ok = ch.keyCost ? (S.chestKeys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
     const price = ch.keyCost ? (ch.keyCost+" 🗝") : (ch.gemCost+" 💎");
     return `<div class="metarow"><span>${ch.n}<br><span class="sub">${ch.cards} карт · гарантия <b class="r${ch.minR}">${SKILL_RAR[ch.minR]}</b>+</span></span>
-      <button class="${ch.keyCost?"buy":"gold"}" onclick="openSkillChest('${ch.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${price}</button></div>`;
+      <button class="${ch.keyCost?"btn btn-soft":"btn btn-hard"}" onclick="openSkillChest('${ch.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${price}</button></div>`;
   }).join("");
   const rows=SKILL_DEFS.map(d=>{
     const lv=skillLv(d.id), cards=cardsOf(d.id), need=cardsNeeded(d.id), pro=proteinNeeded(d.id);
@@ -2941,8 +3158,8 @@ function openSkills(){
       ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} на максимуме · ${curTxt}${capTxt}</span>`
       : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}<br>карты ${cards}/${need} · пиво ${pro} 🍺</span>`;
     const btn=maxed
-      ? `<button class="buy" disabled style="opacity:.4">макс</button>`
-      : `<button class="buy" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"открыть":"ур."+(lv+1)}</button>`;
+      ? `<button class="btn btn-soft" disabled style="opacity:.4">макс</button>`
+      : `<button class="btn btn-soft" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"открыть":"ур."+(lv+1)}</button>`;
     return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
   }).join("");
   metaOpen("Навыки добычи",
@@ -3000,7 +3217,9 @@ function openSkillChest(chestId){
     got.push(grantSkillCard(minR).n);
   }
   showToast("🎴","Ларь открыт","",ch.n,got.join(" · "),true);
-  Platform.logEvent("skill_chest",{id:chestId}); sfxGear(); save(); render(); openSkills();
+  Platform.logEvent("skill_chest",{id:chestId}); sfxGear(); save(); render();
+  if(typeof UIS!=="undefined" && UIS.id==="shop") UIS.render("shop");
+  else openSkills();
   return true;
 }
 function openWheel(){
@@ -3009,7 +3228,7 @@ function openWheel(){
   metaOpen("Колесо старателя","Крутка "+(spin+1)+" · цена растёт 30→820💎 (§9)",
     `<div style="text-align:center;padding:10px 0">
       <div style="font-size:9px;margin-bottom:10px;line-height:1.8">Награды: золото · кристаллы · редкий камень</div>
-      <button class="gold" onclick="spinWheel(${cost})" ${(S.gems||0)<cost?"disabled":""}>Крутить за ${cost}💎</button>
+      <button class="btn btn-hard" onclick="spinWheel(${cost})" ${(S.gems||0)<cost?"disabled":""}>Крутить за ${cost}💎</button>
     </div>`);
 }
 function spinWheel(cost){
@@ -3029,14 +3248,44 @@ function pvpLeagueIdx(){ const t=S.trophies||0; let i=0; for(let k=0;k<BALANCE.p
 let pvpSlate=null;
 function pvpDayReset(){ const t=todayStr();
   if(S.pvpDay!==t){ S.pvpDay=t; S.pvpFights=0; pvpSlate=null; } }
+function pvpBotRec(id){
+  ensureBags(S);
+  if(!S.pvpBotRec[id]) S.pvpBotRec[id]={w:0,l:0};
+  return S.pvpBotRec[id];
+}
+function pvpDayForm(botId){
+  /* детерминированная «форма дня» 0.90..1.10 — один день → одна сила у бота */
+  const s=String(todayStr())+"|"+botId;
+  let h=2166136261>>>0;
+  for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); }
+  return 0.90+((h>>>0)%1001)/10000;
+}
+function pvpBotPower(bot, me){
+  const form=pvpDayForm(bot.id)*(0.985+Math.random()*0.03); // лёгкий шум при ре-ролле формы
+  return Math.max(1, Math.round((me||1)*(bot.mul||1)*form));
+}
 function pvpRollSlate(){
   const me=powerScore();
-  pvpSlate=[];
-  for(let i=0;i<BALANCE.pvpCandidates;i++){
-    const k=0.75+Math.random()*0.6;                 // соперники разной силы
-    pvpSlate.push({ power:Math.max(1,Math.round(me*k)),
-      name:GEO_NAMES_POOL[Math.floor(Math.random()*GEO_NAMES_POOL.length)] });
-  }
+  const bots=BALANCE.pvpBots||[];
+  pvpSlate=bots.map(b=>({
+    id:b.id, name:b.n, ic:b.ic||"🤖", tag:b.tag||"", fluff:b.fluff||"",
+    grit:b.grit||0.4, mul:b.mul||1,
+    power:pvpBotPower(b, me), bot:true
+  }));
+  if(pvpSlate.length!==(BALANCE.pvpCandidates||5))
+    BALANCE.pvpCandidates=pvpSlate.length;
+}
+function pvpMineOrePerSec(power){
+  /* Добыча жилы в гонке: Power → руда/с (CALIB в BALANCE.pvp через raceSec) */
+  return Math.max(0.5, (power||1)/12);
+}
+function pvpRaceSim(meP, oppP, grit){
+  const sec=BALANCE.pvp.raceSec||180;
+  const meOre=pvpMineOrePerSec(meP)*sec;
+  const g=Math.max(0,Math.min(1,grit==null?0.4:grit));
+  const spread=0.16*(1-g*0.65);           // grit↑ → бот менее случайный
+  const oppOre=pvpMineOrePerSec(oppP)*sec*(1-spread+Math.random()*spread*2);
+  return {meOre, oppOre, sec, win:meOre>=oppOre};
 }
 function openPvp(){
   pvpDayReset();
@@ -3045,15 +3294,18 @@ function openPvp(){
   const left=Math.max(0, BALANCE.pvpDayLimit-(S.pvpFights||0));
   const cards = left>0 ? pvpSlate.map((o,i)=>{
     const fav=me>=o.power;
-    return `<div class="metarow"><span>${o.name}<br><span class="sub" style="color:${fav?"var(--green)":"#e8a24a"}">Power ${fmt(o.power)} · ${fav?"слабее тебя":"сильнее тебя"}</span></span>
-      <button class="buy" onclick="pvpFight(${i})">В бой</button></div>`;
+    const rec=pvpBotRec(o.id);
+    return `<div class="metarow"><span>${o.ic||"🤖"} <b>${o.name}</b> · <span class="sub">${o.tag||"ИИ"}</span>
+      <br><span class="sub" style="color:${fav?"var(--green)":"#e8a24a"}">Power ${fmt(o.power)} · ~${fmt(pvpMineOrePerSec(o.power))}/с · счёт ${rec.w}:${rec.l}</span>
+      <br><span class="sub">${o.fluff||""}</span></span>
+      <button class="btn btn-soft" onclick="pvpFight(${i})">В забой</button></div>`;
   }).join("") : '<div class="sub" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>';
-  metaOpen("⚔ PvP · дуэль забоя",
-    "Лига "+BALANCE.pvp.names[li]+" · Power "+fmt(me)+" · боёв осталось сегодня: "+left+"/"+BALANCE.pvpDayLimit,
+  metaOpen("⚔ PvP · гонка с ИИ",
+    "Лига "+BALANCE.pvp.names[li]+" · Power "+fmt(me)+" · "+(BALANCE.pvp.raceSec||180)+"с · осталось: "+left+"/"+BALANCE.pvpDayLimit,
     `<div class="metarow"><span>Кубки: ${fmt(S.trophies||0)} · побед: ${S.pvpWins||0}</span></div>
-     <div class="sub" style="margin:6px 0">Выбери одного из ${BALANCE.pvpCandidates} претендентов:</div>
+     <div class="sub" style="margin:6px 0">5 ИИ-агентов копают ту же жилу ${(BALANCE.pvp.raceSec||180)}с. Кто добыл больше — победил. Выбери соперника:</div>
      ${cards}
-     ${left>0?'<div style="text-align:center;padding:8px 0"><button onclick="pvpRerollSlate()">Сменить претендентов</button></div>':''}`);
+     ${left>0?'<div style="text-align:center;padding:8px 0"><button onclick="pvpRerollSlate()">Обновить форму дня</button></div>':''}`);
 }
 function pvpRerollSlate(){ pvpRollSlate(); openPvp(); }
 function pvpFight(idx){
@@ -3063,13 +3315,22 @@ function pvpFight(idx){
   const cand=pvpSlate[idx]||pvpSlate[0];
   const me=powerScore(), opp=cand.power;
   S.pvpFights=(S.pvpFights||0)+1;
-  const win=me>=opp;
+  const race=pvpRaceSim(me, opp, cand.grit);
+  const win=race.win;
+  if(cand.id){ const r=pvpBotRec(cand.id); if(win) r.w++; else r.l++; }
   if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1); addGymXP(GYM_XP.perPvpWin);
     const li=pvpLeagueIdx(); S.gold+=BALANCE.pvp.rewards[li]*100;
-    showToast("⚔","ПОБЕДА!","","+30 🏆 · +"+fmt(BALANCE.pvp.rewards[li]*100)+" 🪙","Power "+fmt(me)+" vs "+fmt(opp),true); }
+    showToast("⚔","ДОБЫЛ БОЛЬШЕ!","",
+      (cand.ic||"")+" "+(cand.name||"соперник"),
+      "+30 🏆 · "+fmt(Math.round(race.meOre))+" vs "+fmt(Math.round(race.oppOre))+" · "+race.sec+"с",true); }
   else { S.trophies=Math.max(0,(S.trophies||0)-15);
-    showToast("⚔","Поражение","","-15 🏆","Power "+fmt(me)+" vs "+fmt(opp)); }
-  Platform.logEvent("pvp_fight",{win}); pvpRollSlate(); save(); render(); openPvp();
+    showToast("⚔","Устал раньше","",
+      (cand.ic||"")+" "+(cand.name||"соперник"),
+      "-15 🏆 · "+fmt(Math.round(race.meOre))+" vs "+fmt(Math.round(race.oppOre))+" · "+race.sec+"с"); }
+  Platform.logEvent("pvp_fight",{win, bot:cand.id||null, meOre:Math.round(race.meOre), oppOre:Math.round(race.oppOre), raceSec:race.sec});
+  pvpRollSlate(); save(); render();
+  if(typeof UIS!=="undefined" && UIS.id==="pvp") UIS.render("pvp");
+  else openPvp();
 }
 const EVENT_LIST=[
   ["rockfall","Rockfall","волна валунов"],["lavaVein","Lava Vein","череда пластов"],
@@ -3103,7 +3364,7 @@ function openEvents(){
     const cap=lvl>=s.maxLvl?" (макс)":"";
     return `<div class="metarow"><span><b>${nm}</b> · <span style="color:var(--dim)">${desc}</span><br>
       <span style="color:var(--gold)">${s.ic} +${fmt(rew)} ${s.currency}</span> · ур.${lvl}/${s.maxLvl}${cap}</span>
-      <button class="buy" onclick="playEvent('${id}')" ${(S.keys||0)<1?"disabled":""}>Забег 🔑</button></div>`;
+      <button class="btn btn-soft" onclick="playEvent('${id}')" ${(S.keys||0)<1?"disabled":""}>Забег 🔑</button></div>`;
   }).join("");
   metaOpen("Ивенты (5 режимов)",
     "🔑 "+(S.keys||0)+"/"+BALANCE.keyMax+" · "+keyTimerStr()+" · ключ тратится только на победе (§12)",
@@ -3126,8 +3387,6 @@ function playEvent(id){
   }
   save(); render(); openEvents();
 }
-$("navSkills").onclick=openSkills; $("navWheel").onclick=openWheel;
-$("navPvp").onclick=openPvp; $("navEvents").onclick=openEvents;
 
 /* --- Питомцы: гача с pity (§8), пассив к добыче --- */
 const PET_TYPES=[
@@ -3202,9 +3461,9 @@ function openGeoGuild(){
     `<div class="metarow"><span>В деле: <b class="r${S.geo.r}">${S.geo.n}</b>${(S.geo.asc||0)?' <span style="color:var(--gold)">✦'+S.geo.asc+'</span>':''}
        <br><span class="sub">ур.${S.geo.lv||1} · +${Math.round(geoPct(S.geo))}% ${g.stat.toUpperCase()}</span></span></div>
      <div class="metarow"><span>Материал в артели</span>
-       <button class="buy" onclick="mergeGeo()" ${mats>0?"":"disabled"} ${mats>0?"":'style="opacity:.45"'}>Слить ${mats} → +${mats} ур.</button></div>
+       <button class="btn btn-soft" onclick="mergeGeo()" ${mats>0?"":"disabled"} ${mats>0?"":'style="opacity:.45"'}>Слить ${mats} → +${mats} ур.</button></div>
      <div class="metarow"><span>Восхождение ✦${(S.geo.asc||0)+1}<br><span class="sub">+${B.ascendPct}% к бонусу, уровень в 1</span></span>
-       <button class="gold" onclick="ascendGeo()" ${ascOk?"":"disabled"} ${ascOk?"":'style="opacity:.45"'}>${B.ascendGems}💎</button></div>
+       <button class="btn btn-hard" onclick="ascendGeo()" ${ascOk?"":"disabled"} ${ascOk?"":'style="opacity:.45"'}>${B.ascendGems}💎</button></div>
      ${ascWhy?`<div class="sub" style="color:#e8a24a;margin-bottom:8px">Восхождение: ${ascWhy}</div>`:""}
      <div class="sub" style="margin-top:10px">Коллекция дубликатов:</div>${box}`);
   Platform.logEvent("geo_guild",{});
@@ -3221,17 +3480,17 @@ function openPets(){
     const maxed=r>=PET_MERGE_MAX;
     const ok=canMergePet(t,r);
     const btn=maxed
-      ? `<button class="buy" disabled style="opacity:.4">предел</button>`
-      : `<button class="buy" onclick="mergePet(${t},${r})" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>Слить 3 → ${PET_RAR[r+1]}</button>`;
+      ? `<button class="btn btn-soft" disabled style="opacity:.4">предел</button>`
+      : `<button class="btn btn-soft" onclick="mergePet(${t},${r})" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>Слить 3 → ${PET_RAR[r+1]}</button>`;
     const need=maxed?"":`<div class="sub" style="margin:2px 0 0">копий ${c}/${BALANCE.merge.petCost}</div>`;
     return `<div class="metarow"><span><b class="r${r}">${PET_RAR[r]}</b> · ${PET_TYPES[t].n} ×${c}${need}</span>${btn}</div>`;
   }).join("")||'<div class="sub">Коллекция пуста. Крути яйца.</div>';
   const craftBtn = petCraftUnlocked()
     ? `<div class="metarow"><span>⚗ Крафт Exotic<br><span class="sub">по Legendary каждого семейства + ${BALANCE.petCraft.gems} 💎</span></span>
-        <button class="gold" onclick="craftPetExotic()" ${petCraftReady()?"":"disabled"} ${petCraftReady()?"":'style="opacity:.45"'}>Крафт</button></div>`
+        <button class="btn btn-hard" onclick="craftPetExotic()" ${petCraftReady()?"":"disabled"} ${petCraftReady()?"":'style="opacity:.45"'}>Крафт</button></div>`
     : `<div class="sub" style="margin-top:8px">Крафт Exotic откроется после ${BALANCE.petCraft.needLegendaries} легендарных питомцев (есть ${S.petLegSeen||0}).</div>`;
   metaOpen("Питомцы","Гача с жалостью Горы (§8), роллов: "+(S.petRolls||0)+". 3 одинаковых → 1 случайный следующей редкости; Exotic — только крафт.",
-    cur+rows+craftBtn+`<div style="text-align:center;padding:10px 0"><button class="gold" onclick="rollPet()" ${(S.eggs||0)<1?"disabled":""}>Крутить · 🥚1 (ост. ${S.eggs||0})</button></div>`);
+    cur+rows+craftBtn+`<div style="text-align:center;padding:10px 0"><button class="btn btn-hard" onclick="rollPet()" ${(S.eggs||0)<1?"disabled":""}>Крутить · 🥚1 (ост. ${S.eggs||0})</button></div>`);
 }
 /* ---------- Merge питомцев и старейшин (док §Питомцы, §Девушки) ---------- */
 const boxKey=(t,r)=>t+"_"+r;
@@ -3356,9 +3615,9 @@ function openProfile(){
     '<div class="metarow"><span>Глубина прогона</span><span><b>'+Math.min(S.stageIdx,BALANCE.run.len)+'/'+BALANCE.run.len+'</b></span></div>'+
     '<div class="metarow"><span>Рекорд глубины</span><span><b>'+fmt(S.bestDepth||depth)+' м</b></span></div>'+
     '<div class="metarow"><span>Престиж · спусков</span><span>'+(S.prestigeLv||0)+' · '+(S.prestigeRuns||0)+'</span></div>'+
-    '<div class="metarow"><span>Мудрость Бороды</span><button class="buy" onclick="openBeard()">'+w.title+'</button></div>'+'<div class="metarow"><span>Зал</span><span>ур.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
+    '<div class="metarow"><span>Мудрость Бороды</span><button class="btn btn-soft" onclick="openBeard()">'+w.title+'</button></div>'+'<div class="metarow"><span>Зал</span><span>ур.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
     '<div class="metarow"><span>Побед в PvP · кубков</span><span>'+(S.pvpWins||0)+' · '+fmt(S.trophies||0)+'</span></div>'+
-    '<div class="metarow"><span>Имя</span><span><input id="profName" value="'+esc(playerName())+'" maxlength="18" style="width:110px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px;font-size:9px"><button class="buy" style="margin-left:6px" onclick="'+setName+'">✓</button></span></div>';
+    '<div class="metarow"><span>Имя</span><span><input id="profName" value="'+esc(playerName())+'" maxlength="18" style="width:110px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px;font-size:9px"><button class="btn btn-soft" style="margin-left:6px" onclick="'+setName+'">✓</button></span></div>';
   $("profModal").style.display="flex"; Platform.logEvent("profile_view",{});
 }
 
@@ -3403,13 +3662,15 @@ function renderChestCard(){
       +'<div><b class="r'+it.r+'">'+RAR_NAMES[it.r]+'</b><div class="sub">'+(it.n||sl.n)+'</div></div></div>'
       +'<div class="chSts">'+stats+'</div>'+cmp
       +'<div class="btnrow" style="margin-top:8px">'
-      +'<button class="buy" onclick="equipChestItem()">Надеть</button>'
-      +'<button class="gold" onclick="sellChestItem()">Продать · '+fmt(sellPrice(it))+' 🪙</button>'
+      +'<button class="btn btn-soft" onclick="equipChestItem()">Надеть</button>'
+      +'<button class="btn btn-hard" onclick="sellChestItem()">Продать · '+fmt(sellPrice(it))+' 🪙</button>'
       +'</div></div>';
   }
-  const openBtn=(S.bags||0)>0
-    ? '<button class="buy" onclick="chestOpenOne()">Открыть сундук · 🎒'+(S.bags||0)+'</button>'
-    : '<button class="buy" disabled>Нет сумок · 🎒0</button>';
+  const openBtn=S.autoRoll
+    ? '<button class="btn btn-soft" disabled>Auto разбирает</button>'
+    : ((S.bags||0)>0
+    ? '<button class="btn btn-soft" onclick="chestOpenOne()">Открыть сундук · 🎒'+(S.bags||0)+'</button>'
+    : '<button class="btn btn-soft" disabled>Нет сумок · 🎒0</button>');
   // блок апгрейда: таблица шансов текущий → следующий уровень
   let upBlock='';
   if(atCap){
@@ -3423,21 +3684,25 @@ function renderChestCard(){
       +'<div class="chTimer"><div class="chTimerBar"><div class="chTimerFill" style="width:'+timerPct.toFixed(1)+'%"></div></div>'
       +'<span class="sub" id="chTimerLbl">'+timerLbl+'</span></div>'
       +'<div class="btnrow" style="margin-top:8px">'
-      +'<button class="gold" id="chUpBtn" onclick="chestUpgrade()" '+(canUp?'':'disabled')+'>'+(upNow?'Идёт апгрейд…':'Апгрейд · '+fmt(c)+' 🪙')+'</button>'
+      +'<button class="btn btn-hard" id="chUpBtn" onclick="chestUpgrade()" '+(canUp?'':'disabled')+'>'+(upNow?'Идёт апгрейд…':'Апгрейд · '+fmt(c)+' 🪙')+'</button>'
       +'<button id="chSkipBtn" onclick="chestSkip()" '+(upNow?'':'disabled')+' title="пропустить ожидание">Пропуск ⏩ · 💎'+(BALANCE.bags.skipGems||5)+'</button>'
       +'</div></div>';
   }
   el.innerHTML='<h3 style="margin:0 0 2px">🧰 '+bagName(lvl)+'</h3>'
     +'<div class="sub">Сундук находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
     +'<div class="chOpen" style="margin-top:10px">'+openBtn
-    +'<button onclick="toggleAutoRoll()" style="margin-left:6px">'+(S.autoRoll?"Auto ✓":"Auto")+'</button></div>'
+    +'<button type="button" class="btn '+(S.autoRoll?"btn-hard":"btn-soft")+'" onclick="toggleAutoRoll();renderChestCard()" style="margin-left:6px">'+(S.autoRoll?"Auto ✓":"Auto")+'</button>'
+    +'<button type="button" class="btn btn-soft" onclick="cycleAutoTier();renderChestCard()" style="margin-left:6px">порог: <span class="r'+(S.autoRollTier||0)+'">'+RAR_NAMES[S.autoRollTier||0]+'</span>+</button></div>'
     +pend+upBlock;
 }
-function openChest(){ chestPending=null; renderChestCard(); $("chestModal").style.display="flex"; Platform.logEvent("chest_view",{lv:S.bag}); }
+function openChest(){
+  if(S.ftue&&!S.ftue.c){ S.ftue.c=1;
+    const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
+  chestPending=null; renderChestCard(); $("chestModal").style.display="flex"; Platform.logEvent("chest_view",{lv:S.bag}); }
 function chestOpenOne(){
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return; }
   S.bags--; dailyProgress("bag",1);
-  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; if($("openBagBtn"))$("openBagBtn").classList.remove("pulse"); }
+  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
   chestPending=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
   Platform.logEvent("chest_open",{r:chestPending.r}); save(); renderChestCard();
 }
@@ -3492,7 +3757,7 @@ function openStickers(){
   }).join("");
   metaOpen("🃏 Стикеры",
     "Собрано "+have+"/"+STICKERS.length+" · дубликатов "+stickerDupes()+". Влияют на статы, дубликаты дарятся в зал.",
-    `<div class="btnrow"><button class="gold" onclick="buyStickerPack()" ${(S.gems||0)<STICKER_PACK_GEMS?"disabled":""}>Пак ${STICKER_PACK_N} · ${STICKER_PACK_GEMS} 💎</button>
+    `<div class="btnrow"><button class="btn btn-hard" onclick="buyStickerPack()" ${(S.gems||0)<STICKER_PACK_GEMS?"disabled":""}>Пак ${STICKER_PACK_N} · ${STICKER_PACK_GEMS} 💎</button>
        <button onclick="giftStickers()" ${stickerDupes()<1?"disabled":""}>Подарить дубликаты</button></div>
      <div style="margin-top:10px">${rows}</div>`);
   Platform.logEvent("stickers_view",{});
@@ -3536,8 +3801,8 @@ function openWorkouts(){
     if(active){
       const left=Math.max(0,Math.ceil((S.wkActive.end-Date.now())/1000));
       btn=left>0?`<button onclick="skipWorkout()">⏱ ${left}с · пропуск 💎5</button>`
-                :`<button class="buy" onclick="claimWorkout()">Забрать +${BALANCE.workoutStepPct[i]}%</button>`;
-    } else btn=`<button class="buy" onclick="startWorkout('${p}',${cost})" ${(S.protein||0)<cost?"disabled":""}>+${BALANCE.workoutStepPct[i]}% ${p.toUpperCase()} · 🍺${cost}</button>`;
+                :`<button class="btn btn-soft" onclick="claimWorkout()">Забрать +${BALANCE.workoutStepPct[i]}%</button>`;
+    } else btn=`<button class="btn btn-soft" onclick="startWorkout('${p}',${cost})" ${(S.protein||0)<cost?"disabled":""}>+${BALANCE.workoutStepPct[i]}% ${p.toUpperCase()} · 🍺${cost}</button>`;
     return `<div class="metarow"><span>${p.toUpperCase()} · ур.${lv}<br><span style="color:var(--dim)">пост. буст к стату</span></span>${btn}</div>`;
   }).join("");
   metaOpen("Улучшения-таймеры","🍺 Пиво +5/ч (кап 8ч) — топливо тренировок. 7 путей, шаг 50, кап 10080 мин (§10).",rows);
@@ -3577,7 +3842,7 @@ function openDaily(){
   }).join("");
   const trows=BALANCE.dailyTrack.map(([need,rew],i)=>{
     const done=(S.daily.claimed||[]).includes(i), can=S.daily.tok>=need && !done;
-    return `<div class="metarow"><span>${need} жетонов → ${rew}</span>${done?"<span style=color:var(--green)>✓</span>":`<button class="buy" onclick="claimDaily(${i},${need})" ${can?"":"disabled"}>Забрать</button>`}</div>`;
+    return `<div class="metarow"><span>${need} жетонов → ${rew}</span>${done?"<span style=color:var(--green)>✓</span>":`<button class="btn btn-soft" onclick="claimDaily(${i},${need})" ${can?"":"disabled"}>Забрать</button>`}</div>`;
   }).join("");
   metaOpen("Дейлики","Жетонов сегодня: "+(S.daily.tok||0)+"/150 (§8)",qrows+"<div style='height:8px'></div>"+trows);
 }
@@ -3593,17 +3858,53 @@ function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.cl
 
 /* --- Магазин: паки, comeback, no-ads (§13) --- */
 function openShop(){
-  const gems=BALANCE.shop.gemPacks.map((g,i)=>`<div class="metarow"><span>💎 ${g} кристаллов</span><button class="gold" onclick="buyGems(${i})">$${[19.99,59.99,199.99][i]}</button></div>`).join("");
-  const cb=BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>`<div class="metarow"><span>Пак: 💎${g} + 🪙${fmt(gold)}</span><button class="gold" onclick="buyPack(${i})">$${[6.99,16.99,24.99][i]}</button></div>`).join("");
-  const na=S.noAds?"<div class='metarow'><span>✓ Реклама отключена</span></div>":`<div class="metarow"><span>Отключить рекламу</span><button class="gold" onclick="buyNoAds()">$${BALANCE.noAdsPrice}</button></div>`;
+  const gems=BALANCE.shop.gemPacks.map((g,i)=>`<div class="metarow"><span>💎 ${g} кристаллов</span><button class="btn btn-hard" onclick="buyGems(${i})">$${[19.99,59.99,199.99][i]}</button></div>`).join("");
+  const cb=BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>`<div class="metarow"><span>Пак: 💎${g} + 🪙${fmt(gold)}</span><button class="btn btn-hard" onclick="buyPack(${i})">$${[6.99,16.99,24.99][i]}</button></div>`).join("");
+  const na=S.noAds?"<div class='metarow'><span>✓ Реклама отключена</span></div>":`<div class="metarow"><span>Отключить рекламу</span><button class="btn btn-hard" onclick="buyNoAds()">$${BALANCE.noAdsPrice}</button></div>`;
   metaOpen("Магазин","IAP-стабы (Platform.buy → Play Billing в проде). §13",gems+"<div style='height:8px'></div>"+cb+na);
 }
-function buyGems(i){ Platform.buy("gems_"+i); S.gems+=BALANCE.shop.gemPacks[i]; showToast("💎","Покупка","",BALANCE.shop.gemPacks[i]+" кристаллов","спасибо!"); save(); render(); openShop(); }
-function buyPack(i){ Platform.buy("pack_"+i); const [g,gold]=BALANCE.shop.comeback[i]; S.gems+=g; S.gold+=gold; showToast("🎁","Пак куплен","","+"+g+"💎 +"+fmt(gold)+"🪙","спасибо!"); save(); render(); openShop(); }
-function buyNoAds(){ Platform.buy("noads"); S.noAds=true; showToast("🚫","No-Ads","","реклама отключена","спасибо!"); save(); render(); openShop(); }
+function shopFreeReset(){
+  ensureBags(S);
+  const t=todayStr();
+  if(!S.shopFree||S.shopFree.day!==t) S.shopFree={day:t,taken:{}};
+}
+function shopFreeLeft(id){
+  shopFreeReset();
+  const n=BALANCE.shopFreeN||2;
+  /* id: "a"|"b" × modes free/ad → ключ id_mode */
+  return n;
+}
+function claimShopFree(offerId, viaAd){
+  shopFreeReset();
+  const key=offerId+(viaAd?"_ad":"_free");
+  if(S.shopFree.taken[key]){ showToast("🎁","Уже взято","","Завтра снова"); return; }
+  const grant=()=>{
+    S.shopFree.taken[key]=1;
+    if(offerId==="a"){ S.eggs=(S.eggs||0)+1; S.combs=(S.combs||0)+1; showToast("🎁","Подарок","","+1 🥚 +1 🪮"); }
+    else { S.protein=(S.protein||0)+40; S.bags=(S.bags||0)+1; showToast("🎁","Подарок","","+40 🍺 +1 🎒"); }
+    Platform.logEvent("shop_free",{offerId,viaAd:!!viaAd}); save(); render();
+    if(typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
+  };
+  if(viaAd){
+    try{ if(Platform&&Platform.showRewarded){ Platform.showRewarded(ok=>{ if(ok) grant(); }); return; } }catch(e){}
+  }
+  grant();
+}
+function buyGems(i){ Platform.buy("gems_"+i); growthTrackPurchase([1999,5999,19999][i],"gems_"+i); S.gems+=BALANCE.shop.gemPacks[i]; showToast("💎","Покупка","",BALANCE.shop.gemPacks[i]+" кристаллов","спасибо!"); save(); render(); openShop(); }
+function buyPack(i){ Platform.buy("pack_"+i); growthTrackPurchase([699,1699,2499][i],"pack_"+i); const [g,gold]=BALANCE.shop.comeback[i]; S.gems+=g; S.gold+=gold; showToast("🎁","Пак куплен","","+"+g+"💎 +"+fmt(gold)+"🪙","спасибо!"); save(); render(); openShop(); }
+function buyNoAds(){ Platform.buy("noads"); growthTrackPurchase(Math.round(parseFloat(BALANCE.noAdsPrice)*100),"noads"); S.noAds=true; showToast("🚫","No-Ads","","реклама отключена","спасибо!"); save(); render(); openShop(); }
+function buyStarterPack(){
+  ensureGrowth(S);
+  if(S.growth.starterBought){ showToast("🎁","Уже куплен","","стартовый пак — разовый"); return; }
+  const p=BALANCE.growth.starterPack;
+  Platform.buy("starter_pack"); growthTrackPurchase(p.cents,"starter_pack");
+  S.gems=(S.gems||0)+p.gems; S.gold=(S.gold||0)+p.gold; S.bags=(S.bags||0)+p.bags;
+  S.loot2xUntil=Date.now()+p.loot2xMin*60000; S.growth.starterBought=true;
+  showToast("🎁","Стартовый пак","","+"+p.gems+" 💎 · окупаемость D1");
+  Platform.logEvent("starter_pack",{}); save(); render();
+  if(typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
+}
 
-$("navPets").onclick=openPets; $("navWork").onclick=openWorkouts;
-$("navDaily").onclick=openDaily; $("navShop").onclick=openShop;
 
 /* ---------- распитие эля (косметика + чуть энергии) ---------- */
 let aleNext=25+Math.random()*20, aleAnim=0;
@@ -3712,7 +4013,7 @@ function craftBoxFromStones(r){
   S.boxes=S.boxes||[]; S.boxes.push(r);
   showToast("⚒","Лутбокс собран!","r"+r,"📦 тир "+r+" ("+RAR_NAMES[r]+")","−"+need+"× камней",true);
   Platform.logEvent("lootbox_craft",{r}); sfxGear(); save(); render();
-  if($("colModal")&&$("colModal").style.display==="flex") $("colBtn").onclick();
+  if($("colModal")&&$("colModal").style.display==="flex") openCollection();
 }
 function upgradeBoxWithStones(tier){
   if(tier>=7){ showToast("⚗","Предел","","Cosmic — выше некуда"); return; }
@@ -3777,8 +4078,14 @@ function switchTab(name){
     if(panel&&panel.classList) panel.classList.toggle("on", t===name);
     if(btn&&btn.classList) btn.classList.toggle("on", t===name);
   }
+  { // Mine-сцена и лог — только в забое
+    const onMine = name==="Mine";
+    const sc=$("scene"); if(sc&&sc.style) sc.style.display = onMine ? "" : "none";
+    const pw=$("pwStrip"); if(pw&&pw.style) pw.style.display = onMine ? "" : "none";
+    const lw=$("logWrap"); if(lw&&lw.style) lw.style.display = onMine ? "" : "none";
+  }
   if(S&&S.ftue&&name==="Meta"&&!S.ftue.t){ S.ftue.t=1; save(); }
-  document.querySelectorAll&&document.querySelectorAll("#bottomNav .navb").forEach(b=>{
+  document.querySelectorAll&&document.querySelectorAll("#bottomNav .btn-nav").forEach(b=>{
     if(b.classList) b.classList.toggle("on", b.getAttribute&&b.getAttribute("data-nav")===name);
   });
   const v=$("view"); if(v) v.scrollTop=0;   // при смене экрана — наверх
@@ -3799,8 +4106,8 @@ function badges(){
   const upgReady   = UPGRADES.some(u=>!statCapped(u.id) && S.gold>=upCost(u));
   return { skillReady, petReady, geoReady, lootReady, workReady, dailyReady, bagsReady, upgReady,
     prestigeReady: canPrestige(),
-    mine: upgReady,
-    hero: bagsReady,
+    mine: upgReady||bagsReady,
+    hero: false,
     meta: skillReady||petReady||geoReady||lootReady||workReady||dailyReady||canPrestige() };
 }
 function renderBadges(){
@@ -3810,14 +4117,14 @@ function renderBadges(){
   setDot("ndotMine",b.mine); setDot("ndotHero",b.hero); setDot("ndotMeta",b.meta);
   setDot("ndotPets",b.petReady||b.geoReady);
   setDot("dotSkills",b.skillReady); setDot("dotPets",b.petReady||b.geoReady);
-  setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotLoot",b.lootReady);
+  setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotDailySide",b.dailyReady); setDot("dotLoot",b.lootReady);
 }
 /* Аура и эмблемы активных Сетов Подземелья прямо на дворфе. */
 /* ---------- Paperdoll: слоты на теле дворфа (Ultima Online) ---------- */
 /* Колонки слева и справа от силуэта: маркер никогда не перекрывает дворфа. */
 const PD_POS={
-  helm: [-20, 10], robe: [-20, 36], pack: [-20, 62], boots:[-20, 88],
-  pick: [120, 10], glove:[120, 36], lamp: [120, 62], pet:  [120, 88]
+  helm: [-20, 8], robe: [-20, 30], pack: [-20, 52], boots:[-20, 74], pants:[-20, 96],
+  pick: [120, 8], glove:[120, 30], lamp: [120, 52], pet:  [120, 74]
 };
 function openGearSlot(id){
   const sl=SLOTS.find(s=>s.id===id); if(!sl) return;
@@ -3939,7 +4246,7 @@ function openGuild(){
          подключается настоящий проект гражданской науки — с их лицензией и твоим согласием.</span>
        </div>
        <div style="text-align:center;padding:14px 0">
-         <button class="gold" onclick="sciConsent()" style="max-width:280px">Согласен, вступаю</button>
+         <button class="btn btn-hard" onclick="sciConsent()" style="max-width:280px">Согласен, вступаю</button>
        </div>`);
     Platform.logEvent("guild_consent_view",{});
     return;
@@ -3955,7 +4262,7 @@ function openGuild(){
   }
   const img=SPECIMENS[t.id];
   const opts=t.opts.map((o,i)=>
-    `<button class="buy" onclick="sciAnswer(${i})" style="margin:3px 0">${o}</button>`).join("");
+    `<button class="btn btn-soft" onclick="sciAnswer(${i})" style="margin:3px 0">${o}</button>`).join("");
   /* НИКАКОЙ пометки «контрольный»: иначе мошенник отвечает внимательно только
      на контрольные и размечает мусором всё остальное. */
   metaOpen("🔬 Гильдия Рудознатцев",
@@ -4062,7 +4369,7 @@ function openWall(){
     `<div class="btnrow" style="margin-bottom:10px">
        <input id="lbName" value="${esc(me)}" maxlength="18"
          style="flex:1;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px;font-size:9px">
-       <button class="buy" onclick="setPlayerName()">Имя</button></div>
+       <button class="btn btn-soft" onclick="setPlayerName()">Имя</button></div>
      ${rows}
      <div class="sub" style="margin-top:10px">Список демонстрационный (локальный). В релизе — общий рейтинг с сервера.</div>`);
   Platform.logEvent("wall_view",{});
@@ -4081,19 +4388,19 @@ function openFairness(){
   metaOpen("🔐 Честность гачи",
     "Каждый ролл гачи считается хэшем SHA-256 от сервера+клиента+счётчика. Проверяемо, ничего не майнится.",
     `<div class="metarow"><span>Режим честности</span>
-       <button class="${f.on?"gold":"buy"}" onclick="toggleFair()">${f.on?"ВКЛ ✓":"выкл"}</button></div>
+       <button class="btn ${f.on?"btn-hard":"btn-soft"}" onclick="toggleFair()">${f.on?"ВКЛ ✓":"выкл"}</button></div>
      <div class="metarow"><span>Коммит сервера (SHA-256)</span></div>
      <div class="sub" style="word-break:break-all;color:#7ae8dc">${f.serverHash}</div>
      <div class="metarow" style="margin-top:8px"><span>Твой клиентский сид</span></div>
      <div class="btnrow"><input id="fairClient" value="${f.client}"
         style="flex:1;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px;font-size:9px">
-       <button class="buy" onclick="setFairClient()">Задать</button></div>
+       <button class="btn btn-soft" onclick="setFairClient()">Задать</button></div>
      <div class="metarow" style="margin-top:8px"><span>Роллов сделано (nonce)</span><span><b>${f.nonce}</b></span></div>
      <div class="sub" style="margin-top:10px">Проверить прошлый ролл: пересчитай
        <br><code style="color:#e8b93c">SHA256("сид_сервера:${f.client}:${lastNonce}")</code>
        <br>первые 8 hex ÷ 2³² = число ролла в [0,1).</div>
      <div style="text-align:center;padding:12px 0">
-       <button class="gold" onclick="revealFair()" style="max-width:280px">Раскрыть сид и сменить (проверка)</button>
+       <button class="btn btn-hard" onclick="revealFair()" style="max-width:280px">Раскрыть сид и сменить (проверка)</button>
      </div>
      <div class="sub">Раскрытие показывает старый серверный сид — сверь его хэш с коммитом выше — и выдаёт новый.</div>`);
   Platform.logEvent("fair_view",{on:f.on});
@@ -4126,14 +4433,14 @@ function openPrestige(){
      <div class="metarow"><span style="color:var(--green)">Остаётся навсегда</span>
        <span class="sub" style="text-align:right">навыки · старейшина · питомец · коллекция · сеты · борода · кристаллы</span></div>
      <div style="text-align:center;padding:12px 0">
-       <button class="gold" onclick="confirmPrestige()" ${ok?"":"disabled"} style="max-width:260px">
+       <button class="btn btn-hard" onclick="confirmPrestige()" ${ok?"":"disabled"} style="max-width:260px">
          ${ok?("Спуститься заново (+"+gain+" ур.)"):"Ещё не время"}</button>
      </div>`);
   Platform.logEvent("prestige_view",{lv});
 }
 function confirmPrestige(){
   if(!canPrestige()) return;
-  if(doPrestige()){ const m=$("metaModal"); if(m) m.style.display="none"; }
+  if(doPrestige()){ if(typeof UIS!=="undefined") UIS.close(); const m=$("metaModal"); if(m) m.style.display="none"; }
 }
 function openLoot(){
   const boxes=S.boxes||[];
@@ -4148,7 +4455,7 @@ function openLoot(){
         needSh?fmt(needSh)+" 💠":""].filter(Boolean).join(" · ")}</div>`;
     const sNeed=stoneFuseCost(t), sHave=dupStones(t), canStone=t<7&&sHave>=sNeed;
     const stoneBtn = t<7
-      ? `<button class="buy" onclick="upgradeBoxWithStones(${t})" ${canStone?"":"disabled"} ${canStone?"":'style="opacity:.45"'}>Улучшить · ${sNeed}× <span class="r${t}">${RAR_NAMES[t]}</span></button>`
+      ? `<button class="btn btn-soft" onclick="upgradeBoxWithStones(${t})" ${canStone?"":"disabled"} ${canStone?"":'style="opacity:.45"'}>Улучшить · ${sNeed}× <span class="r${t}">${RAR_NAMES[t]}</span></button>`
       : "";
     const stoneWhy = (t<7&&!canStone)
       ? `<div class="sub" style="margin:2px 0 0;color:#8a93a3">камней (дубликаты): ${sHave}/${sNeed}</div>` : "";
@@ -4158,7 +4465,7 @@ function openLoot(){
         ${stoneBtn}
       </span></div>`;
   }).join("")||'<div class="sub">Лутбоксов нет. Надень во все 8 слотов детали одной редкости — упадёт лутбокс.</div>';
-  const openBtns=boxes.length?`<div class="btnrow"><button class="buy" onclick="openOneBox()">Открыть 1</button><button class="gold" onclick="openAllBoxes()">Открыть все (${boxes.length})</button></div>`:"";
+  const openBtns=boxes.length?`<div class="btnrow"><button class="btn btn-soft" onclick="openOneBox()">Открыть 1</button><button class="btn btn-hard" onclick="openAllBoxes()">Открыть все (${boxes.length})</button></div>`:"";
   const setRows=BALANCE.dungeonSets.map(s=>{
     const fr=(S.frags||{})[s.id]||{}; const have=s.frags.filter((f,i)=>fr[i]).length;
     const done=(S.sets||{})[s.id];
@@ -4177,25 +4484,205 @@ function openLoot(){
     boxRows+openBtns+"<div style='height:10px'></div><div class='sub'>Билды (4 фрагмента → уникальное свойство):</div>"+setRows);
   Platform.logEvent("loot_view",{});
 }
-$("navLoot").onclick=openLoot;
 
 /* ---------- старт ---------- */
-load(); switchTab((S&&S.tab)||"Mine"); if(S&&!S.introSeen) showIntro(); buildUpgrades(); renderGear(); newRock(); render(); renderCart(); checkOffline(); checkStreak();
-$("musicBtn").textContent=musicOn?"🔊":"🔇";
-$("musicBtn").onclick=toggleMusic;
+/* ---------- рост: рефералы, вейтлист, юнит-экономика ---------- */
+function growthInviteCode(){ ensureGrowth(S); return S.growth.code; }
+function growthInviteLink(){
+  const code=growthInviteCode();
+  try{ return (location.href.split("?")[0].split("#")[0])+"?ref="+code; }catch(e){ return "?ref="+code; }
+}
+function growthCoopMult(){
+  ensureGrowth(S);
+  const until=S.growth.coopUntil||0, pct=BALANCE.growth.referral.coopBoostPct;
+  return (Date.now()<until)?(1+pct/100):1;
+}
+function growthAdDayReset(){
+  ensureGrowth(S);
+  const t=todayStr();
+  if(S.growth.ads.day!==t) S.growth.ads={day:t,count:0};
+}
+function growthAdCapOk(){
+  growthAdDayReset();
+  return S.growth.ads.count<(BALANCE.growth.ads.dailyCap||12);
+}
+function growthTrackAd(){
+  growthAdDayReset();
+  S.growth.ads.count=(S.growth.ads.count||0)+1;
+  S.growth.adViewsLifetime=(S.growth.adViewsLifetime||0)+1;
+  Platform.trackRevenue(BALANCE.growth.ads.revCents,"rewarded_ad",{ad:true});
+  save();
+}
+function growthTrackPurchase(cents,product){
+  ensureGrowth(S);
+  S.growth.revenueCents=(S.growth.revenueCents||0)+cents;
+  Platform.trackRevenue(cents,product,{iap:true});
+}
+function growthBumpInviter(code){
+  code=(code||"").trim().toUpperCase(); if(!code) return;
+  try{
+    const k="oredeep_ref_"+code, n=Math.min(BALANCE.growth.referral.inviterCap, Number(localStorage.getItem(k)||0)+1);
+    localStorage.setItem(k,String(n));
+    ensureGrowth(S);
+    if(S.growth.code===code) S.growth.invites=n;
+  }catch(e){}
+}
+function growthApplyReferral(code, silent){
+  ensureGrowth(S);
+  code=(code||"").trim().toUpperCase();
+  if(!code||code.length<4){ if(!silent) showToast("👥","Код","","введи код друга"); return false; }
+  if(code===growthInviteCode()){ if(!silent) showToast("👥","Это твой код","","пригласи другого"); return false; }
+  if(S.growth.referredBy){
+    if(!silent) showToast("👥","Уже есть","","от "+S.growth.referredBy);
+    return false;
+  }
+  const r=BALANCE.growth.referral;
+  S.growth.referredBy=code; S.growth.organic=true;
+  S.gems=(S.gems||0)+r.welcomeGems; S.protein=(S.protein||0)+r.welcomeProtein;
+  S.growth.coopUntil=Date.now()+r.coopBoostMin*60000;
+  growthBumpInviter(code);
+  Platform.trackAttribution("referral",{code,organic:true});
+  Platform.logEvent("referral_accept",{code});
+  if(!silent) showToast("👥","Кооп-жила","","+"+r.welcomeGems+" 💎 · буст "+r.coopBoostMin+" мин");
+  save(); render(); return true;
+}
+function growthJoinWaitlist(silent){
+  ensureGrowth(S);
+  if(S.growth.waitlist.joined) return;
+  S.growth.waitlist.joined=true; S.growth.waitlist.at=Date.now(); S.growth.organic=true;
+  Platform.trackAttribution("waitlist",{organic:true});
+  Platform.logEvent("waitlist_join",{});
+  if(!silent) showToast("📋","Вейтлист","","бонус ждёт в разделе Друзья");
+  save();
+}
+function claimWaitlistBonus(){
+  ensureGrowth(S);
+  const w=BALANCE.growth.waitlist;
+  if(!S.growth.waitlist.joined){ showToast("📋","Вейтлист","","сначала вступи"); return; }
+  if(S.growth.waitlist.claimed){ showToast("📋","Уже взято","","спасибо за ранний доступ"); return; }
+  S.gems=(S.gems||0)+w.bonusGems; S.eggs=(S.eggs||0)+w.eggs; S.combs=(S.combs||0)+w.combs;
+  S.loot2xUntil=Date.now()+w.loot2xMin*60000;
+  S.growth.waitlist.claimed=true;
+  Platform.logEvent("waitlist_claim",{});
+  showToast("📋","Ранний доступ","","+"+w.bonusGems+" 💎 · 2× "+w.loot2xMin+" мин");
+  save(); render();
+  if(typeof UIS!=="undefined"&&UIS.id==="profile") UIS.render("profile");
+}
+function claimInviteMilestones(){
+  ensureGrowth(S); growthSyncInvites();
+  const ms=BALANCE.growth.referral.milestones; let gems=0;
+  for(let i=0;i<ms.length;i++){
+    if(S.growth.milestones.includes(i)) continue;
+    if((S.growth.invites||0)>=ms[i].n){
+      S.growth.milestones.push(i); S.gems=(S.gems||0)+ms[i].gems; gems+=ms[i].gems;
+    }
+  }
+  if(gems){ showToast("👥","Веха рефералов","","+"+gems+" 💎"); Platform.logEvent("referral_milestone",{gems}); save(); render(); }
+  else showToast("👥","Вехи","","пригласи ещё друзей");
+  if(typeof UIS!=="undefined"&&UIS.id==="profile") UIS.render("profile");
+}
+function growthSyncInvites(){
+  ensureGrowth(S);
+  try{
+    if(S.growth.code){
+      const cap=BALANCE.growth.referral.inviterCap;
+      const n=Number(localStorage.getItem("oredeep_ref_"+S.growth.code)||0);
+      const fromLs=isFinite(n)?n:0;
+      S.growth.invites=Math.min(cap, Math.max(S.growth.invites||0, fromLs));
+    }
+  }catch(e){}
+}
+function shareInvite(){
+  const url=growthInviteLink(), code=growthInviteCode();
+  const text="Копай со мной в ORE DEEP! Код: "+code;
+  if(navigator.share){ navigator.share({title:"ORE DEEP",text,url}).catch(()=>{}); }
+  else { try{ navigator.clipboard.writeText(url); showToast("👥","Ссылка","","скопирована"); }catch(e){ showToast("👥","Код",code,url); } }
+  Platform.logEvent("invite_share",{code});
+}
+function growthCaptureUrl(){
+  let ref="", wl="";
+  try{ const p=new URLSearchParams(location.search||""); ref=p.get("ref")||""; wl=p.get("wl")||""; }catch(e){}
+  if(wl==="1") growthJoinWaitlist(true);
+  if(ref){
+    ensureGrowth(S);
+    if(!S.growth.referredBy) growthApplyReferral(ref, false);
+  }
+}
+function growthUnitEcon(){
+  ensureGrowth(S);
+  const g=S.growth, B=BALANCE.growth;
+  const days=Math.max(1, Math.ceil((Date.now()-(g.installAt||Date.now()))/86400000));
+  const adRev=(g.adViewsLifetime||0)*B.ads.revCents;
+  const total=(g.revenueCents||0)+adRev;
+  const cac=B.cacTargetCents, ltv=B.ltvTargetCents;
+  const paybackOk=total>=cac && days<=B.paybackDay;
+  return { days, totalCents:total, revenueIap:g.revenueCents||0, adRev, cac, ltv,
+    paybackOk, ltvRatio:total/cac, k:(g.invites||0)/days, organic:!!g.organic };
+}
+function growthOnBoot(){
+  if(!S) return;
+  ensureGrowth(S); growthCaptureUrl(); growthSyncInvites();
+  const dot=$("dotGrowthSide");
+  if(dot){
+    const show=(!S.growth.waitlist.claimed&&S.growth.waitlist.joined)
+      || growthInviteMilestonesReady();
+    dot.style.display=show?"flex":"none";
+  }
+}
+function growthInviteMilestonesReady(){
+  ensureGrowth(S);
+  const ms=BALANCE.growth.referral.milestones;
+  for(let i=0;i<ms.length;i++){
+    if(S.growth.milestones.includes(i)) continue;
+    if((S.growth.invites||0)>=ms[i].n) return true;
+  }
+  return !S.growth.waitlist.claimed && !S.growth.waitlist.joined && (S.stageIdx||1)<=5;
+}
+(function(){
+  const base=Platform.showRewarded;
+  Platform.showRewarded=function(cb){
+    if(!growthAdCapOk()){ showToast("📺","Лимит рекламы","","завтра снова — CPA под контролем"); cb(false); return; }
+    base(ok=>{ if(ok) growthTrackAd(); cb(ok); });
+  };
+})();
+
+load();
+try{ switchTab((S&&S.tab)||"Mine"); }catch(e){}
+try{ if(S&&!S.introSeen) showIntro(); }catch(e){}
+try{ buildUpgrades(); }catch(e){}
+try{ renderGear(); }catch(e){}
+try{ newRock(); }catch(e){}
+try{ render(); }catch(e){}
+try{ renderCart(); }catch(e){}
+try{ checkOffline(); }catch(e){}
+try{ growthOnBoot(); }catch(e){}
+try{ checkStreak(); }catch(e){}
+{ const sm=$("setMusic"); if(sm) sm.textContent=musicOn?"🔊 вкл":"🔇 выкл"; }
 const SPEEDS=[1,2,3,10,100];
-$("speedBtn").onclick=()=>{
+{ const sb=$("speedBtn");
+  if(sb) sb.onclick=()=>{
   const cur=S.speed||1, i=SPEEDS.indexOf(cur);
   const next=SPEEDS[(i+1)%SPEEDS.length];
-  if(next>1){ Platform.showRewarded(ok=>{ if(!ok) return; }); }
-  Platform.logEvent("speed_toggle",{speed:next});
-  S.speed=next;
-  flushSales();                                                  // хвост батча не теряем
-  const q={1:"Спокойный темп. Медитируем.",2:"Двойной темп! Борода развевается!",
-    3:"ТРОЙНОЙ! Держите шлем!",10:"×10! Кирка плавится!",100:"×100! ГОРА ДРОЖИТ!!!"};
-  sayQuip(q[S.speed]||("×"+S.speed+"!"),3);
-  save();
-};
+  const applySpeed=()=>{
+    Platform.logEvent("speed_toggle",{speed:next});
+    S.speed=next;
+    flushSales();                                                  // хвост батча не теряем
+    const q={1:"Спокойный темп. Медитируем.",2:"Двойной темп! Борода развевается!",
+      3:"ТРОЙНОЙ! Держите шлем!",10:"×10! Кирка плавится!",100:"×100! ГОРА ДРОЖИТ!!!"};
+    sayQuip(q[S.speed]||("×"+S.speed+"!"),3);
+    save();
+  };
+  if(next<=1){ applySpeed(); return; }
+  // rewarded может отсутствовать/падать в web/file:// — тогда просто переключаем
+  try{
+    if(Platform && typeof Platform.showRewarded==="function"){
+      Platform.showRewarded(ok=>{ if(ok) applySpeed(); });
+      return;
+    }
+  }catch(e){}
+  applySpeed();
+  };
+}
 requestAnimationFrame(loop);
 setInterval(save,5000);
 </script>

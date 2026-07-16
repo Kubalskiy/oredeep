@@ -4,11 +4,11 @@
 "use strict";
 
 const UI_MINES=[
-  {id:0,ic:"🪙",n:"Золотая жила",   sub:"монеты · чертог "+((S&&S.mine)||0)+1, theme:"t0", on:true},
-  {id:1,ic:"💎",n:"Кристальная",    sub:"осколки · скоро", theme:"t1", on:false},
-  {id:2,ic:"🔥",n:"Лавовая",        sub:"крит · скоро", theme:"t2", on:false},
-  {id:3,ic:"❄️",n:"Ледяная",        sub:"выносливость · скоро", theme:"t3", on:false},
-  {id:4,ic:"✨",n:"Эфирная",        sub:"удача · скоро", theme:"t4", on:false}
+  {id:0,ic:"🪙",n:"Забой новичка",   sub:"🪙 золото · находки", theme:"t0"},
+  {id:1,ic:"💠",n:"Эхо-Дум",         sub:"💠 осколки · дубликаты", theme:"t1"},
+  {id:2,ic:"🍺",n:"Подгорный Огонь", sub:"🍺 пиво · тренировки", theme:"t2"},
+  {id:3,ic:"◎",n:"Хрустальные",      sub:"◎ крутки · колесо", theme:"t3"},
+  {id:4,ic:"🗝",n:"Бездна",          sub:"🗝 ключи · скилл-лари", theme:"t4"}
 ];
 
 const UI_ART_COLS=[
@@ -43,6 +43,11 @@ const UIS={
   open(id, tab){
     this.id=id; this.tab=tab||null;
     this.render(id); this.show();
+    if(typeof S!=="undefined"&&S&&S.ftue){
+      if(id==="tavern"&&!S.ftue.t){ S.ftue.t=1; save(); }
+      if(id==="profile"&&this.tab==="growth"&&!S.ftue.g){ S.ftue.g=1; save(); }
+      try{ updateFtueHint(); }catch(e){}
+    }
   },
   bar(pct, col){
     const w=Math.max(0,Math.min(100,pct||0));
@@ -50,7 +55,7 @@ const UIS={
   },
   tabs(keys, labels, active){
     return '<div class="uiTabs">'+keys.map((k,i)=>
-      '<button class="uiTab'+(k===active?" on":"")+'" onclick="UIS.setTab(\''+k+'\')">'+labels[i]+'</button>'
+      '<button type="button" class="btn btn-tab'+(k===active?" on":"")+'" onclick="UIS.setTab(\''+k+'\')">'+labels[i]+'</button>'
     ).join("")+'</div>';
   },
   card(ic, title, sub, body, cls){
@@ -69,11 +74,45 @@ const UIS={
   },
 
   renderProfile(){
+    const tab=this.tab||"main";
+    if(tab==="growth"){
+      ensureGrowth(S); growthSyncInvites();
+      const code=growthInviteCode(), coop=growthCoopMult()>1;
+      const ms=BALANCE.growth.referral.milestones;
+      const msHtml=ms.map((m,i)=>{
+        const done=S.growth.milestones.includes(i), ok=(S.growth.invites||0)>=m.n;
+        return this.row(m.n+" друзей",(done?"✓ +"+m.gems+" 💎":(ok?"готово!":"—")));
+      }).join("");
+      const wl=S.growth.waitlist;
+      this.$("uiTitle").textContent="Друзья";
+      this.$("uiHeadAct").innerHTML="";
+      this.$("uiTabs").innerHTML=this.tabs(["main","growth"],["Профиль","Друзья"],"growth");
+      this.$("uiBody").innerHTML=
+        '<div class="uiBanner">Органический рост: рефералы и вейтлист без рекламного бюджета</div>'
+        +this.row("Твой код",'<b>'+code+'</b>')
+        +this.row("Приглашено",'<b>'+(S.growth.invites||0)+'</b> / '+BALANCE.growth.referral.inviterCap)
+        +(S.growth.referredBy?this.row("Пригласил",'<b>'+esc(S.growth.referredBy)+'</b>'):"")
+        +(coop?this.row("Кооп-буст",'<b style="color:var(--green)">+'+BALANCE.growth.referral.coopBoostPct+'% доход</b>'):"")
+        +'<div class="uiBtnStack">'
+        +'<button class="btn btn-hard btn-wide" onclick="shareInvite()">Поделиться ссылкой</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="claimInviteMilestones()">Забрать вехи рефералов</button></div>'
+        +'<div class="uiSec">Вехи</div>'+msHtml
+        +'<div class="uiSec">Вейтлист (ранний доступ)</div>'
+        +(wl.joined
+          ?(wl.claimed?this.row("Статус","✓ бонус получен"):this.card("📋","Ранний доступ","органика без CPI",
+            '<button class="btn btn-hard btn-wide" onclick="claimWaitlistBonus()">Забрать бонус</button>'))
+          :this.card("📋","Вейтлист","бонус за органический спрос",
+            '<button class="btn btn-hard btn-wide" onclick="growthJoinWaitlist(false);UIS.render(\'profile\')">Вступить</button>'))
+        +'<div class="uiSec">Пришёл по коду?</div>'
+        +'<div class="uiRow"><span><input id="uiRefInp" class="uiInp wide" maxlength="8" placeholder="КОД"></span>'
+        +'<button class="btn btn-soft btn-tiny" onclick="growthApplyReferral(document.getElementById(\'uiRefInp\').value);UIS.render(\'profile\')">✓</button></div>';
+      return;
+    }
     const w=beardWisdom(), depth=(S.stageIdx||1)*3;
     const setName="var v=document.getElementById('uiProfName').value.trim().slice(0,18);if(v){S.playerName=v;save();UIS.render('profile');}";
     this.$("uiTitle").textContent="Профиль";
     this.$("uiHeadAct").innerHTML="";
-    this.$("uiTabs").innerHTML="";
+    this.$("uiTabs").innerHTML=this.tabs(["main","growth"],["Профиль","Друзья"],"main");
     this.$("uiBody").innerHTML=
       '<div class="uiHero"><div class="uiHeroArt">🧔</div>'
       +'<b>'+esc(playerName())+'</b><div class="uiSub">'+w.title+((S.prestigeLv||0)?(" · ⛰ "+S.prestigeLv):"")+'</div></div>'
@@ -82,13 +121,16 @@ const UIS={
       +this.row("PvP · кубки",(S.pvpWins||0)+' побед · 🏆 '+fmt(S.trophies||0))
       +this.row("Зал",'ур. '+gymLevel()+' · +'+gymPerkPct()+'%')
       +'<div class="uiRow"><span>Имя таверны</span><span><input id="uiProfName" class="uiInp" maxlength="18" value="'+esc(playerName())+'">'
-      +'<button class="buy uiTiny" onclick="'+setName+'">✓</button></span></div>'
+      +'<button class="btn btn-soft btn-tiny" onclick="'+setName+'">✓</button></span></div>'
       +'<div class="uiBtnStack">'
-      +'<button class="buy" onclick="UIS.open(\'beards\')">💇 Бороды</button>'
+      +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Бороды</button>'
+      +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Пригласи друзей</button>'
       +'<button onclick="openWall()">🏔 Стена Горы</button></div>';
   },
 
   renderSettings(){
+    const ue=(typeof growthUnitEcon==="function")?growthUnitEcon():{};
+    const fmtUsd=c=>"$"+(c/100).toFixed(2);
     this.$("uiTitle").textContent="Настройки";
     this.$("uiHeadAct").innerHTML="";
     this.$("uiTabs").innerHTML="";
@@ -96,8 +138,16 @@ const UIS={
       this.row("Музыка",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 вкл":"🔇 выкл")+'</button>')
       +this.row("Устав Горы",'<button onclick="showIntro()">📜 читать</button>')
       +this.row("Честность гачи",'<button onclick="openFairness()">🔐 открыть</button>')
+      +'<div class="uiSec">Юнит-экономика (демо)</div>'
+      +this.row("День с инсталла","D"+(ue.days||1))
+      +this.row("Выручка",fmtUsd(ue.totalCents||0)+" · IAP "+fmtUsd(ue.revenueIap||0))
+      +this.row("CAC цель",fmtUsd(ue.cac||0)+" · LTV цель "+fmtUsd(ue.ltv||0))
+      +this.row("LTV/CAC","×"+((ue.ltvRatio||0).toFixed(1)))
+      +this.row("Окупаемость",(ue.paybackOk?"✓ до D"+BALANCE.growth.paybackDay:"ещё нет"))
+      +this.row("K-фактор",((ue.k||0).toFixed(2))+" · "+(ue.organic?"органика":"платный"))
+      +this.row("Реклама сегодня",(S.growth&&S.growth.ads?S.growth.ads.count:0)+"/"+BALANCE.growth.ads.dailyCap)
       +this.row("Версия",'<span class="uiSub">ORE DEEP · UI shells</span>')
-      +'<button class="red" style="margin-top:14px;width:100%" onclick="UIS.close();document.getElementById(\'resetBtn\').onclick&&document.getElementById(\'resetBtn\').onclick()">↺ Всё сначала</button>';
+      +'<button class="btn btn-danger" style="margin-top:14px;width:100%" onclick="UIS.close();resetProgress()">↺ Всё сначала</button>';
   },
 
   renderPets(){
@@ -112,21 +162,22 @@ const UIS={
     if(tab==="gacha"){
       body=cur+'<div class="uiGachaStage"><div class="uiGachaEgg">🥚</div></div>'
         +'<div class="uiSub" style="text-align:center;margin:8px 0">Роллов: '+(S.petRolls||0)+' · жалость Горы</div>'
-        +'<button class="gold uiWide" onclick="rollPet()" '+(S.eggs<1?"disabled":"")+'>Приручить · 🥚 1</button>';
+        +'<button class="btn btn-hard btn-wide" onclick="rollPet()" '+(S.eggs<1?"disabled":"")+'>Приручить · 🥚 1</button>';
     } else if(tab==="merge"){
       const keys=Object.keys(S.petBox||{}).filter(k=>S.petBox[k]>0)
         .sort((a,b)=>Number(b.split("_")[1])-Number(a.split("_")[1]));
       body=cur+(keys.length?keys.map(k=>{
         const [t,r]=k.split("_").map(Number), c=S.petBox[k], ok=canMergePet(t,r);
+        const maxed=r>=PET_MERGE_MAX;
         return this.card("🐕",PET_RAR[r]+" · "+PET_TYPES[t].n,"×"+c+' · нужно '+BALANCE.merge.petCost+' для слияния',
-          ok?'<button class="buy uiWide" onclick="mergePet('+t+','+r+');UIS.render(\'pets\')">Слить 3 → '+PET_RAR[r+1]+'</button>'
-            :'<button class="buy uiWide" disabled style="opacity:.45">Слить 3 → '+PET_RAR[Math.min(r+1,PET_MERGE_MAX)]+'</button>');
+          maxed?'<button class="btn btn-soft btn-wide" disabled style="opacity:.4">предел</button>'
+            :'<button class="btn btn-soft btn-wide" onclick="mergePet('+t+','+r+')" '+(ok?"":'disabled style="opacity:.45"')+'>Слить 3 → '+PET_RAR[r+1]+'</button>');
       }).join(""):'<div class="uiEmpty">Коллекция пуста — крути яйца на вкладке Гача.</div>');
     } else if(tab==="craft"){
       const unlocked=petCraftUnlocked();
       body=(unlocked
         ? this.card("⚗","Крафт Exotic","По Legendary каждого семейства + "+BALANCE.petCraft.gems+" 💎",
-            '<button class="gold uiWide" onclick="craftPetExotic()" '+(petCraftReady()?"":"disabled")+'>Крафтнуть</button>')
+            '<button class="btn btn-hard btn-wide" onclick="craftPetExotic()" '+(petCraftReady()?"":"disabled")+'>Крафтнуть</button>')
         : '<div class="uiEmpty">🔒 Крафт откроется после '+BALANCE.petCraft.needLegendaries+' легендарных (есть '+(S.petLegSeen||0)+').</div>');
     } else {
       const slots=PET_TYPES.map((p,i)=>{
@@ -150,11 +201,11 @@ const UIS={
     if(tab==="gacha"){
       body=cur+'<div class="uiGachaStage"><div class="uiGachaEgg">🪮</div></div>'
         +'<div class="uiSub" style="text-align:center;margin:8px 0">Роллов: '+(S.geoRolls||0)+'</div>'
-        +'<button class="gold uiWide" onclick="var b=document.getElementById(\'geoBtn\');if(b&&b.onclick)b.onclick()" '+(S.combs<1?"disabled":"")+'>Нанять · 🪮 1</button>';
+        +'<button class="btn btn-hard btn-wide" onclick="hireGeo();UIS.render(\'beards\')" '+(S.combs<1?"disabled":"")+'>Нанять · 🪮 1</button>';
     } else if(tab==="merge"){
       body=cur+(S.geo
         ? this.card("👷",S.geo.n,"ур. "+(S.geo.lv||1)+" · материал: "+geoMaterials(),
-            '<button class="buy uiWide" onclick="mergeGeo();UIS.render(\'beards\')" '+(geoMaterials()<1?"disabled":"")+'>Поглотить дубликаты</button>')
+            '<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(geoMaterials()<1?"disabled":"")+'>Поглотить дубликаты</button>')
         : '<div class="uiEmpty">Сначала найми бороду на вкладке Гача.</div>');
     } else if(tab==="rank"){
       const w=beardWisdom(), need=beardNextXP(w.lv), have=S.beardXP||0;
@@ -171,13 +222,17 @@ const UIS={
     this.$("uiTitle").textContent="Штольни";
     this.$("uiHeadAct").innerHTML="";
     this.$("uiTabs").innerHTML="";
-    const cur=S.mine||0;
+    const curAbs=S.mine||0;
+    const cur=curAbs%MINES.length;
+    const cycle=Math.floor(curAbs/MINES.length);
     this.$("uiBody").innerHTML=
-      '<div class="uiSub" style="margin-bottom:8px">5 видов штолен — по ресурсу. Пока UI-заглушки.</div>'
+      '<div class="uiSub" style="margin-bottom:8px">Чертоги идут по кругу (5 штолен). Внутри текущего круга можно вернуться в уже пройденные.</div>'
       +'<div class="uiMineList">'+UI_MINES.map(m=>
-        '<button class="uiMineCard '+m.theme+(m.id===cur?" sel":"")+'" onclick="'+(m.on?"switchTab('Mine');UIS.close();":'showToast("⛏","Скоро","","Штольня «'+m.n+'» — в следующем спринте")')+'">'
+        '<button class="btn btn-mine '+m.theme+(m.id===cur?" sel":"")+'" onclick="'+(m.id<=cur
+          ? ('switchMine('+m.id+');UIS.close();')
+          : ('showToast(\"⛏\",\"Закрыто\",\"\",\"Дойди до этого чертога\",\"в текущем круге: '+(cur+1)+'/5\")'))+'">'
         +'<span class="uiMineIc">'+m.ic+'</span><b>'+m.n+'</b><span class="uiSub">'+m.sub+'</span>'
-        +(m.id===cur?'<span class="uiTag on">здесь</span>':(m.on?'':'<span class="uiTag">🔒</span>'))
+        +(m.id===cur?'<span class="uiTag on">здесь</span>':(m.id<=cur?'<span class="uiTag">доступно</span>':'<span class="uiTag">🔒</span>'))
         +'</button>').join("")+'</div>';
   },
 
@@ -189,23 +244,27 @@ const UIS={
     const tr=BALANCE.pvp.thresholds||[0];
     const curReq=tr[li]||0, nextReq=tr[nextLi]||tr[li]||100;
     const pct=li>=BALANCE.pvp.names.length-1?100:Math.min(100,Math.round(((S.trophies||0)-curReq)/Math.max(1,nextReq-curReq)*100));
-    this.$("uiTitle").textContent="PvP · Таверна";
+    const raceSec=BALANCE.pvp.raceSec||180;
+    this.$("uiTitle").textContent="PvP · ИИ-агенты";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🏆 '+fmt(S.trophies||0)+'</span>';
     this.$("uiTabs").innerHTML="";
     const opps=pvpSlate.map((o,i)=>{
       const fav=me>=o.power;
-      return '<div class="uiOpp '+(fav?"fav":"")+'"><div><b>'+o.name+'</b><div class="uiSub">Power '+fmt(o.power)+'</div></div>'
-        +'<button class="buy" onclick="pvpFight('+i+');UIS.render(\'pvp\')" '+(left<1?"disabled":"")+'>⚔</button></div>';
+      const rec=typeof pvpBotRec==="function"?pvpBotRec(o.id):{w:0,l:0};
+      return '<div class="uiOpp '+(fav?"fav":"")+'"><div><b>'+(o.ic||"🤖")+' '+o.name+'</b>'
+        +'<div class="uiSub">'+esc(o.tag||"ИИ")+' · Power '+fmt(o.power)+' · ~'+fmt(pvpMineOrePerSec(o.power))+'/с</div>'
+        +'<div class="uiSub">счёт '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div></div>'
+        +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⛏ '+raceSec+'с</button></div>';
     }).join("");
     this.$("uiBody").innerHTML=
-      '<div class="uiHero compact"><div class="uiHeroArt">🍺</div><b>'+esc(playerName())+'</b>'
-      +'<div class="uiSub">«'+esc(playerName())+'» — таверна игрока</div></div>'
-      +this.card("🏆","Лига: "+BALANCE.pvp.names[li],"боёв сегодня: "+left+"/"+BALANCE.pvpDayLimit,
+      '<div class="uiHero compact"><div class="uiHeroArt">🤖</div><b>'+esc(playerName())+'</b>'
+      +'<div class="uiSub">5 ИИ-агентов · гонка добычи '+raceSec+'с</div></div>'
+      +this.card("🏆","Лига: "+BALANCE.pvp.names[li],"твоя добыча ~"+fmt(pvpMineOrePerSec(me))+"/с · попыток "+left+"/"+BALANCE.pvpDayLimit,
         this.bar(pct,"var(--blue)")+'<div class="uiSub" style="margin-top:4px">до '+BALANCE.pvp.names[nextLi]+': '+fmt(Math.max(0,nextReq-(S.trophies||0)))+' 🏆</div>')
-      +'<div class="uiSec">Выбери соперника</div>'
+      +'<div class="uiSec">Выбери ИИ-соперника</div>'
       +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>')
-      +(left>0?'<button class="uiWide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Сменить претендентов</button>':'')
-      +'<button class="gold uiWide" style="margin-top:8px" onclick="openWall()">🏔 Лидерборд</button>';
+      +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Обновить форму дня</button>':'')
+      +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWall()">🏔 Лидерборд</button>';
   },
 
   renderTavern(){
@@ -220,10 +279,10 @@ const UIS={
     let body='<div class="uiTavExt"><div class="uiTavRoof">🍺</div><div class="uiTavSign">'+esc(playerName())+'</div></div>';
     if(tab==="ale"){
       body+=this.card("🍺","Пассивный эль","+12% энергии за глоток",
-        '<button class="buy uiWide" onclick="sipAle()">Выпить</button><div class="uiSub" style="margin-top:6px">Следующий тост через ~'+Math.ceil(aleNext||20)+' ударов</div>');
+        '<button class="btn btn-soft btn-wide" onclick="sipAle()">Выпить</button><div class="uiSub" style="margin-top:6px">Следующий тост через ~'+Math.ceil(aleNext||20)+' ударов</div>');
     } else if(tab==="feast"){
       body+=this.card("💪","Застолья · тренировки","7 путей · 🍺 "+(S.protein||0),
-        '<button class="gold uiWide" onclick="openWorkouts()">Открыть тренировки</button>');
+        '<button class="btn btn-hard btn-wide" onclick="openWorkouts()">Открыть тренировки</button>');
       body+=this.card("🏋","Gym XP · уважение",fmt(xp)+(nextAt!=null?(" / "+fmt(nextAt)):""),
         this.bar(gymPct)+'<div class="uiSub" style="margin-top:4px">+'+gymPerkPct()+'% ко всем статам</div>');
     } else if(tab==="mates"){
@@ -237,7 +296,7 @@ const UIS={
       const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Код принят','',c,'друг добавится в сетевой версии');}";
       body='<div class="uiSub">Добавить друга по коду</div>'
         +'<div class="uiRow"><input id="uiFriendCode" class="uiInp wide" placeholder="ORE-XXXX" maxlength="12">'
-        +'<button class="buy uiTiny" onclick="'+addFn+'">+</button></div>'
+        +'<button class="btn btn-soft btn-tiny" onclick="'+addFn+'">+</button></div>'
         +'<div class="uiEmpty" style="margin-top:12px">Список собутыльников — в сетевой версии.</div>';
     } else {
       body+='<div class="uiSec">Рейтинг таверн</div>'
@@ -260,7 +319,7 @@ const UIS={
       return;
     }
     const col=UI_ART_COLS.find(c=>c.id===tab)||UI_ART_COLS[0];
-    this.$("uiTabs").innerHTML='<button class="uiTab" onclick="UIS.tab=\'pick\';UIS.render(\'artifacts\')">‹ Коллекции</button>';
+    this.$("uiTabs").innerHTML='<button class="btn btn-tab" onclick="UIS.tab=\'pick\';UIS.render(\'artifacts\')">‹ Коллекции</button>';
     const owned=S.stickers||{};
     const slots=STICKERS.filter(s=>s.n&&s.n.length).slice(0,12).map(s=>{
       const c=owned[s.id]||0;
@@ -269,37 +328,72 @@ const UIS={
     this.$("uiBody").innerHTML=
       '<div class="uiColHead" style="--acc:'+col.c+'"><span>'+col.ic+'</span><b>'+col.n+'</b></div>'
       +this.grid(slots)
-      +'<div class="uiBtnStack"><button class="gold" onclick="buyStickerPack()">Пак · '+STICKER_PACK_GEMS+' 💎</button>'
+      +'<div class="uiBtnStack"><button class="btn btn-hard" onclick="buyStickerPack()">Пак · '+STICKER_PACK_GEMS+' 💎</button>'
       +'<button onclick="giftStickers()">Подарить дубликаты</button></div>';
   },
 
   renderShop(){
-    const tab=this.tab||"free";
-    this.$("uiTitle").textContent="Магазин";
-    this.$("uiHeadAct").innerHTML="";
-    this.$("uiTabs").innerHTML=this.tabs(["free","cur","offers","chests","art"],
-      ["Беспл.","Валюта","Офферы","Сундуки","Артеф."],tab);
+    /* AGENTS 5.13: Офферы · Артефакты · Бочки · Самоцветы · Бесплатные */
+    const tab=this.tab||"offers";
+    this.$("uiTitle").textContent="Рынок";
+    this.$("uiHeadAct").innerHTML='<span class="uiPill">💎 '+fmt(S.gems||0)+'</span>';
+    this.$("uiTabs").innerHTML=this.tabs(["offers","art","barrels","gems","free"],
+      ["Офферы","Артеф.","Бочки","Самоцв.","Беспл."],tab);
     let body="";
-    if(tab==="free"){
-      body=this.grid([
-        this.slot("🎁","Ежедневный подарок","+яйца","", "openDaily()"),
-        this.slot("📺","×2 оффлайн","реклама","", "Platform.showRewarded(function(){})"),
-        this.slot("🎡","Колесо","бесплатно","", "openWheel()")
-      ]);
-    } else if(tab==="cur"){
-      body=BALANCE.shop.gemPacks.map((g,i)=>this.card("💎",g+" кристаллов","IAP-stub",
-        '<button class="gold uiWide" onclick="buyGems('+i+')">$'+[19.99,59.99,199.99][i]+'</button>')).join("");
-    } else if(tab==="offers"){
-      body=BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>this.card("🎁","Пак "+(i+1),"💎"+g+" + 🪙"+fmt(gold),
-        '<button class="gold uiWide" onclick="buyPack('+i+')">$'+[6.99,16.99,24.99][i]+'</button>')).join("")
-        +(S.noAds?"":this.card("🚫","No-Ads","убрать рекламу",
-          '<button class="gold uiWide" onclick="buyNoAds()">$'+BALANCE.noAdsPrice+'</button>'));
-    } else if(tab==="chests"){
-      body=this.card("🎒","Сундук находок","ур. "+(S.bag||1)+" · сумок "+(S.bags||0),
-        '<button class="buy uiWide" onclick="openChest()">Открыть окно сундука</button>');
+    if(tab==="offers"){
+      const sp=BALANCE.growth.starterPack;
+      body=(S.growth&&S.growth.starterBought
+        ? this.card("✓","Стартовый пак","куплен · D1 payback","")
+        : this.card("⚡","Стартовый пак","💎"+sp.gems+" + 🪙"+fmt(sp.gold)+" + 🎒"+sp.bags+" · 2× "+sp.loot2xMin+" мин",
+          '<div class="uiSub" style="margin-bottom:6px">разовый · окупается раньше следующего CPI</div>'
+          +'<button class="btn btn-hard btn-wide" onclick="buyStarterPack()">$'+sp.price+'</button>'))
+      +BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>this.card("🎁","Пак "+(i+1)+" · скидка","💎"+g+" + 🪙"+fmt(gold),
+        '<button class="btn btn-hard btn-wide" onclick="buyPack('+i+')">$'+[6.99,16.99,24.99][i]+'</button>')).join("")
+        +(S.noAds
+          ? this.card("✓","Реклама отключена","No-Ads активен","")
+          : this.card("🚫","Отключить рекламу","навсегда",
+            '<button class="btn btn-hard btn-wide" onclick="buyNoAds()">$'+BALANCE.noAdsPrice+'</button>'));
+    } else if(tab==="art"){
+      body=this.card("💎","Пак артефактов","5 случайных · "+STICKER_PACK_GEMS+" 💎",
+        '<button class="btn btn-hard btn-wide" onclick="buyStickerPack()">Купить пак ×5</button>'
+        +'<button class="btn btn-wide" style="margin-top:6px" onclick="UIS.open(\'artifacts\')">К коллекциям</button>');
+    } else if(tab==="barrels"){
+      body=BALANCE.skillChests.map(ch=>{
+        const ok=ch.keyCost?(S.chestKeys||0)>=ch.keyCost:(S.gems||0)>=ch.gemCost;
+        const price=ch.keyCost?(ch.keyCost+" 🗝"):(ch.gemCost+" 💎");
+        return this.card("🛢",ch.n,ch.cards+" карт · гарантия "+SKILL_RAR[ch.minR]+"+",
+          '<button class="btn '+(ch.keyCost?"btn-soft":"btn-hard")+' btn-wide" onclick="openSkillChest(\''+ch.id+'\');UIS.render(\'shop\')" '
+          +(ok?"":"disabled")+'>'+price+'</button>');
+      }).join("");
+    } else if(tab==="gems"){
+      const packs=BALANCE.shop.gemPacks;
+      const prices=[19.99,59.99,199.99];
+      const baseRate=packs[0]/prices[0];
+      body=packs.map((g,i)=>{
+        const fair=Math.round(prices[i]*baseRate);
+        const bonus=Math.max(0,g-fair);
+        const pct=i===0?0:(i===1?15:30);
+        const sub=i===0
+          ? ("базовый пак · "+g+" 💎")
+          : ("выгода +"+pct+"% · +"+fmt(bonus)+" 💎 к честной цене");
+        return this.card("💎",fmt(g)+" самоцветов",sub,
+          '<div class="uiSub" style="margin-bottom:6px">'+(bonus>0?("абсолютная выгода: +"+fmt(bonus)+" 💎"):"без надбавки")+'</div>'
+          +'<button class="btn btn-hard btn-wide" onclick="buyGems('+i+')">$'+prices[i]+'</button>');
+      }).join("");
     } else {
-      body=this.card("🃏","Паки артефактов","стикеры · коллекции",
-        '<button class="gold uiWide" onclick="UIS.open(\'artifacts\')">К коллекциям</button>');
+      if(typeof shopFreeReset==="function") shopFreeReset();
+      const taken=(S.shopFree&&S.shopFree.taken)||{};
+      const row=(id,title,sub)=>{
+        const freeDone=!!taken[id+"_free"], adDone=!!taken[id+"_ad"];
+        return this.card("🎁",title,sub,
+          '<div class="uiBtnStack">'
+          +'<button class="btn btn-soft" onclick="claimShopFree(\''+id+'\',false)" '+(freeDone?"disabled":"")+'>'+(freeDone?"✓ бесплатно":"Бесплатно")+'</button>'
+          +'<button class="btn btn-hard" onclick="claimShopFree(\''+id+'\',true)" '+(adDone?"disabled":"")+'>'+(adDone?"✓ реклама":"За рекламу")+'</button>'
+          +'</div>');
+      };
+      body='<div class="uiSub" style="margin-bottom:8px">2 предложения · каждое бесплатно + за рекламу · сброс ежедневно</div>'
+        +row("a","Яйцо + расчёска","🥚1 · 🪮1")
+        +row("b","Пиво + сумка","🍺40 · 🎒1");
     }
     this.$("uiBody").innerHTML=body;
   },
@@ -311,29 +405,67 @@ const UIS={
       pvp:this.renderPvp, tavern:this.renderTavern, artifacts:this.renderArtifacts, shop:this.renderShop
     }[id];
     if(fn) fn.call(this);
+  },
+
+  /* Sprint 2: legacy metaModal content → uiScreen panel */
+  openPanel(title, sub, html){
+    this._lastMeta={title, sub, html};
+    this.id="panel";
+    this.tab=null;
+    this.$("uiTitle").textContent=title;
+    this.$("uiHeadAct").innerHTML="";
+    this.$("uiTabs").innerHTML="";
+    this.$("uiBody").innerHTML=(sub?'<div class="uiSub" style="margin-bottom:10px;line-height:1.6">'+sub+'</div>':"")+html;
+    this.show();
+  },
+  refresh(){
+    if(this.id==="panel"&&this._lastMeta){
+      this.openPanel(this._lastMeta.title,this._lastMeta.sub,this._lastMeta.html);
+    } else if(this.id) this.render(this.id);
   }
 };
 
+function modalOpen(){
+  const ui=document.getElementById("uiScreen");
+  if(ui&&ui.style.display==="flex") return true;
+  const m=document.getElementById("metaModal");
+  return !!(m&&m.style.display==="flex");
+}
+function modalBodyHtml(){
+  const ui=document.getElementById("uiScreen");
+  if(ui&&ui.style.display==="flex") return document.getElementById("uiBody")?.innerHTML||"";
+  return document.getElementById("metaBody")?.innerHTML||"";
+}
+function modalTitleText(){
+  const ui=document.getElementById("uiScreen");
+  if(ui&&ui.style.display==="flex") return document.getElementById("uiTitle")?.textContent||"";
+  return document.getElementById("metaTitle")?.textContent||"";
+}
+function closeAllPanels(){
+  UIS.close();
+  const m=document.getElementById("metaModal");
+  if(m) m.style.display="none";
+}
+
 function uiWire(){
-  if($("profChip")) $("profChip").onclick=()=>UIS.open("profile");
-  if($("settingsBtn")) $("settingsBtn").onclick=()=>UIS.open("settings");
-  if($("navPetsBtn")) $("navPetsBtn").onclick=()=>UIS.open("pets","gacha");
+  if($("avatar")) $("avatar").onclick=()=>UIS.open("profile");
+  if($("menu")) $("menu").onclick=()=>UIS.open("settings");
   if($("navTavBtn")) $("navTavBtn").onclick=()=>UIS.open("tavern","ale");
-  if($("navPets")) $("navPets").onclick=()=>UIS.open("pets","gacha");
   if($("navPvp")) $("navPvp").onclick=()=>UIS.open("pvp");
-  if($("navShop")) $("navShop").onclick=()=>UIS.open("shop","free");
-  if($("stickBtn")) $("stickBtn").onclick=()=>{ UIS.tab=null; UIS.open("artifacts"); };
-  if($("gymBtn")) $("gymBtn").onclick=()=>UIS.open("tavern","feast");
+  if($("navShop")) $("navShop").onclick=()=>UIS.open("shop","offers");
+  if($("navSkills")) $("navSkills").onclick=()=>openSkills();
   if($("navMines")) $("navMines").onclick=()=>UIS.open("mines");
   const ml=$("mineLabel");
   if(ml){ ml.style.cursor="pointer"; ml.title="Штольни"; ml.onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); UIS.open("mines"); }; }
+  const sm=$("statMine");
+  if(sm){ sm.style.cursor="pointer"; sm.onclick=()=>UIS.open("mines"); }
 }
 function uiWrap(name){
   const prev=globalThis[name];
   if(typeof prev!=="function") return;
   globalThis[name]=function(){
     const r=prev.apply(this,arguments);
-    if(UIS.id) try{ UIS.render(UIS.id); }catch(e){}
+    if(UIS.id) try{ UIS.refresh(); }catch(e){}
     return r;
   };
 }
@@ -350,9 +482,17 @@ if(typeof switchTab==="function"){
 
 openPets=function(tab){ UIS.open("pets", tab||(UIS.id==="pets"?UIS.tab:null)||"gacha"); };
 openPvp=function(){ UIS.open("pvp"); };
-openShop=function(tab){ UIS.open("shop", tab||(UIS.id==="shop"?UIS.tab:null)||"free"); };
+openShop=function(tab){ UIS.open("shop", tab||(UIS.id==="shop"?UIS.tab:null)||"offers"); };
 openGym=function(){ UIS.open("tavern","feast"); };
 openStickers=function(){ UIS.tab=null; UIS.open("artifacts"); };
 openBeard=function(){ UIS.open("beards","rank"); };
+openProfile=function(){ UIS.open("profile"); Platform.logEvent("profile_view",{}); };
 
-["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","buyGems","buyPack","claimDaily","chestOpenOne","chestUpgrade","chestSkip"].forEach(uiWrap);
+if(typeof metaOpen==="function"){
+  metaOpen=function(title,sub,html){ UIS.openPanel(title,sub,html); };
+}
+
+["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","buyGems","buyPack","claimDaily",
+ "chestOpenOne","chestUpgrade","chestSkip","upSkill","openSkillChest","spinWheel","playEvent","sciAnswer","sciSkip",
+ "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout",
+ "toggleFair","setFairClient","revealFair","setPlayerName","buyStickerPack","giftStickers","sipAle"].forEach(uiWrap);

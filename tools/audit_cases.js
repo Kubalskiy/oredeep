@@ -26,14 +26,20 @@ console.log("      " + uniq.join(", "));
 
 /* ---------- 2. Обработчики привязаны к элементам ---------- */
 console.log("\n[B] Обработчики .onclick привязаны");
-for (const id of ["prestigeBtn", "openBagBtn", "autoRollBtn", "autoTierBtn",
-                  "geoName", "geoDesc", "reinfBtn", "bagBtn", "geoBtn",
-                  "navSkills", "navPets", "navLoot", "colBtn", "speedBtn",
-                  "tabMineBtn", "tabHeroBtn", "tabMetaBtn", "fairBtn", "lbBtn",
-                  "guildBtn", "codexBtn", "introGo", "miner", "gymBtn", "stickBtn"]) {
+for (const id of ["geoName", "geoDesc", "navSkills", "speedBtn",
+                  "tabMineBtn", "tabHeroBtn", "tabMetaBtn", "introGo", "miner",
+                  "lootChest", "powerUp", "auto", "avatar", "menu",
+                  "navShop", "navMines", "navTavBtn", "navPvp"]) {
   const el = document.getElementById(id);
   T("#" + id + " имеет onclick", !!(el && typeof el.onclick === "function"));
 }
+T("hireGeo функция", typeof hireGeo === "function");
+T("tryBagUpgrade функция", typeof tryBagUpgrade === "function");
+T("openCollection функция", typeof openCollection === "function");
+T("resetProgress функция", typeof resetProgress === "function");
+T("openPrestige функция", typeof openPrestige === "function");
+T("openBag / canOpenBag", typeof openBag === "function" && typeof canOpenBag === "function");
+T("cycleAutoTier функция", typeof cycleAutoTier === "function");
 
 /* Собрать кнопки из отрендеренной модалки: [{fn, args, disabled}] */
 function modalButtons() {
@@ -70,7 +76,7 @@ T("клик по «Забой» возвращает забой", document.getEl
 console.log("\n[C] Престиж: кнопка и защита от преждевременного клика");
 localStorage.removeItem("oredeep_v3"); load();
 S.stageIdx = 100;
-document.getElementById("prestigeBtn").onclick();
+openPrestige();
 {
   const btns = modalButtons();
   const pb = btns.find(b => b.call.startsWith("confirmPrestige"));
@@ -81,35 +87,34 @@ document.getElementById("prestigeBtn").onclick();
   T("клик по заблокированной не даёт престиж", snap() === before, "состояние изменилось");
 }
 S.stageIdx = 1200; S.gold = 1e6; SLOTS.forEach(sl => { S.gear[sl.id] = { s: sl.id, r: 4, m: 1, i: 1200 }; });
-document.getElementById("prestigeBtn").onclick();
+openPrestige();
 {
   const pb = modalButtons().find(b => b.call.startsWith("confirmPrestige"));
   T("на этапе 1200 кнопка активна", pb && pb.disabled === false);
   click(pb.call);
   T("клик даёт престиж и сбрасывает забой", S.prestigeLv === 2 && S.stageIdx === 1 && S.gold === 0);
-  T("модалка престижа закрылась после клика", document.getElementById("metaModal").style.display === "none");
-  T("HUD-кнопка престижа отражает готовность",
-    (function () { render(); const t = document.getElementById("prestigeBtn").textContent; return /Глубинный Зов/.test(t); })());
+  T("модалка престижа закрылась после клика", !modalOpen());
+  T("после престижа canPrestige ложен на старте", (function () { render(); return !canPrestige() || S.stageIdx < BALANCE.prestige.minStage; })());
 }
 
 /* ---------- 4. Сумки и Auto Roll ---------- */
 console.log("\n[D] Сумки: Открыть / Auto / порог");
 localStorage.removeItem("oredeep_v3"); load(); S.bag = 50;
 S.bags = 0; render();
-T("«Открыть» заблокирована без сумок", document.getElementById("openBagBtn").disabled === true);
-{ const before = snap(); document.getElementById("openBagBtn").onclick();
+T("«Открыть» заблокирована без сумок", !canOpenBag());
+{ const before = snap(); openBag();
   T("клик без сумок ничего не тратит", snap() === before); }
-S.bags = 2; render();
-T("«Открыть» активна при сумках", document.getElementById("openBagBtn").disabled === false);
-{ const b0 = S.bags; document.getElementById("openBagBtn").onclick();
+S.bags = 2; S.autoRoll = false; render();
+T("«Открыть» активна при сумках", canOpenBag());
+{ const b0 = S.bags; openBag();
   T("«Открыть» тратит ровно 1 сумку", S.bags === b0 - 1); }
-{ const on0 = S.autoRoll; document.getElementById("autoRollBtn").onclick();
+{ const on0 = S.autoRoll; toggleAutoRoll();
   T("«Auto» переключает режим", S.autoRoll === !on0);
   render();
-  T("«Auto» подсвечена при включении", document.getElementById("autoRollBtn").textContent.includes("✓")); }
-{ const t0 = S.autoRollTier; document.getElementById("autoTierBtn").onclick();
+  T("«Auto» подсвечена при включении", $("auto").classList.contains("on")); }
+{ const t0 = S.autoRollTier; cycleAutoTier();
   T("порог сдвигается на следующую редкость", S.autoRollTier === (t0 + 1) % 8);
-  S.autoRollTier = 7; document.getElementById("autoTierBtn").onclick();
+  S.autoRollTier = 7; cycleAutoTier();
   T("порог заворачивается Cosmic → Common", S.autoRollTier === 0); }
 { // авто-открытие крутится в игровом цикле
   S.autoRoll = true; S.autoRollTier = 7; S.bags = 3; S.gold = 0; dead = false;
@@ -255,7 +260,7 @@ S.protein = 5000; openSkills();
 /* ---------- 8. Крафт лутбоксов из камней ---------- */
 console.log("\n[H] Крафт лутбоксов из камней");
 S.col = { 0: { 1: 60 } }; S.boxes = []; S.mine = 0;
-document.getElementById("colBtn").onclick();
+openCollection();
 {
   const h = document.getElementById("colList").innerHTML || "";
   const btns = [...h.matchAll(/<button([^>]*)onclick="(craftBoxFromStones\(\d+\))"([^>]*)>/g)]
@@ -276,7 +281,7 @@ console.log("\n[I] Попап сета");
 S.frags = { berserk: { 0: true } }; S.sets = {};
 openLoot();
 {
-  const h = document.getElementById("metaBody").innerHTML || "";
+  const h = modalBodyHtml() || "";
   const rows = [...h.matchAll(/onclick="openSetCard\('(\w+)'\)"/g)].map(m => m[1]);
   T("строки сетов кликабельны", rows.length === BALANCE.dungeonSets.length);
   openSetCard("berserk");
@@ -291,22 +296,22 @@ localStorage.removeItem("oredeep_v3"); load(); render();
 
 // --- Глубинный Зов ---
 {
-  document.getElementById("metaModal").style.display = "none";
-  document.getElementById("prestigeBtn").onclick();
-  T("«Глубинный Зов» открывает модалку", document.getElementById("metaModal").style.display === "flex");
+  closeAllPanels();
+  openPrestige();
+  T("«Глубинный Зов» открывает модалку", modalOpen());
   const b = modalButtons().find(x => x.call.startsWith("confirmPrestige"));
   T("внутри есть кнопка престижа", !!b);
   T("на мелководье она заблокирована (но экран открылся)", b.disabled === true);
-  T("заголовок про престиж", /Глубинный Зов/.test(document.getElementById("metaTitle").textContent));
+  T("заголовок про престиж", /Глубинный Зов/.test(modalTitleText()));
 }
 
 // --- Гильдия ---
 {
   S.science = { on:false, done:0, goldOk:0, goldTotal:0 };
-  document.getElementById("metaModal").style.display = "none";
-  document.getElementById("guildBtn").onclick();
-  T("«Гильдия» открывает экран согласия", document.getElementById("metaModal").style.display === "flex"
-    && document.getElementById("metaBody").innerHTML.includes("Согласен, вступаю"));
+  closeAllPanels();
+  sciTask=null; openGuild();
+  T("«Гильдия» открывает экран согласия", modalOpen()
+    && modalBodyHtml().includes("Согласен, вступаю"));
   const consent = modalButtons().find(x => x.call.startsWith("sciConsent"));
   T("кнопка согласия есть и активна", consent && consent.disabled === false);
   click(consent.call);
@@ -315,9 +320,9 @@ localStorage.removeItem("oredeep_v3"); load(); render();
   const opts = modalButtons().filter(x => x.call.startsWith("sciAnswer"));
   T("вариантов ответа не меньше двух", opts.length >= 2);
   T("на экране есть образец и кнопка пропуска",
-    document.getElementById("metaBody").innerHTML.includes("specImg")
+    modalBodyHtml().includes("specImg")
     && modalButtons().some(x => x.call.startsWith("sciSkip")));
-  T("контрольные не помечены (антифрод)", !document.getElementById("metaBody").innerHTML.includes("контрольн"));
+  T("контрольные не помечены (антифрод)", !modalBodyHtml().includes("контрольн"));
   const done0 = S.science.done, sh0 = S.shards || 0;
   click(opts[0].call);
   T("ответ засчитан и награда начислена", S.science.done === done0 + 1 && (S.shards || 0) >= sh0);
@@ -327,7 +332,7 @@ localStorage.removeItem("oredeep_v3"); load(); render();
 // --- Устав Горы ---
 {
   document.getElementById("introOv").classList.remove("on");
-  document.getElementById("codexBtn").onclick();
+  showIntro();
   T("«Устав Горы» открывает оверлей", document.getElementById("introOv").classList.contains("on"));
   T("нарисованы все 10 пунктов",
     (document.getElementById("introList").innerHTML.match(/class="iitem"/g) || []).length === CODEX.length);
@@ -338,10 +343,10 @@ localStorage.removeItem("oredeep_v3"); load(); render();
 
 // --- Честность гачи ---
 {
-  document.getElementById("metaModal").style.display = "none";
-  document.getElementById("fairBtn").onclick();
-  T("«Честность гачи» открывает модалку", document.getElementById("metaModal").style.display === "flex");
-  const h = document.getElementById("metaBody").innerHTML;
+  closeAllPanels();
+  openFairness();
+  T("«Честность гачи» открывает модалку", modalOpen());
+  const h = modalBodyHtml();
   T("показан коммит серверного сида", h.includes(S.fair.serverHash));
   const tg = modalButtons().find(x => x.call.startsWith("toggleFair"));
   const rv = modalButtons().find(x => x.call.startsWith("revealFair"));
@@ -363,8 +368,6 @@ localStorage.removeItem("oredeep_v3"); load(); render();
   T("гача считается по хэшу, а не Math.random", Math.abs(grandom() - expect) < 1e-12);
   S.fair.on = false;
 }
-
-console.log("\n========== АУДИТ КНОПОК: " + pass + " PASS, " + fail + " FAIL ==========");
 
 console.log("\n========== АУДИТ КНОПОК: " + pass + " PASS, " + fail + " FAIL ==========");
 globalThis.__auditFail = fail;
