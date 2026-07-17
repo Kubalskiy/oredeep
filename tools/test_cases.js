@@ -92,8 +92,15 @@ console.log("\n[7] Сохранение/загрузка");
 S.gold=12345; S.bag=7; save();
 S.gold=0; S.bag=1; load();
 T("состояние восстановлено", S.gold===12345 && S.bag===7);
-localStorage.removeItem("oredeep_v3"); load();
+T("есть резервная копия", !!localStorage.getItem("oredeep_v3_bak"));
+localStorage.removeItem("oredeep_v3"); localStorage.removeItem("oredeep_v3_bak"); load();
 T("чистый старт при отсутствии сейва", S.gold===0 && S.stageIdx===1);
+S.gold=777; S.bag=3; save();
+localStorage.setItem("oredeep_v3", "{битый");
+load();
+T("битый primary → восстановление из bak", S.gold===777 && S.bag===3);
+T("flushSave пишет сейв", (function(){ S.gold=42; flushSave(); return localStorage.getItem("oredeep_v3").includes("42"); })());
+T("bindSaveLifecycle не падает", (function(){ try{ bindSaveLifecycle(); return true; }catch(e){ return false; } })());
 
 
 console.log("\n[8] Оплата и применение всех покупок");
@@ -666,12 +673,21 @@ renderPaperdoll();
 console.log("\n[35] Интро «Устав Горы»");
 localStorage.removeItem("oredeep_v3"); load();
 T("новый игрок интро ещё не видел", S.introSeen===false);
-showIntro();
-T("интро открывается и рисует все 10 пунктов",
-  __ids.introOv.classList.contains("on") && (__ids.introList.innerHTML.match(/class="iitem"/g)||[]).length===CODEX.length);
+maybeAutoIntro();
+T("автопоказ на первом старте", __ids.introOv.classList.contains("on"));
 closeIntro();
 T("после прочтения интро закрыто и помечено", !__ids.introOv.classList.contains("on") && S.introSeen===true);
+{ const ov=$("introOv"); if(ov&&ov.classList) ov.classList.remove("on");
+  maybeAutoIntro();
+  T("повторный вход не показывает Устав", !__ids.introOv.classList.contains("on") && S.introSeen===true); }
 T("старым сейвам интро не показываем", (function(){ const d={}; ensureIntro(d); return d.introSeen===true; })());
+{ showIntro();
+  T("ручное «читать» открывает Устав", __ids.introOv.classList.contains("on") && (__ids.introList.innerHTML.match(/class="iitem"/g)||[]).length===CODEX.length);
+  closeIntro(); }
+{ resetProgress();
+  T("сброс прогресса снова требует Устав", S.introSeen===false && __ids.introOv.classList.contains("on"));
+  closeIntro();
+  T("после сброса и прочтения снова помечено", S.introSeen===true && !__ids.introOv.classList.contains("on")); }
 
 console.log("\n[36] Гильдия Рудознатцев (краудсорсинг)");
 localStorage.removeItem("oredeep_v3"); load();
@@ -776,6 +792,7 @@ T("крепь зажата в [0,100]", S.durab>=0 && S.durab<=MINE_DURAB.max);
 T("скорость приведена к допустимой", SPEEDS.includes(S.speed));
 T("мусор в уровнях апгрейдов обнулён", S.lvls.atk===0 && S.lvls.crit===0);
 localStorage.setItem("oredeep_v3", "не json вовсе");
+localStorage.removeItem("oredeep_v3_bak");
 { let ok=true; try{ load(); }catch(e){ ok=false; } T("не-JSON сейв не роняет load()", ok && S.gold===0); }
 localStorage.removeItem("oredeep_v3"); load();
 // энергия не уходит в минус
@@ -993,7 +1010,10 @@ T("FTUE-подсказка в DOM", !!document.getElementById("ftueTip"));
 { S.ftue={u:1,b:1,c:1,t:1,m:1,g:0}; S.stageIdx=10; S.introSeen=true; render();
   const tip=$("ftueTip");
   T("подсказка Друзья показывается", tip && tip.style.display==="block" && tip._ftueStep==="g");
-  if(tip&&tip.onclick) tip.onclick({stopPropagation(){}});
+  const html0=tip.innerHTML; render(); render();
+  T("подсказка не переписывает DOM каждый кадр", tip.innerHTML===html0);
+  if(tip&&tip.onclick) tip.onclick({stopPropagation(){}, preventDefault(){}});
+  render();
   T("клик по подсказке скрывает её", tip.style.display==="none" && S.ftue.g===1);
 }
 

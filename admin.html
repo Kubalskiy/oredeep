@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORE DEEP · Админка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0b07; --panel:#1c150c; --panel2:#241a10; --line:#3a2c1b;
+  --gold:#f2d488; --gold2:#c9974a; --text:#f0e6d0; --muted:#a89a7c;
+  --ok:#6ea862; --bad:#d4674a; --gem:#c85a6a; --accent:#7a6ec0;
+  --font-d:"VT323",monospace; --font-b:"Space Grotesk",sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;min-height:100%;background:
+  radial-gradient(1200px 600px at 10% -10%,#2a1c0c55,transparent),
+  radial-gradient(900px 500px at 100% 0%,#1a243555,transparent),
+  var(--bg); color:var(--text); font-family:var(--font-b);}
+a{color:var(--gold);}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 48px;}
+h1{font-family:var(--font-d);font-size:42px;letter-spacing:2px;color:var(--gold);margin:0 0 4px;}
+.sub{color:var(--muted);font-size:13px;margin-bottom:18px;}
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--line);
+  border-radius:999px;font-size:12px;color:var(--muted);background:#0004;}
+.badge.on{color:var(--ok);border-color:#3d5a36;}
+.badge.off{color:var(--bad);border-color:#5a3630;}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0;}
+.tabs button{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--text);
+  padding:8px 12px;border-radius:10px;cursor:pointer;font:600 13px var(--font-b);}
+.tabs button.active{background:linear-gradient(180deg,#3a2a16,#24180e);border-color:var(--gold2);color:var(--gold);}
+.panel{display:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;}
+.panel.on{display:block;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;}
+.card .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.card .v{font-family:var(--font-d);font-size:28px;color:var(--gold);margin-top:4px;word-break:break-all;}
+.card .h{font-size:11px;color:var(--muted);margin-top:4px;}
+.form{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);}
+input,textarea,select{width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);
+  background:#120e09;color:var(--text);font:14px var(--font-b);}
+textarea{min-height:280px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center;}
+button.btn{appearance:none;border:1px solid var(--gold2);background:linear-gradient(180deg,#4a3418,#2a1c0c);
+  color:var(--gold);padding:9px 14px;border-radius:10px;cursor:pointer;font:700 13px var(--font-b);}
+button.btn.soft{border-color:var(--line);background:var(--panel2);color:var(--text);}
+button.btn.bad{border-color:#7a3a2e;background:linear-gradient(180deg,#5a2a22,#2a1410);color:#f0b0a0;}
+button.btn:disabled{opacity:.45;cursor:not-allowed;}
+.sec{margin:16px 0 8px;font-family:var(--font-d);font-size:22px;color:var(--gold);}
+.msg{min-height:18px;font-size:12px;color:var(--ok);margin-top:8px;}
+.msg.err{color:var(--bad);}
+.ev{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#0a0806;}
+.ev div{padding:8px 10px;border-bottom:1px solid #1a1510;font-size:12px;display:grid;
+  grid-template-columns:88px 1fr;gap:8px;}
+.ev time{color:var(--muted);font-variant-numeric:tabular-nums;}
+.ev b{color:var(--gold);font-weight:600;}
+.ev code{color:var(--muted);word-break:break-all;}
+.login{max-width:380px;margin:12vh auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;padding:24px;}
+.login h1{font-size:36px;}
+.hint{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px;}
+.preset{display:flex;flex-wrap:wrap;gap:6px;}
+.barrow{display:grid;grid-template-columns:minmax(100px,160px) 1fr 44px;gap:8px;align-items:center;margin:5px 0;font-size:12px;}
+.barrow .lab{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar{height:11px;background:#120e09;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:6px;}
+.bar.ad>i{background:linear-gradient(90deg,#5a3a6e,var(--accent));}
+.bar.money>i{background:linear-gradient(90deg,#3d5a36,var(--ok));}
+.rec{background:#1a120c;border-left:3px solid var(--gold2);padding:10px 12px;margin:8px 0;border-radius:0 10px 10px 0;font-size:13px;line-height:1.45;}
+.rec b{color:var(--gold);}
+.table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.table th,.table td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;}
+.table th{color:var(--muted);font-weight:600;}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-size:11px;color:var(--muted);}
+.pill.ok{color:var(--ok);border-color:#3d5a36;}
+.pill.warn{color:#e0b060;border-color:#5a4a20;}
+.pill.bad{color:var(--bad);border-color:#5a3630;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="login" id="gate">
+    <h1>АДМИНКА</h1>
+    <div class="sub">ORE DEEP · локальная панель управления</div>
+    <label>PIN<input id="pin" type="password" placeholder="deep" autocomplete="off"></label>
+    <div class="row"><button class="btn" id="enterBtn">Войти</button>
+      <a href="index.html">← к игре</a></div>
+    <p class="hint">По умолчанию PIN: <b>deep</b>. Данные берутся из localStorage этой же вкладки/домена.
+      Открой игру в соседней вкладке — правки применятся вживую через BroadcastChannel.</p>
+    <p class="msg err" id="gateMsg"></p>
+  </div>
+
+  <div id="desk" style="display:none">
+    <div class="top">
+      <div>
+        <h1>АДМИНКА</h1>
+        <div class="sub">выручка · экраны · клики · реклама · сейв · читы</div>
+      </div>
+      <div class="row">
+        <span class="badge" id="liveBadge">игра: …</span>
+        <button class="btn soft" id="refreshBtn">↻ обновить</button>
+        <a class="btn soft" href="index.html" style="text-decoration:none">← игра</a>
+        <button class="btn soft" id="logoutBtn">выйти</button>
+      </div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button data-tab="an" class="active">Аналитика</button>
+      <button data-tab="dash">Игрок</button>
+      <button data-tab="res">Ресурсы</button>
+      <button data-tab="prog">Прогресс</button>
+      <button data-tab="econ">Экономика</button>
+      <button data-tab="save">Сейв</button>
+      <button data-tab="ev">Лог</button>
+      <button data-tab="cheats">Читы</button>
+    </div>
+
+    <section class="panel on" id="tab-an">
+      <div class="grid" id="anMoney"></div>
+      <div class="sec">Куда смотрят (экраны / вкладки)</div>
+      <div id="anScreens"></div>
+      <div class="sec">Что жмут (кнопки)</div>
+      <div id="anClicks"></div>
+      <div class="sec">Реклама по слотам</div>
+      <div id="anAds"></div>
+      <div class="sec">Где лучше встраивать рекламу</div>
+      <div id="anRecs"></div>
+      <div class="sec">Топ игровых событий</div>
+      <div id="anEvents"></div>
+      <div class="row">
+        <button class="btn soft" id="anRefresh">↻ обновить</button>
+        <button class="btn soft" id="anExport">Экспорт JSON</button>
+        <button class="btn bad" id="anClear">Сбросить аналитику</button>
+        <span class="hint" style="margin:0" id="anSince"></span>
+      </div>
+      <p class="msg" id="anMsg"></p>
+    </section>
+
+    <section class="panel" id="tab-dash">
+      <div class="grid" id="dashCards"></div>
+      <p class="msg" id="dashMsg"></p>
+    </section>
+
+    <section class="panel" id="tab-res">
+      <div class="sec">Валюты и расходники</div>
+      <div class="form" id="resForm"></div>
+      <div class="row">
+        <button class="btn" id="resApply">Применить</button>
+        <button class="btn soft" id="resSaveOnly">Только в сейв</button>
+      </div>
+      <p class="msg" id="resMsg"></p>
+    </section>
+
+    <section class="panel" id="tab-prog">
+      <div class="sec">Глубина, сундук, престиж, уровни</div>
+      <div class="form" id="progForm"></div>
+      <div class="sec">Уровни апгрейдов (lvls)</div>
+      <div class="form" id="lvlForm"></div>
+      <div class="row"><button class="btn" id="progApply">Применить</button></div>
+      <p class="msg" id="progMsg"></p>
+    </section>
+
+    <section class="panel" id="tab-econ">
+      <div class="grid" id="econCards"></div>
+      <div class="sec">Growth (сырой)</div>
+      <pre class="card" id="growthPre" style="overflow:auto;white-space:pre-wrap;font-size:12px;color:var(--muted)"></pre>
+    </section>
+
+    <section class="panel" id="tab-save">
+      <div class="row">
+        <button class="btn soft" id="saveReload">Загрузить из LS</button>
+        <button class="btn" id="saveWrite">Записать в LS</button>
+        <button class="btn soft" id="savePretty">Форматировать</button>
+        <button class="btn bad" id="saveWipe">Стереть сейв</button>
+        <button class="btn soft" id="saveExport">Экспорт .json</button>
+        <label class="btn soft" style="display:inline-flex;align-items:center;cursor:pointer">Импорт
+          <input type="file" id="saveImport" accept="application/json,.json" style="display:none">
+        </label>
+      </div>
+      <textarea id="saveEditor" spellcheck="false"></textarea>
+      <p class="msg" id="saveMsg"></p>
+    </section>
+
+    <section class="panel" id="tab-ev">
+      <div class="row">
+        <button class="btn soft" id="evRefresh">↻</button>
+        <button class="btn soft" id="evClear">Очистить лог</button>
+        <span class="hint" style="margin:0">Пишется из игры через Platform.logEvent</span>
+      </div>
+      <div class="ev" id="evList"></div>
+    </section>
+
+    <section class="panel" id="tab-cheats">
+      <div class="sec">Пресеты</div>
+      <div class="preset">
+        <button class="btn soft" data-cheat="starter">Старт+</button>
+        <button class="btn soft" data-cheat="mid">Середина</button>
+        <button class="btn soft" data-cheat="late">Лейт</button>
+        <button class="btn soft" data-cheat="rich">Богач</button>
+        <button class="btn soft" data-cheat="prestige">Престиж готов</button>
+        <button class="btn soft" data-cheat="ftue">Сбросить FTUE/интро</button>
+        <button class="btn soft" data-cheat="skipftue">Пропустить FTUE</button>
+      </div>
+      <div class="sec">Опасная зона</div>
+      <div class="row">
+        <button class="btn bad" id="cheatReset">Полный сброс прогресса</button>
+      </div>
+      <p class="msg" id="cheatMsg"></p>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  const SAVE_KEY="oredeep_v3";
+  const SAVE_BAK="oredeep_v3_bak";
+  const EV_KEY="oredeep_admin_events";
+  const STAT_KEY="oredeep_admin_stats";
+  const PIN_KEY="oredeep_admin_ok";
+  const DEFAULT_PIN="deep";
+  const CH_NAME="oredeep-admin";
+  const AD_SLOT_HINT={
+    bag_skip:{title:"Пропуск апгрейда сундука", where:"таймер улучшения сундука", fit:"высокий — игрок уже ждёт и хочет ускорить"},
+    loot2x:{title:"×2 добыча", where:"кнопка буста на забое", fit:"высокий — добровольный буст, низкий churn"},
+    offline_x2:{title:"Офлайн ×2", where:"экран возврата после паузы", fit:"очень высокий — момент радости, платят вниманием"},
+    shop_free:{title:"Бесплатный оффер в магазине", where:"Рынок → бесплатные предложения", fit:"средний — привычный rewarded-паттерн"},
+    speed:{title:"Ускорение боя ×2/×3/…", where:"кнопка скорости", fit:"средний — часто жмут, но раздражает если каждый раз"},
+    unknown:{title:"Без метки", where:"не размечено", fit:"добавь slot в showRewarded"}
+  };
+
+  const RES_FIELDS=[
+    ["gold","Золото"],["gems","Самоцветы"],["bags","Сундуки"],["eggs","Яйца"],
+    ["combs","Расчёски"],["keys","Ключи ивентов"],["chestKeys","Ключи ларей"],
+    ["protein","Эль/провизия"],["shards","Осколки"],["trophies","Трофеи"]
+  ];
+  const PROG_FIELDS=[
+    ["stageIdx","Глубина (stageIdx)"],["stage","Этап"],["mine","Штольня"],
+    ["bag","Уровень сундука"],["prestigeLv","Престиж ур."],["prestigeRuns","Престиж прогонов"],
+    ["echo","Эхо"],["energy","Энергия"],["durab","Крепь"],["beard","Борода ранг"],
+    ["beardXP","Борода XP"],["bestDepth","Рекорд глубины"],["speed","Скорость"],
+    ["playerName","Ник"],["autoRollTier","Auto порог редкости"]
+  ];
+  const LVL_IDS=["atk","energy","spd","tough","crit","luck","mining","stone"];
+  const BOOL_FIELDS=[["introSeen","Интро пройдено"],["noAds","Без рекламы"],["autoRoll","Auto Roll"]];
+
+  let ch=null, live=false, draft=null;
+
+  function $(id){ return document.getElementById(id); }
+  function fmt(n){
+    n=+n; if(!isFinite(n)) return "—";
+    if(Math.abs(n)<1000) return String(Math.floor(n));
+    const u=["","K","M","B","T"]; let i=0;
+    while(Math.abs(n)>=1000 && i<u.length-1){ n/=1000; i++; }
+    return n.toFixed(2)+u[i];
+  }
+  function fmtUsd(c){ return "$"+((+c||0)/100).toFixed(2); }
+  function readSave(){
+    try{
+      let raw=localStorage.getItem(SAVE_KEY);
+      if(!raw) raw=localStorage.getItem(SAVE_BAK);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){ return null; }
+  }
+  function writeSave(obj){
+    const raw=JSON.stringify(obj);
+    localStorage.setItem(SAVE_KEY, raw);
+    try{ localStorage.setItem(SAVE_BAK, raw); }catch(e){}
+  }
+  function setMsg(id, text, err){
+    const el=$(id); if(!el) return;
+    el.textContent=text||"";
+    el.className="msg"+(err?" err":"");
+  }
+  function unlocked(){ return localStorage.getItem(PIN_KEY)==="1"; }
+
+  function openDesk(){
+    $("gate").style.display="none";
+    $("desk").style.display="block";
+    buildForms();
+    refreshAll();
+    connectLive();
+  }
+
+  $("enterBtn").onclick=()=>{
+    const pin=($("pin").value||"").trim()||DEFAULT_PIN;
+    if(pin!==DEFAULT_PIN && pin!==localStorage.getItem("oredeep_admin_pin")){
+      setMsg("gateMsg","Неверный PIN", true); return;
+    }
+    localStorage.setItem(PIN_KEY,"1");
+    openDesk();
+  };
+  $("pin").addEventListener("keydown",e=>{ if(e.key==="Enter") $("enterBtn").click(); });
+  $("logoutBtn").onclick=()=>{ localStorage.removeItem(PIN_KEY); location.reload(); };
+  if(unlocked()) openDesk();
+
+  document.querySelectorAll("#tabs button").forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
+      btn.classList.add("active");
+      $("tab-"+btn.dataset.tab).classList.add("on");
+      if(btn.dataset.tab==="ev") renderEvents();
+      if(btn.dataset.tab==="econ") renderEcon();
+      if(btn.dataset.tab==="an") renderAnalytics();
+    };
+  });
+
+  function readStats(){
+    try{
+      const raw=localStorage.getItem(STAT_KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){ return null; }
+  }
+  function topN(map, n){
+    return Object.keys(map||{}).map(k=>({k, n:map[k]|0}))
+      .sort((a,b)=>b.n-a.n).slice(0, n||12);
+  }
+  function barsHtml(rows, cls){
+    if(!rows.length) return "<p class='hint'>Пока нет данных — поиграй в соседней вкладке.</p>";
+    const max=Math.max(1, rows[0].n);
+    return rows.map(r=>{
+      const pct=Math.round(100*r.n/max);
+      return `<div class="barrow"><span class="lab" title="${r.k}">${r.k}</span>
+        <div class="bar ${cls||""}"><i style="width:${pct}%"></i></div>
+        <span>${r.n}</span></div>`;
+    }).join("");
+  }
+  function renderAnalytics(){
+    const st=readStats();
+    const s=readSave();
+    const ue=unitFromSave(s);
+    const days=Math.max(1, ue.days||1);
+    const adRev=ue.adRev||0;
+    const iap=ue.revenueIap||0;
+    const total=ue.totalCents||((st&&st.revenue&&st.revenue.totalCents)||0);
+    const ads=st&&st.ads||{offer:0,complete:0,fail:0,blocked:0,bySlot:{}};
+    const fill=ads.offer?Math.round(100*ads.complete/ads.offer):0;
+    const arpuDay=total/days;
+
+    $("anMoney").innerHTML=[
+      ["Выручка игрока", fmtUsd(total), "IAP "+fmtUsd(iap)+" · ads "+fmtUsd(adRev)],
+      ["ARPU / день", fmtUsd(arpuDay), "за "+days+" дн. с инсталла"],
+      ["Реклама сегодня", (s&&s.growth&&s.growth.ads?s.growth.ads.count:0)+"/"+(12), "lifetime "+(s&&s.growth?s.growth.adViewsLifetime||0:0)],
+      ["Ad fill", fill+"%", "offer "+(ads.offer|0)+" · ok "+(ads.complete|0)+" · fail "+(ads.fail|0)],
+      ["Событий", String(Object.values(st&&st.events||{}).reduce((a,b)=>a+(b|0),0)), "уник. "+Object.keys(st&&st.events||{}).length],
+      ["Кликов UI", String(Object.values(st&&st.clicks||{}).reduce((a,b)=>a+(b|0),0)), "экранов "+Object.keys(st&&st.screens||{}).length]
+    ].map(([k,v,h])=>`<div class="card"><div class="k">${k}</div><div class="v">${v}</div><div class="h">${h}</div></div>`).join("");
+
+    $("anScreens").innerHTML=barsHtml(topN(st&&st.screens, 15));
+    const clicks=topN(st&&st.clicks, 20).filter(r=>r.k!=="ftueTip");
+    $("anClicks").innerHTML=barsHtml(clicks);
+
+    /* Ad slots table */
+    const slotBase={};
+    Object.keys(ads.bySlot||{}).forEach(k=>{
+      const base=k.replace(/_ok$/,"");
+      if(!slotBase[base]) slotBase[base]={offer:0,ok:0};
+      if(/_ok$/.test(k)) slotBase[base].ok+=ads.bySlot[k]|0;
+      else slotBase[base].offer+=ads.bySlot[k]|0;
+    });
+    const slotRows=Object.keys(slotBase).sort((a,b)=>(slotBase[b].offer)-(slotBase[a].offer));
+    if(!slotRows.length){
+      $("anAds").innerHTML="<p class='hint'>Пока не было ad_offer — посмотри rewarded (скорость, офлайн ×2, skip сумки, магазин).</p>";
+    } else {
+      $("anAds").innerHTML=`<table class="table"><tr><th>Слот</th><th>Показы</th><th>OK</th><th>Fill</th><th>Оценка</th></tr>`
+        +slotRows.map(id=>{
+          const o=slotBase[id];
+          const f=o.offer?Math.round(100*o.ok/o.offer):0;
+          const hint=AD_SLOT_HINT[id]||AD_SLOT_HINT.unknown;
+          const pill=f>=70?"ok":(f>=40?"warn":"bad");
+          return `<tr><td><b>${hint.title}</b><br><span class="hint">${id}</span></td>
+            <td>${o.offer}</td><td>${o.ok}</td><td>${f}%</td>
+            <td><span class="pill ${pill}">${hint.fit}</span></td></tr>`;
+        }).join("")+"</table>";
+    }
+
+    /* Recommendations */
+    const recs=[];
+    const topScreens=topN(st&&st.screens, 5);
+    const topClicks=topN(st&&st.clicks, 8);
+    if(topScreens[0]) recs.push(`Самый частый экран: <b>${topScreens[0].k}</b> (${topScreens[0].n}). Баннер/interstitial здесь даст охват, но rewarded лучше на добровольных бустах.`);
+    if(topClicks[0]) recs.push(`Самая частая кнопка: <b>${topClicks[0].k}</b> (${topClicks[0].n}). Не ставь rewarded на каждый тап — только на ценность (×2, skip, офлайн).`);
+    const offlineN=(st&&st.events&&st.events.offline_return)|0;
+    const chestN=(st&&st.events&&(st.events.chest_view||st.events.chest_open))|0;
+    const bagSkip=(slotBase.bag_skip&&slotBase.bag_skip.offer)|0;
+    const loot2x=(slotBase.loot2x&&slotBase.loot2x.offer)|0;
+    const offAd=(slotBase.offline_x2&&slotBase.offline_x2.offer)|0;
+    if(offlineN>offAd*2) recs.push(`Офлайн-возвратов <b>${offlineN}</b>, а ad offline_x2 всего <b>${offAd}</b> — усиль CTA «забрать ×2 за рекламу» (сейчас лучший слот по LTV).`);
+    if(chestN>20 && bagSkip<3) recs.push(`Сундук смотрят часто (${chestN}), skip по рекламе редкий (${bagSkip}) — покажи skip-ads ярче на таймере апгрейда.`);
+    if(loot2x<5 && ((st&&st.events&&st.events.bag_open)|0)>10) recs.push(`Много открытий сундуков, мало ×2 добычи — вынеси loot2x ближе к забою после победы.`);
+    if(fill<50 && ads.offer>5) recs.push(`Низкий fill ${fill}% — игроки отменяют рекламу или stub/cap. Проверь dailyCap и noAds.`);
+    if(iap===0 && adRev>0) recs.push(`Пока только ads (${fmtUsd(adRev)}). Для IAP усили стартер-пак на экранах: магазин, офлайн, престиж.`);
+    if(!recs.length) recs.push("Мало данных. Поиграй 5–10 минут с открытой игрой, затем обнови эту вкладку.");
+    $("anRecs").innerHTML=recs.map(t=>`<div class="rec">${t}</div>`).join("");
+
+    const skipNoise={ui_click:1,ad_offer:1,ad_complete:1,ad_fail:1,ad_blocked:1,revenue:1};
+    const evTop=topN(st&&st.events, 20).filter(r=>!skipNoise[r.k]);
+    $("anEvents").innerHTML=barsHtml(evTop, "money");
+
+    const since=st&&st.since?new Date(st.since).toLocaleString():"—";
+    const last=st&&st.lastAt?new Date(st.lastAt).toLocaleTimeString():"—";
+    $("anSince").textContent="сбор с "+since+" · последнее "+last;
+    setMsg("anMsg", st?"Агрегаты из localStorage (oredeep_admin_stats)":"Статистики ещё нет — открой игру и покликай", !st);
+  }
+
+  function field(id, label, val){
+    const isBool=typeof val==="boolean";
+    if(isBool){
+      return `<label>${label}<select id="${id}"><option value="1" ${val?"selected":""}>да</option>
+        <option value="0" ${!val?"selected":""}>нет</option></select></label>`;
+    }
+    return `<label>${label}<input id="${id}" value="${val==null?"":String(val).replace(/"/g,"&quot;")}"></label>`;
+  }
+  function buildForms(){
+    $("resForm").innerHTML=RES_FIELDS.map(([k,l])=>field("f_"+k,l,0)).join("");
+    $("progForm").innerHTML=
+      PROG_FIELDS.map(([k,l])=>field("f_"+k,l,"")).join("")
+      +BOOL_FIELDS.map(([k,l])=>field("f_"+k,l,false)).join("");
+    $("lvlForm").innerHTML=LVL_IDS.map(id=>field("lvl_"+id,id.toUpperCase(),0)).join("");
+  }
+  function fillForms(s){
+    if(!s) return;
+    for(const [k] of RES_FIELDS){ const el=$("f_"+k); if(el) el.value=s[k]==null?0:s[k]; }
+    for(const [k] of PROG_FIELDS){ const el=$("f_"+k); if(el) el.value=s[k]==null?"":s[k]; }
+    for(const [k] of BOOL_FIELDS){ const el=$("f_"+k); if(el) el.value=s[k]? "1":"0"; }
+    const lv=s.lvls||{};
+    for(const id of LVL_IDS){ const el=$("lvl_"+id); if(el) el.value=lv[id]==null?0:lv[id]; }
+  }
+  function collectPatch(keys){
+    const patch={};
+    for(const k of keys){
+      const el=$("f_"+k); if(!el) continue;
+      if(BOOL_FIELDS.some(b=>b[0]===k)) patch[k]=el.value==="1";
+      else if(k==="playerName") patch[k]=el.value;
+      else { const n=+el.value; if(isFinite(n)) patch[k]=n; }
+    }
+    return patch;
+  }
+  function collectLvls(){
+    const lvls={};
+    for(const id of LVL_IDS){
+      const el=$("lvl_"+id); if(!el) continue;
+      const n=+el.value; if(isFinite(n)) lvls[id]=Math.floor(n);
+    }
+    return lvls;
+  }
+
+  function unitFromSave(s){
+    if(!s||!s.growth) return {};
+    const g=s.growth;
+    const days=Math.max(1, Math.ceil((Date.now()-(g.installAt||Date.now()))/86400000));
+    const adRev=(g.adViewsLifetime||0)*2;
+    const total=(g.revenueCents||0)+adRev;
+    return { days, totalCents:total, revenueIap:g.revenueCents||0, adRev,
+      invites:g.invites||0, organic:!!g.organic, starterBought:!!g.starterBought,
+      adViews:g.adViewsLifetime||0 };
+  }
+
+  function renderDash(s){
+    const ue=unitFromSave(s);
+    const cards=[
+      ["Игрок", s&&s.playerName?s.playerName:"—", "сейв "+(s?"v"+(s.v||"?"):"пусто")],
+      ["Глубина", s?fmt(s.stageIdx):"—", "этап "+(s?s.stage:"—")],
+      ["Золото", s?fmt(s.gold):"—", "самоцветы "+(s?fmt(s.gems):"—")],
+      ["Сундуки", s?fmt(s.bags):"—", "ур. сундука "+(s?s.bag:"—")],
+      ["Престиж", s?String(s.prestigeLv||0):"—", "эхо "+(s?fmt(s.echo):"—")],
+      ["PvP", s?String(s.trophies||0)+"🏆":"—", "побед "+(s?(s.pvpWins||0):"—")],
+      ["Выручка", fmtUsd(ue.totalCents), "D"+(ue.days||1)+" · ads "+(ue.adViews||0)],
+      ["Инвайты", String(ue.invites||0), ue.organic?"органика":"платный"]
+    ];
+    $("dashCards").innerHTML=cards.map(([k,v,h])=>
+      `<div class="card"><div class="k">${k}</div><div class="v">${v}</div><div class="h">${h}</div></div>`
+    ).join("");
+    setMsg("dashMsg", s?"Сейв прочитан · "+new Date().toLocaleTimeString():"Сейва нет — новый игрок или пустой LS", !s);
+  }
+
+  function renderEcon(){
+    const s=readSave();
+    const ue=unitFromSave(s);
+    const cards=[
+      ["Дней с инсталла", String(ue.days||1), ""],
+      ["Выручка всего", fmtUsd(ue.totalCents), "IAP "+fmtUsd(ue.revenueIap)+" + ads "+fmtUsd(ue.adRev)],
+      ["Просмотры ads", String(ue.adViews||0), "× $0.02 stub"],
+      ["K (инвайты/день)", ((ue.invites||0)/Math.max(1,ue.days||1)).toFixed(2), "инвайтов "+(ue.invites||0)],
+      ["Стартер", ue.starterBought?"куплен":"нет", ""],
+      ["Атрибуция", ue.organic?"organic":"paid", ""]
+    ];
+    $("econCards").innerHTML=cards.map(([k,v,h])=>
+      `<div class="card"><div class="k">${k}</div><div class="v">${v}</div><div class="h">${h||"&nbsp;"}</div></div>`
+    ).join("");
+    $("growthPre").textContent=s&&s.growth?JSON.stringify(s.growth,null,2):"(нет growth)";
+  }
+
+  function renderEvents(){
+    let arr=[];
+    try{ arr=JSON.parse(localStorage.getItem(EV_KEY)||"[]"); }catch(e){}
+    $("evList").innerHTML=arr.length?arr.map(e=>{
+      const t=new Date(e.t||0);
+      const ts=t.toLocaleTimeString();
+      const p=e.params?JSON.stringify(e.params):"";
+      return `<div><time>${ts}</time><div><b>${e.name||"?"}</b><br><code>${p}</code></div></div>`;
+    }).join(""):"<div style='padding:12px;color:var(--muted)'>Пока пусто — поиграй с открытой игрой.</div>";
+  }
+
+  function refreshAll(){
+    draft=readSave();
+    fillForms(draft||{});
+    renderDash(draft);
+    $("saveEditor").value=draft?JSON.stringify(draft,null,2):"";
+    renderEvents();
+    renderEcon();
+    renderAnalytics();
+  }
+
+  function connectLive(){
+    try{
+      ch=new BroadcastChannel(CH_NAME);
+      ch.onmessage=(ev)=>{
+        const m=ev.data||{};
+        if(m.type==="pong"){
+          live=true;
+          $("liveBadge").textContent="игра: онлайн";
+          $("liveBadge").className="badge on";
+          if(m.snap) {/* optional live overlay */}
+        }
+        if(m.type==="applied"||m.type==="reloaded"){
+          setTimeout(refreshAll, 200);
+        }
+      };
+      const ping=()=>{ try{ ch.postMessage({type:"ping"}); }catch(e){} };
+      ping(); setInterval(ping, 2500);
+      setTimeout(()=>{
+        if(!live){ $("liveBadge").textContent="игра: офлайн (правь сейв)"; $("liveBadge").className="badge off"; }
+      }, 800);
+    }catch(e){
+      $("liveBadge").textContent="игра: нет BroadcastChannel";
+      $("liveBadge").className="badge off";
+    }
+  }
+
+  function applyToGame(patch){
+    if(ch && live){
+      ch.postMessage({type:"apply", patch});
+      return true;
+    }
+    return false;
+  }
+  function patchSave(patch){
+    const s=readSave()||{v:4,lvls:{},growth:{},ftue:{u:0,b:0,c:0,t:0,m:0,g:0}};
+    Object.assign(s, patch);
+    if(patch.lvls) s.lvls=Object.assign(s.lvls||{}, patch.lvls);
+    writeSave(s);
+    if(ch) ch.postMessage({type:"reload"});
+    return s;
+  }
+
+  $("refreshBtn").onclick=refreshAll;
+  $("anRefresh").onclick=renderAnalytics;
+  $("anClear").onclick=()=>{
+    if(!confirm("Сбросить агрегаты аналитики (экраны/клики/ads)?")) return;
+    localStorage.removeItem(STAT_KEY);
+    renderAnalytics();
+    setMsg("anMsg","Аналитика очищена", true);
+  };
+  $("anExport").onclick=()=>{
+    const payload={ stats:readStats(), saveGrowth:(readSave()||{}).growth||null, events:null };
+    try{ payload.events=JSON.parse(localStorage.getItem(EV_KEY)||"[]"); }catch(e){}
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="oredeep-analytics-"+Date.now()+".json";
+    a.click();
+  };
+
+  $("resApply").onclick=()=>{
+    const patch=collectPatch(RES_FIELDS.map(x=>x[0]));
+    if(applyToGame(patch)){ setMsg("resMsg","Отправлено в живую игру"); }
+    else { patchSave(patch); setMsg("resMsg","Записано в сейв (открой/обнови игру)"); }
+    refreshAll();
+  };
+  $("resSaveOnly").onclick=()=>{
+    const patch=collectPatch(RES_FIELDS.map(x=>x[0]));
+    patchSave(patch);
+    setMsg("resMsg","Только localStorage · игра подхватит после reload");
+    refreshAll();
+  };
+
+  $("progApply").onclick=()=>{
+    const keys=PROG_FIELDS.map(x=>x[0]).concat(BOOL_FIELDS.map(x=>x[0]));
+    const patch=collectPatch(keys);
+    patch.lvls=collectLvls();
+    if(applyToGame(patch)) setMsg("progMsg","Отправлено в живую игру");
+    else { patchSave(patch); setMsg("progMsg","Записано в сейв"); }
+    refreshAll();
+  };
+
+  $("saveReload").onclick=()=>{
+    const s=readSave();
+    $("saveEditor").value=s?JSON.stringify(s,null,2):"";
+    setMsg("saveMsg", s?"Загружено":"Сейв пуст", !s);
+  };
+  $("savePretty").onclick=()=>{
+    try{
+      $("saveEditor").value=JSON.stringify(JSON.parse($("saveEditor").value),null,2);
+      setMsg("saveMsg","OK");
+    }catch(e){ setMsg("saveMsg","JSON битый: "+e.message, true); }
+  };
+  $("saveWrite").onclick=()=>{
+    try{
+      const obj=JSON.parse($("saveEditor").value);
+      writeSave(obj);
+      if(ch) ch.postMessage({type:"reload"});
+      setMsg("saveMsg","Записано"+ (live?" · игра перезагрузила сейв":""));
+      refreshAll();
+    }catch(e){ setMsg("saveMsg","Не записано: "+e.message, true); }
+  };
+  $("saveWipe").onclick=()=>{
+    if(!confirm("Стереть oredeep_v3 и резерв?")) return;
+    localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem(SAVE_BAK);
+    if(ch) ch.postMessage({type:"reload"});
+    setMsg("saveMsg","Стерто", true);
+    refreshAll();
+  };
+  $("saveExport").onclick=()=>{
+    const s=readSave(); if(!s){ setMsg("saveMsg","Нечего экспортировать", true); return; }
+    const blob=new Blob([JSON.stringify(s,null,2)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="oredeep-save-"+Date.now()+".json";
+    a.click();
+  };
+  $("saveImport").onchange=(e)=>{
+    const f=e.target.files&&e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const obj=JSON.parse(String(r.result));
+        $("saveEditor").value=JSON.stringify(obj,null,2);
+        writeSave(obj);
+        if(ch) ch.postMessage({type:"reload"});
+        setMsg("saveMsg","Импортировано: "+f.name);
+        refreshAll();
+      }catch(err){ setMsg("saveMsg","Импорт failed: "+err.message, true); }
+    };
+    r.readAsText(f);
+  };
+
+  $("evRefresh").onclick=renderEvents;
+  $("evClear").onclick=()=>{ localStorage.removeItem(EV_KEY); renderEvents(); };
+
+  const CHEATS={
+    starter:{ gold:5000, gems:200, bags:10, eggs:5, combs:5, protein:500, chestKeys:3 },
+    mid:{ gold:250000, gems:800, bags:40, stageIdx:120, bag:12, eggs:20, combs:20,
+      lvls:{atk:40,energy:30,spd:20,tough:25,crit:15,luck:20,mining:20,stone:25} },
+    late:{ gold:5e7, gems:5000, bags:200, stageIdx:800, bag:35, prestigeLv:2, echo:50,
+      eggs:50, combs:50, trophies:400,
+      lvls:{atk:120,energy:80,spd:40,tough:60,crit:40,luck:50,mining:50,stone:60} },
+    rich:{ gold:1e12, gems:99999, bags:999, eggs:99, combs:99, protein:9999, shards:9999 },
+    prestige:{ stageIdx:1200, bag:50, gold:1e8,
+      /* cosmic gear not auto — depth enough for call */ },
+    ftue:{ introSeen:false, ftue:{u:0,b:0,c:0,t:0,m:0,g:0} },
+    skipftue:{ introSeen:true, ftue:{u:1,b:1,c:1,t:1,m:1,g:1} }
+  };
+  document.querySelectorAll("[data-cheat]").forEach(btn=>{
+    btn.onclick=()=>{
+      const id=btn.dataset.cheat;
+      const patch=CHEATS[id]; if(!patch) return;
+      const s=Object.assign(readSave()||{v:4,lvls:{},growth:{},daily:{day:"",prog:{},tok:0,claimed:[]}}, patch);
+      if(patch.lvls) s.lvls=Object.assign(s.lvls||{}, patch.lvls);
+      if(patch.ftue) s.ftue=Object.assign({}, patch.ftue);
+      writeSave(s);
+      if(ch) try{ ch.postMessage({type:"reload"}); }catch(e){}
+      setMsg("cheatMsg","Чит «"+id+"» записан · игра перечитает сейв");
+      refreshAll();
+    };
+  });
+  $("cheatReset").onclick=()=>{
+    if(!confirm("Полный сброс? Как «Всё сначала».")) return;
+    localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem(SAVE_BAK);
+    if(ch) ch.postMessage({type:"reload"});
+    setMsg("cheatMsg","Прогресс стёрт", true);
+    refreshAll();
+  };
+})();
+</script>
+</body>
+</html>

@@ -23,17 +23,27 @@ class FE {
   setAttribute(k,v){ this._attrs=this._attrs||{}; this._attrs[k]=v; }
   getAttribute(k){ return (this._attrs||{})[k]; }
   remove(){}
+  addEventListener(){}
+  removeEventListener(){}
   querySelector(sel){ if(!this._q[sel]) this._q[sel]=new FE("q"); return this._q[sel]; }
   getBoundingClientRect(){
     return { left:40, top:120, right:100, bottom:180, width:60, height:60, x:40, y:120 };
   }
 }
 const document={ getElementById:id=>{ if(!__ids[id]) __ids[id]=new FE("static"); return __ids[id]; },
-  createElement:tag=>new FE(tag), addEventListener:()=>{} };
-const window={};
+  createElement:tag=>new FE(tag), addEventListener:()=>{}, visibilityState:"visible" };
+const window={ addEventListener:()=>{}, removeEventListener:()=>{} };
 __HTML_IDS.forEach(i=>document.getElementById(i));
 const __store={};
-const localStorage={ getItem:k=>(k in __store)?__store[k]:null, setItem:(k,v)=>{__store[k]=String(v)}, removeItem:k=>{delete __store[k]} };
+const localStorage={
+  getItem:k=>(k in __store)?__store[k]:null,
+  setItem:(k,v)=>{__store[k]=String(v)},
+  removeItem:k=>{
+    delete __store[k];
+    // сброс основного сейва в тестах всегда чистит и резерв
+    if(k==="oredeep_v3") delete __store["oredeep_v3_bak"];
+  }
+};
 let __vclock=0;
 const performance={ now:()=>__vclock };
 let __rafCb=null;

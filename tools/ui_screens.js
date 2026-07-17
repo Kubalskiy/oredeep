@@ -29,11 +29,17 @@ const UIS={
   show(){
     const el=this.$("uiScreen"); if(!el) return;
     el.style.display="flex";
+    el.style.pointerEvents="auto";
     if(el.classList) el.classList.add("open");
     Platform.logEvent("ui_screen",{id:this.id,tab:this.tab});
   },
   close(){
-    const el=this.$("uiScreen"); if(el){ el.style.display="none"; if(el.classList) el.classList.remove("open"); }
+    const el=this.$("uiScreen");
+    if(el){
+      el.style.display="none";
+      el.style.pointerEvents="none";
+      if(el.classList) el.classList.remove("open");
+    }
     this.id=null; this.tab=null;
   },
   setTab(t){
@@ -68,7 +74,7 @@ const UIS={
   row(l, r){ return '<div class="uiRow"><span>'+l+'</span><span>'+r+'</span></div>'; },
   grid(items){ return '<div class="uiGrid">'+items.join("")+'</div>'; },
   slot(ic, nm, sub, cls, onclick){
-    return '<button class="uiSlot'+(cls?" "+cls:"")+'"'+(onclick?' onclick="'+onclick+'"':"")+'>'
+    return '<button type="button" class="uiSlot'+(cls?" "+cls:"")+'"'+(onclick?' onclick="'+onclick+'"':"")+'>'
       +'<span class="uiSlotIc">'+ic+'</span><span class="uiSlotNm">'+nm+'</span>'
       +(sub?'<span class="uiSlotSub">'+sub+'</span>':"")+'</button>';
   },
@@ -137,6 +143,7 @@ const UIS={
     this.$("uiBody").innerHTML=
       this.row("Музыка",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 вкл":"🔇 выкл")+'</button>')
       +this.row("Устав Горы",'<button onclick="showIntro()">📜 читать</button>')
+      +this.row("Админка",'<button type="button" onclick="location.href=\'admin.html\'">⛏ открыть</button>')
       +this.row("Честность гачи",'<button onclick="openFairness()">🔐 открыть</button>')
       +'<div class="uiSec">Юнит-экономика (демо)</div>'
       +this.row("День с инсталла","D"+(ue.days||1))
@@ -146,6 +153,7 @@ const UIS={
       +this.row("Окупаемость",(ue.paybackOk?"✓ до D"+BALANCE.growth.paybackDay:"ещё нет"))
       +this.row("K-фактор",((ue.k||0).toFixed(2))+" · "+(ue.organic?"органика":"платный"))
       +this.row("Реклама сегодня",(S.growth&&S.growth.ads?S.growth.ads.count:0)+"/"+BALANCE.growth.ads.dailyCap)
+      +this.row("Прогресс",'<span class="uiSub">автосейв · резервная копия</span>')
       +this.row("Версия",'<span class="uiSub">ORE DEEP · UI shells</span>')
       +'<button class="btn btn-danger" style="margin-top:14px;width:100%" onclick="UIS.close();resetProgress()">↺ Всё сначала</button>';
   },
@@ -286,11 +294,17 @@ const UIS={
       body+=this.card("🏋","Gym XP · уважение",fmt(xp)+(nextAt!=null?(" / "+fmt(nextAt)):""),
         this.bar(gymPct)+'<div class="uiSub" style="margin-top:4px">+'+gymPerkPct()+'% ко всем статам</div>');
     } else if(tab==="mates"){
+      const geoSlot=S.geo
+        ? this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r,"UIS.open('beards','merge')")
+        : this.slot("❔","Вакансия","найми бороду","","UIS.open('beards','gacha')");
+      const petSlot=S.pet
+        ? this.slot("🐕",PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.open('pets','gacha')")
+        : this.slot("❔","Питомец","яйца","","UIS.open('pets','gacha')");
       body+=this.grid([
-        this.slot("🧔","Борин","наставник",""),
-        S.geo?this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r):this.slot("❔","Вакансия","найми бороду",""),
-        S.pet?this.slot("🐕",PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r):this.slot("❔","Питомец","яйца",""),
-        this.slot("👥","Кlan stub","сеть","")
+        this.slot("🧔","Борин","наставник","","showIntro()"),
+        geoSlot,
+        petSlot,
+        this.slot("👥","Клан","скоро","","UIS.setTab('friends')")
       ]);
     } else if(tab==="friends"){
       const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Код принят','',c,'друг добавится в сетевой версии');}";

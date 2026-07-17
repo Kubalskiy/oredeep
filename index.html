@@ -308,8 +308,8 @@ button:disabled{opacity:.45;cursor:default;}
 .btn-nav .up.on{display:block;}
 
 /* UI shells / modals (минимальный слой поверх) */
-#uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;}
-#uiScreen.open{display:flex;}
+#uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;pointer-events:none;}
+#uiScreen.open{display:flex;pointer-events:auto;}
 .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bgPanel);border-bottom:2px solid var(--border);flex:none;}
 .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--border);background:var(--bgPanelAlt);color:var(--gold);font-size:16px;}
 .uiTitle{flex:1;font-family:var(--font-display);font-size:20px;color:var(--gold);}
@@ -328,8 +328,10 @@ button:disabled{opacity:.45;cursor:default;}
 .uiCard{display:flex;gap:10px;padding:10px;background:var(--bgPanelAlt);border:2px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;}
 .uiCardIc{font-size:28px;}
 .uiGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-.uiSlot{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;background:var(--bgPanel);border:2px solid var(--border);min-height:72px;border-radius:var(--r-sm);color:var(--textPrimary);}
-.uiSlot.lock{opacity:.45;}
+.uiSlot{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;background:var(--bgPanel);border:2px solid var(--border);min-height:72px;border-radius:var(--r-sm);color:var(--textPrimary);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.uiSlot:active{border-color:var(--gold);transform:scale(.98);}
+.uiSlot.lock{opacity:.45;cursor:default;}
+.uiSlot.lock:active{transform:none;border-color:var(--border);}
 .btn-wide{width:100%;margin-top:6px;}
 .uiBtnStack{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
 .uiBanner{padding:8px 10px;border:2px solid var(--gold);background:var(--bgPanel);border-radius:var(--r-sm);font-size:13px;margin-bottom:8px;text-align:center;}
@@ -392,10 +394,11 @@ button:disabled{opacity:.45;cursor:default;}
 .iitem b{display:block;color:var(--gold);font-size:12px;margin-bottom:5px;}
 .iitem span{font-size:12px;line-height:1.65;color:#c3cad6;}
 #introGo{display:block;max-width:280px;margin:0 auto;width:100%;}
-.ftueTip{position:fixed;z-index:85;max-width:min(210px,calc(100vw - 16px));width:max-content;
+.ftueTip{position:fixed;z-index:110;max-width:min(210px,calc(100vw - 16px));width:max-content;
   padding:8px 10px;background:#141821ee;border:1px solid var(--gold);border-radius:8px;
   font-size:11px;color:#e8e6df;text-align:center;pointer-events:auto;cursor:pointer;
-  box-sizing:border-box;box-shadow:0 4px 18px #000a;line-height:1.35;user-select:none;}
+  box-sizing:border-box;box-shadow:0 4px 18px #000a;line-height:1.35;user-select:none;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .ftueTip .ftueSkip{display:block;margin-top:4px;font-size:9px;color:var(--goldMuted);}
 .btnrow{display:flex;gap:8px;}
 .btnrow button{flex:1;}
@@ -490,10 +493,11 @@ button:disabled{opacity:.45;cursor:default;}
 
   @keyframes duflash{0%,100%{opacity:1}50%{opacity:.55}}
 
-  .ftueTip{position:fixed;z-index:85;max-width:min(210px,calc(100vw - 16px));width:max-content;
+  .ftueTip{position:fixed;z-index:110;max-width:min(210px,calc(100vw - 16px));width:max-content;
     padding:8px 10px;background:#141821ee;border:1px solid var(--gold);border-radius:8px;
     font-size:8px;color:#e8e6df;text-align:center;pointer-events:auto;cursor:pointer;
-    box-sizing:border-box;box-shadow:0 4px 18px #000a;line-height:1.35;user-select:none;}
+    box-sizing:border-box;box-shadow:0 4px 18px #000a;line-height:1.35;user-select:none;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
   .ftueTip .ftueSkip{display:block;margin-top:4px;font-size:7px;color:var(--goldMuted);}
   .ftueTip b{color:var(--gold);display:block;margin-bottom:3px;font-size:7px;letter-spacing:1px;}
   .ftueArr{font-size:14px;line-height:1;margin-top:5px;color:var(--gold);}
@@ -886,6 +890,7 @@ button:disabled{opacity:.45;cursor:default;}
       <h3>⚙ Настройки</h3>
       <div class="metarow"><span>Музыка</span><button id="setMusic">🔊 вкл</button></div>
       <div class="metarow"><span>Устав Горы</span><button onclick="showIntro()">📜 читать</button></div>
+      <div class="metarow"><span>Админка</span><button type="button" onclick="location.href='admin.html'">⛏ открыть</button></div>
       <div class="metarow"><span>Честность гачи</span><button onclick="openFairness()">🔐 открыть</button></div>
       <div class="metarow"><span>Стена Горы</span><button onclick="openWall()">🏔 рейтинг</button></div>
       <div class="sub" style="margin-top:12px">Версия ORE DEEP · копай глубже. ещё.</div>
@@ -1539,7 +1544,7 @@ function skipBagUpgrade(){
     finishBagUpgrade();
     return;
   }
-  Platform.showRewarded(ok=>{ if(ok && S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); } });
+  Platform.showRewarded(ok=>{ if(ok && S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); } }, "bag_skip");
 }
 function rollVeinExtras(isBoss){
   const G=BALANCE.gacha||{};
@@ -2302,7 +2307,7 @@ function toggleLoot2x(){
   };
   try{
     if(Platform&&typeof Platform.showRewarded==="function"){
-      Platform.showRewarded(ok=>{ if(ok) apply(); });
+      Platform.showRewarded(ok=>{ if(ok) apply(); }, "loot2x");
       return;
     }
   }catch(e){}
@@ -2567,13 +2572,22 @@ function updateFtueHint(){
   } else if(!S.ftue.g && S.ftue.t && S.stageIdx>=8){
     el=$("friendsBtn"); step="g"; msg="<b>ДРУЗЬЯ</b>Пригласи — кооп-буст без рекламы";
   }
-  tip._ftueStep=step;
-  if(!el||!el.getBoundingClientRect||!step){ tip.style.display="none"; return; }
+  if(!el||!el.getBoundingClientRect||!step){
+    tip.style.display="none"; tip._ftueStep=null; tip._ftueMsg=null;
+    return;
+  }
   const r=el.getBoundingClientRect();
   if(r.width<1 && r.height<1){ tip.style.display="none"; return; }
-  tip.innerHTML=msg+'<span class="ftueSkip">тап — скрыть</span><div class="ftueArr">▼</div>';
+  /* Не трогаем DOM каждый кадр: innerHTML + visibility:hidden срывают клик «тап — скрыть». */
+  const contentChanged=tip._ftueStep!==step || tip._ftueMsg!==msg;
+  if(contentChanged){
+    tip._ftueStep=step; tip._ftueMsg=msg;
+    tip.innerHTML=msg+'<span class="ftueSkip">тап — скрыть</span><div class="ftueArr">▼</div>';
+  } else {
+    tip._ftueStep=step;
+  }
   tip.style.display="block";
-  tip.style.visibility="hidden";
+  tip.style.visibility="visible";
   const tw=Math.min(tip.offsetWidth||210, window.innerWidth-16);
   const th=tip.offsetHeight||56;
   const pad=8;
@@ -2584,21 +2598,34 @@ function updateFtueHint(){
   if(top<pad) top=Math.min(window.innerHeight-th-pad, r.bottom+10);
   if(top+th>window.innerHeight-pad) top=Math.max(pad, r.top-th-10);
   top=Math.max(pad, Math.min(window.innerHeight-th-pad, top));
-  tip.style.left=left+"px";
-  tip.style.top=top+"px";
-  tip.style.visibility="visible";
-  const arr=tip.querySelector(".ftueArr");
-  if(arr) arr.textContent=(top+th/2 < r.top)?"▼":"▲";
+  left=Math.round(left); top=Math.round(top);
+  if(contentChanged || tip._ftueLeft!==left || tip._ftueTop!==top){
+    tip.style.left=left+"px";
+    tip.style.top=top+"px";
+    tip._ftueLeft=left; tip._ftueTop=top;
+    const arr=tip.querySelector(".ftueArr");
+    if(arr) arr.textContent=(top+th/2 < r.top)?"▼":"▲";
+  }
 }
-function dismissFtueHint(){
+function dismissFtueHint(e){
+  if(e){
+    if(e.preventDefault) e.preventDefault();
+    if(e.stopPropagation) e.stopPropagation();
+  }
   const tip=$("ftueTip"); if(!tip||!S||!S.ftue) return;
   const step=tip._ftueStep;
   if(step) S.ftue[step]=1;
-  tip.style.display="none"; tip._ftueStep=null;
+  tip.style.display="none"; tip._ftueStep=null; tip._ftueMsg=null;
+  tip._ftueLeft=null; tip._ftueTop=null;
   save(); updateFtueHint();
 }
 if($("ftueTip")){
-  $("ftueTip").onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); dismissFtueHint(); };
+  const tip=$("ftueTip");
+  const hide=(e)=>dismissFtueHint(e);
+  tip.addEventListener("pointerdown", hide);
+  tip.addEventListener("click", hide);
+  tip.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" ") hide(e); });
+  tip.onclick=hide;
 }
 
 /* эффекты */
@@ -2726,12 +2753,47 @@ function openCollection(){
 }
 function resetProgress(){
   if(confirm("Точно всё сначала? Гора помнит, но простит.")){
-    localStorage.removeItem("oredeep_v3"); S=freshState(); newRock(); save(); renderGear(); render();
+    wipeSave(); S=ensureAll(freshState()); newRock(); save(); renderGear(); render();
+    /* Новый спуск — Устав снова один раз (как у первого игрока). */
+    try{ showIntro(); }catch(e){}
   }
 }
 
 /* ---------- save/load ---------- */
-function save(){ try{ S.lastSeen=Date.now(); localStorage.setItem("oredeep_v3",JSON.stringify(S)); }catch(e){} }
+const SAVE_KEY="oredeep_v3";
+const SAVE_BAK="oredeep_v3_bak";
+let _saveFailAt=0;
+function save(){
+  if(!S) return false;
+  try{
+    S.lastSeen=Date.now();
+    const raw=JSON.stringify(S);
+    localStorage.setItem(SAVE_KEY, raw);
+    try{ localStorage.setItem(SAVE_BAK, raw); }catch(e2){}
+    return true;
+  }catch(e){
+    if(Date.now()-_saveFailAt>60000){
+      _saveFailAt=Date.now();
+      try{ showToast("💾","Не удалось сохранить","","Мало места в браузере","закрой другие вкладки"); }catch(e3){}
+    }
+    return false;
+  }
+}
+/** Сброс на диск при уходе со страницы — чтобы не потерять жилу/золото между автосейвами. */
+function flushSave(){ try{ save(); }catch(e){} }
+function readSaveObject(){
+  const keys=[SAVE_KEY, SAVE_BAK];
+  for(let i=0;i<keys.length;i++){
+    try{
+      const raw=localStorage.getItem(keys[i]);
+      if(!raw) continue;
+      const parsed=JSON.parse(raw);
+      if(parsed && typeof parsed==="object" && !Array.isArray(parsed))
+        return { data:parsed, fromBak:i>0 };
+    }catch(e){}
+  }
+  return null;
+}
 const SAVE_VER=2;
 function ensureDurab(d){ if(d && d.durab==null) d.durab=MINE_DURAB.max; return d; }
 function ensureCards(d){ if(!d) return d;
@@ -2864,14 +2926,30 @@ function migrate(d){ ensureAll(d); ensureIntro(d); ensureGacha(d);
 }
 function load(){
   try{
-    const raw=localStorage.getItem("oredeep_v3");
-    if(raw){
-      S=Object.assign(freshState(),migrate(JSON.parse(raw)));
-      sanitizeState(S); ensureAll(S); resetTimers(); return;
+    const got=readSaveObject();
+    if(got){
+      S=Object.assign(freshState(), migrate(got.data));
+      sanitizeState(S); ensureAll(S); resetTimers();
+      if(got.fromBak){
+        try{ save(); }catch(e){}
+        try{ showToast("💾","Прогресс восстановлен","","из резервной копии",""); }catch(e){}
+      }
+      return;
     }
   }catch(e){}
   S=ensureAll(freshState());        // новый игрок тоже должен получить fair/science
   resetTimers();
+}
+function wipeSave(){
+  try{ localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_BAK); }catch(e){}
+}
+function bindSaveLifecycle(){
+  const flush=()=>flushSave();
+  try{
+    document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") flush(); });
+    window.addEventListener("pagehide", flush);
+    window.addEventListener("beforeunload", flush);
+  }catch(e){}
 }
 
 /* ---------- музыка подгорных чертогов (WebAudio, без файлов) ---------- */
@@ -3116,7 +3194,7 @@ function claimOffline(mult){
   const grant=()=>{ S.gold+=offlinePending*mult; grantBags(offlineBagsPending*mult);
     offlinePending=0; offlineBagsPending=0;
     $("offOverlay").style.display="none"; save(); render(); };
-  if(mult>1) Platform.showRewarded(ok=>{ if(ok) grant(); });
+  if(mult>1) Platform.showRewarded(ok=>{ if(ok) grant(); }, "offline_x2");
   else grant();
 }
 
@@ -3886,7 +3964,7 @@ function claimShopFree(offerId, viaAd){
     if(typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
   };
   if(viaAd){
-    try{ if(Platform&&Platform.showRewarded){ Platform.showRewarded(ok=>{ if(ok) grant(); }); return; } }catch(e){}
+    try{ if(Platform&&Platform.showRewarded){ Platform.showRewarded(ok=>{ if(ok) grant(); }, "shop_free"); return; } }catch(e){}
   }
   grant();
 }
@@ -4306,6 +4384,10 @@ function showIntro(){
   const ov=$("introOv"); if(ov&&ov.classList) ov.classList.add("on");
   Platform.logEvent("intro_open",{});
 }
+/* Автопоказ: только новый сейв или после «Всё сначала». Не на каждый reload. */
+function maybeAutoIntro(){
+  if(S && S.introSeen===false) showIntro();
+}
 function closeIntro(){
   const ov=$("introOv"); if(ov&&ov.classList) ov.classList.remove("on");
   if(S){ S.introSeen=true; save(); }
@@ -4640,15 +4722,28 @@ function growthInviteMilestonesReady(){
 }
 (function(){
   const base=Platform.showRewarded;
-  Platform.showRewarded=function(cb){
-    if(!growthAdCapOk()){ showToast("📺","Лимит рекламы","","завтра снова — CPA под контролем"); cb(false); return; }
-    base(ok=>{ if(ok) growthTrackAd(); cb(ok); });
+  Platform.showRewarded=function(cb, slot){
+    slot=slot||"unknown";
+    try{ Platform.logEvent("ad_offer",{slot}); }catch(e){}
+    if(!growthAdCapOk()){
+      try{ Platform.logEvent("ad_blocked",{slot,reason:"cap"}); }catch(e){}
+      showToast("📺","Лимит рекламы","","завтра снова — CPA под контролем"); cb(false); return;
+    }
+    base(ok=>{
+      if(ok){
+        growthTrackAd();
+        try{ Platform.logEvent("ad_complete",{slot}); }catch(e){}
+      } else {
+        try{ Platform.logEvent("ad_fail",{slot}); }catch(e){}
+      }
+      cb(ok);
+    }, slot);
   };
 })();
 
 load();
 try{ switchTab((S&&S.tab)||"Mine"); }catch(e){}
-try{ if(S&&!S.introSeen) showIntro(); }catch(e){}
+try{ maybeAutoIntro(); }catch(e){}
 try{ buildUpgrades(); }catch(e){}
 try{ renderGear(); }catch(e){}
 try{ newRock(); }catch(e){}
@@ -4676,7 +4771,7 @@ const SPEEDS=[1,2,3,10,100];
   // rewarded может отсутствовать/падать в web/file:// — тогда просто переключаем
   try{
     if(Platform && typeof Platform.showRewarded==="function"){
-      Platform.showRewarded(ok=>{ if(ok) applySpeed(); });
+      Platform.showRewarded(ok=>{ if(ok) applySpeed(); }, "speed");
       return;
     }
   }catch(e){}
@@ -4684,7 +4779,172 @@ const SPEEDS=[1,2,3,10,100];
   };
 }
 requestAnimationFrame(loop);
-setInterval(save,5000);
+setInterval(save, 3000);   // автосейв каждые 3с; при уходе со страницы — flushSave
+bindSaveLifecycle();
+
+/* ---------- Admin bridge: события + агрегаты + клики + команды ---------- */
+(function(){
+  const EV_KEY="oredeep_admin_events";
+  const EV_MAX=300;
+  const STAT_KEY="oredeep_admin_stats";
+  const CH_NAME="oredeep-admin";
+  const ALLOW={
+    gold:1,gems:1,bags:1,eggs:1,combs:1,keys:1,chestKeys:1,protein:1,shards:1,
+    trophies:1,stageIdx:1,stage:1,mine:1,bag:1,prestigeLv:1,prestigeRuns:1,echo:1,
+    energy:1,durab:1,playerName:1,introSeen:1,noAds:1,autoRoll:1,autoRollTier:1,
+    speed:1,beard:1,beardXP:1,wheelSpins:1,pvpWins:1,pvpFights:1,bestDepth:1
+  };
+  const VIEW_MAP={
+    ui_screen:(p)=>"ui:"+(p&&p.id||"?")+(p&&p.tab?":"+p.tab:""),
+    tab:(p)=>"tab:"+(p&&p.t||"?"),
+    profile_view:()=>"profile", chest_view:()=>"chest", gym_view:()=>"tavern",
+    stickers_view:()=>"artifacts", beard_view:()=>"beards", set_view:()=>"set",
+    guild_view:()=>"guild", guild_consent_view:()=>"guild_consent",
+    wall_view:()=>"wall", fair_view:()=>"fairness", prestige_view:()=>"prestige",
+    loot_view:()=>"loot", intro_open:()=>"intro", pick_gallery:()=>"picks",
+    offline_return:()=>"offline"
+  };
+  function emptyStats(){
+    return { v:1, since:Date.now(), lastAt:0, sessions:1,
+      events:{}, screens:{}, clicks:{},
+      revenue:{ totalCents:0, bySource:{} },
+      ads:{ offer:0, complete:0, fail:0, blocked:0, bySlot:{} } };
+  }
+  function loadStats(){
+    try{
+      const raw=localStorage.getItem(STAT_KEY);
+      if(!raw) return emptyStats();
+      const s=JSON.parse(raw);
+      if(!s||typeof s!=="object") return emptyStats();
+      s.events=s.events||{}; s.screens=s.screens||{}; s.clicks=s.clicks||{};
+      s.revenue=s.revenue||{totalCents:0,bySource:{}};
+      s.revenue.bySource=s.revenue.bySource||{};
+      s.ads=s.ads||{offer:0,complete:0,fail:0,blocked:0,bySlot:{}};
+      s.ads.bySlot=s.ads.bySlot||{};
+      return s;
+    }catch(e){ return emptyStats(); }
+  }
+  function saveStats(st){
+    try{ localStorage.setItem(STAT_KEY, JSON.stringify(st)); }catch(e){}
+  }
+  function bump(map, key, n){
+    if(!key) return;
+    key=String(key).slice(0,64);
+    map[key]=(map[key]|0)+(n||1);
+  }
+  function ingest(name, params){
+    const st=loadStats();
+    st.lastAt=Date.now();
+    bump(st.events, name, 1);
+    const mk=VIEW_MAP[name];
+    if(mk) bump(st.screens, mk(params||{}), 1);
+    if(name==="ui_click") bump(st.clicks, (params&&params.id)||"?", 1);
+    if(name==="revenue"){
+      const c=Math.max(0, Math.floor(+(params&&params.cents)||0));
+      const src=String((params&&params.source)||"other").slice(0,40);
+      st.revenue.totalCents=(st.revenue.totalCents|0)+c;
+      bump(st.revenue.bySource, src, c);
+    }
+    if(name==="ad_offer"){ st.ads.offer=(st.ads.offer|0)+1; bump(st.ads.bySlot, (params&&params.slot)||"?", 1); }
+    if(name==="ad_complete"){ st.ads.complete=(st.ads.complete|0)+1; bump(st.ads.bySlot, ((params&&params.slot)||"?")+"_ok", 1); }
+    if(name==="ad_fail") st.ads.fail=(st.ads.fail|0)+1;
+    if(name==="ad_blocked") st.ads.blocked=(st.ads.blocked|0)+1;
+    saveStats(st);
+  }
+  function pushEvent(name,params){
+    try{
+      const raw=localStorage.getItem(EV_KEY);
+      const arr=raw?JSON.parse(raw):[];
+      arr.unshift({t:Date.now(),name:String(name||""),params:params||{}});
+      localStorage.setItem(EV_KEY, JSON.stringify(arr.slice(0,EV_MAX)));
+    }catch(e){}
+    try{ ingest(name, params||{}); }catch(e){}
+  }
+  const _log=Platform.logEvent;
+  Platform.logEvent=function(name,params){
+    try{ _log.call(Platform,name,params); }catch(e){}
+    pushEvent(name,params);
+  };
+
+  /* Клики по кнопкам/табам — для «что жмут чаще» */
+  let _clickGate=0;
+  document.addEventListener("click", function(e){
+    const now=Date.now();
+    if(now-_clickGate<80) return;
+    const t=e.target && e.target.closest && e.target.closest("button,[role=button],.btn,.tabs button,.navbtn");
+    if(!t || t.id==="ftueTip") return;
+    if(t.closest && t.closest("#adminIgnore")) return;
+    _clickGate=now;
+    let id=t.id||"";
+    if(!id){
+      const txt=(t.textContent||"").replace(/\s+/g," ").trim().slice(0,28);
+      const cls=(t.className&&String(t.className).split(/\s+/).slice(0,3).join("."))||t.tagName;
+      id=txt?("txt:"+txt):("cls:"+cls);
+    }
+    try{ Platform.logEvent("ui_click",{id, tag:t.tagName}); }catch(err){}
+  }, true);
+
+  function snapshot(){
+    if(!S) return null;
+    return {
+      playerName:S.playerName, gold:S.gold, gems:S.gems, bags:S.bags, eggs:S.eggs,
+      combs:S.combs, keys:S.keys, chestKeys:S.chestKeys, protein:S.protein, shards:S.shards,
+      trophies:S.trophies, stageIdx:S.stageIdx, stage:S.stage, mine:S.mine, bag:S.bag,
+      prestigeLv:S.prestigeLv, echo:S.echo, energy:S.energy, durab:S.durab,
+      introSeen:S.introSeen, noAds:S.noAds, autoRoll:S.autoRoll, speed:S.speed,
+      bestDepth:S.bestDepth, beard:S.beard, pvpWins:S.pvpWins,
+      growth:S.growth?{invites:S.growth.invites,adViewsLifetime:S.growth.adViewsLifetime,
+        revenueCents:S.growth.revenueCents,organic:S.growth.organic,
+        starterBought:S.growth.starterBought,installAt:S.growth.installAt,
+        ads:S.growth.ads}:null,
+      unitEcon: typeof growthUnitEcon==="function"?growthUnitEcon():null,
+      lvls:S.lvls?Object.assign({},S.lvls):null,
+      analytics: loadStats()
+    };
+  }
+  function applyPatch(patch){
+    if(!S||!patch||typeof patch!=="object") return false;
+    for(const k of Object.keys(patch)){
+      if(k==="lvls" && patch.lvls && typeof patch.lvls==="object"){
+        S.lvls=S.lvls||{};
+        for(const id of Object.keys(patch.lvls)){
+          const n=+patch.lvls[id]; if(isFinite(n) && n>=0) S.lvls[id]=Math.floor(n);
+        }
+        continue;
+      }
+      if(!ALLOW[k]) continue;
+      let v=patch[k];
+      if(typeof S[k]==="boolean" || k==="introSeen"||k==="noAds"||k==="autoRoll")
+        v=!!v;
+      else if(typeof v==="string" && k==="playerName") v=String(v).slice(0,24);
+      else { v=+v; if(!isFinite(v)) continue; if(k!=="echo") v=Math.floor(v); }
+      S[k]=v;
+    }
+    try{ save(); }catch(e){}
+    try{ if(typeof newRock==="function") newRock(); }catch(e){}
+    try{ if(typeof renderGear==="function") renderGear(); }catch(e){}
+    try{ if(typeof render==="function") render(); }catch(e){}
+    return true;
+  }
+  try{
+    const ch=new BroadcastChannel(CH_NAME);
+    ch.onmessage=function(ev){
+      const m=ev&&ev.data; if(!m||!m.type) return;
+      if(m.type==="ping"){ ch.postMessage({type:"pong", at:Date.now(), snap:snapshot()}); return; }
+      if(m.type==="apply"){ ch.postMessage({type:"applied", ok:applyPatch(m.patch||{})}); return; }
+      if(m.type==="stats"){ ch.postMessage({type:"stats", stats:loadStats()}); return; }
+      if(m.type==="reload"){
+        try{ load(); if(typeof newRock==="function") newRock();
+          if(typeof renderGear==="function") renderGear(); if(typeof render==="function") render();
+          ch.postMessage({type:"reloaded", ok:true, snap:snapshot()});
+        }catch(e){ ch.postMessage({type:"reloaded", ok:false}); }
+      }
+    };
+    window.__oreAdmin={ snapshot, applyPatch, pushEvent, loadStats };
+  }catch(e){
+    window.__oreAdmin={ snapshot, applyPatch, pushEvent, loadStats };
+  }
+})();
 </script>
 <script src="tools/ui_screens.js"></script>
 </body>
