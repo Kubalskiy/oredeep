@@ -425,7 +425,11 @@ body > .modal{
   font-size:11px;color:#e8e6df;text-align:center;pointer-events:auto;cursor:pointer;
   box-sizing:border-box;box-shadow:0 4px 18px #000a;line-height:1.35;user-select:none;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.ftueTip b{color:var(--gold);display:block;margin-bottom:3px;font-size:11px;letter-spacing:1px;}
 .ftueTip .ftueSkip{display:block;margin-top:4px;font-size:9px;color:var(--goldMuted);}
+.ftueArr{font-size:14px;line-height:1;color:var(--gold);}
+.ftueArr.bot{margin-top:5px;margin-bottom:0;}
+.ftueArr.top{margin-top:0;margin-bottom:5px;}
 .btnrow{display:flex;gap:8px;}
 .btnrow button{flex:1;}
 .chDrop,.chUp,.setHead,.setFrags,.specWrap,.curbar{/* kept class hooks */}
@@ -553,7 +557,9 @@ body > .modal{
     touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
   .ftueTip .ftueSkip{display:block;margin-top:4px;font-size:7px;color:var(--goldMuted);}
   .ftueTip b{color:var(--gold);display:block;margin-bottom:3px;font-size:7px;letter-spacing:1px;}
-  .ftueArr{font-size:14px;line-height:1;margin-top:5px;color:var(--gold);}
+  .ftueArr{font-size:14px;line-height:1;color:var(--gold);}
+  .ftueArr.bot{margin-top:5px;margin-bottom:0;}
+  .ftueArr.top{margin-top:0;margin-bottom:5px;}
 
   @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
 
@@ -2629,7 +2635,7 @@ function render(){
 function hideFtueTip(tip){
   tip=tip||$("ftueTip"); if(!tip) return;
   tip.style.display="none"; tip._ftueStep=null; tip._ftueMsg=null;
-  tip._ftueLeft=null; tip._ftueTop=null;
+  tip._ftueLeft=null; tip._ftueTop=null; tip._ftueArr=null;
 }
 /** Подсказки только на главном экране забоя — не поверх UIS, интро и модалок. */
 function ftueOverlayOpen(){
@@ -2699,41 +2705,55 @@ function updateFtueHint(){
   } else if(!S.ftue.t && S.ftue.b && S.stageIdx>=5){
     el=$("navTavBtn"); step="t"; msg="<b>ТАВЕРНА</b>Бороды, питомцы, застолья";
   } else if(!S.ftue.g && S.ftue.t && S.stageIdx>=8){
-    step="g"; msg="<b>ДРУЗЬЯ</b>Профиль → пригласи, кооп-буст без рекламы";
+    step="g"; msg="<b>ДРУЗЬЯ</b>Тап по аватару → пригласи, кооп-буст без рекламы";
     el=$("avatar");
   }
   if(!el||!step||!ftueAnchorVisible(el)){ hideFtueTip(tip); return; }
   const r=el.getBoundingClientRect();
-  /* Не трогаем DOM каждый кадр: innerHTML + visibility:hidden срывают клик «тап — скрыть». */
+  const bounds=ftueAppBounds(8);
+  /* Якоря вверху (аватар) — подсказка снизу со стрелкой ▲ сверху; низкие — наоборот. */
+  const preferBelow=r.top < bounds.top+(bounds.bottom-bounds.top)*0.35;
+  tip.style.display="block";
+  tip.style.visibility="visible";
   const contentChanged=tip._ftueStep!==step || tip._ftueMsg!==msg;
   if(contentChanged){
     tip._ftueStep=step; tip._ftueMsg=msg;
-    tip.innerHTML=msg+'<span class="ftueSkip">тап — скрыть</span><div class="ftueArr">▼</div>';
+    tip.innerHTML=msg+'<span class="ftueSkip">тап — скрыть</span>';
+    tip._ftueArr=null;
   } else {
     tip._ftueStep=step;
   }
-  tip.style.display="block";
-  tip.style.visibility="visible";
-  const bounds=ftueAppBounds(8);
+  const thRough=(tip.offsetHeight||56)+18;
+  let below=preferBelow;
+  if(preferBelow){
+    if(r.bottom+6+thRough>bounds.bottom && r.top-thRough-6>=bounds.top) below=false;
+  } else {
+    if(r.top-thRough-6<bounds.top && r.bottom+6+thRough<=bounds.bottom) below=true;
+  }
+  const arrNeed=below?"top":"bot";
+  const arrChar=below?"▲":"▼";
+  if(tip._ftueArr!==arrNeed){
+    const bodyHtml=msg+'<span class="ftueSkip">тап — скрыть</span>';
+    const arrHtml='<div class="ftueArr '+arrNeed+'">'+arrChar+'</div>';
+    tip.innerHTML=below ? (arrHtml+bodyHtml) : (bodyHtml+arrHtml);
+    tip._ftueArr=arrNeed;
+  }
   const maxW=Math.max(120, bounds.right-bounds.left);
   const tw=Math.min(tip.offsetWidth||210, maxW);
   const th=tip.offsetHeight||56;
-  const pad=8;
-  let left=r.left+r.width/2-tw/2;
+  const gap=6;
+  /* Для узких якорей слева (аватар) — прижимаем подсказку к левому краю якоря, не центрируем. */
+  let left=(step==="g")
+    ? r.left
+    : (r.left+r.width/2-tw/2);
   left=Math.max(bounds.left, Math.min(bounds.right-tw, left));
-  const midY=(bounds.top+bounds.bottom)/2;
-  const preferAbove=r.top+r.height/2>midY;
-  let top=preferAbove ? (r.top-th-10) : (r.bottom+10);
-  if(top<bounds.top) top=Math.min(bounds.bottom-th, r.bottom+10);
-  if(top+th>bounds.bottom) top=Math.max(bounds.top, r.top-th-10);
+  let top=below ? (r.bottom+gap) : (r.top-th-gap);
   top=Math.max(bounds.top, Math.min(bounds.bottom-th, top));
   left=Math.round(left); top=Math.round(top);
   if(contentChanged || tip._ftueLeft!==left || tip._ftueTop!==top){
     tip.style.left=left+"px";
     tip.style.top=top+"px";
     tip._ftueLeft=left; tip._ftueTop=top;
-    const arr=tip.querySelector(".ftueArr");
-    if(arr) arr.textContent=(top+th/2 < r.top)?"▼":"▲";
   }
 }
 function dismissFtueHint(e){
