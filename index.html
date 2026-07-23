@@ -2350,6 +2350,32 @@ function loop(now){
 
 /* ---------- UI ---------- */
 function $(id){ return document.getElementById(id); }
+/** Пишет в DOM только если текст реально изменился — иначе DevTools/layout дёргаются каждый кадр. */
+function setTxt(elOrId, v){
+  const e=typeof elOrId==="string"?$(elOrId):elOrId;
+  if(!e) return;
+  const s=v==null?"":String(v);
+  if(e.textContent!==s) e.textContent=s;
+}
+function setWidth(elOrId, pct){
+  const e=typeof elOrId==="string"?$(elOrId):elOrId;
+  if(!e||!e.style) return;
+  const s=(typeof pct==="number"?pct:parseFloat(pct))+"%";
+  if(e.style.width!==s) e.style.width=s;
+}
+function setHtml(elOrId, html){
+  const e=typeof elOrId==="string"?$(elOrId):elOrId;
+  if(!e) return;
+  const s=html==null?"":String(html);
+  if(e._html===s) return;
+  e._html=s; e.innerHTML=s;
+}
+function setOp(elOrId, v){
+  const e=typeof elOrId==="string"?$(elOrId):elOrId;
+  if(!e||!e.style) return;
+  const s=String(v);
+  if(e.style.opacity!==s) e.style.opacity=s;
+}
 const SUFFIX=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
 function fmt(n){
   n=Math.floor(n);
@@ -2494,42 +2520,42 @@ function renderGear(){
   checkLoadout();
 }
 function render(){
-  $("gold").textContent=fmt(S.gold);
-  $("gps").textContent=fmt(idlePerSec()*3600);
-  $("streakLine").textContent=(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"";
-  $("gems").textContent=fmt(S.gems||0); $("trophies").textContent=fmt(S.trophies||0); $("protein").textContent=fmt(Math.floor(S.protein||0)); $("shards").textContent=fmt(S.shards||0);
-  { const set=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
+  setTxt("gold",fmt(S.gold));
+  setTxt("gps",fmt(idlePerSec()*3600));
+  setTxt("streakLine",(S.streak&&S.streak.n>0)?("🔥 "+S.streak.n+" д"):"");
+  setTxt("gems",fmt(S.gems||0)); setTxt("trophies",fmt(S.trophies||0)); setTxt("protein",fmt(Math.floor(S.protein||0))); setTxt("shards",fmt(S.shards||0));
+  { const set=(id,v)=>setTxt(id,v);
     set("curGems",fmt(S.gems||0)); set("curShards",fmt(S.shards||0));
     set("curProtein",fmt(Math.floor(S.protein||0))); set("curBags",fmt(S.bags||0));
     set("curKeys",String(S.keys||0)); set("curChestKeys",String(S.chestKeys||0));
     set("curTrophies",fmt(S.trophies||0)); set("curEggs",String(S.eggs||0)); set("curCombs",String(S.combs||0)); }
   renderBadges(); renderSetFx(); renderPaperdoll();
-  $("mineLabel").textContent=(S.mine+1)+"-"+S.stage;
-  $("stageLabel").textContent = S.runDone
+  setTxt("mineLabel",(S.mine+1)+"-"+S.stage);
+  setTxt("stageLabel", S.runDone
     ? "⛰ СВОД"
-    : Math.min(S.stageIdx,BALANCE.run.len)+" / "+BALANCE.run.len;
+    : Math.min(S.stageIdx,BALANCE.run.len)+" / "+BALANCE.run.len);
 
-  $("minerRank").textContent=beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):"");
-  { const nick=$("nickname"); if(nick) nick.textContent=playerName().toUpperCase();
+  setTxt("minerRank",beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):""));
+  { const nick=$("nickname"); if(nick) setTxt(nick,playerName().toUpperCase());
     const w=beardWisdom();
     const sm=$("statMiner"); if(sm){
-      sm.textContent=w.title;
+      setTxt(sm,w.title);
       sm.title=w.title+((S.prestigeLv||0)?(" · престиж "+S.prestigeLv):"");
     }
-    const sn=$("statMine"); if(sn) sn.textContent=(S.mine+1)+"-"+S.stage;
-    const hp=$("hudPrestige"); if(hp) hp.textContent=(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""; }
+    const sn=$("statMine"); if(sn) setTxt(sn,(S.mine+1)+"-"+S.stage);
+    const hp=$("hudPrestige"); if(hp) setTxt(hp,(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""); }
 
-  { const hp=$("hudPrestige"); if(hp) hp.textContent=(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""; }
-  $("hpFill").style.width=Math.max(0,S.rockHP/rock.hp*100)+"%";
-  $("cracks").style.opacity=(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2);
-  $("hpTxt").textContent=fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp);
-  $("enFill").style.width=Math.max(0,S.energy/stat("energy")*100)+"%";
-  $("enTxt").textContent=fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy"));
+  { const hp=$("hudPrestige"); if(hp) setTxt(hp,(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""); }
+  setWidth("hpFill",Math.max(0,S.rockHP/rock.hp*100)+"%");
+  setOp("cracks",(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2));
+  setTxt("hpTxt",fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp));
+  setWidth("enFill",Math.max(0,S.energy/stat("energy")*100)+"%");
+  setTxt("enTxt",fmt(Math.max(0,S.energy))+" / "+fmt(stat("energy")));
   { const d=S.durab==null?MINE_DURAB.max:S.durab;
-    const df=$("duFill"); if(df) df.style.width=Math.max(0,d)+"%";
+    setWidth("duFill",Math.max(0,d)+"%");
     const bar=$("duBar"); if(bar&&bar.classList){ bar.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt); bar.classList.toggle("crit",d<MINE_DURAB.critAt); }
     const risk=collapseRiskPerMin();
-    const duTxtEl=$("duTxt"); if(duTxtEl) duTxtEl.textContent=risk>0?("⚠ "+(risk*100<1?"<1":Math.round(risk*100))+"%/мин"):(Math.round(d)+"%");
+    const duTxtEl=$("duTxt"); if(duTxtEl) setTxt(duTxtEl,risk>0?("⚠ "+(risk*100<1?"<1":Math.round(risk*100))+"%/мин"):(Math.round(d)+"%"));
     const eb=$("energyBox");
     if(eb&&eb.classList){
       eb.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt);
@@ -2537,14 +2563,14 @@ function render(){
       eb.title=d>=MINE_DURAB.max-1e-6?"Крепь цела":("Тап — укрепить · "+fmt(reinforceCost())+" 🪙 · крепь "+Math.round(d)+"%");
     }
   }
-  $("sAtk").textContent=fmt(stat("atk"));
-  $("sSpd").textContent=stat("spd").toFixed(1);
-  $("sMin").textContent=Math.round(stat("mining"));
-  $("sCrit").textContent=Math.round(stat("crit"))+"%";
-  $("sLuck").textContent=Math.round(stat("luck"))+"%";
-  { const st=stat("stone"); $("sStone").textContent=(st>=1000?fmt(st):Math.round(st))+"%"; }
+  setTxt("sAtk",fmt(stat("atk")));
+  setTxt("sSpd",stat("spd").toFixed(1));
+  setTxt("sMin",Math.round(stat("mining")));
+  setTxt("sCrit",Math.round(stat("crit"))+"%");
+  setTxt("sLuck",Math.round(stat("luck"))+"%");
+  { const st=stat("stone"); setTxt("sStone",(st>=1000?fmt(st):Math.round(st))+"%"); }
   { // строка статов как в референсе
-    const setPw=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
+    const setPw=(id,v)=>setTxt(id,v);
     setPw("pAtk", fmt(stat("atk")));
     setPw("pDef", fmt(Math.round(stat("tough"))));
     setPw("pStr", fmt(Math.round(stat("mining"))));
@@ -2556,31 +2582,31 @@ function render(){
   }
   { const rn=$("rockName"), en=$("refEnemyName"), en2=$("enemyName");
     const txt=(rn&&rn.textContent||"ПОРОДА").replace(/ \(босс\)$/i,"").toUpperCase();
-    if(en) en.textContent=txt; if(en2) en2.textContent=txt; }
+    if(en) setTxt(en,txt); if(en2) setTxt(en2,txt); }
   { ensureBonus(S);
     const bb=$("refBonusBtn"), bc=$("bonusChest"), bt=$("refBonusTimer");
     const ready=Date.now()>=S.bonusReadyAt;
     if(bb&&bb.classList) bb.classList.toggle("ready",ready);
     if(bc&&bc.classList) bc.classList.toggle("ready",ready);
-    if(bt) bt.textContent=ready?"ГОТОВО!":fmtClock(S.bonusReadyAt-Date.now()); }
+    if(bt) setTxt(bt,ready?"ГОТОВО!":fmtClock(S.bonusReadyAt-Date.now())); }
   { const lb=$("loot2xBtn"), b2=$("boost2x"), ll=$("loot2xLbl");
     const on=S.loot2xUntil&&S.loot2xUntil>Date.now();
     if(lb&&lb.classList) lb.classList.toggle("on",!!on);
     if(b2&&b2.classList) b2.classList.toggle("on",!!on);
-    if(ll) ll.textContent=on?fmtClock(S.loot2xUntil-Date.now()):"НЕАКТИВНО"; }
-  $("findChance").textContent=Math.round(findChance());
-  { const mn=$("refMinerName"); if(mn) mn.textContent=playerName().toUpperCase(); }
+    if(ll) setTxt(ll,on?fmtClock(S.loot2xUntil-Date.now()):"НЕАКТИВНО"); }
+  setTxt("findChance",Math.round(findChance()));
+  { const mn=$("refMinerName"); if(mn) setTxt(mn,playerName().toUpperCase()); }
   { const df=$("refDifficulty"), sl=$("statLoot");
     const dtxt=((rock&&rock.isBoss)?"БОСС":"БРУТАЛЬНАЯ");
-    if(df){ df.textContent=dtxt; if(df.classList) df.classList.toggle("tag", true); }
-    if(sl) sl.textContent=dtxt;
+    if(df){ setTxt(df,dtxt); if(df.classList) df.classList.toggle("tag", true); }
+    if(sl) setTxt(sl,dtxt);
   }
-  $("speedBtn").textContent="×"+(S.speed||1)+" СКОРОСТЬ";
-  $("bagLvl").textContent=S.bag;
-  $("dropCh").textContent=DROP_CHANCE;
-  $("bagTier").textContent=bagName(S.bag);
+  setTxt("speedBtn","×"+(S.speed||1)+" СКОРОСТЬ");
+  setTxt("bagLvl",S.bag);
+  setTxt("dropCh",DROP_CHANCE);
+  setTxt("bagTier",bagName(S.bag));
   const nb=nextBagName(S.bag);
-  $("bagNext").textContent=nb?("до «"+nb[1]+"»: "+(nb[0]-S.bag)+" ур."):"предел жадности достигнут";
+  setTxt("bagNext",nb?("до «"+nb[1]+"»: "+(nb[0]-S.bag)+" ур."):"предел жадности достигнут");
   // FTUE-подсказки: пульс только когда якорь доступен; toggle — не дёргаем класс каждый кадр
   { const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
     UPGRADES.forEach(u=>{
@@ -2598,50 +2624,50 @@ function render(){
   }
   { const ob=$("lootChest");
     if(ob&&ob.classList) ob.classList.toggle("pulse", !!(S.ftue && !S.ftue.c && (S.bags||0)>0)); }
-  if($("bagCount")) $("bagCount").textContent=fmt(S.bags||0);
+  if($("bagCount")) setTxt("bagCount",fmt(S.bags||0));
   /* bag area on main screen */
-  if($("bagBadge2")){ const n=S.bags||0; $("bagBadge2").textContent=n>99?"99+":n; $("bagBadge2").style.display=n>0?"flex":"none"; }
-  if($("bagAreaLvl")) $("bagAreaLvl").textContent="СИЛА УР "+S.bag;
-  if($("bagAreaTimer")){ const bt=$("bagAreaTimer"); bt.textContent=bagUpgrading()?(bagUpgradeLeft()+"с до ур."+(S.bag+1)):""; }
-  { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){ ab.classList.toggle("on",!!S.autoRoll); const l=$("autoLbl2"); if(l) l.textContent=S.autoRoll?"ВКЛ":"ВЫКЛ"; } }
+  if($("bagBadge2")){ const n=S.bags||0; setTxt("bagBadge2",n>99?"99+":n); $("bagBadge2").style.display=n>0?"flex":"none"; }
+  if($("bagAreaLvl")) setTxt("bagAreaLvl","СИЛА УР "+S.bag);
+  if($("bagAreaTimer")){ const bt=$("bagAreaTimer"); setTxt(bt,bagUpgrading()?(bagUpgradeLeft()+"с до ур."+(S.bag+1)):""); }
+  { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){ ab.classList.toggle("on",!!S.autoRoll); const l=$("autoLbl2"); if(l) setTxt(l,S.autoRoll?"ВКЛ":"ВЫКЛ"); } }
   { const lc=$("lootChest");
     if(lc){ const dim=(S.bags||0)<1;
       /* модалку открываем всегда (апгрейд сундука), но приглушаем без сумок / при Auto */
-      if(lc.style) lc.style.opacity=(dim||!!S.autoRoll)?"0.55":"1";
+      setOp(lc,(dim||!!S.autoRoll)?"0.55":"1");
       if(lc.classList) lc.classList.toggle("off", dim||!!S.autoRoll);
       if("disabled"in lc) lc.disabled=false; } }
   { const pu=$("powerUp");
     if(pu){
       const busy=bagUpgrading(), maxed=S.bag>=50, poor=!busy&&!maxed&&(S.gold||0)<bagCost();
       const off=maxed||poor;
-      if("disabled"in pu) pu.disabled=!!off;
-      if(pu.style) pu.style.opacity=off?"0.55":"1";
+      if("disabled"in pu){ if(pu.disabled!==!!off) pu.disabled=!!off; }
+      setOp(pu,off?"0.55":"1");
       if(pu.classList) pu.classList.toggle("off",!!off);
     }
   }
   if(S.geo){
     const g=GEO_TYPES[S.geo.t];
     const asc=(S.geo.asc||0)?(" ✦"+S.geo.asc):"";
-    $("geoName").innerHTML=`<span class="r${S.geo.r}">${S.geo.n||g.names[0]}${asc}</span>`;
-    $("geoDesc").innerHTML=GEO_RAR[S.geo.r]+" ур."+(S.geo.lv||1)+" · +"+Math.round(geoPct(S.geo))+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat])
-      +'<br><span style="color:var(--dim);font-size:7px">артель: '+geoMaterials()+' на слияние</span>';
+    setHtml("geoName",`<span class="r${S.geo.r}">${S.geo.n||g.names[0]}${asc}</span>`);
+    setHtml("geoDesc",GEO_RAR[S.geo.r]+" ур."+(S.geo.lv||1)+" · +"+Math.round(geoPct(S.geo))+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat])
+      +'<br><span style="color:var(--dim);font-size:7px">артель: '+geoMaterials()+' на слияние</span>');
   }
-  { const gr=$("geoRolls"); if(gr) gr.textContent=S.geoRolls; }
+  { const gr=$("geoRolls"); if(gr) setTxt(gr,S.geoRolls); }
   const mineKey=S.mine%MINES.length;
   { const got=Object.keys(S.col[mineKey]||{}).length;
-  $("colCount").textContent=got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":"")); }
+  setTxt("colCount",got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":""))); }
   UPGRADES.forEach(u=>{
     const d=$("u_"+u.id); if(!d) return;
     const btn=d.querySelector("button"), val=d.querySelector(".v"), cost=d.querySelector(".c");
     if(!btn||!val||!cost) return;
     const capped=statCapped(u.id);
     const c=upCost(u);
-    val.textContent=u.fmt(stat(u.id));
-    cost.textContent=capped?"MAX":(fmt(c)+" 🪙");
+    setTxt(val,u.fmt(stat(u.id)));
+    setTxt(cost,capped?"MAX":(fmt(c)+" 🪙"));
     const wantDisabled=capped||S.gold<c;
     if(btn.disabled!==wantDisabled) btn.disabled=wantDisabled;
     const txt=capped?"✓":"+";
-    if(btn.textContent!==txt) btn.textContent=txt;
+    if(btn.textContent!==txt) setTxt(btn,txt);
   });
   updateFtueHint();
 }
@@ -4589,6 +4615,10 @@ function togglePaperdoll(force){
 }
 function renderPaperdoll(){
   const pd=$("paperdoll"); if(!pd||!pd.appendChild) return;
+  let sig="";
+  for(const sl of SLOTS){ const it=S.gear[sl.id]; sig+=(it?(it.r+"|"+(it.n||"")):"-")+";"; }
+  if(pd._gearSig===sig) return;
+  pd._gearSig=sig;
   while(pd.firstChild && pd.removeChild) pd.removeChild(pd.firstChild);
   for(const sl of SLOTS){
     const pos=PD_POS[sl.id]; if(!pos) continue;
@@ -4606,19 +4636,30 @@ function renderPaperdoll(){
 function renderSetFx(){
   const active=BALANCE.dungeonSets.filter(s=>(S.sets||{})[s.id]);
   const aura=$("setAura"), ring=$("setRing");
+  const ids=active.map(s=>s.id).join(",");
+  const lv=S.prestigeLv||0;
+  const sig=ids+"|"+lv+"|"+fmt(prestigeMult());
   if(aura&&aura.style){
-    if(active.length){ aura.style.display="block";
-      aura.style.setProperty("--auraC",(SET_ART[active[0].id]||{}).c||"#e8b93c"); }
-    else aura.style.display="none";
+    if(active.length){ if(aura.style.display!=="block") aura.style.display="block";
+      const c=(SET_ART[active[0].id]||{}).c||"#e8b93c";
+      if(aura._auraC!==c){ aura._auraC=c; aura.style.setProperty("--auraC",c); }
+    }
+    else if(aura.style.display!=="none") aura.style.display="none";
   }
-  if(ring) ring.innerHTML=active.map(s=>{
-    const a=SET_ART[s.id]||{c:"var(--gold)",em:"⚒"};
-    return `<span style="color:${a.c}" title="${s.n}">${a.em}</span>`;
-  }).join("");
+  if(ring){
+    const html=active.map(s=>{
+      const a=SET_ART[s.id]||{c:"var(--gold)",em:"⚒"};
+      return `<span style="color:${a.c}" title="${s.n}">${a.em}</span>`;
+    }).join("");
+    setHtml(ring, html);
+  }
   const pm=$("prestigeMark");
-  if(pm){ const lv=S.prestigeLv||0;
-    if(lv>0){ pm.style.display="block"; pm.textContent="⛰ ПРЕСТИЖ "+lv+" · ×"+fmt(prestigeMult()); }
-    else pm.style.display="none"; }
+  if(pm){
+    if(lv>0){
+      if(pm.style.display!=="block") pm.style.display="block";
+      setTxt(pm,"⛰ ПРЕСТИЖ "+lv+" · ×"+fmt(prestigeMult()));
+    } else if(pm.style.display!=="none") pm.style.display="none";
+  }
 }
 function openWall(){
   const me=playerName();
