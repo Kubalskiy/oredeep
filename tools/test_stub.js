@@ -33,7 +33,11 @@ class FE {
 }
 const document={ getElementById:id=>{ if(!__ids[id]) __ids[id]=new FE("static"); return __ids[id]; },
   createElement:tag=>new FE(tag), addEventListener:()=>{}, visibilityState:"visible" };
-const window={ addEventListener:()=>{}, removeEventListener:()=>{} };
+const window={
+  addEventListener:()=>{}, removeEventListener:()=>{},
+  innerWidth:430, innerHeight:900,
+  getComputedStyle:()=>({ display:"block", visibility:"visible", opacity:"1" })
+};
 __HTML_IDS.forEach(i=>document.getElementById(i));
 const __store={};
 const localStorage={

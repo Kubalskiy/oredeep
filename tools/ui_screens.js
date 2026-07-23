@@ -43,6 +43,7 @@ const UIS={
     if(el.classList) el.classList.add("open");
     this.setChrome(true);
     Platform.logEvent("ui_screen",{id:this.id,tab:this.tab});
+    try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   },
   close(){
     if(typeof closeIntro==="function") closeIntro();
@@ -54,6 +55,7 @@ const UIS={
     }
     this.setChrome(false);
     this.id=null; this.tab=null;
+    try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   },
   setTab(t){
     this.tab=t;

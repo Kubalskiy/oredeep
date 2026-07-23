@@ -1013,9 +1013,20 @@ T("онбординг: жила 1 — гарантированный дроп", 
 breakVein();
 T("онбординг: жила 2 — скриптованный камень", uniqueStones()>=1);
 T("FTUE-подсказка в DOM", !!document.getElementById("ftueTip"));
-{ S.ftue={u:1,b:1,c:1,t:1,m:1,g:0}; S.stageIdx=10; S.introSeen=true; render();
+{ UIS.close(); if(typeof closeChest==="function") closeChest();
+  ["chestModal","metaModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay"].forEach(id=>{
+    const m=$(id); if(m&&m.style) m.style.display="none"; });
+  const intro=$("introOv"); if(intro&&intro.classList) intro.classList.remove("on");
+  S.ftue={u:1,b:1,c:1,t:1,m:1,g:0}; S.stageIdx=10; S.introSeen=true; render();
   const tip=$("ftueTip");
   T("подсказка Друзья показывается", tip && tip.style.display==="block" && tip._ftueStep==="g");
+  UIS.open("settings"); render();
+  T("подсказка скрыта на экране настроек", tip.style.display!=="block");
+  UIS.close(); render();
+  T("подсказка снова на главном экране", tip.style.display==="block" && tip._ftueStep==="g");
+  showIntro(); render();
+  T("подсказка скрыта при уставе", tip.style.display!=="block");
+  closeIntro(); render();
   const html0=tip.innerHTML; render(); render();
   T("подсказка не переписывает DOM каждый кадр", tip.innerHTML===html0);
   if(tip&&tip.onclick) tip.onclick({stopPropagation(){}, preventDefault(){}});
