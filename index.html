@@ -37,6 +37,8 @@
   --red:var(--danger);
   --blue:#5aa7e8;
   --c1:#2c2721; --c2:#171310; --gemc:#e8b93c;
+  /* #bottomNav: padding 4+4 + btn 52 + safe-area */
+  --bottom-nav-h: calc(60px + env(safe-area-inset-bottom, 0px));
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;height:100%;background:#0a0704;color:var(--textPrimary);
@@ -57,33 +59,38 @@ button:disabled{opacity:.45;cursor:default;}
 }
 @media(min-width:520px){ #app{ border-radius:20px; height:min(96vh, 980px); } }
 
-/* A. Шапка */
+/* A. Шапка — одна строка, согласованные кегли */
 #hud{
-  flex:none;display:flex;align-items:center;gap:10px;
-  padding:10px 12px;background:linear-gradient(180deg,#1f170d,#140f09);
+  flex:none;display:flex;align-items:center;gap:6px;
+  padding:8px 10px;background:linear-gradient(180deg,#1f170d,#140f09);
   border-bottom:2px solid var(--border);
 }
 #avatar{
-  width:44px;height:44px;min-width:44px;border-radius:50%;
+  width:40px;height:40px;min-width:40px;border-radius:50%;
   background:var(--bgPanelAlt);border:2px solid var(--borderLight);
-  display:flex;align-items:center;justify-content:center;font-size:22px;padding:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;padding:0;
 }
-#hud .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
-#nickname{font-family:var(--font-display);font-size:22px;color:var(--gold);letter-spacing:1px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;}
-#hudPrestige{font-size:11px;color:var(--goldMuted);}
-#hud .money{text-align:right;line-height:1.15;}
+#hud .who{flex:1 1 64px;min-width:0;max-width:120px;display:flex;flex-direction:column;gap:1px;}
+#nickname{font-family:var(--font-display);font-size:16px;color:var(--gold);letter-spacing:.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1;}
+#hudPrestige{font-size:10px;color:var(--goldMuted);line-height:1;}
+#hud .money{
+  display:flex;flex-direction:row;align-items:center;gap:5px;
+  flex:0 1 auto;min-width:0;text-align:right;flex-wrap:nowrap;
+}
 #gemsBtn{
-  display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;
-  background:var(--bgPanel);border:1px solid var(--border);min-height:28px;
-  font-family:var(--font-display);font-size:18px;color:#f0c0c8;
+  display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:999px;
+  background:var(--bgPanel);border:1px solid var(--border);min-height:26px;
+  font-family:var(--font-display);font-size:14px;color:#f0c0c8;flex:none;line-height:1;
 }
-#gold{font-family:var(--font-display);font-size:28px;color:var(--gold);display:block;}
-#income{font-family:var(--font-display);font-size:16px;color:var(--income);}
+#gold{font-family:var(--font-display);font-size:17px;color:var(--gold);
+  display:inline;white-space:nowrap;line-height:1;}
+#income{font-family:var(--font-display);font-size:13px;color:var(--income);white-space:nowrap;line-height:1;}
+#streakLine{font-family:var(--font-display);font-size:12px;color:#ff9d5c;white-space:nowrap;line-height:1;}
 #menu{
-  width:44px;height:44px;min-width:44px;border-radius:var(--r-sm);
+  width:40px;height:40px;min-width:40px;border-radius:var(--r-sm);
   background:var(--bgPanelAlt);border:2px solid var(--borderLight);
-  font-size:20px;color:var(--textPrimary);
+  font-size:18px;color:var(--textPrimary);
 }
 
 /* B. Статус */
@@ -96,9 +103,11 @@ button:disabled{opacity:.45;cursor:default;}
   padding:7px 6px;text-align:center;
 }
 #statusBar .k{font-size:10px;letter-spacing:1px;color:var(--textMuted);font-family:var(--font-display);}
-#statusBar .v{font-family:var(--font-display);font-size:18px;color:var(--textPrimary);margin-top:2px;}
+#statusBar .v{font-family:var(--font-display);font-size:16px;color:var(--textPrimary);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #statMine{color:#7eb6e8;}
 #statLoot{color:var(--goldMuted);}
+#statMiner{color:var(--gold);font-size:14px;}
 
 /* Скролл */
 #view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overflow-x:hidden;position:relative;}
@@ -288,10 +297,11 @@ button:disabled{opacity:.45;cursor:default;}
 .btn-danger,button.red{background:linear-gradient(180deg,#7a2f2f,#5e2222);color:#fff;border-radius:var(--r-sm);padding:9px 6px;}
 .btn:disabled,.btn[disabled]{opacity:.45;cursor:default;}
 
-/* H. Нижняя навигация */
+/* H. Нижняя навигация — всегда видна; выше uiScreen, модалки в #app с отступом снизу */
 #bottomNav{
   flex:none;display:flex;background:#100c08;border-top:2px solid var(--border);
   padding:4px 4px calc(4px + env(safe-area-inset-bottom));
+  position:relative;z-index:220;
 }
 .btn-nav{
   position:relative;flex:1;min-height:52px;border-radius:var(--r-sm);
@@ -307,10 +317,16 @@ button:disabled{opacity:.45;cursor:default;}
 .btn-nav .up{position:absolute;top:2px;right:calc(50% - 18px);color:var(--income);font-size:12px;display:none;}
 .btn-nav .up.on{display:block;}
 
-/* UI shells — полноэкранно поверх #app (закрывает и bottomNav) */
-#uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;pointer-events:none;}
-#uiScreen.open{display:flex;pointer-events:auto;}
-#app.uiOpen #bottomNav{display:none;}
+/* UI shells — над контентом, но над футером не залезаем */
+#uiScreen{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg);
+  display:none;flex-direction:column;overflow:hidden;pointer-events:none;
+}
+#app.uiOpen #uiScreen{
+  /* место под bottomNav — футер не перекрывает контент таба */
+  bottom:var(--bottom-nav-h);
+}
+#uiScreen.open{display:flex !important;pointer-events:auto;}
 #app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble{visibility:hidden;}
 .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bgPanel);border-bottom:2px solid var(--border);flex:none;}
 .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--border);background:var(--bgPanelAlt);color:var(--gold);font-size:16px;}
@@ -364,8 +380,16 @@ button:disabled{opacity:.45;cursor:default;}
 .dot{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--danger);display:none;}
 .dot.on{display:block;}
 
-.modal{position:fixed;inset:0;background:#000b;z-index:80;display:none;align-items:flex-end;justify-content:center;}
-.modal .box{background:var(--bgPanel);width:100%;max-width:430px;max-height:80%;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;border:1px solid var(--border);}
+/* Модалки внутри #app — absolute, лист над футером */
+#app > .modal{
+  position:absolute;top:0;left:0;right:0;bottom:var(--bottom-nav-h);
+  background:#000b;z-index:210;display:none;align-items:flex-end;justify-content:center;
+}
+/* Модалки вне #app — fixed, над всем включая навбар */
+body > .modal{
+  position:fixed;inset:0;background:#000b;z-index:300;display:none;align-items:flex-end;justify-content:center;
+}
+.modal .box{background:var(--bgPanel);width:100%;max-width:430px;max-height:min(80%,100%);overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;border:1px solid var(--border);}
 .modal h3{margin:0 0 4px;color:var(--gold);font-family:var(--font-display);font-size:22px;}
 .modal .sub{font-size:12px;color:var(--textMuted);margin-bottom:10px;}
 .metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--border);font-size:13px;gap:8px;}
@@ -618,10 +642,13 @@ button:disabled{opacity:.45;cursor:default;}
   #overlay .big{margin-bottom:4px;}
 
 
-/* UIS FULL — поверх всего #app, футер скрыт классом uiOpen */
-#uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;pointer-events:none;}
-  #uiScreen.open{display:flex;pointer-events:auto;}
-  #app.uiOpen #bottomNav{display:none;}
+/* UIS FULL — над контентом, футер (#bottomNav) всегда виден */
+#uiScreen{
+    position:absolute;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg);
+    display:none;flex-direction:column;overflow:hidden;pointer-events:none;
+  }
+  #app.uiOpen #uiScreen{ bottom:var(--bottom-nav-h); }
+  #uiScreen.open{display:flex !important;pointer-events:auto;}
   #app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble{visibility:hidden;}
   .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--panel);border-bottom:2px solid var(--line);flex:none;}
   .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--line);background:#12151d;color:var(--gold);font-size:16px;flex:none;}
@@ -696,14 +723,14 @@ button:disabled{opacity:.45;cursor:default;}
       <button type="button" id="gemsBtn" onclick="UIS.open('shop','gems')">💎 <span id="gems">0</span></button>
       <span id="gold">0</span>
       <div id="income">+<span id="gps">0</span>/ч</div>
-      <div id="streakLine" style="font-size:11px;color:#ff9d5c"></div>
+      <div id="streakLine"></div>
     </div>
     <button type="button" id="menu" title="меню">☰</button>
   </header>
 
   <!-- B. Статус -->
   <div id="statusBar">
-    <div class="cell"><div class="k">ШАХТЁР</div><div class="v" id="statMiner">—</div></div>
+    <div class="cell"><div class="k">РАНГ</div><div class="v" id="statMiner" title="Звание по бороде">—</div></div>
     <div class="cell"><div class="k">ШТОЛЬНЯ</div><div class="v" id="statMine">1-1</div></div>
     <div class="cell"><div class="k">ДОБЫЧА</div><div class="v" id="statLoot">—</div></div>
   </div>
@@ -855,7 +882,7 @@ button:disabled{opacity:.45;cursor:default;}
     <button type="button" class="btn btn-nav" id="navPvp"><span class="ni">⚔</span><span class="nl">ПВП</span></button>
   </nav>
 
-  <!-- Полноэкранные табы: поверх view + bottomNav, футер главного экрана не виден -->
+  <!-- Полноэкранные табы: над view, снизу место под #bottomNav -->
   <div id="uiScreen" style="display:none">
     <div class="uiHead">
       <button class="btn btn-back" onclick="UIS.close()">‹</button>
@@ -939,7 +966,7 @@ button:disabled{opacity:.45;cursor:default;}
 
   <div class="modal" id="chestModal">
     <div class="box"><div id="chestCard"></div>
-      <button style="margin-top:12px" onclick="document.getElementById('chestModal').style.display='none'">Закрыть</button>
+      <button style="margin-top:12px" onclick="closeChest()">Закрыть</button>
     </div>
   </div>
 
@@ -1788,7 +1815,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:false, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
     growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
       waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
       ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
@@ -2464,7 +2491,11 @@ function render(){
 
   $("minerRank").textContent=beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):"");
   { const nick=$("nickname"); if(nick) nick.textContent=playerName().toUpperCase();
-    const sm=$("statMiner"); if(sm) sm.textContent=playerName().toUpperCase();
+    const w=beardWisdom();
+    const sm=$("statMiner"); if(sm){
+      sm.textContent=w.title;
+      sm.title=w.title+((S.prestigeLv||0)?(" · престиж "+S.prestigeLv):"");
+    }
     const sn=$("statMine"); if(sn) sn.textContent=(S.mine+1)+"-"+S.stage;
     const hp=$("hudPrestige"); if(hp) hp.textContent=(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""; }
 
@@ -2786,8 +2817,6 @@ function openCollection(){
 function resetProgress(){
   if(confirm("Точно всё сначала? Гора помнит, но простит.")){
     wipeSave(); S=ensureAll(freshState()); newRock(); save(); renderGear(); render();
-    /* Новый спуск — Устав снова один раз (как у первого игрока). */
-    try{ showIntro(); }catch(e){}
   }
 }
 
@@ -3808,7 +3837,14 @@ function renderChestCard(){
 function openChest(){
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1;
     const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
-  chestPending=null; renderChestCard(); $("chestModal").style.display="flex"; Platform.logEvent("chest_view",{lv:S.bag}); }
+  chestPending=null; renderChestCard(); $("chestModal").style.display="flex";
+  try{ if(typeof UIS!=="undefined"&&UIS.setChrome) UIS.setChrome(true); }catch(e){}
+  Platform.logEvent("chest_view",{lv:S.bag});
+}
+function closeChest(){
+  const m=$("chestModal"); if(m) m.style.display="none";
+  try{ if(typeof UIS!=="undefined"&&!UIS.id&&UIS.setChrome) UIS.setChrome(false); }catch(e){}
+}
 function chestOpenOne(){
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return; }
   S.bags--; dailyProgress("bag",1);
@@ -4416,9 +4452,9 @@ function showIntro(){
   const ov=$("introOv"); if(ov&&ov.classList) ov.classList.add("on");
   Platform.logEvent("intro_open",{});
 }
-/* Автопоказ: только новый сейв или после «Всё сначала». Не на каждый reload. */
+/* Автопоказ отключён: Устав только вручную из настроек. */
 function maybeAutoIntro(){
-  if(S && S.introSeen===false) showIntro();
+  if(S && S.introSeen===false){ S.introSeen=true; save(); }
 }
 function closeIntro(){
   const ov=$("introOv"); if(ov&&ov.classList) ov.classList.remove("on");
@@ -4978,6 +5014,6 @@ bindSaveLifecycle();
   }
 })();
 </script>
-<script src="tools/ui_screens.js"></script>
+<script src="tools/ui_screens.js?v=4"></script>
 </body>
 </html>

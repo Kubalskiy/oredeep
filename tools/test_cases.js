@@ -672,22 +672,16 @@ renderPaperdoll();
 
 console.log("\n[35] Интро «Устав Горы»");
 localStorage.removeItem("oredeep_v3"); load();
-T("новый игрок интро ещё не видел", S.introSeen===false);
+T("новый игрок без автопоказа Устава", S.introSeen===true && !__ids.introOv.classList.contains("on"));
 maybeAutoIntro();
-T("автопоказ на первом старте", __ids.introOv.classList.contains("on"));
-closeIntro();
-T("после прочтения интро закрыто и помечено", !__ids.introOv.classList.contains("on") && S.introSeen===true);
-{ const ov=$("introOv"); if(ov&&ov.classList) ov.classList.remove("on");
-  maybeAutoIntro();
-  T("повторный вход не показывает Устав", !__ids.introOv.classList.contains("on") && S.introSeen===true); }
+T("maybeAutoIntro не открывает оверлей", !__ids.introOv.classList.contains("on"));
 T("старым сейвам интро не показываем", (function(){ const d={}; ensureIntro(d); return d.introSeen===true; })());
 { showIntro();
   T("ручное «читать» открывает Устав", __ids.introOv.classList.contains("on") && (__ids.introList.innerHTML.match(/class="iitem"/g)||[]).length===CODEX.length);
-  closeIntro(); }
-{ resetProgress();
-  T("сброс прогресса снова требует Устав", S.introSeen===false && __ids.introOv.classList.contains("on"));
   closeIntro();
-  T("после сброса и прочтения снова помечено", S.introSeen===true && !__ids.introOv.classList.contains("on")); }
+  T("после ручного прочтения закрыто", !__ids.introOv.classList.contains("on") && S.introSeen===true); }
+{ resetProgress();
+  T("сброс не показывает Устав", !__ids.introOv.classList.contains("on") && S.introSeen===true); }
 
 console.log("\n[36] Гильдия Рудознатцев (краудсорсинг)");
 localStorage.removeItem("oredeep_v3"); load();

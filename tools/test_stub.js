@@ -22,6 +22,7 @@ class FE {
   get firstChild(){ return this.children[0]; }
   setAttribute(k,v){ this._attrs=this._attrs||{}; this._attrs[k]=v; }
   getAttribute(k){ return (this._attrs||{})[k]; }
+  removeAttribute(k){ if(this._attrs) delete this._attrs[k]; }
   remove(){}
   addEventListener(){}
   removeEventListener(){}

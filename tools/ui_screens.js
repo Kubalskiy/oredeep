@@ -26,12 +26,21 @@ const UI_TAV_RANKS=[
 const UIS={
   id:null, tab:null,
   $(id){ return document.getElementById(id); },
+  setChrome(hidden){
+    /* Футер (#bottomNav) всегда виден — гасим только верхнюю шапку. */
+    const app=this.$("app"), nav=this.$("bottomNav");
+    if(app&&app.classList) app.classList.toggle("uiOpen", !!hidden);
+    if(nav){
+      nav.style.display="";
+      nav.removeAttribute("aria-hidden");
+    }
+  },
   show(){
     const el=this.$("uiScreen"); if(!el) return;
     el.style.display="flex";
     el.style.pointerEvents="auto";
     if(el.classList) el.classList.add("open");
-    const app=this.$("app"); if(app&&app.classList) app.classList.add("uiOpen");
+    this.setChrome(true);
     Platform.logEvent("ui_screen",{id:this.id,tab:this.tab});
   },
   close(){
@@ -41,7 +50,7 @@ const UIS={
       el.style.pointerEvents="none";
       if(el.classList) el.classList.remove("open");
     }
-    const app=this.$("app"); if(app&&app.classList) app.classList.remove("uiOpen");
+    this.setChrome(false);
     this.id=null; this.tab=null;
   },
   setTab(t){
