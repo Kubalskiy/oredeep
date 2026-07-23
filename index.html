@@ -307,9 +307,11 @@ button:disabled{opacity:.45;cursor:default;}
 .btn-nav .up{position:absolute;top:2px;right:calc(50% - 18px);color:var(--income);font-size:12px;display:none;}
 .btn-nav .up.on{display:block;}
 
-/* UI shells / modals (минимальный слой поверх) */
+/* UI shells — полноэкранно поверх #app (закрывает и bottomNav) */
 #uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;pointer-events:none;}
 #uiScreen.open{display:flex;pointer-events:auto;}
+#app.uiOpen #bottomNav{display:none;}
+#app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble{visibility:hidden;}
 .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bgPanel);border-bottom:2px solid var(--border);flex:none;}
 .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--border);background:var(--bgPanelAlt);color:var(--gold);font-size:16px;}
 .uiTitle{flex:1;font-family:var(--font-display);font-size:20px;color:var(--gold);}
@@ -403,6 +405,33 @@ button:disabled{opacity:.45;cursor:default;}
 .btnrow{display:flex;gap:8px;}
 .btnrow button{flex:1;}
 .chDrop,.chUp,.setHead,.setFrags,.specWrap,.curbar{/* kept class hooks */}
+.chUp{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.chUpHead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.chUpTitle{font-family:var(--font-display);font-size:24px;color:var(--gold);letter-spacing:1px;line-height:1;}
+.chUpLvl{font-size:13px;color:var(--textMuted);white-space:nowrap;}
+.chCols{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start;}
+.chCol{background:var(--bgPanelAlt);border:1px solid var(--border);border-radius:10px;padding:8px 8px 6px;min-width:0;}
+.chColT{font-family:var(--font-display);font-size:18px;color:var(--gold);letter-spacing:1px;
+  text-align:center;margin:0 0 8px;text-transform:uppercase;line-height:1.1;}
+.chRow{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;
+  gap:1px 6px;align-items:center;padding:4px 0;border-bottom:1px solid #ffffff0a;}
+.chRow:last-child{border-bottom:0;}
+.chNm{font-size:11px;font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chPc{font-size:12px;color:var(--textPrimary);font-variant-numeric:tabular-nums;font-weight:600;}
+.chBar{grid-column:1/-1;height:4px;background:#0007;border-radius:3px;overflow:hidden;}
+.chFill{height:100%;border-radius:3px;}
+.br0b{background:#b9c0cc}.br1b{background:#5fd068}.br2b{background:#5aa7e8}.br3b{background:#b97ae8}
+.br4b{background:#e87a7a}.br5b{background:#e8b93c}.br6b{background:#7ae8dc}.br7b{background:#ff9d5c}
+.chTimer{margin-top:8px;}
+.chTimerBar{height:6px;background:#0007;border-radius:4px;overflow:hidden;margin-bottom:4px;}
+.chTimerFill{height:100%;background:linear-gradient(90deg,var(--goldMuted),var(--gold));}
+.chDrop{margin-top:10px;padding:10px;border:2px solid var(--borderLight);border-radius:12px;background:var(--bgPanelAlt);}
+.chDropTop{display:flex;gap:10px;align-items:center;}
+.chIc{font-size:28px;}
+.chSts{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-top:8px;}
+.chSt{display:flex;justify-content:space-between;font-size:12px;color:var(--textMuted);}
+.chSt b{color:var(--gold);}
+.chOpen{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
 .curbar{display:none;}
 .statimg{width:16px;height:16px;image-rendering:pixelated;}
 #legacy{display:none !important;}
@@ -589,9 +618,11 @@ button:disabled{opacity:.45;cursor:default;}
   #overlay .big{margin-bottom:4px;}
 
 
-/* UIS FULL */
+/* UIS FULL — поверх всего #app, футер скрыт классом uiOpen */
 #uiScreen{position:absolute;inset:0;z-index:95;background:var(--bg);display:none;flex-direction:column;overflow:hidden;pointer-events:none;}
   #uiScreen.open{display:flex;pointer-events:auto;}
+  #app.uiOpen #bottomNav{display:none;}
+  #app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble{visibility:hidden;}
   .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--panel);border-bottom:2px solid var(--line);flex:none;}
   .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--line);background:#12151d;color:var(--gold);font-size:16px;flex:none;}
   .uiTitle{flex:1;font-size:10px;color:var(--gold);line-height:1.4;}
@@ -813,16 +844,6 @@ button:disabled{opacity:.45;cursor:default;}
     </div>
 
     <div id="upgrades"></div>
-
-    <div id="uiScreen" style="display:none">
-      <div class="uiHead">
-        <button class="btn btn-back" onclick="UIS.close()">‹</button>
-        <div class="uiTitle" id="uiTitle"></div>
-        <div class="uiHeadAct" id="uiHeadAct"></div>
-      </div>
-      <div id="uiTabs"></div>
-      <div class="uiBody" id="uiBody"></div>
-    </div>
   </div>
 
   <!-- H. Нижняя навигация -->
@@ -833,6 +854,17 @@ button:disabled{opacity:.45;cursor:default;}
     <button type="button" class="btn btn-nav" id="navTavBtn"><span class="ni">🍺</span><span class="nl">ТАВЕРНА</span></button>
     <button type="button" class="btn btn-nav" id="navPvp"><span class="ni">⚔</span><span class="nl">ПВП</span></button>
   </nav>
+
+  <!-- Полноэкранные табы: поверх view + bottomNav, футер главного экрана не виден -->
+  <div id="uiScreen" style="display:none">
+    <div class="uiHead">
+      <button class="btn btn-back" onclick="UIS.close()">‹</button>
+      <div class="uiTitle" id="uiTitle"></div>
+      <div class="uiHeadAct" id="uiHeadAct"></div>
+    </div>
+    <div id="uiTabs"></div>
+    <div class="uiBody" id="uiBody"></div>
+  </div>
 
   <!-- Скрытый HUD/мост: только данные и вкладки (кнопки-дубли убраны) -->
   <div id="legacy" aria-hidden="true">
@@ -3755,9 +3787,9 @@ function renderChestCard(){
     upBlock='<div class="chUp"><div class="sub" style="text-align:center">Предел жадности достигнут — сундук прокачан до конца.</div></div>';
   } else {
     upBlock='<div class="chUp">'
-      +'<div class="chUpHead"><span>Шансы дропа</span><span class="sub">ур.'+lvl+' → '+(lvl+1)+'</span></div>'
-      +'<div class="chCols"><div class="chCol"><div class="chColT sub">сейчас</div>'+chestChanceRows(lvl)+'</div>'
-      +'<div class="chCol"><div class="chColT sub">после</div>'+chestChanceRows(lvl+1)+'</div></div>'
+      +'<div class="chUpHead"><span class="chUpTitle">Шансы дропа</span><span class="chUpLvl">ур.'+lvl+' → '+(lvl+1)+'</span></div>'
+      +'<div class="chCols"><div class="chCol"><div class="chColT">сейчас</div>'+chestChanceRows(lvl)+'</div>'
+      +'<div class="chCol"><div class="chColT">после</div>'+chestChanceRows(lvl+1)+'</div></div>'
       +(nb?('<div class="sub" style="margin-top:6px;text-align:center">до «'+nb[1]+'»: '+(nb[0]-lvl)+' ур.</div>'):'')
       +'<div class="chTimer"><div class="chTimerBar"><div class="chTimerFill" style="width:'+timerPct.toFixed(1)+'%"></div></div>'
       +'<span class="sub" id="chTimerLbl">'+timerLbl+'</span></div>'

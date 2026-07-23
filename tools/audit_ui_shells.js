@@ -29,6 +29,7 @@
     T(id + " → uiScreen", document.getElementById("uiScreen").style.display === "flex");
     T(id + " metaModal закрыт", document.getElementById("metaModal").style.display !== "flex");
     T(id + " uiBody не пуст", (document.getElementById("uiBody").innerHTML || "").length > 20);
+    T(id + " скрывает футер", document.getElementById("app").classList.contains("uiOpen"));
   }
 
   const metaPanels = [
@@ -50,10 +51,12 @@
     open();
     T(id + " (legacy) → uiScreen", document.getElementById("uiScreen").style.display === "flex");
     T(id + " metaModal не используется", document.getElementById("metaModal").style.display !== "flex");
+    T(id + " (legacy) скрывает футер", document.getElementById("app").classList.contains("uiOpen"));
   }
 
   closeAllPanels();
   T("UIS.close закрывает экран", document.getElementById("uiScreen").style.display !== "flex");
+  T("UIS.close возвращает футер", !document.getElementById("app").classList.contains("uiOpen"));
 
   console.log("\n========== UI SHELLS: " + pass + " PASS, " + fail + " FAIL ==========");
   globalThis.__uiShellFail = fail;

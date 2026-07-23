@@ -31,6 +31,7 @@ const UIS={
     el.style.display="flex";
     el.style.pointerEvents="auto";
     if(el.classList) el.classList.add("open");
+    const app=this.$("app"); if(app&&app.classList) app.classList.add("uiOpen");
     Platform.logEvent("ui_screen",{id:this.id,tab:this.tab});
   },
   close(){
@@ -40,6 +41,7 @@ const UIS={
       el.style.pointerEvents="none";
       if(el.classList) el.classList.remove("open");
     }
+    const app=this.$("app"); if(app&&app.classList) app.classList.remove("uiOpen");
     this.id=null; this.tab=null;
   },
   setTab(t){

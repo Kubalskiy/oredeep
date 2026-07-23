@@ -980,6 +980,9 @@ openChest();
 T("окно сундука открывается", __ids.chestModal.style.display==="flex");
 T("карточка сундука отрендерена", __ids.chestCard.innerHTML.indexOf("Сундук находок")>=0);
 T("таблица шансов присутствует", __ids.chestCard.innerHTML.indexOf("Шансы дропа")>=0);
+T("шансы в две колонки", __ids.chestCard.innerHTML.indexOf("chCols")>=0
+  && __ids.chestCard.innerHTML.indexOf(">сейчас<")>=0
+  && __ids.chestCard.innerHTML.indexOf(">после<")>=0);
 S.bags=3; chestOpenOne();
 T("открытие сундука тратит сумку и готовит предмет", S.bags===2 && !!chestPending);
 { const g0=S.gold; sellChestItem(); T("продажа даёт золото и сбрасывает предмет", S.gold>g0 && chestPending===null); }
