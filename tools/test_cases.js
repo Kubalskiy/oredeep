@@ -1017,9 +1017,15 @@ T("FTUE-подсказка в DOM", !!document.getElementById("ftueTip"));
   ["chestModal","metaModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay"].forEach(id=>{
     const m=$(id); if(m&&m.style) m.style.display="none"; });
   const intro=$("introOv"); if(intro&&intro.classList) intro.classList.remove("on");
-  S.ftue={u:1,b:1,c:1,t:1,m:1,g:0}; S.stageIdx=10; S.introSeen=true; render();
+  S.ftue={u:1,b:1,c:1,t:1,m:1,g:0}; S.stageIdx=10; S.introSeen=true;
+  const app=$("app"), av=$("avatar");
+  app.getBoundingClientRect=()=>({left:700,top:0,right:1180,bottom:900,width:480,height:900,x:700,y:0});
+  av.getBoundingClientRect=()=>({left:708,top:12,right:748,bottom:52,width:40,height:40,x:708,y:12});
+  window.innerWidth=1920; window.innerHeight=900;
+  render();
   const tip=$("ftueTip");
   T("подсказка Друзья показывается", tip && tip.style.display==="block" && tip._ftueStep==="g");
+  T("подсказка Друзья внутри #app", tip._ftueLeft>=700 && tip._ftueLeft<=1180-120);
   UIS.open("settings"); render();
   T("подсказка скрыта на экране настроек", tip.style.display!=="block");
   UIS.close(); render();

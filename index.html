@@ -125,15 +125,15 @@ button:disabled{opacity:.45;cursor:default;}
 #scene.t4{--c1:#272033;--c2:#151021;--gemc:#b97ae8;}
 #decor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
 
-#sideMenu{position:absolute;left:8px;top:40px;display:flex;flex-direction:column;gap:6px;z-index:8;}
+#sideMenu{position:absolute;left:8px;top:18px;display:flex;flex-direction:column;gap:4px;z-index:8;}
 #sideMenu .btn-side{
-  width:52px;min-height:52px;border-radius:var(--r-sm);
+  width:52px;min-height:48px;border-radius:var(--r-sm);
   background:var(--bgPanelAlt);border:2px solid var(--borderLight);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-size:9px;color:var(--textMuted);padding:4px;position:relative;
+  font-size:9px;color:var(--textMuted);padding:3px;position:relative;
   font-family:var(--font-display);letter-spacing:.5px;
 }
-#sideMenu .btn-side b{font-size:18px;line-height:1;margin-bottom:2px;color:var(--gold);}
+#sideMenu .btn-side b{font-size:17px;line-height:1;margin-bottom:1px;color:var(--gold);}
 #sideMenu .dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;
   background:var(--danger);display:none;box-shadow:0 0 6px var(--danger);}
 #sideMenu .dot.on{display:block;}
@@ -2563,10 +2563,13 @@ function render(){
   const nb=nextBagName(S.bag);
   $("bagNext").textContent=nb?("до «"+nb[1]+"»: "+(nb[0]-S.bag)+" ур."):"предел жадности достигнут";
   // FTUE-подсказки: пульс только когда якорь доступен; toggle — не дёргаем класс каждый кадр
-  if(S.ftue && !S.ftue.u){
-    const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
-    const row=$("u_"+cheapest.id), btn=row&&row.querySelector("button");
-    if(btn&&btn.classList) btn.classList.toggle("pulse", S.gold>=upCost(cheapest));
+  { const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
+    UPGRADES.forEach(u=>{
+      const row=$("u_"+u.id), btn=row&&row.querySelector("button");
+      if(!btn||!btn.classList) return;
+      const want=!!(S.ftue && !S.ftue.u && u.id===cheapest.id && S.gold>=upCost(cheapest));
+      btn.classList.toggle("pulse", want);
+    });
   }
   { const pu=$("powerUp");
     if(pu&&pu.classList){
@@ -2613,10 +2616,13 @@ function render(){
     const btn=d.querySelector("button"), val=d.querySelector(".v"), cost=d.querySelector(".c");
     if(!btn||!val||!cost) return;
     const capped=statCapped(u.id);
+    const c=upCost(u);
     val.textContent=u.fmt(stat(u.id));
-    cost.textContent=capped?"MAX":(fmt(upCost(u))+" 🪙");
-    btn.disabled=capped||S.gold<upCost(u);
-    btn.textContent=capped?"✓":"+";
+    cost.textContent=capped?"MAX":(fmt(c)+" 🪙");
+    const wantDisabled=capped||S.gold<c;
+    if(btn.disabled!==wantDisabled) btn.disabled=wantDisabled;
+    const txt=capped?"✓":"+";
+    if(btn.textContent!==txt) btn.textContent=txt;
   });
   updateFtueHint();
 }
@@ -2657,6 +2663,28 @@ function ftueAnchorVisible(el){
   }
   return true;
 }
+/** Область для FTUE-подсказки: внутри #app, над нижней навигацией. */
+function ftueAppBounds(pad){
+  pad=pad||8;
+  const vw=window.innerWidth||430, vh=window.innerHeight||900;
+  let left=pad, top=pad, right=vw-pad, bottom=vh-pad;
+  const app=$("app");
+  if(app&&app.getBoundingClientRect){
+    const ar=app.getBoundingClientRect();
+    if(ar.width>1&&ar.height>1){
+      left=Math.max(left, ar.left+pad);
+      top=Math.max(top, ar.top+pad);
+      right=Math.min(right, ar.right-pad);
+      bottom=Math.min(bottom, ar.bottom-pad);
+    }
+  }
+  const nav=$("bottomNav");
+  if(nav&&nav.getBoundingClientRect){
+    const nr=nav.getBoundingClientRect();
+    if(nr.top>top+40) bottom=Math.min(bottom, nr.top-pad);
+  }
+  return { left, top, right, bottom };
+}
 function updateFtueHint(){
   const tip=$("ftueTip"); if(!tip||!S||!S.ftue||S.introSeen===false) return;
   if(ftueOverlayOpen()){ hideFtueTip(tip); return; }
@@ -2671,7 +2699,8 @@ function updateFtueHint(){
   } else if(!S.ftue.t && S.ftue.b && S.stageIdx>=5){
     el=$("navTavBtn"); step="t"; msg="<b>ТАВЕРНА</b>Бороды, питомцы, застолья";
   } else if(!S.ftue.g && S.ftue.t && S.stageIdx>=8){
-    el=$("friendsBtn"); step="g"; msg="<b>ДРУЗЬЯ</b>Пригласи — кооп-буст без рекламы";
+    step="g"; msg="<b>ДРУЗЬЯ</b>Профиль → пригласи, кооп-буст без рекламы";
+    el=$("avatar");
   }
   if(!el||!step||!ftueAnchorVisible(el)){ hideFtueTip(tip); return; }
   const r=el.getBoundingClientRect();
@@ -2685,16 +2714,19 @@ function updateFtueHint(){
   }
   tip.style.display="block";
   tip.style.visibility="visible";
-  const tw=Math.min(tip.offsetWidth||210, window.innerWidth-16);
+  const bounds=ftueAppBounds(8);
+  const maxW=Math.max(120, bounds.right-bounds.left);
+  const tw=Math.min(tip.offsetWidth||210, maxW);
   const th=tip.offsetHeight||56;
   const pad=8;
   let left=r.left+r.width/2-tw/2;
-  left=Math.max(pad, Math.min(window.innerWidth-tw-pad, left));
-  const preferAbove=r.top>window.innerHeight*0.45;
+  left=Math.max(bounds.left, Math.min(bounds.right-tw, left));
+  const midY=(bounds.top+bounds.bottom)/2;
+  const preferAbove=r.top+r.height/2>midY;
   let top=preferAbove ? (r.top-th-10) : (r.bottom+10);
-  if(top<pad) top=Math.min(window.innerHeight-th-pad, r.bottom+10);
-  if(top+th>window.innerHeight-pad) top=Math.max(pad, r.top-th-10);
-  top=Math.max(pad, Math.min(window.innerHeight-th-pad, top));
+  if(top<bounds.top) top=Math.min(bounds.bottom-th, r.bottom+10);
+  if(top+th>bounds.bottom) top=Math.max(bounds.top, r.top-th-10);
+  top=Math.max(bounds.top, Math.min(bounds.bottom-th, top));
   left=Math.round(left); top=Math.round(top);
   if(contentChanged || tip._ftueLeft!==left || tip._ftueTop!==top){
     tip.style.left=left+"px";
