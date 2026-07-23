@@ -196,6 +196,33 @@ S.stageIdx=1; newRock(); S.energy=1; const before=S.energy;
 sipAle();
 T("глоток эля восстанавливает энергию", S.energy>before);
 T("эль не превышает максимум", S.energy<=stat("energy"));
+{ UIS.open("tavern","mates");
+  const html=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("союзники: Борин → наставник", /openBorinMentor\(/.test(html));
+  T("союзники: Клан → заглушка", /openClanSoon\(/.test(html));
+  T("союзники: борода/питомец через push", /UIS\.push\('beards'/.test(html) && /UIS\.push\('pets'/.test(html));
+  T("союзники: нет прыжков по вкладкам", !/UIS\.setTab\('feast'\)/.test(html) && !/UIS\.setTab\('friends'\)/.test(html));
+  openBorinMentor();
+  T("Борин открывает свою карточку", UIS.id==="panel" && /Борин/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  UIS.back();
+  T("назад с Борина → Союзники", UIS.id==="tavern" && UIS.tab==="mates");
+  openClanSoon();
+  T("Клан открывает заглушку", UIS.id==="panel" && /Клан/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  UIS.back();
+  T("назад с Клана → Союзники", UIS.id==="tavern" && UIS.tab==="mates");
+  UIS.push("beards","gacha");
+  T("борода из союзников", UIS.id==="beards");
+  UIS.back();
+  T("назад с бороды → Союзники", UIS.id==="tavern" && UIS.tab==="mates");
+  UIS.push("pets","gacha");
+  UIS.back();
+  T("назад с питомца → Союзники", UIS.id==="tavern" && UIS.tab==="mates");
+  UIS.close(); }
+{ UIS.open("tavern","feast"); openWorkouts();
+  T("тренировки открываются поверх таверны", UIS.id==="panel" && /Улучшения-таймеры/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  UIS.back();
+  T("назад из тренировок → Застолья", UIS.id==="tavern" && UIS.tab==="feast");
+  UIS.close(); }
 // миграция старого сейва без бороды
 localStorage.setItem("oredeep_v3", JSON.stringify({gold:1,stageIdx:3}));
 load();
@@ -544,6 +571,12 @@ T("восхождение требует уровня", ascendGeo()===false);
 S.geo.lv=5; { const p0=geoPct(S.geo); ascendGeo();
   T("восхождение: ступень+1, уровень в 1, гемы списаны, бонус вырос",
     S.geo.asc===1 && S.geo.lv===1 && S.gems===1000-BALANCE.merge.ascendGems && geoPct(S.geo)>p0); }
+{ S.geo={t:0,r:GEO_RAR.length-1,n:"Дед",lv:BALANCE.merge.ascendLv,asc:1}; S.gems=BALANCE.merge.ascendGems+10;
+  UIS.open("beards","ascend");
+  const body=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("UIS бород: вкладка Восхождение", UIS.id==="beards" && UIS.tab==="ascend" && /Восхождение/.test(body));
+  T("UIS бород: кнопка восхождения", /ascendGeo\(/.test(body));
+  UIS.close(); }
 
 console.log("\n[29] Скиллы как карточки + лари (док §Скиллы)");
 localStorage.removeItem("oredeep_v3"); load();
@@ -982,6 +1015,9 @@ localStorage.removeItem("oredeep_v3"); load();
 openChest();
 T("окно сундука открывается", __ids.chestModal.style.display==="flex");
 T("карточка сундука отрендерена", __ids.chestCard.innerHTML.indexOf("Сундук находок")>=0);
+T("сундук: название в шапке", (__ids.chestTitle.textContent||"").indexOf(bagName(S.bag))>=0);
+T("сундук: контент без кнопки Закрыть", !/Закрыть/.test(__ids.chestCard.innerHTML||""));
+T("сундук: шапка и closeChest есть", !!__ids.chestTitle && typeof closeChest==="function");
 T("таблица шансов присутствует", __ids.chestCard.innerHTML.indexOf("Шансы дропа")>=0);
 T("шансы в две колонки", __ids.chestCard.innerHTML.indexOf("chCols")>=0
   && __ids.chestCard.innerHTML.indexOf(">сейчас<")>=0

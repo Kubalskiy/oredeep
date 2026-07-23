@@ -54,19 +54,47 @@ const UIS={
       if(el.classList) el.classList.remove("open");
     }
     this.setChrome(false);
-    this.id=null; this.tab=null;
+    this.id=null; this.tab=null; this._stack=[]; this._lastMeta=null;
     try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
+  },
+  /** Назад: из panel/push → предыдущий экран (напр. Союзники); иначе закрыть. */
+  back(){
+    const prev=(this._stack||[]).pop();
+    if(!prev){ this.close(); return; }
+    if(prev.kind==="panel"){
+      this.openPanel(prev.title, prev.sub, prev.html, true);
+      return;
+    }
+    this.id=prev.id; this.tab=prev.tab||null;
+    this.render(this.id); this.show();
   },
   setTab(t){
     this.tab=t;
     if(this.id) this.render(this.id);
   },
+  /** Сброс стека — для нижнего навбара и «корневых» входов. */
   open(id, tab){
+    this._stack=[];
+    this._go(id, tab);
+  },
+  /** Вложенный переход: назад вернёт на текущий экран (Союзники → Бороды и т.п.). */
+  push(id, tab){
+    if(this.id && this.id!=="panel"){
+      (this._stack=this._stack||[]).push({kind:"screen", id:this.id, tab:this.tab});
+    } else if(this.id==="panel" && this._lastMeta){
+      (this._stack=this._stack||[]).push({
+        kind:"panel", title:this._lastMeta.title, sub:this._lastMeta.sub, html:this._lastMeta.html
+      });
+    }
+    this._go(id, tab);
+  },
+  _go(id, tab){
     this.id=id; this.tab=tab||null;
     this.render(id); this.show();
     if(typeof S!=="undefined"&&S&&S.ftue){
       if(id==="tavern"&&!S.ftue.t){ S.ftue.t=1; save(); }
       if(id==="profile"&&this.tab==="growth"&&!S.ftue.g){ S.ftue.g=1; save(); }
+      try{ if(typeof updateGrowthDot==="function") updateGrowthDot(); }catch(e){}
       try{ updateFtueHint(); }catch(e){}
     }
   },
@@ -127,6 +155,7 @@ const UIS={
         +'<div class="uiSec">Пришёл по коду?</div>'
         +'<div class="uiRow"><span><input id="uiRefInp" class="uiInp wide" maxlength="8" placeholder="КОД"></span>'
         +'<button class="btn btn-soft btn-tiny" onclick="growthApplyReferral(document.getElementById(\'uiRefInp\').value);UIS.render(\'profile\')">✓</button></div>';
+      try{ if(typeof updateGrowthDot==="function") updateGrowthDot(); }catch(e){}
       return;
     }
     const w=beardWisdom(), depth=(S.stageIdx||1)*3;
@@ -217,10 +246,12 @@ const UIS={
     const tab=this.tab||"gacha";
     this.$("uiTitle").textContent="Бороды";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🪮 '+(S.combs||0)+'</span>';
-    this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","rank","gallery"],
-      ["Гача","Слияние","Ранг","Галерея"],tab);
+    this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","ascend","rank","gallery"],
+      ["Гача","Слияние","Восхожд.","Ранг","Галерея"],tab);
     let body="";
-    const cur=S.geo?('<div class="uiBanner r'+S.geo.r+'">'+S.geo.n+' · +'+geoPct(S.geo).toFixed(0)+'% '+GEO_TYPES[S.geo.t].stat.toUpperCase()+'</div>'):"";
+    const cur=S.geo?('<div class="uiBanner r'+S.geo.r+'">'+S.geo.n
+      +((S.geo.asc||0)?' ✦'+S.geo.asc:'')
+      +' · +'+geoPct(S.geo).toFixed(0)+'% '+GEO_TYPES[S.geo.t].stat.toUpperCase()+'</div>'):"";
     if(tab==="gacha"){
       body=cur+'<div class="uiGachaStage"><div class="uiGachaEgg">🪮</div></div>'
         +'<div class="uiSub" style="text-align:center;margin:8px 0">Роллов: '+(S.geoRolls||0)+'</div>'
@@ -230,6 +261,23 @@ const UIS={
         ? this.card("👷",S.geo.n,"ур. "+(S.geo.lv||1)+" · материал: "+geoMaterials(),
             '<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(geoMaterials()<1?"disabled":"")+'>Поглотить дубликаты</button>')
         : '<div class="uiEmpty">Сначала найми бороду на вкладке Гача.</div>');
+    } else if(tab==="ascend"){
+      const B=BALANCE.merge;
+      if(!S.geo){
+        body='<div class="uiEmpty">Сначала найми бороду на вкладке Гача.</div>';
+      } else {
+        const isLeg=S.geo.r===GEO_RAR.length-1;
+        const ascOk=canAscendGeo();
+        const why=!isLeg ? ("нужен "+GEO_RAR[GEO_RAR.length-1])
+          : ((S.geo.lv||1)<B.ascendLv ? ("нужен ур."+B.ascendLv+" (есть "+(S.geo.lv||1)+")")
+          : ((S.gems||0)<B.ascendGems ? ("нужно "+B.ascendGems+" 💎 (есть "+fmt(S.gems||0)+")") : ""));
+        body=cur+this.card("✦","Восхождение ✦"+((S.geo.asc||0)+1),
+          "+"+B.ascendPct+"% к бонусу · уровень сбрасывается в 1 · "+B.ascendGems+" 💎",
+          (isLeg
+            ? '<button class="btn btn-hard btn-wide" onclick="ascendGeo()" '+(ascOk?"":"disabled")+'>Восхождение · '+B.ascendGems+' 💎</button>'
+              +(why?'<div class="uiSub" style="margin-top:8px;color:#e8a24a">'+why+'</div>':"")
+            : '<div class="uiEmpty">🔒 Только для '+GEO_RAR[GEO_RAR.length-1]+'. Сливай дубликаты на вкладке Слияние до легендарки.</div>'));
+      }
     } else if(tab==="rank"){
       const w=beardWisdom(), need=beardNextXP(w.lv), have=S.beardXP||0;
       const pct=w.lv>=BEARD_RANKS.length-1?100:Math.min(100,Math.round(have/need*100));
@@ -310,16 +358,16 @@ const UIS={
         this.bar(gymPct)+'<div class="uiSub" style="margin-top:4px">+'+gymPerkPct()+'% ко всем статам</div>');
     } else if(tab==="mates"){
       const geoSlot=S.geo
-        ? this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r,"UIS.open('beards','merge')")
-        : this.slot("❔","Вакансия","найми бороду","","UIS.open('beards','gacha')");
+        ? this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r,"UIS.push('beards','merge')")
+        : this.slot("❔","Вакансия","найми бороду","","UIS.push('beards','gacha')");
       const petSlot=S.pet
-        ? this.slot("🐕",PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.open('pets','gacha')")
-        : this.slot("❔","Питомец","яйца","","UIS.open('pets','gacha')");
+        ? this.slot("🐕",PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.push('pets','gacha')")
+        : this.slot("❔","Питомец","яйца","","UIS.push('pets','gacha')");
       body+=this.grid([
-        this.slot("🧔","Борин","наставник","","showIntro()"),
+        this.slot("🧔","Борин","наставник","","openBorinMentor()"),
         geoSlot,
         petSlot,
-        this.slot("👥","Клан","скоро","","UIS.setTab('friends')")
+        this.slot("👥","Клан","скоро","","openClanSoon()")
       ]);
     } else if(tab==="friends"){
       const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Код принят','',c,'друг добавится в сетевой версии');}";
@@ -437,7 +485,10 @@ const UIS={
   },
 
   /* Sprint 2: legacy metaModal content → uiScreen panel */
-  openPanel(title, sub, html){
+  openPanel(title, sub, html, silent){
+    if(!silent && this.id && this.id!=="panel"){
+      (this._stack=this._stack||[]).push({kind:"screen", id:this.id, tab:this.tab});
+    }
     this._lastMeta={title, sub, html};
     this.id="panel";
     this.tab=null;
@@ -449,7 +500,7 @@ const UIS={
   },
   refresh(){
     if(this.id==="panel"&&this._lastMeta){
-      this.openPanel(this._lastMeta.title,this._lastMeta.sub,this._lastMeta.html);
+      this.openPanel(this._lastMeta.title,this._lastMeta.sub,this._lastMeta.html, true);
     } else if(this.id) this.render(this.id);
   }
 };
@@ -514,14 +565,34 @@ openPvp=function(){ UIS.open("pvp"); };
 openShop=function(tab){ UIS.open("shop", tab||(UIS.id==="shop"?UIS.tab:null)||"offers"); };
 openGym=function(){ UIS.open("tavern","feast"); };
 openStickers=function(){ UIS.tab=null; UIS.open("artifacts"); };
-openBeard=function(){ UIS.open("beards","rank"); };
+openBeard=function(tab){ UIS.open("beards", tab||(UIS.id==="beards"?UIS.tab:null)||"rank"); };
 openProfile=function(){ UIS.open("profile"); Platform.logEvent("profile_view",{}); };
+openGeoGuild=function(){ UIS.open("beards", S.geo && S.geo.r===GEO_RAR.length-1 ? "ascend" : "merge"); };
+
+/** Наставник из Союзников — своя карточка, не вкладка Застолья/Устав. */
+function openBorinMentor(){
+  const w=typeof beardWisdom==="function"?beardWisdom():{title:"—",goldPct:0,luckAdd:0};
+  UIS.openPanel("Борин · наставник",
+    "Старый дворф у стойки. Учит рангу бороды и следит, чтобы ты не забыл, зачем спустился в Гору.",
+    '<div class="uiCard"><div class="uiCardIc">🧔</div><div class="uiCardBody"><b>'+esc(w.title)+'</b>'
+    +'<div class="uiSub">+'+w.goldPct+'% доход · +'+Number(w.luckAdd||0).toFixed(1)+' LUCK</div></div></div>'
+    +'<div class="uiBtnStack" style="margin-top:10px">'
+    +'<button class="btn btn-hard btn-wide" onclick="UIS.push(\'beards\',\'rank\')">Мудрость Бороды</button>'
+    +'</div>');
+}
+/** Клан из Союзников — заглушка, не вкладка Друзья. */
+function openClanSoon(){
+  UIS.openPanel("Клан",
+    "Артель дворфов: общий забой, чат и войны кланов.",
+    '<div class="uiEmpty">👥 Скоро — в сетевой версии</div>'
+    +'<div class="uiSub" style="margin-top:8px;text-align:center">Пока зови друзей по коду во вкладке «Друзья» таверны.</div>');
+}
 
 if(typeof metaOpen==="function"){
   metaOpen=function(title,sub,html){ UIS.openPanel(title,sub,html); };
 }
 
-["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","buyGems","buyPack","claimDaily",
+["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","ascendGeo","hireGeo","buyGems","buyPack","claimDaily",
  "chestOpenOne","chestUpgrade","chestSkip","upSkill","openSkillChest","spinWheel","playEvent","sciAnswer","sciSkip",
  "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout",
  "toggleFair","setFairClient","revealFair","setPlayerName","buyStickerPack","giftStickers","sipAle"].forEach(uiWrap);

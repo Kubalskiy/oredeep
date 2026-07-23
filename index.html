@@ -253,7 +253,7 @@ button:disabled{opacity:.45;cursor:default;}
 
 /* G. Действия */
 #actionBar{
-  display:grid;grid-template-columns:1.4fr 1fr .7fr;gap:8px;align-items:center;
+  display:grid;grid-template-columns:1.2fr 1.15fr .7fr;gap:8px;align-items:center;
   padding:12px 10px 14px;
 }
 #lootChest{
@@ -271,8 +271,8 @@ button:disabled{opacity:.45;cursor:default;}
   border:2px solid var(--border);padding:8px;text-align:left;
   font-family:var(--font-display);
 }
-#powerUp b{display:block;font-size:18px;color:var(--gold);}
-#powerUp span{font-size:14px;color:var(--goldMuted);}
+#powerUp b{display:block;font-size:15px;color:var(--gold);}
+#powerUp span{font-size:13px;color:var(--goldMuted);}
 #auto{
   min-height:72px;border-radius:var(--r-md);background:var(--bgPanelAlt);
   border:2px solid var(--borderLight);font-family:var(--font-display);
@@ -392,6 +392,14 @@ body > .modal{
 .modal .box{background:var(--bgPanel);width:100%;max-width:430px;max-height:min(80%,100%);overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;border:1px solid var(--border);}
 .modal h3{margin:0 0 4px;color:var(--gold);font-family:var(--font-display);font-size:22px;}
 .modal .sub{font-size:12px;color:var(--textMuted);margin-bottom:10px;}
+/* Лист как UIS: шапка с «‹» вместо «Закрыть» в подвале */
+#chestModal{align-items:stretch;}
+#chestModal .sheetBox{
+  display:flex;flex-direction:column;padding:0;max-width:100%;max-height:100%;height:100%;
+  border-radius:0;overflow:hidden;border:0;border-top:2px solid var(--border);
+}
+#chestModal .sheetBody{flex:1;overflow-y:auto;padding:10px 12px 16px;-webkit-overflow-scrolling:touch;}
+#chestModal .uiTitle{font-size:18px;}
 .metarow{display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid var(--border);font-size:13px;gap:8px;}
 .metarow button{width:auto;padding:8px 10px;font-size:12px;background:var(--bgPanelAlt);border:1px solid var(--border);border-radius:8px;color:var(--textPrimary);}
 .col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--border);font-size:13px;}
@@ -891,7 +899,7 @@ body > .modal{
   <!-- Полноэкранные табы: над view, снизу место под #bottomNav -->
   <div id="uiScreen" style="display:none">
     <div class="uiHead">
-      <button class="btn btn-back" onclick="UIS.close()">‹</button>
+      <button class="btn btn-back" onclick="UIS.back()">‹</button>
       <div class="uiTitle" id="uiTitle"></div>
       <div class="uiHeadAct" id="uiHeadAct"></div>
     </div>
@@ -971,8 +979,13 @@ body > .modal{
   </div>
 
   <div class="modal" id="chestModal">
-    <div class="box"><div id="chestCard"></div>
-      <button style="margin-top:12px" onclick="closeChest()">Закрыть</button>
+    <div class="box sheetBox">
+      <div class="uiHead">
+        <button type="button" class="btn btn-back" onclick="closeChest()" title="Назад">‹</button>
+        <div class="uiTitle" id="chestTitle">Сундук</div>
+        <div class="uiHeadAct" id="chestHeadAct"></div>
+      </div>
+      <div class="sheetBody" id="chestCard"></div>
     </div>
   </div>
 
@@ -3918,12 +3931,13 @@ function renderChestCard(){
       +'<button id="chSkipBtn" onclick="chestSkip()" '+(upNow?'':'disabled')+' title="пропустить ожидание">Пропуск ⏩ · 💎'+(BALANCE.bags.skipGems||5)+'</button>'
       +'</div></div>';
   }
-  el.innerHTML='<h3 style="margin:0 0 2px">🧰 '+bagName(lvl)+'</h3>'
-    +'<div class="sub">Сундук находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
-    +'<div class="chOpen" style="margin-top:10px">'+openBtn
+  el.innerHTML='<div class="uiSub" style="margin-bottom:10px">Сундук находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
+    +'<div class="chOpen">'+openBtn
     +'<button type="button" class="btn '+(S.autoRoll?"btn-hard":"btn-soft")+'" onclick="toggleAutoRoll();renderChestCard()" style="margin-left:6px">'+(S.autoRoll?"Auto ✓":"Auto")+'</button>'
     +'<button type="button" class="btn btn-soft" onclick="cycleAutoTier();renderChestCard()" style="margin-left:6px">порог: <span class="r'+(S.autoRollTier||0)+'">'+RAR_NAMES[S.autoRollTier||0]+'</span>+</button></div>'
     +pend+upBlock;
+  const tit=$("chestTitle"); if(tit) tit.textContent="🧰 "+bagName(lvl);
+  const act=$("chestHeadAct"); if(act) act.innerHTML='<span class="uiPill">ур.'+lvl+'</span>';
 }
 function openChest(){
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1;
@@ -4357,6 +4371,7 @@ function renderBadges(){
   setDot("ndotPets",b.petReady||b.geoReady);
   setDot("dotSkills",b.skillReady); setDot("dotPets",b.petReady||b.geoReady);
   setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotDailySide",b.dailyReady); setDot("dotLoot",b.lootReady);
+  try{ updateGrowthDot(); }catch(e){}
 }
 /* Аура и эмблемы активных Сетов Подземелья прямо на дворфе. */
 /* ---------- Paperdoll: слоты на теле дворфа (Ultima Online) ---------- */
@@ -4807,7 +4822,7 @@ function growthJoinWaitlist(silent){
   Platform.trackAttribution("waitlist",{organic:true});
   Platform.logEvent("waitlist_join",{});
   if(!silent) showToast("📋","Вейтлист","","бонус ждёт в разделе Друзья");
-  save();
+  save(); updateGrowthDot();
 }
 function claimWaitlistBonus(){
   ensureGrowth(S);
@@ -4819,7 +4834,7 @@ function claimWaitlistBonus(){
   S.growth.waitlist.claimed=true;
   Platform.logEvent("waitlist_claim",{});
   showToast("📋","Ранний доступ","","+"+w.bonusGems+" 💎 · 2× "+w.loot2xMin+" мин");
-  save(); render();
+  save(); render(); updateGrowthDot();
   if(typeof UIS!=="undefined"&&UIS.id==="profile") UIS.render("profile");
 }
 function claimInviteMilestones(){
@@ -4833,6 +4848,7 @@ function claimInviteMilestones(){
   }
   if(gems){ showToast("👥","Веха рефералов","","+"+gems+" 💎"); Platform.logEvent("referral_milestone",{gems}); save(); render(); }
   else showToast("👥","Вехи","","пригласи ещё друзей");
+  updateGrowthDot();
   if(typeof UIS!=="undefined"&&UIS.id==="profile") UIS.render("profile");
 }
 function growthSyncInvites(){
@@ -4873,16 +4889,6 @@ function growthUnitEcon(){
   return { days, totalCents:total, revenueIap:g.revenueCents||0, adRev, cac, ltv,
     paybackOk, ltvRatio:total/cac, k:(g.invites||0)/days, organic:!!g.organic };
 }
-function growthOnBoot(){
-  if(!S) return;
-  ensureGrowth(S); growthCaptureUrl(); growthSyncInvites();
-  const dot=$("dotGrowthSide");
-  if(dot){
-    const show=(!S.growth.waitlist.claimed&&S.growth.waitlist.joined)
-      || growthInviteMilestonesReady();
-    dot.style.display=show?"flex":"none";
-  }
-}
 function growthInviteMilestonesReady(){
   ensureGrowth(S);
   const ms=BALANCE.growth.referral.milestones;
@@ -4890,7 +4896,28 @@ function growthInviteMilestonesReady(){
     if(S.growth.milestones.includes(i)) continue;
     if((S.growth.invites||0)>=ms[i].n) return true;
   }
-  return !S.growth.waitlist.claimed && !S.growth.waitlist.joined && (S.stageIdx||1)<=5;
+  return false;
+}
+/** Красная точка на «Друзья»: незабранный вейтлист / вехи; ранний намёк — пока не заходили в раздел. */
+function growthDotShouldShow(){
+  if(!S) return false;
+  ensureGrowth(S);
+  if(S.growth.waitlist.joined && !S.growth.waitlist.claimed) return true;
+  if(growthInviteMilestonesReady()) return true;
+  if(!S.ftue.g && !S.growth.waitlist.joined && (S.stageIdx||1)<=5) return true;
+  return false;
+}
+function updateGrowthDot(){
+  const dot=$("dotGrowthSide"); if(!dot) return;
+  const show=growthDotShouldShow();
+  if(dot.style) dot.style.display="";
+  if(dot.classList) dot.classList.toggle("on", !!show);
+  else if(dot.style) dot.style.display=show?"block":"none";
+}
+function growthOnBoot(){
+  if(!S) return;
+  ensureGrowth(S); growthCaptureUrl(); growthSyncInvites();
+  updateGrowthDot();
 }
 (function(){
   const base=Platform.showRewarded;
