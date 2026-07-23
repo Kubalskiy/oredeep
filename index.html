@@ -4449,6 +4449,10 @@ function showIntro(){
   const list=$("introList");
   if(list) list.innerHTML=CODEX.map(([t,s],i)=>
     `<div class="iitem"><b>${i+1}. ${t}</b><span>${s}</span></div>`).join("");
+  try{
+    if(typeof UIS!=="undefined"&&UIS.id&&UIS.close) UIS.close();
+  }catch(e){}
+  const sm=$("setModal2"); if(sm&&sm.style) sm.style.display="none";
   const ov=$("introOv"); if(ov&&ov.classList) ov.classList.add("on");
   Platform.logEvent("intro_open",{});
 }
@@ -4457,9 +4461,14 @@ function maybeAutoIntro(){
   if(S && S.introSeen===false){ S.introSeen=true; save(); }
 }
 function closeIntro(){
-  const ov=$("introOv"); if(ov&&ov.classList) ov.classList.remove("on");
+  const ov=$("introOv");
+  const wasOpen=ov&&ov.classList&&ov.classList.contains("on");
+  if(ov&&ov.classList) ov.classList.remove("on");
   if(S){ S.introSeen=true; save(); }
-  Platform.logEvent("intro_done",{});
+  if(wasOpen) Platform.logEvent("intro_done",{});
+  if(wasOpen) try{
+    if(typeof UIS!=="undefined"&&UIS.setChrome) UIS.setChrome(!!UIS.id);
+  }catch(e){}
 }
 function togglePaperdoll(force){
   const pd=$("paperdoll"); if(!pd||!pd.classList) return;

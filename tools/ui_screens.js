@@ -36,6 +36,7 @@ const UIS={
     }
   },
   show(){
+    if(typeof closeIntro==="function") closeIntro();
     const el=this.$("uiScreen"); if(!el) return;
     el.style.display="flex";
     el.style.pointerEvents="auto";
@@ -44,6 +45,7 @@ const UIS={
     Platform.logEvent("ui_screen",{id:this.id,tab:this.tab});
   },
   close(){
+    if(typeof closeIntro==="function") closeIntro();
     const el=this.$("uiScreen");
     if(el){
       el.style.display="none";

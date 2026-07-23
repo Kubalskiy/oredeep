@@ -4,7 +4,7 @@
   "description": "ORE DEEP — idle-добыча в гномьих чертогах (рескин баланса Idle Boxer)",
   "private": true,
   "scripts": {
-    "build": "mkdir -p www && cp index.html www/index.html",
+    "build": "mkdir -p www/tools && cp index.html www/index.html && cp tools/ui_screens.js www/tools/ui_screens.js",
     "sync": "npm run build && npx cap sync",
     "android": "npm run sync && npx cap open android",
     "test": "node tools/run_tests.js",

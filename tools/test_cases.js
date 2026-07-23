@@ -682,6 +682,15 @@ T("старым сейвам интро не показываем", (function(){
   T("после ручного прочтения закрыто", !__ids.introOv.classList.contains("on") && S.introSeen===true); }
 { resetProgress();
   T("сброс не показывает Устав", !__ids.introOv.classList.contains("on") && S.introSeen===true); }
+{ UIS.open("settings"); showIntro();
+  T("устав из настроек открыт", __ids.introOv.classList.contains("on"));
+  T("окно настроек скрыто при чтении", !UIS.id && document.getElementById("uiScreen").style.display!=="flex" && !document.getElementById("app").classList.contains("uiOpen"));
+  const nav=document.getElementById("navShop");
+  if(nav&&nav.onclick) nav.onclick();
+  T("клик по нижнему меню закрывает устав", !__ids.introOv.classList.contains("on"));
+  T("шапка uiScreen видна после закрытия устава", document.getElementById("uiScreen").style.display==="flex");
+  UIS.close();
+  T("шапка HUD возвращается после выхода из экрана", !document.getElementById("app").classList.contains("uiOpen")); }
 
 console.log("\n[36] Гильдия Рудознатцев (краудсорсинг)");
 localStorage.removeItem("oredeep_v3"); load();
