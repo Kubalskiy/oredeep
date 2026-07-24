@@ -536,8 +536,9 @@ body > .modal{
 .col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--border);font-size:13px;}
 .oreimg{width:26px;height:26px;image-rendering:pixelated;vertical-align:middle;margin-right:6px;}
 .oreimg.big{width:44px;height:44px;}
-#toast{position:fixed;left:50%;bottom:calc(var(--bottom-nav-h, 72px) + 16px);transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
-  border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92vw);pointer-events:none;}
+/* Внутри #app + absolute: иначе fixed цепляется к viewport и падает ниже рамки игры */
+#toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
+  border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:none;}
 #toast .big{font-size:30px;}
 #toast .r{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;}
 #toast .nm{font-size:15px;font-weight:700;margin:2px 0;}
@@ -741,8 +742,8 @@ body > .modal{
     background:#12151dcc;border:1px solid var(--gold);border-radius:6px;padding:3px 7px;display:none;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
 
-  #toast{position:fixed;left:50%;bottom:calc(var(--bottom-nav-h, 72px) + 16px);transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
-    border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92vw);pointer-events:none;}
+  #toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
+    border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:none;}
 
   #toast .big{font-size:30px;}
 
@@ -1339,9 +1340,9 @@ body > .modal{
     </div>
   </div>
 
-</div><!-- /app -->
+  <div id="toast"></div>
 
-<div id="toast"></div>
+</div><!-- /app -->
 
 <div id="offOverlay" class="modal">
   <div class="box" style="text-align:center">
