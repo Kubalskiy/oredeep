@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">Core loop</title>
+  <desc id="desc">Auto-fight a vein, collect loot, upgrade, go deeper.</desc>
+  <rect width="1200" height="280" rx="26" fill="#140f09" stroke="#3a2e1c" stroke-width="2"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
+    <g transform="translate(40 48)">
+      <rect width="240" height="184" rx="16" fill="#1c150c" stroke="#5a4830" stroke-width="2"/>
+      <text x="24" y="40" fill="#c9974a" font-family="ui-monospace, Menlo, monospace" font-size="18">01</text>
+      <text x="24" y="84" fill="#f2d488" font-size="26" font-weight="700">Бей жилу</text>
+      <text x="24" y="120" fill="#cbb89a" font-size="18">Авто-бой PvE,</text>
+      <text x="24" y="146" fill="#cbb89a" font-size="18">энергия как HP,</text>
+      <text x="24" y="172" fill="#cbb89a" font-size="18">тап — доп. урон</text>
+    </g>
+    <path d="M300 140 H336" stroke="#c9974a" stroke-width="3"/>
+    <polygon points="336,134 350,140 336,146" fill="#c9974a"/>
+    <g transform="translate(366 48)">
+      <rect width="240" height="184" rx="16" fill="#1c150c" stroke="#5a4830" stroke-width="2"/>
+      <text x="24" y="40" fill="#c9974a" font-family="ui-monospace, Menlo, monospace" font-size="18">02</text>
+      <text x="24" y="84" fill="#f2d488" font-size="26" font-weight="700">Собирай лут</text>
+      <text x="24" y="120" fill="#cbb89a" font-size="18">Золото + сумка,</text>
+      <text x="24" y="146" fill="#cbb89a" font-size="18">яйца, расчёски,</text>
+      <text x="24" y="172" fill="#cbb89a" font-size="18">ключи и эль</text>
+    </g>
+    <path d="M626 140 H662" stroke="#c9974a" stroke-width="3"/>
+    <polygon points="662,134 676,140 662,146" fill="#c9974a"/>
+    <g transform="translate(692 48)">
+      <rect width="240" height="184" rx="16" fill="#1c150c" stroke="#5a4830" stroke-width="2"/>
+      <text x="24" y="40" fill="#c9974a" font-family="ui-monospace, Menlo, monospace" font-size="18">03</text>
+      <text x="24" y="84" fill="#f2d488" font-size="26" font-weight="700">Качай</text>
+      <text x="24" y="120" fill="#cbb89a" font-size="18">Шмот, навыки,</text>
+      <text x="24" y="146" fill="#cbb89a" font-size="18">питомцы, борода,</text>
+      <text x="24" y="172" fill="#cbb89a" font-size="18">таверна</text>
+    </g>
+    <path d="M952 140 H988" stroke="#c9974a" stroke-width="3"/>
+    <polygon points="988,134 1002,140 988,146" fill="#c9974a"/>
+    <g transform="translate(1018 48)">
+      <rect width="142" height="184" rx="16" fill="#241a10" stroke="#c9974a" stroke-width="2"/>
+      <text x="71" y="88" text-anchor="middle" fill="#c9974a" font-family="ui-monospace, Menlo, monospace" font-size="18">04</text>
+      <text x="71" y="128" text-anchor="middle" fill="#f2d488" font-size="22" font-weight="700">Глубже</text>
+    </g>
+  </g>
+</svg>
