@@ -1019,6 +1019,13 @@ T("Gym XP поднимает уровень зала", gymLevel()===1 && gymPerk
 { const a0=stat("atk"); S.gymXP=GYM_LEVELS[5]; T("перк зала множит статы", stat("atk")>a0); }
 { let ok=true; try{ openGym(); openStickers(); }catch(e){ ok=false; } T("экраны Зала и Стикеров открываются", ok); }
 S.gymXP=0;
+{ T("у каждого стикера есть коллекция", STICKERS.every(s=>!!s.col && UI_ART_COLS.some(c=>c.id===s.col)));
+  T("коллекции не пустые", UI_ART_COLS.every(c=>stickersInCol(c.id).length>0));
+  S.stickers={s_atk1:1,s_min:1}; UIS.open("artifacts","mountain");
+  const html=(__ids.uiBody&&__ids.uiBody.innerHTML)||"";
+  T("коллекция Гора фильтрует стикеры", html.indexOf("Кирка-огонь")>=0 && html.indexOf("Мешок золота")<0);
+  T("прогресс коллекции 2/3", html.indexOf("2/3")>=0);
+  UIS.close(); }
 
 console.log("\n[47] Мобильная оболочка: фрейм + нижний навбар");
 localStorage.removeItem("oredeep_v3"); load();

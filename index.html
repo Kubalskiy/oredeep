@@ -4327,19 +4327,25 @@ function addGymXP(n){ if(!(n>0)) return; const before=gymLevel();
 /* Стикеры (PDF): отдельная коллекция, влияет на статы; паки за кристаллы;
    дубликаты дарятся в зале (даёт Gym XP — соц-слой стабом). */
 const STICKERS=[
-  {id:"s_atk1",n:"Кирка-огонь",   ic:"⛏️",stat:"atk",   val:15,r:0},
-  {id:"s_atk2",n:"Золотой молот", ic:"🔨",stat:"atk",   val:40,r:2},
-  {id:"s_crit",n:"Меткий глаз",   ic:"🎯",stat:"crit",  val:3, r:1},
-  {id:"s_luck",n:"Клевер-4",      ic:"🍀",stat:"luck",  val:4, r:1},
-  {id:"s_min", n:"Нюхач руды",    ic:"👃",stat:"mining",val:4, r:2},
-  {id:"s_sto1",n:"Мешок золота",  ic:"💰",stat:"stone", val:20,r:0},
-  {id:"s_sto2",n:"Сундук предков",ic:"🧰",stat:"stone", val:60,r:3},
-  {id:"s_en",  n:"Второе дыхание",ic:"🫁",stat:"energy",val:30,r:1},
-  {id:"s_tou", n:"Дубовый щит",   ic:"🛡️",stat:"tough", val:8, r:2},
-  {id:"s_rgn", n:"Живая вода",    ic:"💧",stat:"regen", val:2, r:2},
-  {id:"s_stm", n:"Меха-лёгкие",   ic:"🌬️",stat:"stamina",val:5,r:3},
-  {id:"s_atk3",n:"Сердце Горы",   ic:"💎",stat:"atk",   val:120,r:4}
+  {id:"s_atk1",n:"Кирка-огонь",   ic:"⛏️",stat:"atk",   val:15,r:0,col:"mountain"},
+  {id:"s_atk2",n:"Золотой молот", ic:"🔨",stat:"atk",   val:40,r:2,col:"forge"},
+  {id:"s_crit",n:"Меткий глаз",   ic:"🎯",stat:"crit",  val:3, r:1,col:"forge"},
+  {id:"s_luck",n:"Клевер-4",      ic:"🍀",stat:"luck",  val:4, r:1,col:"deep"},
+  {id:"s_min", n:"Нюхач руды",    ic:"👃",stat:"mining",val:4, r:2,col:"mountain"},
+  {id:"s_sto1",n:"Мешок золота",  ic:"💰",stat:"stone", val:20,r:0,col:"tavern"},
+  {id:"s_sto2",n:"Сундук предков",ic:"🧰",stat:"stone", val:60,r:3,col:"tavern"},
+  {id:"s_en",  n:"Второе дыхание",ic:"🫁",stat:"energy",val:30,r:1,col:"deep"},
+  {id:"s_tou", n:"Дубовый щит",   ic:"🛡️",stat:"tough", val:8, r:2,col:"forge"},
+  {id:"s_rgn", n:"Живая вода",    ic:"💧",stat:"regen", val:2, r:2,col:"deep"},
+  {id:"s_stm", n:"Меха-лёгкие",   ic:"🌬️",stat:"stamina",val:5,r:3,col:"tavern"},
+  {id:"s_atk3",n:"Сердце Горы",   ic:"💎",stat:"atk",   val:120,r:4,col:"mountain"}
 ];
+function stickersInCol(colId){ return STICKERS.filter(s=>s.col===colId); }
+function stickerColProgress(colId){
+  const list=stickersInCol(colId), owned=S.stickers||{};
+  let have=0; for(const s of list) if((owned[s.id]||0)>0) have++;
+  return {have, total:list.length};
+}
 const STICKER_PACK_GEMS=250, STICKER_PACK_N=5;   // PDF: пак 5 случайных за алмазы
 function stickerBonus(id){ let v=0; const owned=S.stickers||{};
   for(const s of STICKERS) if(s.stat===id && (owned[s.id]||0)>0) v+=s.val; return v; }

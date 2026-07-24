@@ -391,21 +391,27 @@ const UIS={
     if(tab==="pick"){
       this.$("uiTabs").innerHTML="";
       this.$("uiBody").innerHTML='<div class="uiSub" style="margin-bottom:8px">Выбери коллекцию</div>'
-        +this.grid(UI_ART_COLS.map(c=>
-          '<button class="uiColPick" style="--acc:'+c.c+'" onclick="UIS.tab=\''+c.id+'\';UIS.render(\'artifacts\')">'
-          +'<span class="uiColEm">'+c.ic+'</span><b>'+c.n+'</b></button>'));
+        +this.grid(UI_ART_COLS.map(c=>{
+          const p=typeof stickerColProgress==="function"?stickerColProgress(c.id):{have:0,total:0};
+          return '<button class="uiColPick" style="--acc:'+c.c+'" onclick="UIS.tab=\''+c.id+'\';UIS.render(\'artifacts\')">'
+            +'<span class="uiColEm">'+c.ic+'</span><b>'+c.n+'</b>'
+            +'<span class="uiSub">'+p.have+'/'+p.total+'</span></button>';
+        }));
       return;
     }
     const col=UI_ART_COLS.find(c=>c.id===tab)||UI_ART_COLS[0];
     this.$("uiTabs").innerHTML='<button class="btn btn-tab" onclick="UIS.tab=\'pick\';UIS.render(\'artifacts\')">‹ Коллекции</button>';
     const owned=S.stickers||{};
-    const slots=STICKERS.filter(s=>s.n&&s.n.length).slice(0,12).map(s=>{
+    const list=typeof stickersInCol==="function"?stickersInCol(col.id):STICKERS.filter(s=>s.col===col.id);
+    const slots=list.map(s=>{
       const c=owned[s.id]||0;
       return this.slot(s.ic,s.n,c?("+"+s.val): "—",c?"r"+s.r:" lock");
     });
+    const prog=typeof stickerColProgress==="function"?stickerColProgress(col.id):{have:0,total:list.length};
     this.$("uiBody").innerHTML=
-      '<div class="uiColHead" style="--acc:'+col.c+'"><span>'+col.ic+'</span><b>'+col.n+'</b></div>'
-      +this.grid(slots)
+      '<div class="uiColHead" style="--acc:'+col.c+'"><span>'+col.ic+'</span><b>'+col.n+'</b>'
+      +'<span class="uiSub" style="margin-left:8px">'+prog.have+'/'+prog.total+'</span></div>'
+      +(slots.length?this.grid(slots):'<div class="uiEmpty">В этой коллекции пока пусто</div>')
       +'<div class="uiBtnStack"><button class="btn btn-hard" onclick="buyStickerPack()">Пак · '+STICKER_PACK_GEMS+' 💎</button>'
       +'<button onclick="giftStickers()">Подарить дубликаты</button></div>';
   },
