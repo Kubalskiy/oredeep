@@ -396,7 +396,7 @@ button:disabled{opacity:.45;cursor:default;}
   display:none;align-items:center;justify-content:center;padding:0 6px;
 }
 #powerUp{
-  min-height:72px;border-radius:var(--r-md);background:var(--bgPanel);
+  position:relative;min-height:72px;border-radius:var(--r-md);background:var(--bgPanel);
   border:2px solid var(--border);padding:8px;text-align:left;
   font-family:var(--font-display);
 }
@@ -404,6 +404,11 @@ button:disabled{opacity:.45;cursor:default;}
 #powerUp span{font-size:13px;color:var(--goldMuted);}
 #powerUp.skipOffer{border-color:var(--gold);box-shadow:0 0 0 1px rgba(212,168,75,.35);}
 #powerUp.skipOffer b{color:#ffe09a;}
+#bagUpDot{
+  position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;
+  background:var(--income);color:#fff;font-size:12px;line-height:18px;text-align:center;
+  display:none;font-family:var(--font-display);pointer-events:none;
+}
 #auto{
   min-height:72px;border-radius:var(--r-md);background:var(--bgPanelAlt);
   border:2px solid var(--borderLight);font-family:var(--font-display);
@@ -417,6 +422,7 @@ button:disabled{opacity:.45;cursor:default;}
   padding:8px 4px;text-align:center;font-family:var(--font-display);
 }
 #upgrades .u .k{font-size:12px;color:var(--textMuted);}
+#upgrades .u .lv{font-size:11px;color:var(--textMuted);opacity:.85;margin-top:1px;}
 #upgrades .u .v{font-size:18px;color:var(--gold);margin:2px 0;}
 #upgrades .u .c{font-size:13px;color:var(--goldMuted);margin-bottom:4px;}
 #upgrades .u button{width:100%;min-height:32px;background:var(--bgPanelAlt);
@@ -598,9 +604,22 @@ body > .modal{
 .chDropTop{display:flex;gap:10px;align-items:center;}
 .chIc{font-size:28px;}
 .chSts{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-top:8px;}
-.chSt{display:flex;justify-content:space-between;font-size:12px;color:var(--textMuted);}
+.chSt{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--textMuted);gap:6px;}
 .chSt b{color:var(--gold);}
+.chPill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;font-family:var(--font-body);white-space:nowrap;}
+.chPill.up{background:#1a3d28;color:#5fd068;}
+.chPill.dn{background:#3d1a1a;color:#e87a7a;}
+.chPill.eq{background:#2a2418;color:var(--textMuted);}
+.chCmp{margin-top:6px;font-size:12px;font-weight:700;text-align:center;}
+.chCmp.up{color:#5fd068;}
+.chCmp.dn{color:#e87a7a;}
 .chOpen{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+#dropModal{align-items:center;justify-content:center;z-index:230;}
+#dropModal .dropBox{width:min(320px,92%);border-radius:16px;padding:14px 16px 16px;max-height:min(70%,100%);overflow-y:auto;}
+#dropModal .dropTitle{font-family:var(--font-display);font-size:20px;color:var(--gold);text-align:center;margin-bottom:8px;letter-spacing:1px;}
+#dropModal .chDrop{margin-top:0;}
+#dropModal .btnrow button{min-height:48px;line-height:1.15;}
+#dropModal .btnrow button small{display:block;font-size:11px;opacity:.9;font-weight:600;}
 .curbar{display:none;}
 .statimg{width:16px;height:16px;image-rendering:pixelated;}
 #legacy{display:none !important;}
@@ -1218,12 +1237,13 @@ body > .modal{
 
     <!-- G. Действия -->
     <div id="actionBar">
-      <button type="button" id="lootChest" title="Тап — открыть · удержи — настройки">📦<span id="bagBadge2"></span></button>
-      <button type="button" id="powerUp" onclick="tryBagUpgrade()">
-        <b id="bagAreaLvl">СИЛА УР 1</b>
-        <span id="bagAreaTimer"></span>
+      <button type="button" id="lootChest" title="Тап — вытянуть · надеть/продать">📦<span id="bagBadge2"></span></button>
+      <button type="button" id="powerUp" title="Тап — шансы и апгрейд">
+        <b id="bagAreaLvl">СУМКА УР 1</b>
+        <span id="bagAreaTimer">тап — шансы</span>
+        <i id="bagUpDot" aria-hidden="true">↑</i>
       </button>
-      <button type="button" id="auto" onclick="toggleAutoRoll()">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
+      <button type="button" id="auto" title="Тап — вкл/выкл · удержи — порог">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
     </div>
 
     <div id="upgrades"></div>
@@ -1317,6 +1337,13 @@ body > .modal{
   <div class="modal" id="profModal">
     <div class="box"><div id="profCard"></div>
       <button style="margin-top:12px" onclick="document.getElementById('profModal').style.display='none'">Закрыть</button>
+    </div>
+  </div>
+
+  <div class="modal" id="dropModal">
+    <div class="box dropBox">
+      <div class="dropTitle" id="dropTitle">НОВАЯ НАХОДКА</div>
+      <div id="dropCard"></div>
     </div>
   </div>
 
@@ -2640,9 +2667,33 @@ function tryBagUpgrade(){
   return true;
 }
 if($("energyBox")) $("energyBox").onclick=()=>reinforceMine();
-if($("powerUp")) $("powerUp").onclick=()=>tryBagUpgrade();
-if($("auto")) $("auto").onclick=()=>toggleAutoRoll();
-/* сундук: короткий тап = 1-tap открытие (если есть), long-press = модалка */
+/* Сумка УР: шансы/апгрейд; во время таймера — пропуск (двойной тап) */
+function onPowerUpClick(){
+  if(bagUpgrading()){ tryBagUpgrade(); return; }
+  openChest(true);
+}
+if($("powerUp")) $("powerUp").onclick=()=>onPowerUpClick();
+/* АВТО: короткий тап = вкл/выкл, long-press = порог фильтра */
+(function wireAutoBtn(){
+  const ab=$("auto"); if(!ab||!ab.addEventListener) return;
+  let longFired=false, lpT=0;
+  ab.onclick=null;
+  ab.removeAttribute("onclick");
+  ab.addEventListener("pointerdown", function(){
+    longFired=false;
+    clearTimeout(lpT);
+    lpT=setTimeout(function(){ longFired=true; cycleAutoTier(); }, 480);
+  });
+  function clearLp(){ clearTimeout(lpT); }
+  ab.addEventListener("pointerup", clearLp);
+  ab.addEventListener("pointercancel", clearLp);
+  ab.addEventListener("pointerleave", clearLp);
+  ab.addEventListener("click", function(e){
+    if(longFired){ longFired=false; if(e&&e.preventDefault) e.preventDefault(); return; }
+    toggleAutoRoll();
+  });
+})();
+/* сундук: короткий тап = вытянуть → Equip/Sell; long-press = лист шансов/апгрейда */
 (function wireLootChest(){
   const lc=$("lootChest"); if(!lc||!lc.addEventListener) return;
   let longFired=false, lpT=0;
@@ -2843,7 +2894,7 @@ function buildUpgrades(){
   const box=$("upgrades"); box.innerHTML="";
   UPGRADES.forEach(u=>{
     const d=document.createElement("div"); d.className="u"; d.id="u_"+u.id;
-    d.innerHTML=`<div class="k">${u.k}</div><div class="v"></div><div class="c"></div><button class="btn btn-soft">+</button>`;
+    d.innerHTML=`<div class="k">${u.k}</div><div class="lv">Ур. 0</div><div class="v"></div><div class="c"></div><button class="btn btn-soft">+</button>`;
     d.querySelector("button").onclick=()=>{
       if(statCapped(u.id)) return;                       // кап: не тратить впустую
       const c=upCost(u);
@@ -3157,26 +3208,36 @@ function render(){
   if($("bagBadge2")){ const n=S.bags||0; setTxt("bagBadge2",n>99?"99+":n); $("bagBadge2").style.display=n>0?"flex":"none"; }
   if($("bagAreaLvl")){
     if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","ПРОПУСК 💎"+bagSkipGems());
-    else setTxt("bagAreaLvl","СИЛА УР "+S.bag);
+    else setTxt("bagAreaLvl","СУМКА УР "+S.bag);
   }
   if($("bagAreaTimer")){
     const bt=$("bagAreaTimer");
     if(bagUpgrading()){
       const left=bagUpgradeLeft()+"с до ур."+(S.bag+1);
       setTxt(bt, bagSkipArmed ? ("тап → 💎"+bagSkipGems()+" · "+left) : left);
-    } else setTxt(bt,"");
+    } else setTxt(bt,"тап — шансы");
   }
-  { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){ ab.classList.toggle("on",!!S.autoRoll); const l=$("autoLbl2"); if(l) setTxt(l,S.autoRoll?"ВКЛ":"ВЫКЛ"); } }
+  { const dot=$("bagUpDot");
+    if(dot){
+      const can=!bagUpgrading() && S.bag<50 && (S.gold||0)>=bagCost();
+      dot.style.display=can?"block":"none";
+    }
+  }
+  { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){
+      ab.classList.toggle("on",!!S.autoRoll);
+      const l=$("autoLbl2");
+      if(l) setTxt(l, S.autoRoll ? (RAR_NAMES[S.autoRollTier||0]+"+") : "ВЫКЛ");
+    } }
   { const lc=$("lootChest");
     if(lc){ const dim=(S.bags||0)<1;
-      /* модалку открываем всегда (апгрейд сундука), но приглушаем без сумок / при Auto */
       setOp(lc,(dim||!!S.autoRoll)?"0.55":"1");
       if(lc.classList) lc.classList.toggle("off", dim||!!S.autoRoll);
       if("disabled"in lc) lc.disabled=false; } }
   { const pu=$("powerUp");
     if(pu){
       const busy=bagUpgrading(), maxed=S.bag>=50, poor=!busy&&!maxed&&(S.gold||0)<bagCost();
-      const off=maxed||poor;
+      /* панель шансов всегда открывается; disabled только на капе без апгрейда в процессе */
+      const off=maxed && !busy;
       if("disabled"in pu){ if(pu.disabled!==!!off) pu.disabled=!!off; }
       setOp(pu,off?"0.55":"1");
       if(pu.classList){
@@ -3187,7 +3248,7 @@ function render(){
         ? (bagSkipArmed
           ? ("Пропуск за 💎"+bagSkipGems()+" — тап ещё раз")
           : ("Идёт апгрейд · тап — цена пропуска"))
-        : (maxed?"Максимум":(poor?("Нужно "+fmt(bagCost())+" 🪙"):"Улучшить сундук"));
+        : (maxed?"Максимум":"Шансы дропа и апгрейд");
     }
   }
   if(S.geo){
@@ -3203,10 +3264,11 @@ function render(){
   setTxt("colCount",got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":""))); }
   UPGRADES.forEach(u=>{
     const d=$("u_"+u.id); if(!d) return;
-    const btn=d.querySelector("button"), val=d.querySelector(".v"), cost=d.querySelector(".c");
+    const btn=d.querySelector("button"), val=d.querySelector(".v"), cost=d.querySelector(".c"), lv=d.querySelector(".lv");
     if(!btn||!val||!cost) return;
     const capped=statCapped(u.id);
     const c=upCost(u);
+    if(lv) setTxt(lv,"Ур. "+(S.lvls[u.id]|0));
     setTxt(val,u.fmt(stat(u.id)));
     setTxt(cost,capped?"MAX":(fmt(c)+" 🪙"));
     const wantDisabled=capped||S.gold<c;
@@ -3225,7 +3287,7 @@ function hideFtueTip(tip){
 function ftueOverlayOpen(){
   const intro=$("introOv"); if(intro&&intro.classList&&intro.classList.contains("on")) return true;
   const ui=$("uiScreen"); if(ui&&ui.style.display==="flex") return true;
-  for(const id of ["chestModal","metaModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay"]){
+  for(const id of ["dropModal","chestModal","metaModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay"]){
     const m=$(id); if(m&&m.style.display==="flex") return true;
   }
   return false;
@@ -4493,6 +4555,56 @@ function chestChanceRows(lvl){
   }
   return h;
 }
+/** Сравнение со слотом: зелёные/красные пилюли дельты (как у боксёра). */
+function chestPendingParts(it){
+  const sl=SLOTS.find(s=>s.id===it.s);
+  const old=S.gear[it.s];
+  let stats="";
+  for(const k in sl.st){
+    const nv=itemStat(it,k);
+    const ov=old?itemStat(old,k):0;
+    const d=nv-ov;
+    let pill;
+    if(!old){
+      pill='<span class="chPill up">+'+chestStatVal(nv)+'</span>';
+    } else {
+      const cls=d>1e-6?"up":(d<-1e-6?"dn":"eq");
+      const sign=d>0?"+":"";
+      pill='<span class="chPill '+cls+'">'+sign+chestStatVal(d)+'</span>';
+    }
+    stats+='<div class="chSt"><span>'+(CHEST_STAT_LBL[k]||k)+'</span>'+pill+'</div>';
+  }
+  const better=!old||itemPower(it)>itemPower(old);
+  const cmp=old
+    ?('<div class="chCmp '+(better?"up":"dn")+'">'+(better?"▲ сильнее надетого":"▼ слабее надетого")+'</div>')
+    :'<div class="chCmp up">слот был пуст</div>';
+  return {sl,stats,cmp,better,old};
+}
+function chestPendingCardHtml(it){
+  const p=chestPendingParts(it);
+  return '<div class="chDrop br'+it.r+'">'
+    +'<div class="chDropTop"><span class="chIc">'+p.sl.ic+'</span>'
+    +'<div><b class="r'+it.r+'">'+RAR_NAMES[it.r]+'</b><div class="sub">'+(it.n||p.sl.n)+'</div></div></div>'
+    +'<div class="chSts">'+p.stats+'</div>'+p.cmp
+    +'<div class="btnrow" style="margin-top:10px">'
+    +'<button class="btn btn-hard" onclick="sellChestItem()">Продать<small>'+fmt(sellPrice(it))+' 🪙</small></button>'
+    +'<button class="btn btn-soft" onclick="equipChestItem()">Надеть<small>экип</small></button>'
+    +'</div></div>';
+}
+function renderDropCard(){
+  const el=$("dropCard"); if(!el||!chestPending) return;
+  const tit=$("dropTitle"); if(tit) tit.textContent="НОВАЯ НАХОДКА";
+  el.innerHTML=chestPendingCardHtml(chestPending);
+}
+function showDropDecide(){
+  renderDropCard();
+  const m=$("dropModal"); if(m) m.style.display="flex";
+  try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
+}
+function closeDropDecide(){
+  const m=$("dropModal"); if(m) m.style.display="none";
+  try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
+}
 function renderChestCard(){
   const el=$("chestCard"); if(!el) return;
   const lvl=S.bag, atCap=lvl>=50, c=bagCost(), upNow=bagUpgrading();
@@ -4501,30 +4613,15 @@ function renderChestCard(){
   const upSec=BALANCE.bags.upgradeSec||45;
   const timerPct=upNow? Math.max(0,100*(1-bagUpgradeLeft()/upSec)) : 0;
   const timerLbl=upNow? ("Улучшение… "+bagUpgradeLeft()+"с") : ("~"+upSec+"с после оплаты");
-  // блок результата открытия
   let pend="";
   if(chestPending){
-    const it=chestPending, sl=SLOTS.find(s=>s.id===it.s);
-    let stats="";
-    for(const k in sl.st){ stats+='<div class="chSt"><span>'+(CHEST_STAT_LBL[k]||k)+'</span><b>+'+chestStatVal(itemStat(it,k))+'</b></div>'; }
-    const old=S.gear[it.s];
-    const better=!old||itemPower(it)>itemPower(old);
-    const cmp=old?('<div class="sub" style="margin-top:5px" class="'+(better?"r1":"r4")+'">'+(better?"▲ сильнее надетого":"▼ слабее надетого")+'</div>'):'<div class="sub" style="margin-top:5px">слот был пуст</div>';
-    pend='<div class="chDrop br'+it.r+'">'
-      +'<div class="chDropTop"><span class="chIc">'+sl.ic+'</span>'
-      +'<div><b class="r'+it.r+'">'+RAR_NAMES[it.r]+'</b><div class="sub">'+(it.n||sl.n)+'</div></div></div>'
-      +'<div class="chSts">'+stats+'</div>'+cmp
-      +'<div class="btnrow" style="margin-top:8px">'
-      +'<button class="btn btn-soft" onclick="equipChestItem()">Надеть</button>'
-      +'<button class="btn btn-hard" onclick="sellChestItem()">Продать · '+fmt(sellPrice(it))+' 🪙</button>'
-      +'</div></div>';
+    pend=chestPendingCardHtml(chestPending);
   }
   const openBtn=S.autoRoll
     ? '<button class="btn btn-soft" disabled>Auto разбирает</button>'
     : ((S.bags||0)>0
     ? '<button class="btn btn-soft" onclick="chestOpenOne()">Открыть сундук · 🎒'+(S.bags||0)+'</button>'
     : '<button class="btn btn-soft" disabled>Нет сумок · 🎒0</button>');
-  // блок апгрейда: таблица шансов текущий → следующий уровень
   let upBlock='';
   if(atCap){
     upBlock='<div class="chUp"><div class="sub" style="text-align:center">Предел жадности достигнут — сундук прокачан до конца.</div></div>';
@@ -4550,13 +4647,15 @@ function renderChestCard(){
   const act=$("chestHeadAct"); if(act) act.innerHTML='<span class="uiPill">ур.'+lvl+'</span>';
 }
 function quickOpenBag(){
+  if(S.autoRoll){ showToast("🎒","Auto включён","","Выключи Auto, чтобы открывать вручную"); return false; }
+  if(chestPending){ showToast("🎒","Сначала реши","","Надень или продай находку"); showDropDecide(); return false; }
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
   S.bags--; dailyProgress("bag",1);
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
-  const it=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
-  Platform.logEvent("chest_open",{r:it.r,quick:1});
-  dropGearItem(it);
+  chestPending=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
+  Platform.logEvent("chest_open",{r:chestPending.r,quick:1});
   save(); render();
+  showDropDecide();
   return true;
 }
 function openChest(forceModal){
@@ -4566,7 +4665,9 @@ function openChest(forceModal){
     quickOpenBag();
     return;
   }
-  chestPending=null; renderChestCard(); $("chestModal").style.display="flex";
+  /* Лист шансов/апгрейда — не сбрасываем pending из dropModal */
+  if(!forceModal) chestPending=null;
+  renderChestCard(); $("chestModal").style.display="flex";
   try{ if(typeof UIS!=="undefined"&&UIS.setChrome) UIS.setChrome(true); }catch(e){}
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   Platform.logEvent("chest_view",{lv:S.bag});
@@ -4577,11 +4678,12 @@ function closeChest(){
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
 }
 function chestOpenOne(){
+  if(chestPending){ showToast("🎒","Сначала реши","","Надень или продай находку"); return; }
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return; }
   S.bags--; dailyProgress("bag",1);
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
   chestPending=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
-  Platform.logEvent("chest_open",{r:chestPending.r}); save(); renderChestCard();
+  Platform.logEvent("chest_open",{r:chestPending.r}); save(); render(); renderChestCard();
 }
 function equipChestItem(){
   if(!chestPending) return;
@@ -4590,13 +4692,15 @@ function equipChestItem(){
   S.gear[it.s]=it;
   if(old){ const p=sellPrice(old); S.gold+=p; showToast("⚙",SLOTS.find(s=>s.id===it.s).n,"","надето · старое скупщику","+"+fmt(p)+" 🪙"); }
   else showToast("⚙",SLOTS.find(s=>s.id===it.s).n,"","надето. Дворф доволен.");
-  chestPending=null; save(); render(); renderChestCard();
+  chestPending=null; closeDropDecide(); save(); render();
+  if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
 }
 function sellChestItem(){
   if(!chestPending) return;
   const it=chestPending, p=sellPrice(it); S.gold+=p;
   showToast("🎒",RAR_NAMES[it.r],"r"+it.r,"продано скупщику","+"+fmt(p)+" 🪙");
-  chestPending=null; save(); render(); renderChestCard();
+  chestPending=null; closeDropDecide(); save(); render();
+  if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
 }
 function chestUpgrade(){
   if(bagUpgrading()){ showToast("🧰","Идёт апгрейд","","Осталось "+bagUpgradeLeft()+"с"); return; }

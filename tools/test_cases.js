@@ -120,7 +120,8 @@ S.gold=0; S.combs=0; render();
 let allDisabled=true;
 for(const u of UPGRADES){ if(!__ids["u_"+u.id]._q["button"].disabled) allDisabled=false; }
 T("без золота все 8 кнопок апгрейдов заблокированы", allDisabled);
-T("сумка и гача без ресурсов заблокированы", ($("powerUp")&&$("powerUp").disabled) && ((S.combs||0)<1));
+T("гача без расчёсок заблокирована", (S.combs||0)<1);
+T("кнопка сумки открывает шансы даже без золота", $("powerUp") && !$("powerUp").disabled);
 { const g0=S.gold, l0=S.lvls.atk; __ids.u_atk._q["button"].onclick();
   T("клик по заблокированной кнопке ничего не делает", S.gold===g0 && S.lvls.atk===l0); }
 
@@ -1053,9 +1054,17 @@ S.bags=1; chestOpenOne(); { const sl=chestPending.s; equipChestItem();
   if(S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); }
   T("апгрейд из окна повышает уровень сундука", S.bag===b0+1); }
 closeChest();
-{ S.bags=2; const b0=S.bags; openChest(false);
-  T("1-tap сундук тратит сумку без модалки", S.bags===b0-1 && __ids.chestModal.style.display!=="flex");
-  T("1-tap сундук пишет в toast", !!__ids.toast && __ids.toast.style.display==="block"); }
+{ S.bags=2; S.gear={}; const b0=S.bags; openChest(false);
+  T("1-tap сундук тратит сумку без листа шансов", S.bags===b0-1 && __ids.chestModal.style.display!=="flex");
+  T("1-tap сразу даёт решение Equip/Sell", !!chestPending && __ids.dropModal.style.display==="flex");
+  T("1-tap показывает пилюли сравнения", /chPill/.test(__ids.dropCard.innerHTML||""));
+  sellChestItem();
+  T("продажа закрывает dropModal", chestPending===null && __ids.dropModal.style.display!=="flex"); }
+{ buildUpgrades(); render();
+  T("карточки апгрейдов показывают Ур. N", /Ур\.\s*\d+/.test((__ids.u_atk&&__ids.u_atk.innerHTML)||"")); }
+{ S.bag=1; S.gold=bagCost()*2; S.bagActive=null; bagSkipArmed=false; render();
+  T("индикатор апгрейда сумки при ресурсах", __ids.bagUpDot && __ids.bagUpDot.style.display==="block");
+  T("лейбл СУМКА УР на action bar", /СУМКА УР/.test((__ids.bagAreaLvl&&__ids.bagAreaLvl.textContent)||"")); }
 { showToast("🧪","ТОСТ","r3","проверка","видно",true);
   T("showToast показывает #toast", __ids.toast.style.display==="block" && /проверка/.test(__ids.toast.innerHTML||"")); }
 { showToast('<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="oreimg big">',"COMMON","r0","Уголёк","тест img",true);
