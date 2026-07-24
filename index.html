@@ -184,7 +184,136 @@ button:disabled{opacity:.45;cursor:default;}
 #pickHand{position:absolute;left:60px;top:32px;width:40px;image-rendering:pixelated;
   transform-origin:42% 90%;transform:rotate(-22deg);z-index:4;}
 #aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
-#petBox{position:absolute;left:calc(6% + 1cm);bottom:36px;z-index:5;animation:bob 2s ease-in-out infinite;display:none;}
+/* Питомец-кот: 6 настроений + скины по редкости */
+#petBox{
+  position:absolute;left:calc(6% + 1cm);bottom:36px;z-index:5;display:none;
+  transform-origin:70% 90%;width:64px;height:56px;
+  --pet-fur:#7a8494; --pet-dark:#5a6474; --pet-sock:#eef0f3;
+  --pet-eye:#f0c84a; --pet-nose:#3a2c1c; --pet-patch:#e08a3c;
+}
+#petBox .petFur{fill:var(--pet-fur);}
+#petBox .petFurStroke{stroke:var(--pet-fur);}
+#petBox .petDark{fill:var(--pet-dark);}
+#petBox .petDarkStroke{stroke:var(--pet-dark);}
+#petBox .petSock{fill:var(--pet-sock);}
+#petBox .petEye{fill:var(--pet-eye);}
+#petBox .petNose{fill:var(--pet-nose);}
+#petBox.pat-tabby .petPatTabby,
+#petBox.pat-rosette .petPatSpot,
+#petBox.pat-polka .petPatSpot{opacity:.75 !important;}
+#petBox.pat-calico .petPatCalico{opacity:1 !important;}
+#petBox.pat-bandaid .petBandaid{opacity:1 !important;}
+#petBox.pat-fluffy .petFur,#petBox.pat-fluffy .petFurStroke{filter:url(#petFluff) brightness(1.05);}
+#petBox.pat-sphynx .petFur{filter:saturate(1.15);}
+#petBox.pat-tuxedo .petSock{opacity:1;}
+#petBox .petMood{display:none;width:100%;height:100%;}
+#petBox.mood-gaze .petMood.gaze,
+#petBox.mood-purr .petMood.purr,
+#petBox.mood-follow .petMood.follow,
+#petBox.mood-twitch .petMood.twitch,
+#petBox.mood-sleep .petMood.sleep,
+#petBox.mood-belly .petMood.belly{display:block;}
+#petBox svg{overflow:visible;display:block;width:100%;height:100%;}
+#petBox .petPurrTxt{
+  display:none;position:absolute;left:36px;top:-2px;white-space:nowrap;
+  font-family:var(--font-display);font-size:11px;color:var(--gold);
+  text-shadow:0 1px 2px #000c;pointer-events:none;
+}
+#petBox.mood-purr .petPurrTxt{display:block;animation:petPurrFade 1.4s ease-in-out infinite;}
+#petBox .petPetHand{
+  display:none;position:absolute;right:-10px;top:0;z-index:8;width:42px;height:30px;
+  pointer-events:none;filter:drop-shadow(0 1px 2px #0009);
+}
+#petBox.petting .petPetHand{display:block;animation:petStroke 1.45s ease-in-out 1;}
+#petBox .petHearts{
+  display:none;position:absolute;left:8px;top:-10px;z-index:7;pointer-events:none;
+  font-size:10px;line-height:1;color:#ff7a9a;text-shadow:0 1px 2px #000a;
+}
+#petBox.petting .petHearts{display:block;animation:petHeartsUp 1.4s ease-out 1;}
+#petBox.petting .petPurrTxt{
+  display:block !important;font-size:13px;left:28px;top:-8px;
+  animation:petPurrFade .55s ease-in-out infinite;
+}
+#petBox.mood-purr.petting{animation:petPurrShake .32s ease-in-out 5;}
+#petBox.mood-follow{animation:petRub 4.2s ease-in-out infinite;}
+#petBox.mood-follow .petQTail{
+  transform-box:view-box;transform-origin:10px 30px;
+  animation:petTailWag 3.2s ease-in-out infinite;
+}
+#petBox.mood-twitch .petStraightTail{
+  transform-box:view-box;transform-origin:13px 30px;
+  animation:petTailTwitch .38s ease-in-out infinite;
+}
+#petBox.mood-gaze{animation:petSitBob 3.4s ease-in-out infinite;}
+#petBox.mood-gaze .petBlink{animation:petBlink 4.5s ease-in-out infinite;}
+#petBox.mood-purr{animation:petSitBob 3.4s ease-in-out infinite;}
+#petBox.mood-sleep{animation:petSleepBob 3.6s ease-in-out infinite;}
+#petBox.mood-belly{animation:petBellyWiggle 2.8s ease-in-out infinite;}
+#petBox.mood-belly .petSock{filter:brightness(1.08);}
+@keyframes petStroke{
+  0%{transform:translate(10px,-6px) rotate(-22deg);opacity:0}
+  12%{opacity:1}
+  35%{transform:translate(-10px,4px) rotate(-6deg)}
+  58%{transform:translate(2px,0) rotate(-12deg)}
+  82%{transform:translate(-6px,2px) rotate(-8deg)}
+  100%{transform:translate(12px,-8px) rotate(-24deg);opacity:0}
+}
+@keyframes petHeartsUp{
+  0%{opacity:0;transform:translateY(6px) scale(.7)}
+  25%{opacity:1}
+  100%{opacity:0;transform:translateY(-16px) scale(1.15)}
+}
+@keyframes petPurrShake{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-2px) scale(1.03)}
+}
+@keyframes petRub{
+  0%,12%{transform:translate(0,0) rotate(0deg)}
+  28%{transform:translate(11px,1px) rotate(5deg)}
+  38%{transform:translate(16px,0) rotate(7deg)}
+  48%{transform:translate(12px,1px) rotate(4deg)}
+  58%{transform:translate(4px,0) rotate(-1deg)}
+  72%{transform:translate(0,-2px) rotate(0deg)}
+  82%{transform:translate(2px,0) rotate(1deg)}
+  100%{transform:translate(0,0) rotate(0deg)}
+}
+@keyframes petTailWag{
+  0%,100%{transform:rotate(-6deg)}
+  50%{transform:rotate(10deg)}
+}
+@keyframes petTailTwitch{
+  0%,100%{transform:rotate(-3deg)}
+  50%{transform:rotate(4deg)}
+}
+@keyframes petSitBob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-2px)}
+}
+@keyframes petSleepBob{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(1px) scale(1.02)}
+}
+@keyframes petBellyWiggle{
+  0%,100%{transform:rotate(-3deg) translateY(0)}
+  50%{transform:rotate(4deg) translateY(1px)}
+}
+/* хвост в позе «живот» — медленная дуга */
+#petBox.mood-belly .petFurStroke{
+  transform-box:view-box;transform-origin:36px 30px;
+  animation:petBellyTail 3.4s ease-in-out infinite;
+}
+@keyframes petBellyTail{
+  0%,100%{transform:rotate(-4deg)}
+  50%{transform:rotate(8deg)}
+}
+@keyframes petPurrFade{
+  0%,100%{opacity:.35;transform:translateY(0)}
+  50%{opacity:1;transform:translateY(-2px)}
+}
+@keyframes petBlink{
+  0%,42%,48%,100%{opacity:1}
+  45%{opacity:0}
+}
 #rock{
   position:absolute;right:4%;bottom:36px;width:148px;height:148px;z-index:3;cursor:pointer;
   filter:drop-shadow(0 10px 12px #000a);
@@ -273,6 +402,8 @@ button:disabled{opacity:.45;cursor:default;}
 }
 #powerUp b{display:block;font-size:15px;color:var(--gold);}
 #powerUp span{font-size:13px;color:var(--goldMuted);}
+#powerUp.skipOffer{border-color:var(--gold);box-shadow:0 0 0 1px rgba(212,168,75,.35);}
+#powerUp.skipOffer b{color:#ffe09a;}
 #auto{
   min-height:72px;border-radius:var(--r-md);background:var(--bgPanelAlt);
   border:2px solid var(--borderLight);font-family:var(--font-display);
@@ -405,8 +536,8 @@ body > .modal{
 .col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--border);font-size:13px;}
 .oreimg{width:26px;height:26px;image-rendering:pixelated;vertical-align:middle;margin-right:6px;}
 .oreimg.big{width:44px;height:44px;}
-#toast{position:fixed;left:50%;top:15%;transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
-  border-radius:14px;padding:12px 20px;text-align:center;z-index:50;display:none;box-shadow:0 8px 30px #000a;min-width:230px;}
+#toast{position:fixed;left:50%;bottom:calc(var(--bottom-nav-h, 72px) + 16px);transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
+  border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92vw);pointer-events:none;}
 #toast .big{font-size:30px;}
 #toast .r{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;}
 #toast .nm{font-size:15px;font-weight:700;margin:2px 0;}
@@ -610,8 +741,8 @@ body > .modal{
     background:#12151dcc;border:1px solid var(--gold);border-radius:6px;padding:3px 7px;display:none;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
 
-  #toast{position:fixed;left:50%;top:15%;transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
-    border-radius:14px;padding:12px 20px;text-align:center;z-index:50;display:none;box-shadow:0 8px 30px #000a;min-width:230px;}
+  #toast{position:fixed;left:50%;bottom:calc(var(--bottom-nav-h, 72px) + 16px);transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
+    border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92vw);pointer-events:none;}
 
   #toast .big{font-size:30px;}
 
@@ -827,20 +958,229 @@ body > .modal{
         <img id="aleMug" alt="">
         <div id="paperdoll"></div>
       </div>
-      <div id="petBox" class="pet" style="display:none">
-        <svg viewBox="0 0 40 30" width="46" height="35">
-          <ellipse cx="20" cy="27" rx="14" ry="3" fill="rgba(0,0,0,0.25)"/>
-          <ellipse cx="18" cy="19" rx="11" ry="7" fill="#c98d4f"/>
-          <circle cx="29" cy="13" r="6" fill="#c98d4f"/>
-          <path d="M26 8 L28 3 L31 8 Z" fill="#a5713a"/>
-          <path d="M31 8 L34 4 L35 9 Z" fill="#a5713a"/>
-          <circle cx="31" cy="12" r="1.3" fill="#26221e"/>
-          <circle cx="34.5" cy="14.5" r="1.6" fill="#3a2c1c"/>
-          <path d="M8 17 Q3 12 6 8" stroke="#c98d4f" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <rect x="11" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
-          <rect x="21" y="23" width="3.5" height="5" rx="1.5" fill="#a5713a"/>
-          <rect id="petCollar" x="24" y="16" width="9" height="3" rx="1.5" fill="#5fd068"/>
-        </svg>
+      <div id="petBox" class="pet mood-gaze" style="display:none" title="Тап — погладить · удержи — питомцы">
+        <span class="petPurrTxt">Муррр...</span>
+        <div class="petHearts" aria-hidden="true">♥ · ♥</div>
+        <div class="petPetHand" aria-hidden="true">
+          <svg viewBox="0 0 44 30" width="42" height="30">
+            <rect x="1" y="9" width="17" height="9" rx="2.2" fill="#7ec8e8"/>
+            <rect x="1" y="9" width="17" height="3.2" rx="1.2" fill="#b6e6f6"/>
+            <path d="M3.5 18.5 V24.5 M7 18.5 V25.5 M10.5 18.5 V24.5 M14 18.5 V25.2" stroke="#4f8eab" stroke-width="1.35" stroke-linecap="round"/>
+            <ellipse cx="30" cy="13" rx="10" ry="8" fill="#e8c4a8"/>
+            <ellipse cx="37" cy="8" rx="3.2" ry="4.2" fill="#e8c4a8"/>
+            <ellipse cx="22" cy="11" rx="2.4" ry="3.2" fill="#e8c4a8"/>
+          </svg>
+        </div>
+        <!-- 1. Смотрит в глаза -->
+        <div class="petMood gaze">
+          <svg viewBox="0 0 48 44" aria-hidden="true">
+            <ellipse cx="24" cy="41" rx="12" ry="2.2" fill="rgba(0,0,0,.28)"/>
+            <ellipse cx="24" cy="30" rx="12" ry="9" class="petFur" fill="var(--pet-fur)"/>
+            <g class="petPatTabby" opacity="0" pointer-events="none">
+              <path d="M16 26 Q20 24 24 26 M18 30 Q24 28 30 30 M17 34 Q24 32 31 34" stroke="var(--pet-dark)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+              <path d="M18 12 Q24 10 30 12" stroke="var(--pet-dark)" stroke-width="1.2" fill="none"/>
+            </g>
+            <g class="petPatSpot" opacity="0" pointer-events="none">
+              <circle cx="18" cy="28" r="1.6" fill="var(--pet-dark)"/>
+              <circle cx="28" cy="27" r="1.3" fill="var(--pet-dark)"/>
+              <circle cx="22" cy="33" r="1.1" fill="var(--pet-dark)"/>
+              <circle cx="20" cy="14" r="1.2" fill="var(--pet-dark)"/>
+              <circle cx="27" cy="13" r="1.0" fill="var(--pet-dark)"/>
+            </g>
+            <g class="petPatCalico" opacity="0" pointer-events="none">
+              <path d="M14 26 Q18 22 22 28 Q16 32 14 26Z" fill="var(--pet-patch)"/>
+              <path d="M28 25 Q34 22 34 30 Q30 34 28 25Z" fill="var(--pet-dark)"/>
+              <path d="M18 10 Q22 8 24 14 Q20 16 18 10Z" fill="var(--pet-patch)"/>
+            </g>
+            <g class="petBandaid" opacity="0" pointer-events="none">
+              <rect x="20" y="26" width="9" height="4" rx="1" fill="var(--pet-patch)" stroke="#fff" stroke-width=".4"/>
+              <line x1="24.5" y1="26" x2="24.5" y2="30" stroke="#fff" stroke-width=".5"/>
+            </g>
+            <ellipse cx="24" cy="32" rx="6" ry="5" class="petSock" fill="var(--pet-sock)"/>
+            <path d="M14 36 Q24 40 34 36" class="petDarkStroke" stroke="var(--pet-dark)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <rect x="14" y="35" width="4" height="5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <rect x="30" y="35" width="4" height="5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <circle cx="24" cy="16" r="9" class="petFur" fill="var(--pet-fur)"/>
+            <path d="M16 12 L15 6 L20 11 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M32 12 L33 6 L28 11 Z" class="petDark" fill="var(--pet-dark)"/>
+            <ellipse class="petBlink petEye" cx="20.5" cy="16" rx="2.2" ry="2.6" fill="var(--pet-eye)"/>
+            <ellipse class="petBlink petEye" cx="27.5" cy="16" rx="2.2" ry="2.6" fill="var(--pet-eye)"/>
+            <circle cx="20.5" cy="16.3" r=".7" fill="#26221e"/>
+            <circle cx="27.5" cy="16.3" r=".7" fill="#26221e"/>
+            <ellipse cx="24" cy="19.5" rx="1.3" ry="1" class="petNose" fill="var(--pet-nose)"/>
+            <rect class="petCollar" x="18" y="23" width="12" height="2.6" rx="1.3" fill="#5fd068"/>
+          </svg>
+        </div>
+        <!-- 2. Мурлычет (гладят — глаза закрыты, подбородок вверх) -->
+        <div class="petMood purr">
+          <svg viewBox="0 0 48 44" aria-hidden="true">
+            <ellipse cx="24" cy="41" rx="12" ry="2.2" fill="rgba(0,0,0,.28)"/>
+            <ellipse cx="24" cy="31" rx="12" ry="9" class="petFur" fill="var(--pet-fur)"/>
+            <ellipse cx="24" cy="33" rx="6" ry="5" class="petSock" fill="var(--pet-sock)"/>
+            <path d="M14 37 Q24 41 34 37" class="petDarkStroke" stroke="var(--pet-dark)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <rect x="14" y="36" width="4" height="5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <rect x="30" y="36" width="4" height="5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <circle cx="24" cy="14.5" r="9.2" class="petFur" fill="var(--pet-fur)"/>
+            <path d="M16 11 L14.5 4.5 L20.5 10 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M32 11 L33.5 4.5 L27.5 10 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M17.2 14.2 Q20.5 18 23.6 14.2" stroke="#26221e" stroke-width="1.45" fill="none" stroke-linecap="round"/>
+            <path d="M24.4 14.2 Q27.5 18 30.8 14.2" stroke="#26221e" stroke-width="1.45" fill="none" stroke-linecap="round"/>
+            <ellipse cx="24" cy="18.2" rx="1.35" ry="1.05" class="petNose" fill="var(--pet-nose)"/>
+            <path d="M20.2 20 Q24 23.2 27.8 20" stroke="#c97a7a" stroke-width="1.05" fill="none" stroke-linecap="round" opacity=".75"/>
+            <path d="M14 17 L7 15 M14 19.5 L7.5 21" stroke="var(--pet-sock)" stroke-width="1" stroke-linecap="round" opacity=".55"/>
+            <path d="M34 17 L41 15 M34 19.5 L40.5 21" stroke="var(--pet-sock)" stroke-width="1" stroke-linecap="round" opacity=".55"/>
+            <rect class="petCollar" x="18" y="22.5" width="12" height="2.6" rx="1.3" fill="#5fd068"/>
+          </svg>
+        </div>
+        <!-- 3. Ходит за тобой — профиль по меркам: 1 корпус, 2 шея, 4 грудь, 5 брюхо, 7 пояс -->
+        <div class="petMood follow">
+          <svg viewBox="0 0 56 48" aria-hidden="true">
+            <ellipse cx="28" cy="45" rx="16" ry="2.2" fill="rgba(0,0,0,.28)"/>
+            <!--  хвост «?» от основания (1) -->
+            <g class="petQTail">
+              <path d="M10 30
+                       C 5 28, 3 18, 7 10
+                       C 9 5, 15 3, 18 7
+                       C 20 10, 17 13, 14 12"
+                class="petFurStroke" stroke="var(--pet-fur)" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+            </g>
+            <!-- 1 корпус: шея→хвост; 4 грудь толще, 7 пояс чуть уже -->
+            <path d="M14 32
+                     C 14 24, 18 20, 26 19
+                     C 34 18, 42 20, 46 24
+                     C 48 27, 47 33, 42 35
+                     C 36 38, 22 38, 16 35
+                     C 13 34, 14 32, 14 32 Z"
+              class="petFur" fill="var(--pet-fur)"/>
+            <!-- 5 длина брюха между лапами -->
+            <ellipse cx="30" cy="34" rx="10" ry="3.2" class="petSock" fill="var(--pet-sock)" opacity=".85"/>
+            <g class="petPatTabby" opacity="0" pointer-events="none">
+              <path d="M20 24 Q26 22 32 24 M18 28 Q28 26 36 28 M22 32 Q30 30 38 32" stroke="var(--pet-dark)" stroke-width="1.3" fill="none"/>
+            </g>
+            <g class="petPatSpot" opacity="0" pointer-events="none">
+              <circle cx="22" cy="26" r="1.5" fill="var(--pet-dark)"/>
+              <circle cx="32" cy="25" r="1.3" fill="var(--pet-dark)"/>
+              <circle cx="28" cy="31" r="1.1" fill="var(--pet-dark)"/>
+              <circle cx="40" cy="22" r="1.0" fill="var(--pet-dark)"/>
+            </g>
+            <g class="petPatCalico" opacity="0" pointer-events="none">
+              <path d="M16 26 Q22 20 26 28 Z" fill="var(--pet-patch)"/>
+              <path d="M34 24 Q42 20 42 32 Z" fill="var(--pet-dark)"/>
+            </g>
+            <g class="petBandaid" opacity="0" pointer-events="none">
+              <rect x="26" y="26" width="9" height="3.5" rx="1" fill="var(--pet-patch)" stroke="#fff" stroke-width=".4"/>
+            </g>
+            <!-- 6 передние лапы у груди (4) -->
+            <rect x="36" y="34" width="3.4" height="8" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <rect x="41" y="34" width="3.2" height="7.5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <!-- задние лапы у пояса (7) -->
+            <rect x="16" y="34" width="3.6" height="8" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <rect x="21" y="34" width="3.2" height="7.5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <!-- 2–3 шея + ошейник у основания шеи -->
+            <ellipse cx="44" cy="22" rx="4.5" ry="5" class="petFur" fill="var(--pet-fur)"/>
+            <rect class="petCollar" x="40" y="24" width="8.5" height="2.4" rx="1.2" fill="#5fd068"/>
+            <!-- голова -->
+            <circle cx="49" cy="17" r="6.5" class="petFur" fill="var(--pet-fur)"/>
+            <path d="M44 13 L44.5 6.5 L48 12.5 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M50 12 L53.5 5.5 L54.5 12.8 Z" class="petDark" fill="var(--pet-dark)"/>
+            <circle cx="51.2" cy="16.2" r="1.25" class="petEye" fill="var(--pet-eye)"/>
+            <circle cx="51.4" cy="16.4" r=".45" fill="#26221e"/>
+            <ellipse cx="54" cy="18.5" rx="1.4" ry="1" class="petNose" fill="var(--pet-nose)"/>
+          </svg>
+        </div>
+        <!-- 4. Подёргивает хвост — тот же профиль, хвост вертикально (1→вверх) -->
+        <div class="petMood twitch">
+          <svg viewBox="0 0 56 48" aria-hidden="true">
+            <ellipse cx="28" cy="45" rx="16" ry="2.2" fill="rgba(0,0,0,.28)"/>
+            <g class="petStraightTail">
+              <path d="M14 30 L12 6" class="petFurStroke" stroke="var(--pet-fur)" stroke-width="3.3" fill="none" stroke-linecap="round"/>
+              <path d="M8 10 Q12 5 16 10" stroke="#aab3c0" stroke-width="1" fill="none" opacity=".65"/>
+              <path d="M7 16 Q12 11 17 16" stroke="#aab3c0" stroke-width="1" fill="none" opacity=".5"/>
+            </g>
+            <path d="M14 32
+                     C 14 24, 18 20, 26 19
+                     C 34 18, 42 20, 46 24
+                     C 48 27, 47 33, 42 35
+                     C 36 38, 22 38, 16 35
+                     C 13 34, 14 32, 14 32 Z"
+              class="petFur" fill="var(--pet-fur)"/>
+            <ellipse cx="30" cy="34" rx="10" ry="3.2" class="petSock" fill="var(--pet-sock)" opacity=".85"/>
+            <rect x="36" y="34" width="3.4" height="8" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <rect x="41" y="34" width="3.2" height="7.5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <rect x="16" y="34" width="3.6" height="8" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <rect x="21" y="34" width="3.2" height="7.5" rx="1.5" class="petSock" fill="var(--pet-sock)"/>
+            <ellipse cx="44" cy="22" rx="4.5" ry="5" class="petFur" fill="var(--pet-fur)"/>
+            <rect class="petCollar" x="40" y="24" width="8.5" height="2.4" rx="1.2" fill="#5fd068"/>
+            <circle cx="49" cy="17" r="6.5" class="petFur" fill="var(--pet-fur)"/>
+            <path d="M44 13 L44.5 6.5 L48 12.5 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M50 12 L53.5 5.5 L54.5 12.8 Z" class="petDark" fill="var(--pet-dark)"/>
+            <circle cx="51.2" cy="16.2" r="1.25" class="petEye" fill="var(--pet-eye)"/>
+            <circle cx="51.4" cy="16.4" r=".45" fill="#26221e"/>
+            <ellipse cx="54" cy="18.5" rx="1.4" ry="1" class="petNose" fill="var(--pet-nose)"/>
+          </svg>
+        </div>
+        <!-- 5. Спит -->
+        <div class="petMood sleep">
+          <svg viewBox="0 0 48 44" aria-hidden="true">
+            <ellipse cx="24" cy="40" rx="14" ry="2.4" fill="rgba(0,0,0,.28)"/>
+            <ellipse cx="24" cy="30" rx="14" ry="9" class="petFur" fill="var(--pet-fur)"/>
+            <ellipse cx="22" cy="31" rx="7" ry="5" class="petSock" fill="var(--pet-sock)" opacity=".85"/>
+            <circle cx="30" cy="24" r="7.5" class="petFur" fill="var(--pet-fur)"/>
+            <path d="M24 21 L24.5 15.5 L28 20.5 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M32 20 L35.5 14.5 L36 20.5 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M26.5 24 Q28.5 25.5 30.5 24" stroke="#26221e" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M31.5 24 Q33.5 25.5 35.5 24" stroke="#26221e" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <ellipse cx="32" cy="27" rx="1.1" ry=".8" class="petNose" fill="var(--pet-nose)"/>
+            <path d="M12 32 C 10 28, 14 24, 18 26 C 20 28, 16 34, 14 34 Z" class="petDark" fill="var(--pet-dark)"/>
+            <rect class="petCollar" x="26" y="28" width="9" height="2.2" rx="1.1" fill="#5fd068"/>
+            <text x="36" y="14" fill="#c9b896" font-size="7" font-family="VT323,monospace" opacity=".8">z</text>
+            <text x="40" y="10" fill="#c9b896" font-size="9" font-family="VT323,monospace" opacity=".65">z</text>
+          </svg>
+        </div>
+        <!-- 6. Показывает живот — стикер: на спине, лапки к груди, глазки-V, хвост дугой -->
+        <div class="petMood belly">
+          <svg viewBox="0 0 48 44" aria-hidden="true">
+            <ellipse cx="24" cy="41" rx="14" ry="2" fill="rgba(0,0,0,.28)"/>
+            <!-- хвост дугой вверх-вправо -->
+            <path d="M36 30 C 42 28, 46 20, 42 12 C 40 8, 36 10, 37 14"
+              class="petFurStroke" stroke="var(--pet-fur)" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+            <path d="M36 30 C 42 28, 46 20, 42 12 C 40 8, 36 10, 37 14"
+              class="petDarkStroke" stroke="var(--pet-dark)" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".45"/>
+            <!-- туловище -->
+            <ellipse cx="22" cy="28" rx="14" ry="11" class="petFur" fill="var(--pet-fur)"/>
+            <!-- белое брюшко + «штрихи» как на стикере -->
+            <ellipse cx="22" cy="29" rx="10" ry="8" class="petSock" fill="var(--pet-sock)"/>
+            <path d="M18 27 H26 M17 30 H27 M18.5 33 H25.5" stroke="var(--pet-dark)" stroke-width="1.1" stroke-linecap="round" opacity=".35"/>
+            <!-- полоски табби на боках (видны на tabby/rosette скинах) -->
+            <g class="petPatTabby" opacity="0" pointer-events="none">
+              <path d="M10 24 Q14 22 12 28 M11 30 Q15 28 13 34" stroke="var(--pet-dark)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <path d="M30 22 Q34 24 32 28" stroke="var(--pet-dark)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+            </g>
+            <!-- задние лапки в стороны, согнуты -->
+            <ellipse cx="8" cy="32" rx="4" ry="3.2" class="petFur" fill="var(--pet-fur)" transform="rotate(-25 8 32)"/>
+            <circle cx="6" cy="34" r="2.4" class="petSock" fill="var(--pet-sock)"/>
+            <ellipse cx="34" cy="33" rx="4" ry="3.2" class="petFur" fill="var(--pet-fur)" transform="rotate(30 34 33)"/>
+            <circle cx="36" cy="35" r="2.4" class="petSock" fill="var(--pet-sock)"/>
+            <!-- передние лапки к груди (как на стикере) -->
+            <ellipse cx="16" cy="22" rx="3.6" ry="2.8" class="petFur" fill="var(--pet-fur)" transform="rotate(-35 16 22)"/>
+            <circle cx="14.5" cy="23.5" r="2.2" class="petSock" fill="var(--pet-sock)"/>
+            <ellipse cx="28" cy="22" rx="3.6" ry="2.8" class="petFur" fill="var(--pet-fur)" transform="rotate(35 28 22)"/>
+            <circle cx="29.5" cy="23.5" r="2.2" class="petSock" fill="var(--pet-sock)"/>
+            <!-- голова -->
+            <circle cx="22" cy="14" r="8.2" class="petFur" fill="var(--pet-fur)"/>
+            <path d="M15.5 10 L14 3.5 L20 9 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M28.5 10 L30 3.5 L24 9 Z" class="petDark" fill="var(--pet-dark)"/>
+            <path d="M16.5 9.5 L16 5.5 L19.5 9 Z" class="petSock" fill="var(--pet-sock)" opacity=".5"/>
+            <path d="M27.5 9.5 L28 5.5 L24.5 9 Z" class="petSock" fill="var(--pet-sock)" opacity=".5"/>
+            <!-- глазки-V довольные -->
+            <path d="M17.5 13.5 Q19.5 11.5 21.5 13.5" stroke="#26221e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M22.5 13.5 Q24.5 11.5 26.5 13.5" stroke="#26221e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- носик + улыбка -->
+            <ellipse cx="22" cy="16.2" rx="1.3" ry="1" class="petNose" fill="var(--pet-nose)"/>
+            <path d="M19.5 17.8 Q22 20 24.5 17.8" stroke="#26221e" stroke-width="1.15" fill="none" stroke-linecap="round"/>
+            <rect class="petCollar" x="16.5" y="20" width="11" height="2.2" rx="1.1" fill="#5fd068"/>
+          </svg>
+        </div>
       </div>
       <div id="rock" class="rock">
         <img id="rockImg" alt="">
@@ -877,7 +1217,7 @@ body > .modal{
 
     <!-- G. Действия -->
     <div id="actionBar">
-      <button type="button" id="lootChest" onclick="openChest()">📦<span id="bagBadge2"></span></button>
+      <button type="button" id="lootChest" title="Тап — открыть · удержи — настройки">📦<span id="bagBadge2"></span></button>
       <button type="button" id="powerUp" onclick="tryBagUpgrade()">
         <b id="bagAreaLvl">СИЛА УР 1</b>
         <span id="bagAreaTimer"></span>
@@ -1587,9 +1927,12 @@ const GEO_RAR=["Common","Rare","Epic","Legendary"];
 const geoCost=()=> 1;          /* 1 расческа за ролл (док §Девушки) */
 function bagUpgrading(){ return !!(S.bagActive && Date.now()<S.bagActive.end); }
 function bagUpgradeLeft(){ return S.bagActive? Math.max(0,Math.ceil((S.bagActive.end-Date.now())/1000)) : 0; }
+function bagSkipGems(){ return BALANCE.bags.skipGems||5; }
+let bagSkipArmed=false;
 function finishBagUpgrade(){
   if(!S.bagActive || Date.now()<S.bagActive.end) return false;
   S.bagActive=null;
+  bagSkipArmed=false;
   const oldName=bagName(S.bag);
   S.bag++;
   Platform.logEvent("bag_upgrade",{level:S.bag});
@@ -1609,6 +1952,7 @@ function startBagUpgrade(){
     if($("powerUp")&&$("powerUp").classList) $("powerUp").classList.remove("pulse");
     if($("powerUp")&&$("powerUp").classList) $("powerUp").classList.remove("pulse"); }
   S.gold-=c;
+  bagSkipArmed=false;
   S.bagActive={ end:Date.now()+(BALANCE.bags.upgradeSec||45)*1000 };
   Platform.logEvent("bag_upgrade_start",{next:S.bag+1});
   save(); render();
@@ -1616,14 +1960,15 @@ function startBagUpgrade(){
   return true;
 }
 function skipBagUpgrade(){
-  if(!S.bagActive) return;
-  const gems=BALANCE.bags.skipGems||5;
+  if(!S.bagActive) return false;
+  const gems=bagSkipGems();
   if((S.gems||0)>=gems){
     S.gems-=gems; S.bagActive.end=Date.now();
     finishBagUpgrade();
-    return;
+    return true;
   }
   Platform.showRewarded(ok=>{ if(ok && S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); } }, "bag_skip");
+  return false;
 }
 function rollVeinExtras(isBoss){
   const G=BALANCE.gacha||{};
@@ -2273,7 +2618,21 @@ function hireGeo(){
 
 /* ---------- сумка (апгрейд с таймером — док §Экипировка) ---------- */
 function tryBagUpgrade(){
-  if(bagUpgrading()){ showToast("🧰","Идёт апгрейд","","Осталось "+bagUpgradeLeft()+"с"); return false; }
+  if(bagUpgrading()){
+    const gems=bagSkipGems();
+    if(!bagSkipArmed){
+      bagSkipArmed=true;
+      render();
+      showToast("⏩","Пропуск ожидания","","💎"+gems,"ещё тап — сразу ур."+(S.bag+1));
+      return false;
+    }
+    if((S.gems||0)<gems){
+      showToast("💎","Мало кристаллов","","Нужно "+gems+" 💎","или реклама");
+    }
+    skipBagUpgrade();
+    return true;
+  }
+  bagSkipArmed=false;
   if(S.bag>=50) return false;
   if((S.gold||0)<bagCost()) return false;
   startBagUpgrade();
@@ -2282,7 +2641,26 @@ function tryBagUpgrade(){
 if($("energyBox")) $("energyBox").onclick=()=>reinforceMine();
 if($("powerUp")) $("powerUp").onclick=()=>tryBagUpgrade();
 if($("auto")) $("auto").onclick=()=>toggleAutoRoll();
-if($("lootChest")) $("lootChest").onclick=()=>openChest();
+/* сундук: короткий тап = 1-tap открытие (если есть), long-press = модалка */
+(function wireLootChest(){
+  const lc=$("lootChest"); if(!lc||!lc.addEventListener) return;
+  let longFired=false, lpT=0;
+  lc.onclick=null;
+  lc.removeAttribute("onclick");
+  lc.addEventListener("pointerdown", function(){
+    longFired=false;
+    clearTimeout(lpT);
+    lpT=setTimeout(function(){ longFired=true; openChest(true); }, 480);
+  });
+  function clearLp(){ clearTimeout(lpT); }
+  lc.addEventListener("pointerup", clearLp);
+  lc.addEventListener("pointercancel", clearLp);
+  lc.addEventListener("pointerleave", clearLp);
+  lc.addEventListener("click", function(e){
+    if(longFired){ longFired=false; if(e&&e.preventDefault) e.preventDefault(); return; }
+    openChest(false);
+  });
+})();
 
 /* ---------- цикл ---------- */
 let last=performance.now(), idleAcc=0;
@@ -2345,9 +2723,36 @@ function loop(now){
   else if(!dead){ aleNext-=rawDt; if(aleNext<=0){ sipAle(); aleNext=35+Math.random()*30; } }
   if(quipHide>0){ quipHide-=rawDt; if(quipHide<=0) $("bubble").classList.remove("show"); }
   else if(!dead){ quipNext-=rawDt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
+  tickPetMood(rawDt);
   render();
   requestAnimationFrame(loop);
 }
+
+/* тап по коту — погладить/мурлычет; long-press — коллекция питомцев */
+(function wirePetMoodTap(){
+  const box=document.getElementById("petBox");
+  if(!box||!box.addEventListener) return;
+  box.style.cursor="pointer";
+  let longFired=false, lpT=0;
+  box.addEventListener("pointerdown", function(e){
+    if(e&&e.stopPropagation) e.stopPropagation();
+    longFired=false;
+    clearTimeout(lpT);
+    lpT=setTimeout(function(){
+      longFired=true;
+      if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha");
+      else if(typeof openPets==="function") openPets();
+    }, 520);
+  });
+  function clearLp(){ clearTimeout(lpT); }
+  box.addEventListener("pointerup", clearLp);
+  box.addEventListener("pointercancel", clearLp);
+  box.addEventListener("click", function(e){
+    if(e&&e.stopPropagation) e.stopPropagation();
+    if(longFired){ longFired=false; return; }
+    petCat();
+  });
+})();
 
 /* ---------- UI ---------- */
 function $(id){ return document.getElementById(id); }
@@ -2454,6 +2859,117 @@ function shadeHex(h,t){ const n=parseInt(h.slice(1),16);
   const r=Math.min(255,f(n>>16)),g=Math.min(255,f((n>>8)&255)),b=Math.min(255,f(n&255));
   return "#"+((r<<16|g<<8|b)>>>0).toString(16).padStart(6,"0"); }
 function setFill(id,c){ const el=document.getElementById(id); if(el&&el.setAttribute) el.setAttribute("fill",c); }
+/* 6 состояний кошки с инфографики «Твоя кошка любит тебя, когда...» */
+const PET_MOODS=[
+  {id:"gaze",  title:"Смотрит тебе в глаза"},
+  {id:"purr",  title:"Мурлычет, когда ты рядом"},
+  {id:"follow",title:"Ходит за тобой"},
+  {id:"twitch",title:"Поднимает и подёргивает хвост"},
+  {id:"sleep", title:"Спит на тебе"},
+  {id:"belly", title:"Показывает живот"}
+];
+/* Скины по редкости (пулы) — имена с мемов про котов-рудокопов */
+const PET_SKIN_POOL=[
+  [ // Common
+    {id:"snow", n:"Снеговый", pat:"none", fur:"#f5f6f8", dark:"#c8ced6", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#e08a3c"},
+    {id:"beige",n:"Бежевый", pat:"none", fur:"#e8d2b0", dark:"#c4a078", sock:"#f5ebe0", eye:"#5a8a6a", nose:"#8a5040", patch:"#c4a078"},
+    {id:"miner",n:"Шахтёр", pat:"none", fur:"#2c3038", dark:"#1a1c22", sock:"#4a4e58", eye:"#f0c84a", nose:"#1a1010", patch:"#e08a3c"}
+  ],
+  [ // Rare
+    {id:"rust", n:"Ржавый", pat:"tabby", fur:"#e08a3c", dark:"#b05620", sock:"#f0c090", eye:"#3a8a4a", nose:"#5a3020", patch:"#b05620"},
+    {id:"sea",  n:"Морской котек", pat:"none", fur:"#7a8494", dark:"#5a6474", sock:"#eef0f3", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
+    {id:"dust", n:"Пыльный", pat:"tabby", fur:"#6a6870", dark:"#3a3840", sock:"#c8c6c0", eye:"#f0c84a", nose:"#2a2218", patch:"#3a3840"}
+  ],
+  [ // Epic
+    {id:"calico",n:"Снегово-ржавый шахтёр", pat:"calico", fur:"#f0f2f4", dark:"#2a2e34", sock:"#ffffff", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
+    {id:"fluffy",n:"Снегово-шерстный", pat:"fluffy", fur:"#f8f9fb", dark:"#d0d4dc", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#d0d4dc"},
+    {id:"tuxedo",n:"Снегово-пыльный", pat:"tuxedo", fur:"#4a5060", dark:"#2a3038", sock:"#f4f6f8", eye:"#f0c84a", nose:"#3a2c1c", patch:"#f4f6f8"}
+  ],
+  [ // Legendary
+    {id:"egypt",n:"Египтян", pat:"sphynx", fur:"#d4b090", dark:"#b89070", sock:"#e8c8b0", eye:"#6bb8e8", nose:"#c07070", patch:"#b89070"},
+    {id:"tortie",n:"Пыльно-ржавый", pat:"calico", fur:"#3a3838", dark:"#1a1818", sock:"#e08a3c", eye:"#f0c84a", nose:"#2a1810", patch:"#e08a3c"},
+    {id:"sand", n:"Мемная ржавая", pat:"none", fur:"#c9a070", dark:"#9a7040", sock:"#e8d0b0", eye:"#5a8a4a", nose:"#6a4030", patch:"#9a7040"}
+  ],
+  [ // Exotic
+    {id:"leo", n:"Ржавомер", pat:"rosette", fur:"#d4a060", dark:"#6a4020", sock:"#e8c898", eye:"#c8a020", nose:"#3a2c1c", patch:"#6a4020"},
+    {id:"polka",n:"Возмущённый в горошек", pat:"polka", fur:"#8a9098", dark:"#2a2e34", sock:"#d0d4da", eye:"#e05040", nose:"#3a2c1c", patch:"#2a2e34"},
+    {id:"bandaid",n:"С пластырем", pat:"bandaid", fur:"#6a9aaa", dark:"#3a6a7a", sock:"#c8e0e8", eye:"#f0c84a", nose:"#3a2c1c", patch:"#f0a0b0"}
+  ]
+];
+let petMoodI=0, petMoodT=0, petPetLock=0;
+function activeCatPet(){
+  if(S.pet&&S.pet.r!=null) return S.pet;
+  if(S.gear&&S.gear.pet) return {t:0, r:S.gear.pet.r|0};
+  return null;
+}
+function petSkinOf(pet){
+  const pool=PET_SKIN_POOL[Math.min(Math.max(0,(pet&&pet.r)|0), PET_SKIN_POOL.length-1)];
+  return pool[((pet&&pet.t)|0)%pool.length];
+}
+function syncPetBoxClass(){
+  const box=$("petBox"); if(!box) return;
+  const mood=(PET_MOODS[petMoodI]||PET_MOODS[0]);
+  const pet=activeCatPet();
+  const skin=petSkinOf(pet||{t:0,r:0});
+  const petting=box.classList.contains("petting");
+  const next="pet mood-"+mood.id+" skin-"+skin.id+" pat-"+(skin.pat||"none")+(petting?" petting":"");
+  if(box.className!==next) box.className=next;
+  box.title=petting
+    ? "Гладишь · мурлычет"
+    : (mood.title+" · "+skin.n+" · тап — погладить");
+  box.style.setProperty("--pet-fur", skin.fur);
+  box.style.setProperty("--pet-dark", skin.dark);
+  box.style.setProperty("--pet-sock", skin.sock);
+  box.style.setProperty("--pet-eye", skin.eye);
+  box.style.setProperty("--pet-nose", skin.nose);
+  box.style.setProperty("--pet-patch", skin.patch||skin.dark);
+  if(pet) paintPetCollars(RAR_HEX[Math.min(pet.r|0, RAR_HEX.length-1)]);
+}
+function applyPetMood(id){
+  const ix=PET_MOODS.findIndex(x=>x.id===id);
+  if(ix>=0) petMoodI=ix;
+  syncPetBoxClass();
+}
+/** Чисто вайб: погладить кота → мурлычет. Наград нет. */
+function petCat(){
+  if(!activeCatPet()) return false;
+  applyPetMood("purr");
+  petMoodT=-4; // дольше держим мурлыканье перед автосменой
+  const box=$("petBox");
+  if(box){
+    box.classList.remove("petting");
+    void box.offsetWidth;
+    box.classList.add("petting");
+    box.title="Гладишь · мурлычет";
+    clearTimeout(petPetLock);
+    petPetLock=setTimeout(function(){
+      box.classList.remove("petting");
+      syncPetBoxClass();
+    }, 1500);
+  }
+  try{ sfxPurr(); }catch(e){}
+  return true;
+}
+function tickPetMood(rawDt){
+  const box=$("petBox");
+  if(!box||box.style.display==="none"||!activeCatPet()) return;
+  if(box.classList.contains("petting")) return;
+  petMoodT+=rawDt;
+  if(petMoodT<5) return;
+  petMoodT=0;
+  petMoodI=(petMoodI+1)%PET_MOODS.length;
+  syncPetBoxClass();
+}
+function paintPetCollars(hex){
+  const box=$("petBox"); if(!box||!box.querySelectorAll) return;
+  box.querySelectorAll(".petCollar").forEach(el=>{ if(el.setAttribute) el.setAttribute("fill",hex); });
+}
+function cyclePetMood(force){
+  if(!force && !activeCatPet()) return;
+  petMoodT=0;
+  petMoodI=(petMoodI+1)%PET_MOODS.length;
+  syncPetBoxClass();
+}
 function updateMiner(){
   const g=S.gear;
   $("mlBase").src=MINER_BASES[S.look||0];
@@ -2468,8 +2984,12 @@ function updateMiner(){
     else el.style.display="none";
   }
   $("pickHand").src=PICK_ICONS[g.pick?g.pick.r:0];
-  $("petBox").style.display=g.pet?"block":"none";
-  if(g.pet) setFill("petCollar",RAR_HEX[g.pet.r]);
+  const pb=$("petBox");
+  if(pb){
+    const on=!!(g.pet||S.pet);
+    pb.style.display=on?"block":"none";
+    if(on) syncPetBoxClass();
+  }
 }
 function openPickGallery(){
   const log=S.pickLog||{};
@@ -2513,8 +3033,14 @@ function renderGear(){
     }
     const icon=(sl.id==="pick"&&item)?`<img src="${PICK_ICONS[item.r]}" class="oreimg" style="width:30px;height:30px;margin:0">`:sl.ic;
     d.innerHTML=`<span class="up">↑</span><div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
-    if(sl.id==="pick") d.onclick=openPickGallery;
-    else d.onclick=()=>openGearSlot(sl.id);
+    if(sl.id==="pet"){
+      d.title="Питомцы";
+      d.onclick=function(){ if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha"); else if(typeof openPets==="function") openPets(); };
+    } else if(sl.id==="pick") d.onclick=openPickGallery;
+    else if(canUp){
+      d.title="Есть сумки — открыть";
+      d.onclick=function(){ openChest(false); };
+    } else d.onclick=function(){ openGearSlot(sl.id); };
     g.appendChild(d);
   });
   updateMiner();
@@ -2628,8 +3154,17 @@ function render(){
   if($("bagCount")) setTxt("bagCount",fmt(S.bags||0));
   /* bag area on main screen */
   if($("bagBadge2")){ const n=S.bags||0; setTxt("bagBadge2",n>99?"99+":n); $("bagBadge2").style.display=n>0?"flex":"none"; }
-  if($("bagAreaLvl")) setTxt("bagAreaLvl","СИЛА УР "+S.bag);
-  if($("bagAreaTimer")){ const bt=$("bagAreaTimer"); setTxt(bt,bagUpgrading()?(bagUpgradeLeft()+"с до ур."+(S.bag+1)):""); }
+  if($("bagAreaLvl")){
+    if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","ПРОПУСК 💎"+bagSkipGems());
+    else setTxt("bagAreaLvl","СИЛА УР "+S.bag);
+  }
+  if($("bagAreaTimer")){
+    const bt=$("bagAreaTimer");
+    if(bagUpgrading()){
+      const left=bagUpgradeLeft()+"с до ур."+(S.bag+1);
+      setTxt(bt, bagSkipArmed ? ("тап → 💎"+bagSkipGems()+" · "+left) : left);
+    } else setTxt(bt,"");
+  }
   { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){ ab.classList.toggle("on",!!S.autoRoll); const l=$("autoLbl2"); if(l) setTxt(l,S.autoRoll?"ВКЛ":"ВЫКЛ"); } }
   { const lc=$("lootChest");
     if(lc){ const dim=(S.bags||0)<1;
@@ -2643,7 +3178,15 @@ function render(){
       const off=maxed||poor;
       if("disabled"in pu){ if(pu.disabled!==!!off) pu.disabled=!!off; }
       setOp(pu,off?"0.55":"1");
-      if(pu.classList) pu.classList.toggle("off",!!off);
+      if(pu.classList){
+        pu.classList.toggle("off",!!off);
+        pu.classList.toggle("skipOffer", !!(busy && bagSkipArmed));
+      }
+      pu.title=busy
+        ? (bagSkipArmed
+          ? ("Пропуск за 💎"+bagSkipGems()+" — тап ещё раз")
+          : ("Идёт апгрейд · тап — цена пропуска"))
+        : (maxed?"Максимум":(poor?("Нужно "+fmt(bagCost())+" 🪙"):"Улучшить сундук"));
     }
   }
   if(S.geo){
@@ -2881,14 +3424,29 @@ function renderLog(){
   // автоскролл вниз только на свежей странице
   if(logPage===0 && typeof g.scrollHeight==="number") g.scrollTop=g.scrollHeight;
 }
+let toastHideT=0;
+function toastIconHtml(icon){
+  const s=String(icon||"");
+  /* Ore-дроп передаёт <img class="oreimg"> — его нельзя esc() */
+  if(/^<img\b/i.test(s) && s.indexOf("<",1)<0) return s;
+  return esc(s);
+}
 function showToast(icon,rar,rcls,name,extra,important){
   const head=[rar,name].filter(x=>x&&(""+x).trim()).join(" ");
-  lastLogMsg=(icon||"")+" "+head+(extra?(" · "+extra):"");
+  lastLogMsg=(/^<img\b/i.test(String(icon||""))?"💎":(icon||""))+" "+head+(extra?(" · "+extra):"");
   logBuf.push({icon:icon||"",rar:rar||"",rc:(rcls||"").trim(),name:name||"",extra:extra||"",important:!!important});
   while(logBuf.length>LOG_CAP) logBuf.shift();
   if(logPage!==0) logPage++;                       // держим позицию при чтении истории
   if(logPage>logTotalPages()-1) logPage=0;         // выпало за буфер — прыгаем к свежим
   renderLog();
+  const t=$("toast");
+  if(t){
+    const rc=(rcls||"").trim().replace(/[^a-zA-Z0-9_-]/g,"");
+    t.innerHTML=`<div class="big">${toastIconHtml(icon)}</div><div class="r ${rc}">${esc(rar||"")}</div><div class="nm">${esc(name||"")}</div><div class="vl">${esc(extra||"")}</div>`;
+    t.style.display="block";
+    clearTimeout(toastHideT);
+    toastHideT=setTimeout(function(){ if(t) t.style.display="none"; }, important?2800:1800);
+  }
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];
@@ -3272,6 +3830,22 @@ function sfxGear(){
   if(!AC||!musicOn) return;
   const t=AC.currentTime;
   anvil(t,392,0.08,0.35); anvil(t+0.08,587,0.08,0.4);
+}
+function sfxPurr(){
+  if(!AC||!musicOn) return;
+  const t=AC.currentTime;
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type="triangle";
+  o.frequency.setValueAtTime(52, t);
+  o.frequency.linearRampToValueAtTime(64, t+0.18);
+  o.frequency.linearRampToValueAtTime(55, t+0.36);
+  o.frequency.linearRampToValueAtTime(61, t+0.55);
+  o.frequency.linearRampToValueAtTime(50, t+0.85);
+  g.gain.setValueAtTime(0.001, t);
+  g.gain.linearRampToValueAtTime(0.045, t+0.1);
+  g.gain.linearRampToValueAtTime(0.028, t+0.55);
+  g.gain.exponentialRampToValueAtTime(0.001, t+0.95);
+  o.connect(g); g.connect(MG); o.start(t); o.stop(t+1);
 }
 function jingleFind(){ if(!AC||!musicOn) return; const t=AC.currentTime;
   [392,523.25,659.25].forEach((f,i)=>anvil(t+i*0.09,f,0.12,0.6)); }
@@ -3963,7 +4537,7 @@ function renderChestCard(){
       +'<span class="sub" id="chTimerLbl">'+timerLbl+'</span></div>'
       +'<div class="btnrow" style="margin-top:8px">'
       +'<button class="btn btn-hard" id="chUpBtn" onclick="chestUpgrade()" '+(canUp?'':'disabled')+'>'+(upNow?'Идёт апгрейд…':'Апгрейд · '+fmt(c)+' 🪙')+'</button>'
-      +'<button id="chSkipBtn" onclick="chestSkip()" '+(upNow?'':'disabled')+' title="пропустить ожидание">Пропуск ⏩ · 💎'+(BALANCE.bags.skipGems||5)+'</button>'
+      +'<button id="chSkipBtn" onclick="chestSkip()" '+(upNow?'':'disabled')+' title="пропустить ожидание">Пропуск ⏩ · 💎'+bagSkipGems()+'</button>'
       +'</div></div>';
   }
   el.innerHTML='<div class="uiSub" style="margin-bottom:10px">Сундук находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
@@ -3974,9 +4548,23 @@ function renderChestCard(){
   const tit=$("chestTitle"); if(tit) tit.textContent="🧰 "+bagName(lvl);
   const act=$("chestHeadAct"); if(act) act.innerHTML='<span class="uiPill">ур.'+lvl+'</span>';
 }
-function openChest(){
+function quickOpenBag(){
+  if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
+  S.bags--; dailyProgress("bag",1);
+  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
+  const it=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
+  Platform.logEvent("chest_open",{r:it.r,quick:1});
+  dropGearItem(it);
+  save(); render();
+  return true;
+}
+function openChest(forceModal){
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1;
     const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
+  if(!forceModal && (S.bags||0)>0){
+    quickOpenBag();
+    return;
+  }
   chestPending=null; renderChestCard(); $("chestModal").style.display="flex";
   try{ if(typeof UIS!=="undefined"&&UIS.setChrome) UIS.setChrome(true); }catch(e){}
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
@@ -4416,6 +5004,11 @@ const PD_POS={
   pick: [120, 8], glove:[120, 30], lamp: [120, 52], pet:  [120, 74]
 };
 function openGearSlot(id){
+  if(id==="pet"){
+    if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha");
+    else if(typeof openPets==="function") openPets();
+    return;
+  }
   const sl=SLOTS.find(s=>s.id===id); if(!sl) return;
   const it=S.gear[id];
   const statLines=Object.keys(sl.st).map(k=>{

@@ -960,6 +960,28 @@ S.lvls.atk=0; S.pet={t:0,r:0}; const lo=petDot().dps; S.pet={t:0,r:3}; const hi=
 T("DoT растёт с редкостью питомца", hi>lo);
 T("без питомца DoT отсутствует", (function(){ S.pet=null; return petDot()===null; })());
 T("у каждого семейства свой DoT", PET_TYPES.every(p=>["bleed","shock","splash"].includes(p.dot)));
+T("у кота 6 настроений", typeof PET_MOODS!=="undefined" && PET_MOODS.length===6);
+T("скины кошки по 5 редкостям", typeof PET_SKIN_POOL!=="undefined" && PET_SKIN_POOL.length===5
+  && PET_SKIN_POOL.every(p=>p.length>=1));
+T("ржавый скин на Rare", petSkinOf({t:0,r:1}).id==="rust");
+T("ржавомер на Exotic", petSkinOf({t:0,r:4}).id==="leo");
+T("applyPetMood ставит class mood-*", (function(){
+  if(typeof applyPetMood!=="function"||!document.getElementById("petBox")) return true;
+  applyPetMood("belly");
+  return document.getElementById("petBox").className.indexOf("mood-belly")>=0;
+})());
+T("petCat гладит и мурлычет", (function(){
+  if(typeof petCat!=="function"||!document.getElementById("petBox")) return true;
+  S.pet={t:0,r:0}; petCat();
+  const c=document.getElementById("petBox").className||"";
+  return c.indexOf("mood-purr")>=0 && c.indexOf("petting")>=0;
+})());
+T("syncPetBoxClass красит скин", (function(){
+  if(typeof syncPetBoxClass!=="function"||!document.getElementById("petBox")) return true;
+  S.pet={t:0,r:1}; syncPetBoxClass();
+  const b=document.getElementById("petBox");
+  return b.className.indexOf("skin-rust")>=0 && b.className.indexOf("pat-tabby")>=0;
+})());
 
 console.log("\n[45] Крафт питомцев → Exotic (PDF)");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1012,7 +1034,7 @@ T("полоса боевых статов заполнена АТК", __ids.pAtk
 
 console.log("\n[48] Окно сундука: открыть/надеть/продать/апгрейд");
 localStorage.removeItem("oredeep_v3"); load();
-openChest();
+openChest(true);
 T("окно сундука открывается", __ids.chestModal.style.display==="flex");
 T("карточка сундука отрендерена", __ids.chestCard.innerHTML.indexOf("Сундук находок")>=0);
 T("сундук: название в шапке", (__ids.chestTitle.textContent||"").indexOf(bagName(S.bag))>=0);
@@ -1030,6 +1052,14 @@ S.bags=1; chestOpenOne(); { const sl=chestPending.s; equipChestItem();
 { S.bag=1; S.gold=bagCost()*3; const b0=S.bag; chestUpgrade();
   if(S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); }
   T("апгрейд из окна повышает уровень сундука", S.bag===b0+1); }
+closeChest();
+{ S.bags=2; const b0=S.bags; openChest(false);
+  T("1-tap сундук тратит сумку без модалки", S.bags===b0-1 && __ids.chestModal.style.display!=="flex");
+  T("1-tap сундук пишет в toast", !!__ids.toast && __ids.toast.style.display==="block"); }
+{ showToast("🧪","ТОСТ","r3","проверка","видно",true);
+  T("showToast показывает #toast", __ids.toast.style.display==="block" && /проверка/.test(__ids.toast.innerHTML||"")); }
+{ showToast('<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="oreimg big">',"COMMON","r0","Уголёк","тест img",true);
+  T("toast рендерит oreimg, не текст тега", /<img\b/i.test(__ids.toast.innerHTML||"") && !/&lt;img/i.test(__ids.toast.innerHTML||"")); }
 
 console.log("\n[48] Sprint 1: яйца, расчёски, таймер сумки, FTUE");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1110,6 +1140,15 @@ dead=false; S.durab=40; S.gold=Math.max(S.gold||0, reinforceCost()*3);
   skipBagUpgrade();
   T("ad-cap не даёт бесплатный skip сумки", !!S.bagActive && called);
   Platform.showRewarded=prev; }
+{ S.bag=1; S.gold=bagCost()*5; S.gems=20; bagSkipArmed=false; startBagUpgrade();
+  const b0=S.bag, g0=S.gems, left0=bagUpgradeLeft();
+  tryBagUpgrade();
+  T("тап во время таймера показывает цену пропуска", bagSkipArmed===true
+    && /💎/.test((__ids.bagAreaLvl&&__ids.bagAreaLvl.textContent)||"")
+    && left0>0);
+  tryBagUpgrade();
+  T("второй тап качает за кристаллы без ожидания", !bagUpgrading() && S.bag===b0+1
+    && S.gems===g0-bagSkipGems()); }
 { S.autoRoll=true; render();
   const ab=$("auto");
   T("видимый Auto получает класс on", !!(ab&&ab.classList&&ab.classList.contains("on"))); }

@@ -210,6 +210,7 @@ const UIS={
       ["Гача","Слияние","Крафт","Клетка"],tab);
     let body="";
     const cur=S.pet?('<div class="uiBanner r'+S.pet.r+'">В бою: '+PET_TYPES[S.pet.t].n
+      +' · '+petSkinOf(S.pet).n
       +' · +'+PET_TYPES[S.pet.t].pct[S.pet.r]+'% '+PET_TYPES[S.pet.t].stat.toUpperCase()+'</div>'):"";
     if(tab==="gacha"){
       body=cur+'<div class="uiGachaStage"><div class="uiGachaEgg">🥚</div></div>'
