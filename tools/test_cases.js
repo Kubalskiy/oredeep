@@ -936,6 +936,16 @@ S.pvpDay="вчера"; pvpDayReset(); T("новый день сбрасывае�
 T("победа в PvP двигает дейлик", (function(){ localStorage.removeItem("oredeep_v3"); load();
   S.lvls.atk=1e6; S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; openPvp();
   const p0=(S.daily.prog.pvp||0); pvpFight(0); return (S.daily.prog.pvp||0)>=p0; })());
+{ S.trophies=0; openPvp();
+  T("PvP показывает награду лиги", /победа \+/.test((__ids.uiBody&&__ids.uiBody.innerHTML)||""));
+  T("PvP кнопка рейтинга кубков", /openPvpBoard/.test((__ids.uiBody&&__ids.uiBody.innerHTML)||""));
+  T("pvpWinGold ROOKIE = 0", pvpWinGold(0)===0);
+  S.trophies=500; T("pvpWinGold CHAMP III", pvpWinGold(pvpLeagueIdx())===BALANCE.pvp.rewards[pvpLeagueIdx()]*100);
+  openPvpBoard();
+  T("рейтинг PvP открывается", UIS.id==="panel"
+    && /Рейтинг PvP/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  T("игрок в таблице кубков", /🏆/.test(($("uiBody")&&$("uiBody").innerHTML)||""));
+  UIS.close(); }
 // дейлик на сумки
 localStorage.removeItem("oredeep_v3"); load();
 S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; S.bags=5; S.bag=50;

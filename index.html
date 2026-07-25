@@ -4160,6 +4160,40 @@ function powerScore(){
     +stat("crit")*2+stat("luck")*2+stat("mining")*3+stat("stone"));
 }
 function pvpLeagueIdx(){ const t=S.trophies||0; let i=0; for(let k=0;k<BALANCE.pvp.thresholds.length;k++) if(t>=BALANCE.pvp.thresholds[k]) i=k; return i; }
+function pvpWinGold(li){
+  li=li==null?pvpLeagueIdx():li;
+  return (BALANCE.pvp.rewards[li]||0)*100;
+}
+function pvpLeaderboard(){
+  const meName=playerName();
+  const seeds=(typeof UI_PVP_BOARD!=="undefined"?UI_PVP_BOARD:[]).map(e=>({
+    n:e.n, ic:e.ic||"⚔", t:e.t|0, me:false
+  }));
+  const list=seeds.filter(e=>e.n!==meName)
+    .concat([{n:meName, ic:"⛏️", t:S.trophies|0, me:true}]);
+  list.sort((a,b)=>b.t-a.t || (a.me?-1:1));
+  return list;
+}
+function openPvpBoard(){
+  const lb=pvpLeaderboard();
+  const myRank=lb.findIndex(e=>e.me);
+  const li=pvpLeagueIdx();
+  const rows=lb.map((e,i)=>{
+    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":("#"+(i+1));
+    const league=BALANCE.pvp.names[(()=>{ const t=e.t; let j=0;
+      for(let k=0;k<BALANCE.pvp.thresholds.length;k++) if(t>=BALANCE.pvp.thresholds[k]) j=k; return j; })()]||"";
+    return `<div class="metarow" ${e.me?'style="background:#1c2230;border-radius:6px"':''}>
+      <span>${medal} ${e.ic||""} ${e.me?"<b style=\"color:var(--gold)\">":""}${esc(e.n)}${e.me?"</b>":""}
+        <br><span class="sub">${league} · 🏆 ${fmt(e.t)}</span></span></div>`;
+  }).join("");
+  metaOpen("⚔ Рейтинг PvP",
+    "По кубкам арены. Ты: "+BALANCE.pvp.names[li]+" · 🏆 "+fmt(S.trophies||0)
+      +(myRank>=0?(" · место #"+(myRank+1)):"")
+      +" · победа сейчас +"+fmt(pvpWinGold(li))+" 🪙",
+    rows+'<div class="sub" style="margin-top:10px">Демо-таблица (локальная). Стена Горы — про глубину, не про кубки.</div>'
+      +'<button class="btn btn-wide" style="margin-top:8px" onclick="openWall()">🏔 Стена Горы</button>');
+  Platform.logEvent("pvp_board",{rank:myRank+1,trophies:S.trophies|0});
+}
 let pvpSlate=null;
 function pvpDayReset(){ const t=todayStr();
   if(S.pvpDay!==t){ S.pvpDay=t; S.pvpFights=0; pvpSlate=null; } }
@@ -4234,7 +4268,7 @@ function pvpFight(idx){
   const win=race.win;
   if(cand.id){ const r=pvpBotRec(cand.id); if(win) r.w++; else r.l++; }
   if(win){ S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1); addGymXP(GYM_XP.perPvpWin);
-    const li=pvpLeagueIdx(); S.gold+=BALANCE.pvp.rewards[li]*100;
+    const li=pvpLeagueIdx(); S.gold+=pvpWinGold(li);
     showToast("⚔","ДОБЫЛ БОЛЬШЕ!","",
       (cand.ic||"")+" "+(cand.name||"соперник"),
       "+30 🏆 · "+fmt(Math.round(race.meOre))+" vs "+fmt(Math.round(race.oppOre))+" · "+race.sec+"с",true); }

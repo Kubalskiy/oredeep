@@ -23,6 +23,17 @@ const UI_TAV_RANKS=[
   {n:"Серебряный Кубок",xp:540,r:4},{n:"Золотой Кубок",xp:320,r:5},{n:"Платиновый Кубок",xp:110,r:6}
 ];
 
+/* Фейковый PvP-рейтинг по кубкам (отдельно от Стены Горы по глубине) */
+const UI_PVP_BOARD=[
+  {n:"Дурин Глубинный", ic:"⛰", t:1180},
+  {n:"Мира Рунная",     ic:"✦", t:860},
+  {n:"Гром Железозуб",  ic:"🦷", t:640},
+  {n:"Борин-Счётчик",   ic:"📐", t:410},
+  {n:"Шлак Безбородый", ic:"🪓", t:180},
+  {n:"Баба Глыба",      ic:"🪨", t:95},
+  {n:"Нори Скупщик",    ic:"💰", t:55}
+];
+
 const UIS={
   id:null, tab:null,
   $(id){ return document.getElementById(id); },
@@ -317,6 +328,12 @@ const UIS={
     const curReq=tr[li]||0, nextReq=tr[nextLi]||tr[li]||100;
     const pct=li>=BALANCE.pvp.names.length-1?100:Math.min(100,Math.round(((S.trophies||0)-curReq)/Math.max(1,nextReq-curReq)*100));
     const raceSec=BALANCE.pvp.raceSec||180;
+    const winGold=typeof pvpWinGold==="function"?pvpWinGold(li):(BALANCE.pvp.rewards[li]||0)*100;
+    const nextGold=typeof pvpWinGold==="function"?pvpWinGold(nextLi):(BALANCE.pvp.rewards[nextLi]||0)*100;
+    const atMax=li>=BALANCE.pvp.names.length-1;
+    const leagueSub=atMax
+      ? ("макс · победа +" + fmt(winGold) + " 🪙")
+      : ("победа +" + fmt(winGold) + " 🪙 · в " + BALANCE.pvp.names[nextLi] + " уже +" + fmt(nextGold) + " 🪙");
     this.$("uiTitle").textContent="PvP · ИИ-агенты";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🏆 '+fmt(S.trophies||0)+'</span>';
     this.$("uiTabs").innerHTML="";
@@ -331,12 +348,18 @@ const UIS={
     this.$("uiBody").innerHTML=
       '<div class="uiHero compact"><div class="uiHeroArt">🤖</div><b>'+esc(playerName())+'</b>'
       +'<div class="uiSub">5 ИИ-агентов · гонка добычи '+raceSec+'с</div></div>'
-      +this.card("🏆","Лига: "+BALANCE.pvp.names[li],"твоя добыча ~"+fmt(pvpMineOrePerSec(me))+"/с · попыток "+left+"/"+BALANCE.pvpDayLimit,
-        this.bar(pct,"var(--blue)")+'<div class="uiSub" style="margin-top:4px">до '+BALANCE.pvp.names[nextLi]+': '+fmt(Math.max(0,nextReq-(S.trophies||0)))+' 🏆</div>')
+      +this.card("🏆","Лига: "+BALANCE.pvp.names[li], leagueSub,
+        this.bar(pct,"var(--blue)")
+        +'<div class="uiSub" style="margin-top:4px">'+(atMax
+          ? ("вершина арены · "+fmt(S.trophies||0)+" 🏆")
+          : ("до "+BALANCE.pvp.names[nextLi]+": "+fmt(Math.max(0,nextReq-(S.trophies||0)))+" 🏆"))+'</div>'
+        +'<div class="uiSub" style="margin-top:4px">попыток '+left+"/"+BALANCE.pvpDayLimit
+          +" · твоя добыча ~"+fmt(pvpMineOrePerSec(me))+"/с</div>")
       +'<div class="uiSec">Выбери ИИ-соперника</div>'
       +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>')
       +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Обновить форму дня</button>':'')
-      +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWall()">🏔 Лидерборд</button>';
+      +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openPvpBoard()">⚔ Рейтинг PvP</button>'
+      +'<button class="btn btn-wide" style="margin-top:6px" onclick="openWall()">🏔 Стена Горы</button>';
   },
 
   renderTavern(){
