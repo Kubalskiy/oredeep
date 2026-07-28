@@ -593,30 +593,27 @@ button:disabled{opacity:.45;cursor:default;}
 .foCell{background:#0e0b08;border:2px solid #5a4830;border-radius:4px;padding:5px 7px;min-height:36px;}
 .foCell .k{display:block;font-size:9px;letter-spacing:1px;color:#c9974a;text-transform:uppercase;}
 .foCell .v{display:block;font-size:13px;color:#f2d488;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.foGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+.foGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;align-items:stretch;}
+.foGrid>.foPanel{display:flex;flex-direction:column;min-height:100%;}
 .foPanel{background:#120e0a;border:2px solid #6a5438;border-radius:6px;padding:6px;position:relative;}
 .foPanel h4{margin:0 0 6px;font-size:11px;letter-spacing:1.5px;color:#f2d488;text-transform:uppercase;
   border-bottom:1px solid #3a2e1c;padding-bottom:4px;}
-.foSpecRow{display:grid;grid-template-columns:28px 1fr 28px 36px 22px 22px;align-items:center;gap:3px;
-  padding:3px 0;border-bottom:1px solid #2a2118;font-size:11px;}
+.foSpecRow{display:grid;grid-template-columns:minmax(0,1fr) 36px 24px 24px;align-items:center;gap:4px;
+  padding:4px 2px;border-bottom:1px solid #2a2118;font-size:12px;cursor:pointer;}
 .foSpecRow:last-child{border-bottom:none;}
-.foSpecRow .let{color:#f2d488;font-weight:800;}
-.foSpecRow .nm{color:#cbb89a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.foSpecRow .grade{color:#8fce6a;font-size:9px;text-align:center;}
-.foSpecRow .num{color:#8fce6a;font-weight:800;text-align:center;font-size:13px;}
-.foSpecRow button{width:22px;height:22px;padding:0;margin:0;border-radius:3px;font-size:14px;line-height:1;
-  background:#2a2118;border:1px solid #c9974a;color:#f2d488;}
+.foSpecRow .nm{color:#f2d488;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  min-width:0;letter-spacing:0;}
+.foSpecRow .num{color:#8fce6a;font-weight:800;text-align:center;font-size:13px;font-variant-numeric:tabular-nums;}
+.foSpecRow button{width:24px;height:24px;padding:0;margin:0;border-radius:3px;font-size:14px;line-height:1;
+  background:#2a2118;border:1px solid #c9974a;color:#f2d488;flex:none;}
 .foSpecRow button:disabled{opacity:.3;border-color:#5a4830;}
 .foSpecRow.on{background:#241a10;}
-.foPoints{margin-top:6px;padding:5px 6px;background:#0e0b08;border:1px solid #c9974a;border-radius:4px;
+.foPoints{margin-top:auto;padding:5px 6px;background:#0e0b08;border:1px solid #c9974a;border-radius:4px;
   display:flex;justify-content:space-between;font-size:11px;color:#f2d488;}
-.foDer{font-size:11px;}
+.foDer{font-size:11px;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
 .foDer .row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #2a2118;gap:6px;}
 .foDer .row span:first-child{color:#cbb89a;}
 .foDer .row span:last-child{color:#8fce6a;font-weight:700;}
-.foAvatar{text-align:center;padding:6px 0 4px;}
-.foAvatar .art{font-size:42px;line-height:1;filter:drop-shadow(0 2px 0 #000);}
-.foAvatar .sub{font-size:10px;color:#c9974a;margin-top:4px;}
 .foSkillRow{display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:4px;
   padding:3px 0;border-bottom:1px solid #2a2118;font-size:11px;}
 .foSkillRow.on{background:#241a10;}
@@ -1707,8 +1704,11 @@ const BALANCE = {
      Теперь за тик разбирается вся очередь, но не больше maxPerTick за раз —
      чтобы не ронять кадр. */
   bags:{ perVein:1, perBoss:3, autoSec:2, cap:9999, maxPerTick:400,
-    upgradeSec:45, skipGems:5 },   /* док §Экипировка: апгрейд сумки за софт + время */
-  /* SPECIAL в духе Fallout 2: 7 черт + очки навыков за «уровень шахтёра».
+    /* Апгрейд сумки: софт + таймер; пропуск за 💎. Оба растут с ур. сумки
+       (lv1: 30с/3💎 → lv49: ~5м/61💎). base + perLv*(bag-1). */
+    upgradeSecBase:30, upgradeSecPerLv:6,
+    skipGemsBase:3, skipGemsPerLv:1.2 },
+  /* КРАСАВА (рескин SPECIAL): 7 черт + очки навыков за «уровень шахтёра».
      Не ломает треадмилл: % от черт капнут, тренировка слабее карточных уровней. */
   special:{
     start:5, pool:5, attrMax:10, attrPct:1.2, attrPctCap:12,
@@ -2130,7 +2130,7 @@ function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
     /* ранг бороды ≈ level-up: +1 очко SPECIAL (как перк/атрибут в FO) */
     ensureSpecial();
     if((S.specialPool||0)<99){ S.specialPool=(S.specialPool||0)+1;
-      showToast("🧬","Черта гнома","","+1 очко SPECIAL","распредели в Навыках",true); }
+      showToast("🧬","Черта гнома","","+1 очко КРАСАВА","распредели в Навыках",true); }
   } }
 const MUG_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAlklEQVR4nGNkQAIiYjL/GbCAN6+eMMLYjMiKH9w8hk09g4K6FVwTE1YVeAALzHRvTQ6G7AAnBm0FEcIakIGdxnMU/qEbknAnv3n1hBFDAzq4+uANg7cmBwMDAwPDVgaZ/0T5AdmZGDbAnIAAb1B4JIcSURquPkDYQtDT2goiDF3bnzAwMEBinGgnkR3TKGmJkOkMDAwMAC1BK8eiEIVdAAAAAElFTkSuQmCC";
 const EQ={helm:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYFi0ZDmGXFxMJAMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/6oZ2og1rbajE6Su6+QinRbAEQCrApQ+rN0XEZP4HBIeRYw8DAwMDw4a1qzCCEGcckesjBgbCSX0UjIJRMApGwSgYBaNg5AAA0+gilt+FcIcAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAgklEQVR4nGNkIAKIiMn8Z2BgYGg+1YAhV2sGEXvz6gkjPjPwSsIswWYBNgvxWcZE0AQqAbw+EhGT+e+9y4dow7a6bcHpK7r5CKdFsARAKsClD6s3RcRk/utV65BjDwMDAwPDpdYrGEGIM47I9REDA+GkPgpGwSgYBaNgFIyCUTByAAC8DCKWRuwWgQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYKhffwVDrjFQh4GBgYHhzasnjPjMwCsJswSbBdgsxGcZE0ETqATw+khETOa/28QzRBu2K98Ep6/o5iOcFsESAKkAlz6s3hQRk/mvHddGjj0MDAwMDFcXVWEEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEA41QillL+UEcAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYNg76QqGnHOeDgMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/pSlniDYseo4JTl/RzUc4LYIlAFIBLn1YvSkiJvM/176NHHsYGBgYGCYfrMIIQpxxRK6PGBgIJ/VRMApGwSgYBaNgFIyCkQMA+1gilhY0scgAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYLgzqQdDTiWvhIGBgYHhzasnjPjMwCsJswSbBdgsxGcZE0ETqATw+khETOb/lZQ4og3TmbMIp6/o5iOcFsESAKkAlz6s3hQRk/nfZ29Jjj0MDAwMDEUHj2MEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEA3TwilhCvh1IAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYLizOwVDTsV1DgMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/K4sViDZMJ/YBTl/RzUc4LYIlAFIBLn1YvSkiJvO/L5uPHHsYGBgYGIqmfsIIQpxxRK6PGBgIJ/VRMApGwSgYBaNgFIyCkQMA3dwilhE4rsAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYJhy6wyGXI6aCQMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/tEsHiDZslp4DTl/RzUc4LYIlAFIBLn1YvSkiJvPfsaeOHHsYGBgYGPaXNGEEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEADE8iljHn+CAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhElEQVR4nO2SqxGAMBAFF2oIUZEUQhd4uqACusDTBYUgUUAPQaHIjwyD4dbe5O283BUkoLSxAPvU32ZVOwBwbGsRyggOL4lL4BKGZGU04SWCjZQ2dh+a5LCqn72tPmvkFV0H8BTfO2dNpY0d2zrHA0A3Lbcv9O4otxHET10QBEEQBOE/nOqoIpYZ3VCvAAAAAElFTkSuQmCC"],robe:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusEBwWE4DdmwdhVBi7FaJCIm83/RkuWEHIkTxMVEYljGRLZpJAK6WcSCS+LmnQdUtWgEBd3+PdtwatrYysrgX/2bOhaJiUvi1JQ6iYFBTJwke4ZhHBFdBJECiCn7RsEIBgAqnB9NtFTJoQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAiklEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiaw0KswXrVOjgNudTKgKIWm8VYXSIiJvO/+VQDIUfiBLVmDRiWMZFtGomAbhbhjKMTH85Q1aIRFHRXF13Eqel0qiqD6ezb1LGIT54fpybnXa/wyjMwPMYQGX5xhLOMwle2EQLElH2jYAQDAKHyIVlw380vAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusHacW04Dbm6qIqgxVgtEhGT+V+//gohR+IEjYE6GJYxkW0aiYBuFrHgkjj+6AdVLRpBQXd9y3Scms7V3GcwalGkjkV8kso4NTnMVWbgkyTJnmEYR0QXQaQAYsq+UTCCAQBQ/B9RgqTjOQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusG59m04DZl8sIqgxVgtEhGT+b930hVCjsQJnPN0MCxjIts0EgHdLGLBJfHi0g+qWjSCgm7Nyek4Nc2acp8hLUeROhbJCCnj1NRUp8wgI0SSPcMwjogugkgBxJR9o2AEAwAInR99/e+v9wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhElEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusF99pY4DSk6eJygxVgtEhGT+X9nUg8hR+IEKnklGJYxkW0aiYBuFrHgkvhx6RJVLRpBQTf95EmcmhqmSDM05DyljkXKQkI4NS2u+45XHhsYfnFEdBFECiCm7BsFIxgAAH6NIIjVz6qrAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAh0lEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusF92Xw4DSma+omgxVgtEhGT+X9ndwohR+IEKq5zMCxjIts0EgHdLGLBJfHjxR6qWjSCgm76mqc4NTUU2TI09B2mjkXKMpw4NS1edQavPAPDbwyR4RdHRBdBpABiyr5RMIIBAM8QIYUodzoJAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusGOPXU4Ddlf0kTQYqwWiYjJ/J9y6wwhR+IEOWomGJYxkW0aiYBuFrHgkrj04wtVLRpBQXdy+lycmvZEPGVwWSFNHYuElBVxago7rcggpEySPcMwjogugkgBxJR9o2AEAwCpEx+lS25tigAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAiklEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiaw0KswfPCVXAakrSSAUUtNouxukRETOb/65WVhByJE4iGt2NYxkS2aSQCulmEM44Y7h2nqkUjKOh6d17Dqam4UYeht/4KdSxSE+fDqWnztEd45RkYXmGIDL84wllG4SvbCAFiyr5RMIIBALDrIK9/fnFPAAAAAElFTkSuQmCC"],boots:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf+LlizHKhcXE8mATw6bZSy4LGJgYGC4eecBWXLYABNJqikAeH109fJ5suSwAQBd9hwlC1cEJAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf/NpxqwytWaNTDgk8NmGQsuixgYGBhOfDhDlhw2wESSagoAXh89PviALDlsAAA6KhwdTZ+vNAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf/1669glWsM1GHAJ4fNMhZcFjEwMDAcf/SDLDlsgIkk1RQAvD56enYXWXLYAAB2BhwnLd0C+wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf97J13BKuecp8OATw6bZSy4LGJgYGB4cekHWXLYABNJqikAeH104vYusuSwAQCZFhwrXqNGIQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf93JvVglVPJK2HAJ4fNMhZcFjEwMDD8uHSJLDlsgIkk1RQAvD7adfs2WXLYAABr7hwlDkNQKQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf93dqdglVNxncOATw6bZSy4LGJgYGD48WIPWXLYABNJqikAeH2068Q7suSwAQBsJBwlmikQMQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf9Tbp3BKpejZsKATw6bZSy4LGJgYGC49OMLWXLYABNJqikAeH10e9c+suSwAQCyBBwviSzxOgAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf+vV1ZilRMNb2fAJ4fNMhZcFjEwMDAw3DtOnhwWwESSagoAXh9tvvCELDlsAABeKholP5+NlQAAAABJRU5ErkJggg=="],glove:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqJFS5ZjaI6LiSTKMkL6WZAFb955QJTLcQF8+pkoMpkEQDeL6JYYRsEoGAWUAwD2kyM2n6bFRAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqLmUw0YmmvNGoiyjJB+FmTBEx/OEONwnACffiaKTCYB0M0iuiWGUTAKRgHlAABQXSMU5FMA2wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqL69VcwNDcG6hBlGSH9LMiCxx/9IM7pOAA+/UwUmUwCoJtFdEsMo2AUjALKAQBrZiNOSiZ/4AAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqK9k65gaHbO0yHKMkL6WZAFX1z6QZzTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwASGyNwudbjZwAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqI7k3owNKvklRBlGSH9LMiCPy5dIs7pOAA+/UwUmUwCoJtFdEsMo2AUjALKAQA7aCNEspER+QAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqI7u1MwNKu4ziHKMkL6WZAFf7zYQ5zTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwA7vCNEb5+IaQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqIpt85gaM5RMyHKMkL6WZAFL/34QpzTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwCHXyOITiF8BAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAV0lEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqLXKysxNIuGtxNlGSH9LCii944T5XKcAI9+JspMJh7QzSK6JYZRMApGAeUAABVbIVYeKPGkAAAAAElFTkSuQmCC"],pack:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaUlEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxBASH4ZTcsHbVf2pZxkQNQwaVRSzauoY4JTesXUU1i4Zh0DEwMDBcvXweQwJfkJID6OsjarseGxiGiQFbQqAFoFuhOgpGARwAAHulF2/IDsdcAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax6FXr4JS81Mrwn1qWMVHDkEFlEYusvQJOyUutV6hm0TAMOgYGBobHBx9gSOALUnIAfX1EbddjA8MwMWBLCLQAdCtUR8EogAMA7nYWsti6JtAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxaMe14ZS8uqjqP7UsY6KGIYPKIhZpYzecklcXVVHNomEYdAwMDAxPz+7CkMAXpOQA+vqI2q7HBoZhYsCWEGgB6FaojoJRAAcASY8XZMG+HxMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax5Nq34ZScfLDqP7UsY6KGIYPKIhYLVTeckpMPVlHNomEYdAwMDAwnbu/CkMAXpOQA+vqI2q7HBoZhYsCWEGgB6FaojoJRAAcA5ywXUDXUuFMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax9Nlb4pQsOnj8P7UsY6KGIYPKIhY3VVXcsgePU82iYRh0DAwMDLtu38aQwBukZAD6+ojarscGhmFiwJYQaAHoVqiOglEABwCwvxb3JqNiMAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax9GXz4ZQsmirzn1qWMVHDkEFlEYubhRBu2amfqGbRMAw6BgYGhl0n3mFI4A1SMgB9fURt12MDwzAxYEsItAB0K1RHwSiAAwCYXhYgAqkESQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZklEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRahaFLpqF06L9JU1Us4yJGoYMKotYVN2ccEruZ2iimkXDMOgYGBgYbu/ahyGBL0jJAfT1EbVdjw0Mw8SALSHQAtCtUB0FowAOAOm/FxCvxoj1AAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxzAtXwSmZtJLhP7UsY6KGIYPKIhZfAxncsivvUM2iYRh0DAwMDJsvPMGQwBukZAD6+ojarscGhmFiwJYQaAHoVqiOglEABwCkTRYh0dh1awAAAABJRU5ErkJggg=="]};
@@ -2176,7 +2176,20 @@ const GEO_RAR=["Common","Rare","Epic","Legendary"];
 const geoCost=()=> 1;          /* 1 расческа за ролл (док §Девушки) */
 function bagUpgrading(){ return !!(S.bagActive && Date.now()<S.bagActive.end); }
 function bagUpgradeLeft(){ return S.bagActive? Math.max(0,Math.ceil((S.bagActive.end-Date.now())/1000)) : 0; }
-function bagSkipGems(){ return BALANCE.bags.skipGems||5; }
+/** Длительность таймера апгрейда сумки (сек) для уровня lv (по умолч. S.bag). */
+function bagUpgradeSec(lv){
+  const b=BALANCE.bags, L=lv==null?S.bag:lv;
+  const base=b.upgradeSecBase!=null?b.upgradeSecBase:(b.upgradeSec||45);
+  const per=b.upgradeSecPerLv||0;
+  return Math.max(1, Math.round(base+per*Math.max(0,(L|0)-1)));
+}
+/** Цена пропуска таймера в 💎 для уровня lv (по умолч. S.bag). */
+function bagSkipGems(lv){
+  const b=BALANCE.bags, L=lv==null?S.bag:lv;
+  const base=b.skipGemsBase!=null?b.skipGemsBase:(b.skipGems||5);
+  const per=b.skipGemsPerLv||0;
+  return Math.max(1, Math.round(base+per*Math.max(0,(L|0)-1)));
+}
 let bagSkipArmed=false;
 function finishBagUpgrade(){
   if(!S.bagActive || Date.now()<S.bagActive.end) return false;
@@ -2202,8 +2215,9 @@ function startBagUpgrade(){
     if($("powerUp")&&$("powerUp").classList) $("powerUp").classList.remove("pulse"); }
   S.gold-=c;
   bagSkipArmed=false;
-  S.bagActive={ end:Date.now()+(BALANCE.bags.upgradeSec||45)*1000 };
-  Platform.logEvent("bag_upgrade_start",{next:S.bag+1});
+  const sec=bagUpgradeSec();
+  S.bagActive={ end:Date.now()+sec*1000, dur:sec, from:S.bag };
+  Platform.logEvent("bag_upgrade_start",{next:S.bag+1, sec, skip:bagSkipGems()});
   save(); render();
   if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
   return true;
@@ -2534,7 +2548,7 @@ function pushFeed(who, text, kind){
 }
 function feedWhoFromToast(rar, name, extra){
   const blob=[rar,name,extra].filter(Boolean).join(" ");
-  if(/прокач|апгрейд|ПРОПУСК|сумк|SPECIAL|перк|трен\.|Ур\./i.test(blob)) return {who:"Прокачка", kind:"up"};
+  if(/прокач|апгрейд|ПРОПУСК|сумк|SPECIAL|КРАСАВА|перк|трен\.|Ур\./i.test(blob)) return {who:"Прокачка", kind:"up"};
   if(/купл|магазин|пак|реклам|No-Ads|стартер|вейглист|самоцвет/i.test(blob)) return {who:"Куплено", kind:"buy"};
   if(/надето|продано|сундук|находк|дубликат|коллекц|питомец|COMMON|RARE|EPIC|LEGENDARY|EXOTIC|MYTHIC|ASCENDED|COSMIC/i.test(blob))
     return {who:"Добыча", kind:"loot"};
@@ -3512,8 +3526,8 @@ function render(){
       setTxt(bt, bagSkipArmed
         ? ("тап ещё раз → −"+bagSkipGems()+" 💎")
         : ("тап — пропуск · 💎"+bagSkipGems()));
-    } else if(S.bag>=50) setTxt(bt,"предел");
-    else setTxt(bt, fmt(bagCost())+" 🪙 · тап");
+    }     else if(S.bag>=50) setTxt(bt,"предел");
+    else setTxt(bt, fmt(bagCost())+" 🪙 · "+bagUpgradeSec()+"с");
   }
   { const dot=$("bagUpDot");
     if(dot){
@@ -4370,19 +4384,20 @@ function claimOffline(mult){
 function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub").innerHTML=sub;
   $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
 
-/* ---------- SPECIAL гнома (вдохновлено Fallout 2) ----------
-   S P E C I A L → семь черт. Уровень шахтёра за жилы даёт очки навыков
-   (формула близка к FO: база + бонус от Ума). Теги ×3 дешевле тренировать.
-   Карточные навыки из ларей остаются; тренировка — параллельный слой. */
+/* ---------- К.Р.А.С.А.В.А. гнома (рескин SPECIAL / Fallout 2) ----------
+   К Р А С А В А → семь черт. Внутри сейва id те же (s/p/e/c/i/a/l).
+   Уровень шахтёра за жилы даёт очки навыков (база + бонус от Разума).
+   Теги ×3 дешевле тренировать. Карточные навыки из ларей остаются. */
 const SPECIAL_DEFS=[
-  {id:"s", n:"Сила",         letter:"S", stats:["atk"],          tip:"Удар киркой"},
-  {id:"p", n:"Восприятие",   letter:"P", stats:["mining","crit"], tip:"Видеть трещины в жиле"},
-  {id:"e", n:"Выносливость", letter:"E", stats:["energy","tough"], tip:"Держать штольню"},
-  {id:"c", n:"Харизма",      letter:"C", stats:["stone"],         tip:"Торг со скупщиком"},
-  {id:"i", n:"Ум",           letter:"I", stats:[],                tip:"Больше очков навыков за уровень"},
-  {id:"a", n:"Ловкость",     letter:"A", stats:["spd"],           tip:"Темп ударов"},
-  {id:"l", n:"Удача",        letter:"L", stats:["luck"],          tip:"Нюх на жилу"}
+  {id:"e", n:"Крепость", letter:"К", stats:["energy","tough"], tip:"Держать штольню"},
+  {id:"i", n:"Разум",    letter:"Р", stats:[],                tip:"Больше очков навыков за уровень"},
+  {id:"a", n:"Атлетизм", letter:"А", stats:["spd"],           tip:"Темп ударов"},
+  {id:"s", n:"Сила",     letter:"С", stats:["atk"],          tip:"Удар киркой"},
+  {id:"c", n:"Аура",     letter:"А", stats:["stone"],         tip:"Торг со скупщиком"},
+  {id:"l", n:"Везение",  letter:"В", stats:["luck"],          tip:"Нюх на жилу"},
+  {id:"p", n:"Анализ",   letter:"А", stats:["mining","crit"], tip:"Видеть трещины в жиле"}
 ];
+const KRASAVA_TITLE="К.Р.А.С.А.В.А.";
 function ensureSpecial(){
   const B=BALANCE.special||{};
   const start=B.start||5;
@@ -4427,7 +4442,7 @@ function checkMinerLevelUp(announce){
     if(S.minerLv%every===0){ S.perkPicks=(S.perkPicks||0)+1; perkGain++; }
   }
   if(gained && announce){
-    const sub=perkGain?("+"+pts+" очк. · перк ×"+perkGain):("+"+pts+" очк. навыков · Ум "+specialAttr("i"));
+    const sub=perkGain?("+"+pts+" очк. · перк ×"+perkGain):("+"+pts+" очк. навыков · Разум "+specialAttr("i"));
     showToast("📈","УРОВЕНЬ ШАХТЁРА","", "ур."+S.minerLv, sub, true);
     sayQuip(perkGain?"Уровень — и Гора шепчет новый перк. Выбирай.":"Ещё жила за спиной. Руки помнят — голова считает очки.",4);
     Platform.logEvent("miner_level",{lv:S.minerLv,pts:S.skillPts,perk:perkGain});
@@ -4476,7 +4491,7 @@ const PERK_DEFS=[
 ];
 const TRAIT_DEFS=[
   {id:"gifted", n:"Одарённый", ico:"✨",
-    desc:"Ум и руки от природы. +1 ко всем SPECIAL сразу, но уровни шахтёра дают на 20% меньше очков навыков.",
+    desc:"Разум и руки от природы. +1 ко всем чертам КРАСАВА сразу, но уровни шахтёра дают на 20% меньше очков навыков.",
     specialAdd:1, ptsMult:0.8},
   {id:"small", n:"Коренастый", ico:"🪨",
     desc:"Низкий, крепкий. +крепь, но медленнее машет киркой (−темп).",
@@ -4622,7 +4637,7 @@ function spendSpecial(id){
   ensureSpecial();
   const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
   const max=BALANCE.special.attrMax||10;
-  if((S.specialPool||0)<1){ showToast("🧬","Нет очков SPECIAL","","Растут с рангом бороды"); return false; }
+  if((S.specialPool||0)<1){ showToast("🧬","Нет очков КРАСАВА","","Растут с рангом бороды"); return false; }
   if(specialAttr(id)>=max){ showToast("🧬","Потолок","","Макс "+max+" · "+d.n); return false; }
   S.specialPool--; S.special[id]=specialAttr(id)+1;
   Platform.logEvent("special_up",{id,v:S.special[id]});
@@ -4687,15 +4702,27 @@ function foStatTxt(id){
   return pct?(Math.round(v)+"%"):fmt(v);
 }
 const FO_SPECIAL_INFO={
+  e:{ico:"🛡", txt:"Крепость шахтёра (выносливость). Больше энергии и крепи — дольше комбо до «устала кирка»."},
+  i:{ico:"🧠", txt:"Разум старателя (интеллект). Каждый уровень шахтёра даёт больше очков навыков. Качай Разум — учись быстрее."},
+  a:{ico:"⚡", txt:"Атлетизм забоя (ловкость). Темп ударов (SPD) — сколько раз кирка стучит в секунду."},
   s:{ico:"💪", txt:"Сила рук и кирки. Точки выше базы усиливают ATK (с капом). Без силы жила стоит вечность."},
-  p:{ico:"👁", txt:"Восприятие пласта. Растёт mining и крит — видишь слабые места породы раньше, чем остальные."},
-  e:{ico:"🛡", txt:"Выносливость шахтёра. Больше энергии и крепости — дольше комбо до «устала кирка»."},
-  c:{ico:"💰", txt:"Харизма у скупщика. Больше золота (STONE) за жилу — умеешь торговаться даже с камнем."},
-  i:{ico:"🧠", txt:"Ум старателя. Каждый уровень шахтёра даёт больше очков навыков. Качай I — учись быстрее."},
-  a:{ico:"⚡", txt:"Ловкость забоя. Темп ударов (SPD) — сколько раз кирка стучит в секунду."},
-  l:{ico:"🍀", txt:"Удача в забое. Шанс находки и жирных жил. Гора любит везучих — или делает вид."}
+  c:{ico:"💰", txt:"Аура у скупщика (харизма). Больше золота (STONE) за жилу — умеешь торговаться даже с камнем."},
+  l:{ico:"🍀", txt:"Везение в забое (удача). Шанс находки и жирных жил. Гора любит везучих — или делает вид."},
+  p:{ico:"👁", txt:"Анализ пласта (сообразительность / восприятие). Растёт mining и крит — видишь, где камень врёт, раньше остальных."}
 };
 const FO_SKILL_ICO={crit_up:"🎯",atk_up:"⛏",luck_up:"💎",stone_up:"🪙",energy_up:"💨",mining_up:"🧭",tough_up:"🪵",regen_up:"❤",stam_up:"🫁"};
+/* Подсказки к навыкам — тон Борина / Устав Горы, не сухая формула. */
+const FO_SKILL_INFO={
+  crit_up:"Точный удар. Бьёшь не «куда попало», а в трещину, которую видит только дворф после третьего эля. Порода обижается лично.",
+  atk_up:"Сила забоя. Кирка тяжелеет — зато жила понимает намёки с первого раза. Дед говорил: «Сила есть — ума не надо». Дед врал только наполовину.",
+  luck_up:"Нюх на камни. Нос знает раньше глаз. Если зачесалась борода — копай левее. Если зачесалась дважды — это блохи, не жила.",
+  stone_up:"Жадность. Скупщик плачет, ты киваешь. Золото липнет к перчаткам само — Гора уважает тех, кто считает вслух.",
+  energy_up:"Второе дыхание. Когда лёгкие говорят «всё», дворф отвечает «ещё один удар». Кардио? Нет. Вторник.",
+  mining_up:"Чутьё пласта. Слышишь, где камень врёт. Эльфы зовут это «интуицией». Мы зовём «не бей впустую, дубина».",
+  tough_up:"Дубовая крепь. Своды держат, потому что ты тоже дуб. Обвал смотрит — и идёт мимо. Вежливо.",
+  regen_up:"Второе сердце. Первое стучит по жиле, второе — по таверне. Пока одно отдыхает, другое уже снова в забое.",
+  stam_up:"Дыхалка. Комбо не обрывается от чиха. Кто выдохся первым — тот не дворф, а турист с киркой напрокат."
+};
 function charFocus(kind,id){
   window._charFocus={kind,id};
   renderCharSheet();
@@ -4728,7 +4755,6 @@ function renderCharSheet(){
   const w=(typeof beardWisdom==="function")?beardWisdom():{title:"Борода"};
   const age=1+(S.minerLv|0)+(S.prestigeLv|0);
   const eMax=Math.max(1,stat("energy")|0), eCur=Math.max(0,Math.min(eMax,(S.energy!=null?S.energy:eMax)|0));
-  const status=eCur/eMax<0.25?"Устал":(eCur/eMax<0.55?"Дышит":"В строю");
   const tabs=`<div class="foTabs">
     <button type="button" class="${tab==="stats"?"on":""}" onclick="setCharTab('stats')">Статы</button>
     <button type="button" class="${tab==="perks"?"on":""}" onclick="setCharTab('perks')">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
@@ -4762,6 +4788,10 @@ function renderCharSheet(){
         <div class="foCell"><span class="k">Перки</span><span class="v">${(S.perks||[]).length}/${(BALANCE.perks&&BALANCE.perks.maxOwned)||10}</span></div>
         <div class="foCell"><span class="k">Выбор</span><span class="v">${S.perkPicks||0}</span></div>
       </div>
+      <div class="foInfo" style="margin-bottom:6px">
+        <div class="ico">${infoIco}</div>
+        <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
+      </div>
       <div class="foPanel" style="margin-bottom:6px">
         <h4>Перки</h4>
         <div class="foPerkOwned">${owned}</div>
@@ -4771,10 +4801,6 @@ function renderCharSheet(){
         <h4>Черты (Traits)</h4>
         <div class="foPerkOwned">${traitRows}</div>
         <div class="sub" style="margin-top:6px;color:#8a7a60">До 2 черт. У каждой есть цена.</div>
-      </div>
-      <div class="foInfo">
-        <div class="ico">${infoIco}</div>
-        <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
       </div>
       <div class="foFoot">
         <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Статы</button>
@@ -4789,8 +4815,8 @@ function renderCharSheet(){
     const canDn=v>start;
     const on=focus.kind==="special"&&focus.id===d.id?" on":"";
     return `<div class="foSpecRow${on}" onclick="charFocus('special','${d.id}')">
-      <span class="let">${d.letter}</span><span class="nm">${d.n}</span>
-      <span class="grade">${foGrade(v)}</span><span class="num">${String(v).padStart(2,"0")}</span>
+      <span class="nm">${d.n}</span>
+      <span class="num">${String(v).padStart(2,"0")}</span>
       <button type="button" onclick="event.stopPropagation();refundSpecial('${d.id}')" ${canDn?"":"disabled"}>−</button>
       <button type="button" onclick="event.stopPropagation();spendSpecial('${d.id}')" ${canUp?"":"disabled"}>+</button>
     </div>`;
@@ -4822,7 +4848,7 @@ function renderCharSheet(){
     </div>`;
   }).join("");
 
-  let infoIco="🧔", infoTtl="Дворф", infoTxt="Выбери черту SPECIAL или навык — здесь будет подсказка, как в Pip-Boy.";
+  let infoIco="🧔", infoTtl="Дворф", infoTxt="Выбери черту КРАСАВА или навык — здесь будет подсказка, как в Pip-Boy.";
   if(focus.kind==="special"){
     const d=SPECIAL_DEFS.find(x=>x.id===focus.id), info=FO_SPECIAL_INFO[focus.id]||{};
     if(d){ infoIco=info.ico||"🧬"; infoTtl=d.letter+". "+d.n+" · "+specialAttr(d.id);
@@ -4831,8 +4857,9 @@ function renderCharSheet(){
     const d=SKILL_DEFS.find(x=>x.id===focus.id);
     if(d){
       const tr=(S.trained||{})[d.id]|0, card=(typeof skillLv==="function"?skillLv(d.id):0)|0;
+      const fluff=FO_SKILL_INFO[d.id]||d.n;
       infoIco=FO_SKILL_ICO[d.id]||"📜"; infoTtl=d.n+" · "+skillSheetPct(d.id)+"%";
-      infoTxt="Карта ур."+card+" · тренировка "+tr+"/"+(B.trainCap||15)+". +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+d.stat.toUpperCase()+" за трен. Тег: тренировка за "+(B.tagCost||1)+" очк. вместо "+(B.untagCost||2)+".";
+      infoTxt=fluff+" Карта ур."+card+" · трен. "+tr+"/"+(B.trainCap||15)+" · +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+d.stat.toUpperCase()+"/трен. Тег: −"+(B.tagCost||1)+" очк. вместо "+(B.untagCost||2)+".";
     }
   }
 
@@ -4845,34 +4872,24 @@ function renderCharSheet(){
     </div>
     <div class="foGrid">
       <div class="foPanel">
-        <h4>S.P.E.C.I.A.L.</h4>
+        <h4>${KRASAVA_TITLE}</h4>
         ${specRows}
         <div class="foPoints"><span>Очки черт</span><b>${S.specialPool||0}</b></div>
       </div>
-      <div>
-        <div class="foPanel" style="margin-bottom:6px">
-          <h4>Состояние</h4>
-          <div class="foDer">
-            <div class="row"><span>Энергия</span><span>${eCur}/${eMax}</span></div>
-            <div class="row"><span>Статус</span><span>${status}</span></div>
-          </div>
-          <div class="foAvatar"><div class="art">🧔</div><div class="sub">вид ${((S.look|0)%6)+1}</div></div>
-        </div>
-        <div class="foPanel">
-          <h4>Боевые</h4>
-          <div class="foDer">${derRows}</div>
-        </div>
+      <div class="foPanel">
+        <h4>Боевые</h4>
+        <div class="foDer">${derRows}</div>
       </div>
+    </div>
+    <div class="foInfo" style="margin:6px 0">
+      <div class="ico">${infoIco}</div>
+      <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
     </div>
     <div class="foPanel" style="margin-bottom:6px">
       <h4>Навыки · теги и тренировка</h4>
       ${skillRows}
       <div class="foTagBar"><span>Теги ${(S.skillTags||[]).length}/${B.tagSlots||3}</span>
         <span>Очки навыков <b>${S.skillPts||0}</b></span></div>
-    </div>
-    <div class="foInfo">
-      <div class="ico">${infoIco}</div>
-      <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
     </div>
     <div class="foFoot">
       <button type="button" class="btn btn-soft" onclick="closeCharSheet();openSkills('cards')">Ларь карт</button>
@@ -4910,7 +4927,7 @@ function openSkills(tab){
   }
   const tabBar=`<div class="btnrow" style="margin-bottom:10px;flex-wrap:wrap">
     <button class="btn ${tab==="cards"?"btn-hard":"btn-soft"}" onclick="openSkills('cards')">Карты</button>
-    <button class="btn btn-soft" onclick="openCharSheet()">Лист · SPECIAL</button>
+    <button class="btn btn-soft" onclick="openCharSheet()">Лист · КРАСАВА</button>
     <button class="btn btn-soft" onclick="openCharSheet({tab:'perks'})">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
     <button class="btn btn-soft" onclick="openCharSheet({kind:'skill',id:'atk_up'})">Тренировка${(S.skillPts||0)>0?(" · "+S.skillPts):""}</button>
   </div>`;
@@ -4938,7 +4955,7 @@ function openSkills(tab){
     return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
   }).join("");
   metaOpen("Навыки добычи",
-    "Ларь карт. Лист персонажа — SPECIAL и тренировка. Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0),
+    "Ларь карт. Лист персонажа — КРАСАВА и тренировка. Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0),
     tabBar+`<div class="sub" style="margin-bottom:6px">Лари со скилл-картами:</div>${chests}
      <div class="sub" style="margin:12px 0 6px">Навыки:</div>${rows}`);
 }
@@ -5431,7 +5448,7 @@ function openProfile(){
     '<div class="metarow"><span>Рекорд глубины</span><span><b>'+fmt(S.bestDepth||depth)+' м</b></span></div>'+
     '<div class="metarow"><span>Престиж · спусков</span><span>'+(S.prestigeLv||0)+' · '+(S.prestigeRuns||0)+'</span></div>'+
     '<div class="metarow"><span>Мудрость Бороды</span><button class="btn btn-soft" onclick="openBeard()">'+w.title+'</button></div>'+
-    '<div class="metarow"><span>SPECIAL</span><button class="btn btn-soft" onclick="openCharSheet()">Лист · пул '+(S.specialPool||0)+'</button></div>'+
+    '<div class="metarow"><span>КРАСАВА</span><button class="btn btn-soft" onclick="openCharSheet()">Лист · пул '+(S.specialPool||0)+'</button></div>'+
     '<div class="metarow"><span>Зал</span><span>ур.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
     '<div class="metarow"><span>Побед в PvP · кубков</span><span>'+(S.pvpWins||0)+' · '+fmt(S.trophies||0)+'</span></div>'+
     '<div class="metarow"><span>Имя</span><span><input id="profName" value="'+esc(playerName())+'" maxlength="18" style="width:110px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px;font-size:9px"><button class="btn btn-soft" style="margin-left:6px" onclick="'+setName+'">✓</button></span></div>';
@@ -5512,7 +5529,7 @@ function renderChestCard(){
   const lvl=S.bag, atCap=lvl>=50, c=bagCost(), upNow=bagUpgrading();
   const canUp=!atCap && !upNow && (S.gold||0)>=c;
   const nb=nextBagName(lvl);
-  const upSec=BALANCE.bags.upgradeSec||45;
+  const upSec=(upNow && S.bagActive && S.bagActive.dur)||bagUpgradeSec();
   const timerPct=upNow? Math.max(0,100*(1-bagUpgradeLeft()/upSec)) : 0;
   const timerLbl=upNow
     ? (bagSkipArmed

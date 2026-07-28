@@ -611,11 +611,13 @@ S.keys=5; S.chestKeys=0; S.gems=0; S.skillCards={};
 T("нет ключей от ларей — ларь не открыть (ключи ивентов не тратятся)", openSkillChest("wood")===false && S.keys===5);
 T("миграция карт", (function(){ const d={}; ensureCards(d); return !!d.skillCards; })());
 
-console.log("\n[29b] SPECIAL + тренировка (Fallout 2 vibe)");
+console.log("\n[29b] КРАСАВА + тренировка (Fallout 2 vibe)");
 localStorage.removeItem("oredeep_v3"); load();
 ensureSpecial();
-T("SPECIAL стартует с 5 по всем чертам", SPECIAL_DEFS.every(d=>specialAttr(d.id)===5));
-T("есть пул SPECIAL", (S.specialPool||0)>=5);
+T("КРАСАВА стартует с 5 по всем чертам", SPECIAL_DEFS.every(d=>specialAttr(d.id)===5));
+T("есть пул КРАСАВА", (S.specialPool||0)>=5);
+T("порядок КРАСАВА", SPECIAL_DEFS.map(d=>d.letter).join("")==="КРАСАВА");
+T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="К.Р.А.С.А.В.А.");
 { const a0=stat("atk"); spendSpecial("s");
   T("Сила поднимает ATK", specialAttr("s")===6 && stat("atk")>a0); }
 { S.veinsBroken=BALANCE.special.veinsPerLv; S.minerLv=0; S.skillPts=0;
@@ -635,9 +637,9 @@ T("есть пул SPECIAL", (S.specialPool||0)>=5);
   T("Ум даёт больше очков за уровень", S.skillPts>=BALANCE.special.ptsBase+3); }
 { const p0=S.specialPool, v0=specialAttr("s");
   spendSpecial("s"); refundSpecial("s");
-  T("refund SPECIAL возвращает очко", specialAttr("s")===v0 && S.specialPool===p0); }
+  T("refund КРАСАВА возвращает очко", specialAttr("s")===v0 && S.specialPool===p0); }
 { openCharSheet(); 
-  T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("S.P.E.C.I.A.L")>=0);
+  T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("К.Р.А.С.А.В.А")>=0);
   closeCharSheet();
   T("лист персонажа закрывается", $("charModal").style.display!=="flex"); }
 
@@ -1240,13 +1242,27 @@ dead=false; S.durab=40; S.gold=Math.max(S.gold||0, reinforceCost()*3);
   Platform.showRewarded=prev; }
 { S.bag=1; S.gold=bagCost()*5; S.gems=20; bagSkipArmed=false; startBagUpgrade();
   const b0=S.bag, g0=S.gems, left0=bagUpgradeLeft();
+  const skipAt=bagSkipGems(b0);
   tryBagUpgrade();
   T("тап во время таймера показывает цену пропуска", bagSkipArmed===true
     && /💎/.test((__ids.bagAreaLvl&&__ids.bagAreaLvl.textContent)||"")
     && left0>0);
   tryBagUpgrade();
   T("второй тап качает за кристаллы без ожидания", !bagUpgrading() && S.bag===b0+1
-    && S.gems===g0-bagSkipGems()); }
+    && S.gems===g0-skipAt); }
+{ const b=BALANCE.bags;
+  T("таймер сумки растёт с уровнем", bagUpgradeSec(1)<bagUpgradeSec(20) && bagUpgradeSec(20)<bagUpgradeSec(49));
+  T("пропуск сумки растёт с уровнем", bagSkipGems(1)<bagSkipGems(20) && bagSkipGems(20)<bagSkipGems(49));
+  T("таймер сумки lv1 = base", bagUpgradeSec(1)===b.upgradeSecBase);
+  T("пропуск сумки lv1 = base", bagSkipGems(1)===b.skipGemsBase);
+  T("таймер сумки lv10 по формуле",
+    bagUpgradeSec(10)===Math.round(b.upgradeSecBase+b.upgradeSecPerLv*9));
+  T("пропуск сумки lv30 по формуле",
+    bagSkipGems(30)===Math.round(b.skipGemsBase+b.skipGemsPerLv*29));
+  S.bag=20; S.gold=bagCost()*3; S.bagActive=null; startBagUpgrade();
+  T("старт пишет dur по уровню", !!S.bagActive && S.bagActive.dur===bagUpgradeSec(20)
+    && S.bagActive.from===20);
+  S.bagActive=null; }
 { S.autoRoll=true; render();
   const ab=$("auto");
   T("видимый Auto получает класс on", !!(ab&&ab.classList&&ab.classList.contains("on"))); }

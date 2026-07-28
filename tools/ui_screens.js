@@ -184,7 +184,7 @@ const UIS={
       +'<div class="uiRow"><span>Имя таверны</span><span><input id="uiProfName" class="uiInp" maxlength="18" value="'+esc(playerName())+'">'
       +'<button class="btn btn-soft btn-tiny" onclick="'+setName+'">✓</button></span></div>'
       +'<div class="uiBtnStack">'
-      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Лист · SPECIAL</button>'
+      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Лист · КРАСАВА</button>'
       +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Бороды</button>'
       +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Пригласи друзей</button>'
       +'<button onclick="openWall()">🏔 Стена Горы</button></div>';
