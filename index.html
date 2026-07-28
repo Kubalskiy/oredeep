@@ -27,6 +27,7 @@
   --r-sm:8px; --r-md:12px; --r-lg:18px;
   --font-display:"VT323", monospace;
   --font-body:"Space Grotesk", sans-serif;
+  --font-ui:var(--font-body);
   /* compat aliases used by remaining modal CSS snippets */
   --panel:var(--bgPanel);
   --panel2:var(--bgPanelAlt);
@@ -42,11 +43,22 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;height:100%;background:#0a0704;color:var(--textPrimary);
-  font-family:var(--font-body);overflow:hidden;}
+  font-family:var(--font-body);overflow:hidden;color-scheme:dark;}
 body{display:flex;align-items:center;justify-content:center;}
 button{font-family:inherit;border:0;cursor:pointer;color:inherit;background:transparent;}
 button:active{transform:scale(.97);}
 button:disabled{opacity:.45;cursor:default;}
+
+/* Скролл под цвет меню (тёмный трек, золотой бегунок) */
+*{scrollbar-width:thin;scrollbar-color:var(--goldMuted) var(--bgPanelAlt);}
+*::-webkit-scrollbar{width:8px;height:8px;}
+*::-webkit-scrollbar-track{background:var(--bgPanelAlt);border-left:1px solid var(--border);}
+*::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,var(--goldMuted),#8a6834);
+  border:1px solid var(--borderLight);border-radius:6px;
+}
+*::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--gold),var(--goldMuted));}
+*::-webkit-scrollbar-corner{background:var(--bgPanelAlt);}
 
 #app{
   position:relative;
@@ -330,25 +342,26 @@ button:disabled{opacity:.45;cursor:default;}
 #bubble{display:none!important;} /* заменено на #feedPanel */
 #feedPanel{
   flex:none;margin:6px 10px 8px;display:flex;flex-direction:column;gap:4px;
-  max-height:102px;overflow:hidden;pointer-events:none;
+  max-height:168px;overflow:hidden;pointer-events:none;
 }
 #feedLines{display:flex;flex-direction:column;gap:4px;}
 .feedLine{
-  padding:7px 14px;border-radius:999px;background:#0a0c10;
-  border:1px solid var(--goldMuted);font-size:11px;line-height:1.35;
-  color:var(--textBody);text-align:center;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:7px 12px;border-radius:14px;background:#0a0c10;
+  border:1px solid var(--goldMuted);font-size:12px;line-height:1.35;
+  color:var(--textBody);text-align:center;font-family:var(--font-body);
+  white-space:normal;overflow:visible;word-break:break-word;
   box-shadow:0 2px 8px #0008;
 }
-.feedLine b{color:var(--gold);font-weight:700;margin-right:4px;}
+.feedLine b{color:var(--gold);font-weight:400;margin-right:4px;font-family:var(--font-display);font-size:14px;}
 .feedLine.quip{border-color:#8a7040;}
 .feedLine.loot{border-color:#6a8a50;}
 .feedLine.buy{border-color:#6a7ab0;}
 .feedLine.up{border-color:#c9974a;}
 .feedLine.hot{border-color:var(--gold);background:#141008;}
 #feedEmpty{
-  padding:7px 14px;border-radius:999px;background:#0a0c10;
-  border:1px dashed #5a4830;font-size:11px;color:var(--textMuted);text-align:center;
+  padding:7px 12px;border-radius:14px;background:#0a0c10;
+  border:1px dashed #5a4830;font-size:12px;color:var(--textMuted);text-align:center;
+  font-family:var(--font-body);white-space:normal;word-break:break-word;
 }
 #setAura,#setRing,#prestigeMark,#paperdoll{position:absolute;pointer-events:none;}
 #paperdoll{inset:0;z-index:7;display:none;}
@@ -384,7 +397,8 @@ button:disabled{opacity:.45;cursor:default;}
 #statStrip .u:active{transform:scale(.97);}
 #statStrip .u.can{border-color:var(--goldMuted);box-shadow:inset 0 0 0 1px rgba(201,151,74,.28);}
 #statStrip .u.maxed{opacity:.7;}
-#statStrip .u .k{font-size:11px;color:var(--textMuted);letter-spacing:.4px;line-height:1.1;}
+#statStrip .u .k{font-size:10px;color:var(--textMuted);letter-spacing:.2px;line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 #statStrip .u .lv{font-size:10px;color:var(--textMuted);opacity:.9;line-height:1.1;}
 #statStrip .u .v{font-size:15px;color:var(--textPrimary);line-height:1.15;margin:1px 0;}
 #statStrip .u .c{font-size:11px;color:var(--goldMuted);line-height:1.1;}
@@ -580,7 +594,7 @@ button:disabled{opacity:.45;cursor:default;}
 .dot{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--danger);display:none;}
 .dot.on{display:block;}
 
-/* --- Лист персонажа (Fallout 2 layout) --- */
+/* --- Лист персонажа --- */
 #charModal{z-index:280;align-items:stretch;padding:0;background:#000c;}
 #charModal .foSheetBox{
   width:100%;max-width:480px;height:100%;max-height:100%;margin:0 auto;
@@ -588,91 +602,100 @@ button:disabled{opacity:.45;cursor:default;}
   overflow:hidden;
 }
 #charSheet{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 8px 12px;
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#d8c49a;}
+  font-family:var(--font-body);color:#d8c49a;}
 .foHead{display:grid;grid-template-columns:1.4fr .7fr .7fr .9fr;gap:4px;margin-bottom:6px;}
 .foCell{background:#0e0b08;border:2px solid #5a4830;border-radius:4px;padding:5px 7px;min-height:36px;}
-.foCell .k{display:block;font-size:9px;letter-spacing:1px;color:#c9974a;text-transform:uppercase;}
-.foCell .v{display:block;font-size:13px;color:#f2d488;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.foGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;align-items:stretch;}
-.foGrid>.foPanel{display:flex;flex-direction:column;min-height:100%;}
-.foPanel{background:#120e0a;border:2px solid #6a5438;border-radius:6px;padding:6px;position:relative;}
-.foPanel h4{margin:0 0 6px;font-size:11px;letter-spacing:1.5px;color:#f2d488;text-transform:uppercase;
-  border-bottom:1px solid #3a2e1c;padding-bottom:4px;}
-.foSpecRow{display:grid;grid-template-columns:minmax(0,1fr) 36px 24px 24px;align-items:center;gap:4px;
-  padding:4px 2px;border-bottom:1px solid #2a2118;font-size:12px;cursor:pointer;}
+.foCell .k{display:block;font-size:10px;letter-spacing:1px;color:#c9974a;text-transform:uppercase;
+  font-family:var(--font-display);}
+.foCell .v{display:block;font-size:16px;color:#f2d488;font-weight:400;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-family:var(--font-display);}
+.foGrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:5px;margin-bottom:6px;align-items:stretch;}
+.foGrid>.foPanel{display:flex;flex-direction:column;min-height:100%;min-width:0;}
+.foPanel{background:#120e0a;border:2px solid #6a5438;border-radius:6px;padding:5px;position:relative;min-width:0;}
+.foPanel h4{margin:0 0 5px;font-size:12px;letter-spacing:.8px;color:#f2d488;text-transform:uppercase;
+  border-bottom:1px solid #3a2e1c;padding-bottom:3px;font-family:var(--font-display);font-weight:400;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.foSpecRow{display:flex;align-items:center;justify-content:space-between;gap:4px;
+  padding:4px 1px;border-bottom:1px solid #2a2118;cursor:pointer;}
 .foSpecRow:last-child{border-bottom:none;}
-.foSpecRow .nm{color:#f2d488;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  min-width:0;letter-spacing:0;}
-.foSpecRow .num{color:#8fce6a;font-weight:800;text-align:center;font-size:13px;font-variant-numeric:tabular-nums;}
-.foSpecRow button{width:24px;height:24px;padding:0;margin:0;border-radius:3px;font-size:14px;line-height:1;
-  background:#2a2118;border:1px solid #c9974a;color:#f2d488;flex:none;}
+.foSpecRow .nm{color:#f2d488;font-weight:600;flex:1 1 auto;min-width:0;
+  font-size:12px;line-height:1.15;white-space:nowrap;font-family:var(--font-body);
+  overflow:hidden;text-overflow:ellipsis;}
+.foSpecCtrl{display:flex;align-items:center;gap:2px;flex:0 0 auto;}
+.foSpecRow .num{color:#8fce6a;font-weight:400;text-align:center;font-size:14px;min-width:24px;
+  font-variant-numeric:tabular-nums;font-family:var(--font-display);}
+.foSpecRow button{width:20px;height:20px;padding:0;margin:0;border-radius:3px;font-size:14px;line-height:1;
+  background:#2a2118;border:1px solid #c9974a;color:#f2d488;flex:none;font-family:var(--font-display);}
 .foSpecRow button:disabled{opacity:.3;border-color:#5a4830;}
 .foSpecRow.on{background:#241a10;}
-.foPoints{margin-top:auto;padding:5px 6px;background:#0e0b08;border:1px solid #c9974a;border-radius:4px;
-  display:flex;justify-content:space-between;font-size:11px;color:#f2d488;}
-.foDer{font-size:11px;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
-.foDer .row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #2a2118;gap:6px;}
-.foDer .row span:first-child{color:#cbb89a;}
-.foDer .row span:last-child{color:#8fce6a;font-weight:700;}
-.foSkillRow{display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:4px;
-  padding:3px 0;border-bottom:1px solid #2a2118;font-size:11px;}
+.foPoints{margin-top:auto;padding:4px 5px;background:#0e0b08;border:1px solid #c9974a;border-radius:4px;
+  display:flex;justify-content:space-between;font-size:12px;color:#f2d488;font-family:var(--font-display);}
+.foDer{font-size:11px;flex:1;display:flex;flex-direction:column;justify-content:space-between;
+  font-family:var(--font-body);min-width:0;}
+.foDer .row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #2a2118;gap:4px;min-width:0;}
+.foDer .row span:first-child{color:#cbb89a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.foDer .row span:last-child{color:#8fce6a;font-weight:600;font-family:var(--font-display);font-size:13px;flex:none;}
+.foSkillRow{display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;align-items:center;gap:4px;
+  padding:4px 0;border-bottom:1px solid #2a2118;font-size:12px;font-family:var(--font-body);}
 .foSkillRow.on{background:#241a10;}
 .foSkillRow .tag{width:14px;height:14px;border-radius:50%;border:2px solid #8a3030;background:#1a1010;padding:0;margin:0;}
 .foSkillRow .tag.on{background:#e05050;box-shadow:0 0 6px #e0505088;}
-.foSkillRow .sn{color:#cbb89a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.foSkillRow .pct{color:#8fce6a;font-weight:800;min-width:36px;text-align:right;}
-.foSkillRow .trn{color:#c9974a;font-size:10px;min-width:28px;text-align:right;}
-.foTagBar{margin-top:6px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#f2d488;
-  padding:5px 6px;background:#0e0b08;border:1px solid #5a4830;border-radius:4px;}
-.foInfo{display:grid;grid-template-columns:72px 1fr;gap:8px;background:#2a2418;border:2px solid #8a7040;
-  border-radius:6px;padding:8px;margin:6px 0;min-height:88px;}
-.foInfo .ico{font-size:40px;text-align:center;line-height:72px;background:#1a1510;border:1px solid #5a4830;border-radius:4px;}
-.foInfo .ttl{font-size:13px;color:#f2d488;font-weight:800;margin-bottom:4px;}
-.foInfo .txt{font-size:11px;color:#d8c49a;line-height:1.45;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;}
+.foSkillRow .sn{color:#cbb89a;overflow:visible;min-width:0;font-size:12px;font-weight:600;white-space:normal;line-height:1.2;}
+.foSkillRow .pct{color:#8fce6a;font-weight:400;min-width:34px;text-align:right;font-family:var(--font-display);font-size:14px;}
+.foSkillRow .trn{color:#c9974a;font-size:12px;min-width:26px;text-align:right;font-family:var(--font-display);}
+.foTagBar{margin-top:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#f2d488;
+  padding:5px 6px;background:#0e0b08;border:1px solid #5a4830;border-radius:4px;font-family:var(--font-display);}
+.foInfo{display:grid;grid-template-columns:64px 1fr;gap:8px;background:#2a2418;border:2px solid #8a7040;
+  border-radius:6px;padding:8px;margin:6px 0;min-height:80px;}
+.foInfo .ico{font-size:36px;text-align:center;line-height:64px;background:#1a1510;border:1px solid #5a4830;border-radius:4px;}
+.foInfo .ttl{font-size:15px;color:#f2d488;font-weight:400;margin-bottom:4px;font-family:var(--font-display);letter-spacing:.3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.foInfo .txt{font-size:12px;color:#d8c49a;line-height:1.4;font-family:var(--font-body);overflow-wrap:anywhere;word-break:break-word;}
 .foFoot{display:flex;gap:6px;margin-top:4px;position:sticky;bottom:0;background:linear-gradient(180deg,transparent,#1a1510 30%);
   padding-top:10px;}
-.foFoot button{flex:1;min-height:44px;border-radius:8px;font-family:var(--font-display);font-size:14px;}
+.foFoot button{flex:1;min-height:44px;border-radius:8px;font-family:var(--font-display);font-size:16px;}
 .foTabs{display:flex;gap:4px;margin-bottom:6px;}
-.foTabs button{flex:1;min-height:36px;font-size:11px;letter-spacing:1px;text-transform:uppercase;
-  background:#1a1510;border:2px solid #5a4830;color:#cbb89a;border-radius:4px 4px 0 0;font-family:ui-monospace,Menlo,monospace;}
+.foTabs button{flex:1;min-height:36px;font-size:14px;letter-spacing:1px;text-transform:uppercase;
+  background:#1a1510;border:2px solid #5a4830;color:#cbb89a;border-radius:4px 4px 0 0;font-family:var(--font-display);}
 .foTabs button.on{background:#2a2118;border-color:#c9974a;color:#f2d488;}
-.foPerkOwned{font-size:11px;}
+.foPerkOwned{font-size:13px;font-family:var(--font-body);}
 .foPerkOwned .row{display:flex;gap:8px;align-items:center;padding:5px 4px;border-bottom:1px solid #2a2118;cursor:pointer;}
 .foPerkOwned .row.on{background:#241a10;}
 .foPerkOwned .row .ic{font-size:20px;width:28px;text-align:center;}
-.foPerkOwned .row .nm{color:#8fce6a;font-weight:700;}
-.foPerkOwned .empty{color:#8a7a60;padding:10px 4px;font-size:11px;}
+.foPerkOwned .row .nm{color:#8fce6a;font-weight:400;font-family:var(--font-display);font-size:14px;}
+.foPerkOwned .empty{color:#8a7a60;padding:10px 4px;font-size:12px;}
 
-/* --- Выбор перка (Fallout 2 PICK A PERK) --- */
+/* --- Выбор перка --- */
 #perkModal{z-index:290;align-items:center;padding:10px;background:#000c;}
 #perkModal .foPerkBox{
   width:100%;max-width:440px;max-height:92%;margin:0 auto;padding:0;overflow:hidden;
   background:#1a1510;border:3px solid #6a5438;border-radius:6px;
   display:flex;flex-direction:column;
   box-shadow:inset 0 0 0 1px #3a2e1c, 0 8px 28px #000a;
+  font-family:var(--font-body);
 }
 .foPerkTitle{padding:10px 12px 8px;text-align:center;font-family:var(--font-display);
-  font-size:16px;letter-spacing:2px;color:#f2d488;border-bottom:2px solid #5a4830;
+  font-size:18px;letter-spacing:2px;color:#f2d488;border-bottom:2px solid #5a4830;
   background:linear-gradient(180deg,#2a2118,#1a1510);}
 .foPerkBody{display:grid;grid-template-columns:1fr 1.15fr;gap:0;min-height:280px;flex:1;overflow:hidden;}
 .foPerkList{overflow:auto;-webkit-overflow-scrolling:touch;background:#0e0b08;border-right:2px solid #5a4830;
-  font-family:ui-monospace,Menlo,monospace;}
-.foPerkItem{padding:8px 10px;font-size:12px;color:#8fce6a;border-bottom:1px solid #2a2118;cursor:pointer;
+  font-family:var(--font-display);}
+.foPerkItem{padding:8px 10px;font-size:14px;color:#8fce6a;border-bottom:1px solid #2a2118;cursor:pointer;
   line-height:1.3;}
 .foPerkItem:hover{background:#1a1510;}
 .foPerkItem.on{background:#243018;color:#b8f090;box-shadow:inset 3px 0 0 #8fce6a;}
 .foPerkItem.have{opacity:.45;text-decoration:line-through;}
 .foPerkDetail{background:#2a2418;padding:12px;overflow:auto;display:flex;flex-direction:column;gap:10px;
   border-left:1px solid #8a7040;}
-.foPerkDetail .pt{font-size:15px;font-weight:800;color:#1a1510;background:#d4c49a;padding:4px 8px;
+.foPerkDetail .pt{font-size:16px;font-weight:400;color:#1a1510;background:#d4c49a;padding:4px 8px;
   border:1px solid #8a7040;font-family:var(--font-display);letter-spacing:1px;}
-.foPerkDetail .pd{font-size:12px;color:#2a2118;line-height:1.5;background:#d8cba8;padding:8px;
-  border:1px solid #8a7040;flex:1;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;}
+.foPerkDetail .pd{font-size:13px;color:#2a2118;line-height:1.5;background:#d8cba8;padding:8px;
+  border:1px solid #8a7040;flex:1;font-family:var(--font-body);}
 .foPerkDetail .pi{font-size:56px;text-align:center;line-height:1.1;padding:8px;background:#1a1510;
   border:2px solid #5a4830;border-radius:4px;filter:grayscale(.2);}
-.foPerkDetail .pe{font-size:11px;color:#5a4030;font-family:ui-monospace,Menlo,monospace;}
+.foPerkDetail .pe{font-size:12px;color:#5a4030;font-family:var(--font-display);}
 .foPerkFoot{display:flex;gap:8px;padding:10px;border-top:2px solid #5a4830;background:#1a1510;}
-.foPerkFoot button{flex:1;min-height:46px;font-family:var(--font-display);font-size:14px;letter-spacing:1px;
+.foPerkFoot button{flex:1;min-height:46px;font-family:var(--font-display);font-size:16px;letter-spacing:1px;
   position:relative;padding-left:28px;}
 .foPerkFoot button::before{content:"";position:absolute;left:10px;top:50%;transform:translateY(-50%);
   width:12px;height:12px;border-radius:50%;background:#8a2020;box-shadow:inset 0 1px 0 #c04040,0 0 0 2px #3a1010;}
@@ -705,11 +728,12 @@ body > .modal{
 .oreimg.big{width:44px;height:44px;}
 /* Внутри #app + absolute: иначе fixed цепляется к viewport и падает ниже рамки игры */
 #toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
-  border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:none;}
+  border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:none;
+  font-family:var(--font-body);}
 #toast .big{font-size:30px;}
-#toast .r{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1px;}
-#toast .nm{font-size:15px;font-weight:700;margin:2px 0;}
-#toast .vl{color:var(--gold);font-size:12px;}
+#toast .r{font-weight:400;font-size:16px;text-transform:uppercase;letter-spacing:1px;font-family:var(--font-display);}
+#toast .nm{font-size:16px;font-weight:400;margin:2px 0;font-family:var(--font-display);}
+#toast .vl{color:var(--gold);font-size:13px;font-family:var(--font-body);}
 #overlay{position:fixed;inset:0;background:#000c;z-index:70;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px;}
 #overlay .big{font-size:52px;}
 #overlay h2{color:var(--danger);margin:8px 0;font-family:var(--font-display);}
@@ -918,9 +942,9 @@ body > .modal{
 
   #introGo{display:block;max-width:280px;margin:0 auto;width:100%;position:relative;z-index:3;}
 
-  #prestigeMark{position:absolute;right:10px;top:8px;z-index:6;font-size:9px;color:var(--gold);
+  #prestigeMark{position:absolute;right:10px;top:8px;z-index:6;font-size:12px;color:var(--gold);
     background:#12151dcc;border:1px solid var(--gold);border-radius:6px;padding:3px 7px;display:none;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+    font-family:var(--font-display);letter-spacing:.5px;}
 
   #toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
     border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:none;}
@@ -1549,14 +1573,14 @@ body > .modal{
     </div>
   </div>
 
-  <!-- Лист персонажа в духе Fallout 2 -->
+  <!-- Лист персонажа -->
   <div class="modal" id="charModal">
     <div class="box foSheetBox">
       <div id="charSheet"></div>
     </div>
   </div>
 
-  <!-- Выбор перка (Fallout 2 PICK A PERK) -->
+  <!-- Выбор перка -->
   <div class="modal" id="perkModal">
     <div class="box foPerkBox">
       <div class="foPerkTitle">ВЫБЕРИ ПЕРК</div>
@@ -1708,14 +1732,14 @@ const BALANCE = {
        (lv1: 30с/3💎 → lv49: ~5м/61💎). base + perLv*(bag-1). */
     upgradeSecBase:30, upgradeSecPerLv:6,
     skipGemsBase:3, skipGemsPerLv:1.2 },
-  /* КРАСАВА (рескин SPECIAL): 7 черт + очки навыков за «уровень шахтёра».
+  /* КРАСАВА: 7 черт + очки навыков за «уровень шахтёра».
      Не ломает треадмилл: % от черт капнут, тренировка слабее карточных уровней. */
   special:{
     start:5, pool:5, attrMax:10, attrPct:1.2, attrPctCap:12,
     veinsPerLv:35, maxLv:40, ptsBase:5, ptsPerInt:1,
     tagSlots:3, tagCost:1, untagCost:2, trainMult:0.5, trainCap:15
   },
-  /* Перки как в Fallout 2: выбор каждые N уровней шахтёра. % маленькие + кап — треадмилл цел. */
+  /* Перки: выбор каждые N уровней шахтёра. % маленькие + кап — треадмилл цел. */
   perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:10 },
   /* Яйца и расчёски — отдельные ресурсы гачи (док §Питомцы, §Девушки → адаптация) */
   gacha:{ eggDropPct:4, combDropPct:4, eggBossPct:12, combBossPct:12,
@@ -2127,7 +2151,7 @@ function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
     showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK",true);
     sayQuip("Борода стала гуще и седее. Клан кланяется.",4);
     Platform.logEvent("beard_rank",{lv:w.lv});
-    /* ранг бороды ≈ level-up: +1 очко SPECIAL (как перк/атрибут в FO) */
+    /* ранг бороды ≈ level-up: +1 очко КРАСАВА */
     ensureSpecial();
     if((S.specialPool||0)<99){ S.specialPool=(S.specialPool||0)+1;
       showToast("🧬","Черта гнома","","+1 очко КРАСАВА","распредели в Навыках",true); }
@@ -2320,8 +2344,8 @@ function stat(id){
   for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
   v+=stickerBonus(id);                                  // стикеры (PDF)
   if(id==="luck") v+=beardWisdom().luckAdd;                              // Мудрость Бороды
-  { const sp=specialBonusPct(id); if(sp) v*=(1+sp/100); }               // SPECIAL-черты (FO2)
-  { const pk=perkBonusPct(id); if(pk) v*=(1+pk/100); }                   // перки (FO2)
+  { const sp=specialBonusPct(id); if(sp) v*=(1+sp/100); }               // черты КРАСАВА
+  { const pk=perkBonusPct(id); if(pk) v*=(1+pk/100); }                   // перки
   const sets=S.sets||{};
   if(id==="atk"&&sets.berserk) v*=1.5;
   if(id==="crit"&&sets.berserk) v+=20;
@@ -2548,7 +2572,7 @@ function pushFeed(who, text, kind){
 }
 function feedWhoFromToast(rar, name, extra){
   const blob=[rar,name,extra].filter(Boolean).join(" ");
-  if(/прокач|апгрейд|ПРОПУСК|сумк|SPECIAL|КРАСАВА|перк|трен\.|Ур\./i.test(blob)) return {who:"Прокачка", kind:"up"};
+  if(/прокач|апгрейд|ПРОПУСК|сумк|КРАСАВА|перк|трен\.|Ур\./i.test(blob)) return {who:"Прокачка", kind:"up"};
   if(/купл|магазин|пак|реклам|No-Ads|стартер|вейглист|самоцвет/i.test(blob)) return {who:"Куплено", kind:"buy"};
   if(/надето|продано|сундук|находк|дубликат|коллекц|питомец|COMMON|RARE|EPIC|LEGENDARY|EXOTIC|MYTHIC|ASCENDED|COSMIC/i.test(blob))
     return {who:"Добыча", kind:"loot"};
@@ -3191,7 +3215,16 @@ function buyUpgrade(id){
   save(); render();
   return true;
 }
-const STRIP_LABEL={atk:"ATK",energy:"ЭНЕР",spd:"СКОР",tough:"DEF",crit:"КРИТ",luck:"УДАЧА",mining:"СИЛ",stone:"STONE"};
+const STRIP_LABEL={
+  atk:"Урон",
+  energy:"Энергия",
+  spd:"Темп",
+  tough:"Крепёж",
+  crit:"Крит",
+  luck:"Удача",
+  mining:"Чутьё",
+  stone:"Жадность"
+};
 function buildUpgrades(){
   const box=$("statStrip")||$("upgrades"); if(!box) return;
   box.innerHTML="";
@@ -4384,10 +4417,10 @@ function claimOffline(mult){
 function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub").innerHTML=sub;
   $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
 
-/* ---------- К.Р.А.С.А.В.А. гнома (рескин SPECIAL / Fallout 2) ----------
-   К Р А С А В А → семь черт. Внутри сейва id те же (s/p/e/c/i/a/l).
+/* ---------- К.Р.А.С.А.В.А. гнома ----------
+   К Р А С А В А → семь черт. Внутри сейва id: s/p/e/c/i/a/l.
    Уровень шахтёра за жилы даёт очки навыков (база + бонус от Разума).
-   Теги ×3 дешевле тренировать. Карточные навыки из ларей остаются. */
+   Теги дешевле тренировать. Карточные навыки из ларей остаются. */
 const SPECIAL_DEFS=[
   {id:"e", n:"Крепость", letter:"К", stats:["energy","tough"], tip:"Держать штольню"},
   {id:"i", n:"Разум",    letter:"Р", stats:[],                tip:"Больше очков навыков за уровень"},
@@ -4419,9 +4452,11 @@ function specialPtsPerLevel(){
   const B=BALANCE.special||{};
   const i=Math.max(0, specialAttr("i")-(B.start||5));
   let pts=(B.ptsBase||5)+i*(B.ptsPerInt||1);
-  if(typeof hasTrait==="function" && hasTrait("gifted")){
-    const t=TRAIT_DEFS.find(x=>x.id==="gifted");
-    pts=Math.max(1, Math.floor(pts*((t&&t.ptsMult)||0.8)));
+  if(typeof hasTrait==="function"){
+    for(const id of (S.traits||[])){
+      const t=traitDef(id); if(!t||t.ptsMult==null) continue;
+      pts=Math.max(1, Math.floor(pts*t.ptsMult));
+    }
   }
   return pts;
 }
@@ -4462,7 +4497,7 @@ function specialBonusPct(statId){
   return Math.min(B.attrPctCap||12, pct);
 }
 
-/* ---------- Перки (Fallout 2) ---------- */
+/* ---------- Перки шахтёра ---------- */
 const PERK_DEFS=[
   {id:"aware",    n:"Чутьё породы",     ico:"🔭", stats:["mining"],
     desc:"Ты видишь слабые места в жиле. Чутьё пласта растёт — меньше слепых ударов."},
@@ -4494,8 +4529,44 @@ const TRAIT_DEFS=[
     desc:"Разум и руки от природы. +1 ко всем чертам КРАСАВА сразу, но уровни шахтёра дают на 20% меньше очков навыков.",
     specialAdd:1, ptsMult:0.8},
   {id:"small", n:"Коренастый", ico:"🪨",
-    desc:"Низкий, крепкий. +крепь, но медленнее машет киркой (−темп).",
-    statsPlus:["tough"], statsMinus:["spd"]}
+    desc:"Низкий, крепкий. Своды тебя любят (+крепь), но кирка ходит медленнее (−темп).",
+    statsPlus:["tough"], statsMinus:["spd"]},
+  {id:"bruiser", n:"Силач", ico:"💪",
+    desc:"Бьёшь как дед кувалдой. Больше урона, меньше темпа — жила должна успеть испугаться.",
+    statsPlus:["atk"], statsMinus:["spd"]},
+  {id:"finesse", n:"Точный", ico:"🎯",
+    desc:"Бьёшь в трещину, не в дух. Крит чаще, но каждый удар легче (−ATK).",
+    statsPlus:["crit"], statsMinus:["atk"]},
+  {id:"kamikaze", n:"Безбашенный", ico:"💥",
+    desc:"Крепь? Какая крепь. Мчишься в забой (+темп), но своды мстят (−крепь).",
+    statsPlus:["spd"], statsMinus:["tough"]},
+  {id:"greed", n:"Жадный", ico:"🪙",
+    desc:"Скупщик плачет от счастья (+STONE). Гора обижается: удача на находки падает.",
+    statsPlus:["stone"], statsMinus:["luck"]},
+  {id:"jinxed", n:"Баловень Горы", ico:"🍀",
+    desc:"Камень сам прыгает в карман (+удача). Чутьё пласта слепнет (−mining): находишь всё, кроме жилы.",
+    statsPlus:["luck"], statsMinus:["mining"]},
+  {id:"aleblood", n:"Эль в крови", ico:"🍺",
+    desc:"Запас сил как у бочки (+энергия). После третьей кружки чутьё пласта плывёт (−mining).",
+    statsPlus:["energy"], statsMinus:["mining"]},
+  {id:"sober", n:"Трезвенник", ico:"🧊",
+    desc:"Вода вместо эля. Видишь каждую трещину (+mining), но устаёшь как смертный (−энергия).",
+    statsPlus:["mining"], statsMinus:["energy"]},
+  {id:"goodnat", n:"Добряк", ico:"🤝",
+    desc:"Даже порода с тобой здоровается (+STONE у скупщика). Бить сильно — не по-дружески (−ATK).",
+    statsPlus:["stone"], statsMinus:["atk"]},
+  {id:"heavy", n:"Тяжёлая рука", ico:"⛏",
+    desc:"Удар глушит эхо. Больше ATK, но крит почти не ловишь — куда уж точнее, если уже дыра.",
+    statsPlus:["atk"], statsMinus:["crit"]},
+  {id:"lantern", n:"Глаза-фонари", ico:"🕯",
+    desc:"В полумраке видишь жилу (+mining, +крит). На солнце жмуришься: темп падает.",
+    statsPlus:["mining","crit"], statsMinus:["spd"]},
+  {id:"bearded", n:"Бородатый с пелёнок", ico:"🧔",
+    desc:"Борода тащит удачу (+luck) и уважение клана. Зато путается в кирке (−темп).",
+    statsPlus:["luck"], statsMinus:["spd"]},
+  {id:"winded", n:"Короткая дыхалка", ico:"😮‍💨",
+    desc:"Комбо рвётся реже? Наоборот: stamina слабее, зато бьёшь злее (+ATK) пока хватает воздуха.",
+    statsPlus:["atk"], statsMinus:["stamina"]}
 ];
 function hasPerk(id){ ensureSpecial(); return (S.perks||[]).indexOf(id)>=0; }
 function hasTrait(id){ ensureSpecial(); return (S.traits||[]).indexOf(id)>=0; }
@@ -4773,7 +4844,7 @@ function renderCharSheet(){
         ${!have&&can?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();pickTrait('${t.id}')">взять</button>`:""}
       </div>`;
     }).join("");
-    let infoIco="📜", infoTtl="Перки", infoTxt="Как в Fallout 2: каждые несколько уровней — новый перк. Выбери из списка.";
+    let infoIco="📜", infoTtl="Перки", infoTxt="Каждые несколько уровней шахтёра Гора даёт новый перк. Выбери из списка.";
     if(focus.kind==="perk"){
       const p=perkDef(focus.id);
       if(p){ infoIco=p.ico; infoTtl=p.n; infoTxt=p.desc+" Эффект: +"+((BALANCE.perks&&BALANCE.perks.pct)||2)+"% к "+(p.stats||[]).map(s=>s.toUpperCase()).join(", ")+"."; }
@@ -4798,9 +4869,9 @@ function renderCharSheet(){
         ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" style="width:100%;margin-top:8px" onclick="openPerkPick()">ВЫБРАТЬ ПЕРК · ${S.perkPicks}</button>`:""}
       </div>
       <div class="foPanel" style="margin-bottom:6px">
-        <h4>Черты (Traits)</h4>
+        <h4>Черты</h4>
         <div class="foPerkOwned">${traitRows}</div>
-        <div class="sub" style="margin-top:6px;color:#8a7a60">До 2 черт. У каждой есть цена.</div>
+        <div class="sub" style="margin-top:6px;color:#8a7a60">До 2 черт. У каждой есть цена. Сейчас в колоде: ${TRAIT_DEFS.length}.</div>
       </div>
       <div class="foFoot">
         <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Статы</button>
@@ -4816,9 +4887,11 @@ function renderCharSheet(){
     const on=focus.kind==="special"&&focus.id===d.id?" on":"";
     return `<div class="foSpecRow${on}" onclick="charFocus('special','${d.id}')">
       <span class="nm">${d.n}</span>
-      <span class="num">${String(v).padStart(2,"0")}</span>
-      <button type="button" onclick="event.stopPropagation();refundSpecial('${d.id}')" ${canDn?"":"disabled"}>−</button>
-      <button type="button" onclick="event.stopPropagation();spendSpecial('${d.id}')" ${canUp?"":"disabled"}>+</button>
+      <span class="foSpecCtrl">
+        <span class="num">${String(v).padStart(2,"0")}</span>
+        <button type="button" onclick="event.stopPropagation();refundSpecial('${d.id}')" ${canDn?"":"disabled"}>−</button>
+        <button type="button" onclick="event.stopPropagation();spendSpecial('${d.id}')" ${canUp?"":"disabled"}>+</button>
+      </span>
     </div>`;
   }).join("");
 
@@ -4848,7 +4921,7 @@ function renderCharSheet(){
     </div>`;
   }).join("");
 
-  let infoIco="🧔", infoTtl="Дворф", infoTxt="Выбери черту КРАСАВА или навык — здесь будет подсказка, как в Pip-Boy.";
+  let infoIco="🧔", infoTtl="Дворф", infoTxt="Выбери черту КРАСАВА или навык — справа будет подсказка.";
   if(focus.kind==="special"){
     const d=SPECIAL_DEFS.find(x=>x.id===focus.id), info=FO_SPECIAL_INFO[focus.id]||{};
     if(d){ infoIco=info.ico||"🧬"; infoTtl=d.letter+". "+d.n+" · "+specialAttr(d.id);

@@ -611,7 +611,7 @@ S.keys=5; S.chestKeys=0; S.gems=0; S.skillCards={};
 T("нет ключей от ларей — ларь не открыть (ключи ивентов не тратятся)", openSkillChest("wood")===false && S.keys===5);
 T("миграция карт", (function(){ const d={}; ensureCards(d); return !!d.skillCards; })());
 
-console.log("\n[29b] КРАСАВА + тренировка (Fallout 2 vibe)");
+console.log("\n[29b] КРАСАВА + тренировка");
 localStorage.removeItem("oredeep_v3"); load();
 ensureSpecial();
 T("КРАСАВА стартует с 5 по всем чертам", SPECIAL_DEFS.every(d=>specialAttr(d.id)===5));
@@ -643,7 +643,7 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="К.Р.А.С.А.В
   closeCharSheet();
   T("лист персонажа закрывается", $("charModal").style.display!=="flex"); }
 
-console.log("\n[29c] Перки (Fallout 2 PICK A PERK)");
+console.log("\n[29c] Перки");
 localStorage.removeItem("oredeep_v3"); load();
 ensureSpecial();
 T("перки стартуют пустыми", (S.perks||[]).length===0 && (S.perkPicks||0)===0);
@@ -660,6 +660,15 @@ T("перки стартуют пустыми", (S.perks||[]).length===0 && (S.p
   pickTrait("gifted");
   T("черта Одарённый берётся", hasTrait("gifted") && specialAttr("s")>=6);
   T("Одарённый режет очки навыков", specialPtsPerLevel()<p0 || specialPtsPerLevel()<=Math.floor(p0*0.8)+1);
+  closeCharSheet(); }
+T("черт КРАСАВА больше двух", TRAIT_DEFS.length>=10);
+{ S.traits=[]; const t0=stat("atk"), s0=stat("spd");
+  pickTrait("bruiser");
+  T("Силач качает ATK и режет темп", hasTrait("bruiser") && stat("atk")>t0 && stat("spd")<s0);
+  pickTrait("small");
+  T("вторая черта берётся", hasTrait("small") && (S.traits||[]).length===2);
+  T("третью черту взять нельзя", pickTrait("finesse")===false && pickTrait("greed")===false
+    && (S.traits||[]).length===2);
   closeCharSheet(); }
 
 console.log("\n[30] Ключи ларей отделены от ключей ивентов");

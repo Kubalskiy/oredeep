@@ -12,7 +12,8 @@
   --bg:#0e0b07; --panel:#1c150c; --panel2:#241a10; --line:#3a2c1b;
   --gold:#f2d488; --gold2:#c9974a; --text:#f0e6d0; --muted:#a89a7c;
   --ok:#6ea862; --bad:#d4674a; --gem:#c85a6a; --accent:#7a6ec0;
-  --font-d:"VT323",monospace; --font-b:"Space Grotesk",sans-serif;
+  --font-display:"VT323",monospace; --font-body:"Space Grotesk",sans-serif;
+  --font-d:var(--font-display); --font-b:var(--font-body);
 }
 *{box-sizing:border-box;}
 html,body{margin:0;min-height:100%;background:
@@ -43,7 +44,7 @@ h1{font-family:var(--font-d);font-size:42px;letter-spacing:2px;color:var(--gold)
 label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);}
 input,textarea,select{width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);
   background:#120e09;color:var(--text);font:14px var(--font-b);}
-textarea{min-height:280px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;}
+textarea{min-height:280px;font-family:var(--font-body);font-size:13px;}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center;}
 button.btn{appearance:none;border:1px solid var(--gold2);background:linear-gradient(180deg,#4a3418,#2a1c0c);
   color:var(--gold);padding:9px 14px;border-radius:10px;cursor:pointer;font:700 13px var(--font-b);}
