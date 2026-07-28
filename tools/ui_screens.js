@@ -4,11 +4,11 @@
 "use strict";
 
 const UI_MINES=[
-  {id:0,ic:"🪙",n:"Забой новичка",   sub:"🪙 золото · находки", theme:"t0"},
-  {id:1,ic:"💠",n:"Эхо-Дум",         sub:"💠 осколки · дубликаты", theme:"t1"},
-  {id:2,ic:"🍺",n:"Подгорный Огонь", sub:"🍺 пиво · тренировки", theme:"t2"},
-  {id:3,ic:"◎",n:"Хрустальные",      sub:"◎ крутки · колесо", theme:"t3"},
-  {id:4,ic:"🗝",n:"Бездна",          sub:"🗝 ключи · скилл-лари", theme:"t4"}
+  {id:0,ic:"🪙",n:"Забой новичка",   sub:"золото · находки",     theme:"t0", rock:"🪨"},
+  {id:1,ic:"💠",n:"Эхо-Дум",         sub:"осколки · дубликаты", theme:"t1", rock:"⛰️"},
+  {id:2,ic:"🍺",n:"Подгорный Огонь", sub:"пиво · тренировки",   theme:"t2", rock:"🌋"},
+  {id:3,ic:"◎", n:"Хрустальные",     sub:"крутки · колесо",     theme:"t3", rock:"🧊"},
+  {id:4,ic:"🗝",n:"Бездна",          sub:"ключи · скилл-лари",  theme:"t4", rock:"🗿"}
 ];
 
 const UI_ART_COLS=[
@@ -184,6 +184,7 @@ const UIS={
       +'<div class="uiRow"><span>Имя таверны</span><span><input id="uiProfName" class="uiInp" maxlength="18" value="'+esc(playerName())+'">'
       +'<button class="btn btn-soft btn-tiny" onclick="'+setName+'">✓</button></span></div>'
       +'<div class="uiBtnStack">'
+      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Лист · SPECIAL</button>'
       +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Бороды</button>'
       +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Пригласи друзей</button>'
       +'<button onclick="openWall()">🏔 Стена Горы</button></div>';
@@ -197,6 +198,7 @@ const UIS={
     this.$("uiTabs").innerHTML="";
     this.$("uiBody").innerHTML=
       this.row("Музыка",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 вкл":"🔇 выкл")+'</button>')
+      +this.row("Всплывающие окна",'<button id="uiSetToasts" onclick="toggleToasts();UIS.render(\'settings\')">'+(typeof toastToggleLabel==="function"?toastToggleLabel():(toastsOn?"💬 вкл":"🚫 выкл"))+'</button>')
       +this.row("Устав Горы",'<button onclick="showIntro()">📜 читать</button>')
       +this.row("Админка",'<button type="button" onclick="location.href=\'admin.html\'">⛏ открыть</button>')
       +this.row("Честность гачи",'<button onclick="openFairness()">🔐 открыть</button>')
@@ -303,20 +305,87 @@ const UIS={
 
   renderMines(){
     this.$("uiTitle").textContent="Штольни";
-    this.$("uiHeadAct").innerHTML="";
-    this.$("uiTabs").innerHTML="";
     const curAbs=S.mine||0;
     const cur=curAbs%MINES.length;
-    const cycle=Math.floor(curAbs/MINES.length);
-    this.$("uiBody").innerHTML=
-      '<div class="uiSub" style="margin-bottom:8px">Чертоги идут по кругу (5 штолен). Внутри текущего круга можно вернуться в уже пройденные.</div>'
-      +'<div class="uiMineList">'+UI_MINES.map(m=>
-        '<button class="btn btn-mine '+m.theme+(m.id===cur?" sel":"")+'" onclick="'+(m.id<=cur
-          ? ('switchMine('+m.id+');UIS.close();')
-          : ('showToast(\"⛏\",\"Закрыто\",\"\",\"Дойди до этого чертога\",\"в текущем круге: '+(cur+1)+'/5\")'))+'">'
-        +'<span class="uiMineIc">'+m.ic+'</span><b>'+m.n+'</b><span class="uiSub">'+m.sub+'</span>'
-        +(m.id===cur?'<span class="uiTag on">здесь</span>':(m.id<=cur?'<span class="uiTag">доступно</span>':'<span class="uiTag">🔒</span>'))
-        +'</button>').join("")+'</div>';
+    const cycle=Math.floor(curAbs/MINES.length)+1;
+    const stride=BALANCE.venueStride||50;
+    const stage=Math.min(stride, S.stage||1);
+    const stagePct=Math.min(100, Math.round(stage/stride*100));
+    const depth=S.stageIdx||1;
+    const best=S.bestDepth||depth;
+    const colOf=id=>Object.keys((S.col&&S.col[id])||{}).length;
+    const here=MINES[cur]||{};
+    const hereGot=colOf(cur);
+    const hereSet=SET_BONUS[cur];
+    const totalCol=UI_MINES.reduce((a,m)=>a+colOf(m.id),0);
+    const setsDone=UI_MINES.filter(m=>typeof setDone==="function"&&setDone(m.id)).length;
+
+    this.$("uiHeadAct").innerHTML='<span class="uiPill">круг '+cycle+'</span>';
+    this.$("uiTabs").innerHTML="";
+
+    const overview=
+      '<div class="uiMineHero">'
+      +'<div class="uiMineHeroTop">'
+      +'<span class="uiMineHeroRock">'+(UI_MINES[cur]&&UI_MINES[cur].rock||"⛏")+'</span>'
+      +'<div><b>'+esc((UI_MINES[cur]&&UI_MINES[cur].n)||here.n||"Штольня")+'</b>'
+      +'<div class="uiSub">'+(here.n||"")+' · этап '+stage+'/'+stride+'</div></div>'
+      +'<span class="uiTag on">здесь</span></div>'
+      +this.bar(stagePct)
+      +'<div class="uiMineStats">'
+      +'<div><span class="k">Глубина</span><b>'+fmt(depth)+'</b></div>'
+      +'<div><span class="k">Рекорд</span><b>'+fmt(best)+'</b></div>'
+      +'<div><span class="k">Коллекция</span><b>'+hereGot+'/8</b></div>'
+      +'<div><span class="k">Сеты</span><b>'+setsDone+'/5</b></div>'
+      +'</div>'
+      +(hereSet?('<div class="uiSub uiMineSetHint">'+(hereGot>=8?"✓ активен: ":"сет 8/8 → ")+esc(hereSet.label)+'</div>'):"")
+      +'</div>';
+
+    const cards=UI_MINES.map(m=>{
+      const unlocked=m.id<=cur;
+      const hereNow=m.id===cur;
+      const got=colOf(m.id);
+      const done=typeof setDone==="function"&&setDone(m.id);
+      const bonus=SET_BONUS[m.id];
+      const mine=MINES[m.id];
+      const click=unlocked
+        ? ("switchMine("+m.id+");UIS.close();")
+        : ("showToast(\"⛏\",\"Закрыто\",\"\",\"Дойди до этого чертога\",\"сейчас "+(cur+1)+"/5 в круге\")");
+      const badge=hereNow
+        ? '<span class="uiTag on">здесь</span>'
+        : (unlocked?'<span class="uiTag go">войти</span>':'<span class="uiTag">🔒</span>');
+      const colTxt=done?("✓ сет собран"):("камни "+got+"/8");
+      return '<button type="button" class="btn btn-mine uiMineCard '+m.theme
+        +(hereNow?" sel":"")+(unlocked?"":" locked")+'" onclick="'+click+'">'
+        +'<span class="uiMineIc">'+(m.ic||"⛏")+'</span>'
+        +'<div class="uiMineMain">'
+        +'<div class="uiMineTop"><b>'+esc(m.n)+'</b>'+badge+'</div>'
+        +'<div class="uiSub">'+esc(m.sub)+(mine&&mine.rock?(" · "+mine.rock):"")+'</div>'
+        +'<div class="uiMineColRow"><span>'+colTxt+'</span>'
+        +(bonus?'<span class="uiMineBonusShort">'+(done?"✓ ":"")+esc((bonus.label||"").split("—")[0].trim())+'</span>':"")
+        +'</div>'
+        +this.bar(got/8*100, done?"var(--income)":"var(--mc,var(--gold))")
+        +'</div></button>';
+    }).join("");
+
+    const setStrip='<div class="uiMineStrip">'
+      +UI_MINES.map(m=>{
+        const got=colOf(m.id);
+        const done=typeof setDone==="function"&&setDone(m.id);
+        return '<div class="uiMineChip '+m.theme+(done?" done":"")+(m.id===cur?" on":"")+'" title="'+esc(m.n)+'">'
+          +'<span>'+m.ic+'</span><b>'+got+'/8</b></div>';
+      }).join("")
+      +'</div>';
+
+    const foot=
+      '<div class="uiSec">Сводка круга</div>'
+      +setStrip
+      +'<div class="uiSub" style="margin-top:8px">Камней собрано '+totalCol+'/40 · полный сет чертога даёт вечный бонус.</div>'
+      +'<div class="uiSub">Чертоги по кругу (5). Внутри круга можно вернуться в уже открытые.</div>';
+
+    this.$("uiBody").innerHTML=overview
+      +'<div class="uiSec">Выбор штольни</div>'
+      +'<div class="uiMineList">'+cards+'</div>'
+      +foot;
   },
 
   renderPvp(){
@@ -563,12 +632,18 @@ function uiWire(){
   if($("navTavBtn")) $("navTavBtn").onclick=()=>UIS.open("tavern","ale");
   if($("navPvp")) $("navPvp").onclick=()=>UIS.open("pvp");
   if($("navShop")) $("navShop").onclick=()=>UIS.open("shop","offers");
-  if($("navSkills")) $("navSkills").onclick=()=>openSkills();
+  if($("navSkills")) $("navSkills").onclick=()=>openCharSheet();
   if($("navMines")) $("navMines").onclick=()=>UIS.open("mines");
   const ml=$("mineLabel");
   if(ml){ ml.style.cursor="pointer"; ml.title="Штольни"; ml.onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); UIS.open("mines"); }; }
   const sm=$("statMine");
   if(sm){ sm.style.cursor="pointer"; sm.onclick=()=>UIS.open("mines"); }
+  const rank=$("statMinerCell")||$("statMiner");
+  if(rank){
+    rank.style.cursor="pointer";
+    rank.title="Бороды · звание";
+    rank.onclick=()=>UIS.open("beards","rank");
+  }
 }
 function uiWrap(name){
   const prev=globalThis[name];

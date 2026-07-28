@@ -100,8 +100,10 @@ button:disabled{opacity:.45;cursor:default;}
 }
 #statusBar .cell{
   background:var(--bgPanel);border:1px solid var(--border);border-radius:var(--r-sm);
-  padding:7px 6px;text-align:center;
+  padding:7px 6px;text-align:center;color:inherit;font:inherit;width:100%;
 }
+#statusBar button.cell{cursor:pointer;-webkit-tap-highlight-color:transparent;}
+#statusBar button.cell:active{transform:scale(.98);border-color:var(--goldMuted);}
 #statusBar .k{font-size:10px;letter-spacing:1px;color:var(--textMuted);font-family:var(--font-display);}
 #statusBar .v{font-family:var(--font-display);font-size:16px;color:var(--textPrimary);margin-top:2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -325,13 +327,29 @@ button:disabled{opacity:.45;cursor:default;}
 #rock.boss #rockImg{transform:scale(1.13);transform-origin:bottom center;}
 #rock.hitfx{animation:shake .12s;}
 @keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
-#bubble{
-  display:none;margin:6px 10px 0;padding:7px 12px;border-radius:8px;background:#0d1018f2;
-  border:1px solid var(--goldMuted);font-size:11px;line-height:1.35;color:var(--textBody);
-  text-align:center;box-shadow:0 4px 12px #000a;flex:none;
+#bubble{display:none!important;} /* заменено на #feedPanel */
+#feedPanel{
+  flex:none;margin:6px 10px 8px;display:flex;flex-direction:column;gap:4px;
+  max-height:102px;overflow:hidden;pointer-events:none;
 }
-#bubble.show{display:block;}
-#bubble b{color:var(--gold);}
+#feedLines{display:flex;flex-direction:column;gap:4px;}
+.feedLine{
+  padding:7px 14px;border-radius:999px;background:#0a0c10;
+  border:1px solid var(--goldMuted);font-size:11px;line-height:1.35;
+  color:var(--textBody);text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  box-shadow:0 2px 8px #0008;
+}
+.feedLine b{color:var(--gold);font-weight:700;margin-right:4px;}
+.feedLine.quip{border-color:#8a7040;}
+.feedLine.loot{border-color:#6a8a50;}
+.feedLine.buy{border-color:#6a7ab0;}
+.feedLine.up{border-color:#c9974a;}
+.feedLine.hot{border-color:var(--gold);background:#141008;}
+#feedEmpty{
+  padding:7px 14px;border-radius:999px;background:#0a0c10;
+  border:1px dashed #5a4830;font-size:11px;color:var(--textMuted);text-align:center;
+}
 #setAura,#setRing,#prestigeMark,#paperdoll{position:absolute;pointer-events:none;}
 #paperdoll{inset:0;z-index:7;display:none;}
 #paperdoll.on{display:block;pointer-events:auto;}
@@ -351,14 +369,32 @@ button:disabled{opacity:.45;cursor:default;}
 .pulse{animation:pulseBtn 1.1s ease-in-out infinite;}
 @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #f2d48888}50%{box-shadow:0 0 0 6px #f2d48800}}
 
-/* E. Статы */
+/* E. Статы — кликабельная полоска апгрейдов (нижняя сетка скрыта) */
 #statStrip{
-  display:grid;grid-template-columns:repeat(8,1fr);gap:2px;
-  padding:6px 4px;background:#100c08;border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:5px;
+  padding:6px 8px 8px;background:#100c08;border-bottom:1px solid var(--border);
 }
-#statStrip .pw{text-align:center;padding:4px 0;}
-#statStrip .pwk{display:block;font-family:var(--font-display);font-size:12px;color:var(--textMuted);}
-#statStrip b{font-family:var(--font-display);font-size:16px;color:var(--textPrimary);}
+#statStrip .u{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;padding:6px 4px 5px;min-height:70px;cursor:pointer;user-select:none;
+  background:var(--bgPanel);border:2px solid var(--border);border-radius:var(--r-sm);
+  text-align:center;font-family:var(--font-display);color:var(--textPrimary);
+  -webkit-tap-highlight-color:transparent;
+}
+#statStrip .u:active{transform:scale(.97);}
+#statStrip .u.can{border-color:var(--goldMuted);box-shadow:inset 0 0 0 1px rgba(201,151,74,.28);}
+#statStrip .u.maxed{opacity:.7;}
+#statStrip .u .k{font-size:11px;color:var(--textMuted);letter-spacing:.4px;line-height:1.1;}
+#statStrip .u .lv{font-size:10px;color:var(--textMuted);opacity:.9;line-height:1.1;}
+#statStrip .u .v{font-size:15px;color:var(--textPrimary);line-height:1.15;margin:1px 0;}
+#statStrip .u .c{font-size:11px;color:var(--goldMuted);line-height:1.1;}
+#statStrip .u button{
+  position:absolute;right:3px;bottom:3px;width:22px;height:22px;padding:0;margin:0;
+  min-height:0;border-radius:5px;background:var(--bgPanelAlt);border:1px solid var(--borderLight);
+  color:var(--gold);font-family:var(--font-display);font-size:14px;line-height:1;pointer-events:none;
+}
+#statStrip .u.can button{background:linear-gradient(180deg,#2f6b39,#25522d);border-color:#3a8a45;color:#fff;}
+#statStrip .pw{display:none;}
 
 /* F. Экипировка */
 #gearSection{padding:10px 10px 0;}
@@ -409,6 +445,9 @@ button:disabled{opacity:.45;cursor:default;}
   background:var(--income);color:#fff;font-size:12px;line-height:18px;text-align:center;
   display:none;font-family:var(--font-display);pointer-events:none;
 }
+#powerUp.skipOffer #bagUpDot{background:var(--gem);font-size:10px;}
+#powerUp.busyBag{border-color:var(--goldMuted);}
+#powerUp.busyBag b{color:#ffe09a;}
 #auto{
   min-height:72px;border-radius:var(--r-md);background:var(--bgPanelAlt);
   border:2px solid var(--borderLight);font-family:var(--font-display);
@@ -416,17 +455,7 @@ button:disabled{opacity:.45;cursor:default;}
 }
 #auto.on{border-color:var(--income);color:var(--income);}
 
-#upgrades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 10px 16px;}
-#upgrades .u{
-  background:var(--bgPanel);border:2px solid var(--border);border-radius:var(--r-sm);
-  padding:8px 4px;text-align:center;font-family:var(--font-display);
-}
-#upgrades .u .k{font-size:12px;color:var(--textMuted);}
-#upgrades .u .lv{font-size:11px;color:var(--textMuted);opacity:.85;margin-top:1px;}
-#upgrades .u .v{font-size:18px;color:var(--gold);margin:2px 0;}
-#upgrades .u .c{font-size:13px;color:var(--goldMuted);margin-bottom:4px;}
-#upgrades .u button{width:100%;min-height:32px;background:var(--bgPanelAlt);
-  border:1px solid var(--borderLight);border-radius:6px;color:var(--gold);font-family:var(--font-display);}
+#upgrades{display:none!important;} /* дубль полоски — качаем в #statStrip */
 /* Кнопки: единая схема .btn + роль (.btn-soft|hard|danger|nav|side|back|boost|tab) + модификаторы (.btn-wide|tiny) */
 .btn{font-family:inherit;border:0;cursor:pointer;color:inherit;}
 .btn-soft,button.buy{background:linear-gradient(180deg,#2f6b39,#25522d);color:#fff;border-radius:var(--r-sm);padding:9px 6px;font-weight:700;}
@@ -464,7 +493,7 @@ button:disabled{opacity:.45;cursor:default;}
   bottom:var(--bottom-nav-h);
 }
 #uiScreen.open{display:flex !important;pointer-events:auto;}
-#app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble{visibility:hidden;}
+#app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble,#app.uiOpen #feedPanel{visibility:hidden;}
 .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bgPanel);border-bottom:2px solid var(--border);flex:none;}
 .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--border);background:var(--bgPanelAlt);color:var(--gold);font-size:16px;}
 .uiTitle{flex:1;font-family:var(--font-display);font-size:20px;color:var(--gold);}
@@ -499,11 +528,45 @@ button:disabled{opacity:.45;cursor:default;}
 .uiOpp.fav{border-color:var(--income);}
 .uiTag{font-size:10px;padding:2px 6px;border:1px solid var(--border);color:var(--textMuted);border-radius:8px;}
 .uiTag.on{color:var(--income);border-color:var(--income);}
-.uiMineList{display:flex;flex-direction:column;gap:8px;}
-.uiMineCard{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bgPanelAlt);border:2px solid var(--border);text-align:left;color:var(--textPrimary);border-radius:var(--r-sm);}
-.uiMineCard.sel{border-color:var(--gold);}
-.uiMineIc{font-size:26px;}
-.uiMineCard b{font-size:14px;display:block;color:var(--gold);}
+.uiMineList{display:flex;flex-direction:column;gap:6px;}
+.uiMineCard,button.btn-mine.uiMineCard{
+  display:grid;grid-template-columns:40px 1fr;gap:8px 10px;align-items:center;
+  width:100%;padding:10px;background:var(--bgPanelAlt);border:2px solid var(--border);
+  text-align:left;color:var(--textPrimary);border-radius:var(--r-sm);cursor:pointer;
+}
+.uiMineCard.sel{border-color:var(--gold);box-shadow:inset 0 0 0 1px rgba(242,212,136,.25);}
+.uiMineCard.locked{opacity:.55;}
+.uiMineCard.t0{--mc:#e8b93c}.uiMineCard.t1{--mc:#5aa7e8}.uiMineCard.t2{--mc:#ff8a4a}
+.uiMineCard.t3{--mc:#7ae8dc}.uiMineCard.t4{--mc:#b97ae8}
+.uiMineIc{font-size:26px;line-height:1;filter:drop-shadow(0 0 6px var(--mc,#888));}
+.uiMineMain{min-width:0;display:flex;flex-direction:column;gap:3px;}
+.uiMineTop{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.uiMineCard b{font-size:14px;color:var(--mc,var(--gold));font-family:var(--font-display);}
+.uiMineColRow{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--textMuted);}
+.uiMineBonusShort{color:var(--mc,var(--goldMuted));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%;}
+.uiMineHero{
+  background:var(--bgPanelAlt);border:2px solid var(--gold);border-radius:var(--r-sm);
+  padding:10px;margin-bottom:10px;
+}
+.uiMineHeroTop{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.uiMineHeroRock{font-size:28px;line-height:1;}
+.uiMineHero b{font-size:15px;color:var(--gold);display:block;}
+.uiMineStats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;text-align:center;
+}
+.uiMineStats .k{display:block;font-size:10px;color:var(--textMuted);}
+.uiMineStats b{font-size:13px;color:var(--textPrimary);font-family:var(--font-display);}
+.uiMineSetHint{margin-top:6px;color:var(--goldMuted);}
+.uiMineStrip{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.uiMineChip{
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;
+  background:var(--bgPanelAlt);border:2px solid var(--border);border-radius:var(--r-sm);font-size:11px;
+}
+.uiMineChip.on{border-color:var(--gold);}
+.uiMineChip.done{border-color:var(--income);}
+.uiMineChip b{font-family:var(--font-display);color:var(--textPrimary);}
+.uiTag.go{color:var(--gold);border-color:var(--goldMuted);}
+
 .uiTavExt{position:relative;height:100px;background:linear-gradient(180deg,#2a1f14,#12151d);border:2px solid #5d4326;border-radius:var(--r-sm);margin-bottom:10px;}
 .uiTavRoof{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:32px;}
 .uiTavSign{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:14px;color:var(--gold);}
@@ -516,6 +579,107 @@ button:disabled{opacity:.45;cursor:default;}
 .uiGachaEgg{font-size:56px;animation:bob 2s ease-in-out infinite;}
 .dot{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--danger);display:none;}
 .dot.on{display:block;}
+
+/* --- Лист персонажа (Fallout 2 layout) --- */
+#charModal{z-index:280;align-items:stretch;padding:0;background:#000c;}
+#charModal .foSheetBox{
+  width:100%;max-width:480px;height:100%;max-height:100%;margin:0 auto;
+  border-radius:0;border:none;background:#1a1510;padding:0;display:flex;flex-direction:column;
+  overflow:hidden;
+}
+#charSheet{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 8px 12px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#d8c49a;}
+.foHead{display:grid;grid-template-columns:1.4fr .7fr .7fr .9fr;gap:4px;margin-bottom:6px;}
+.foCell{background:#0e0b08;border:2px solid #5a4830;border-radius:4px;padding:5px 7px;min-height:36px;}
+.foCell .k{display:block;font-size:9px;letter-spacing:1px;color:#c9974a;text-transform:uppercase;}
+.foCell .v{display:block;font-size:13px;color:#f2d488;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.foGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+.foPanel{background:#120e0a;border:2px solid #6a5438;border-radius:6px;padding:6px;position:relative;}
+.foPanel h4{margin:0 0 6px;font-size:11px;letter-spacing:1.5px;color:#f2d488;text-transform:uppercase;
+  border-bottom:1px solid #3a2e1c;padding-bottom:4px;}
+.foSpecRow{display:grid;grid-template-columns:28px 1fr 28px 36px 22px 22px;align-items:center;gap:3px;
+  padding:3px 0;border-bottom:1px solid #2a2118;font-size:11px;}
+.foSpecRow:last-child{border-bottom:none;}
+.foSpecRow .let{color:#f2d488;font-weight:800;}
+.foSpecRow .nm{color:#cbb89a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.foSpecRow .grade{color:#8fce6a;font-size:9px;text-align:center;}
+.foSpecRow .num{color:#8fce6a;font-weight:800;text-align:center;font-size:13px;}
+.foSpecRow button{width:22px;height:22px;padding:0;margin:0;border-radius:3px;font-size:14px;line-height:1;
+  background:#2a2118;border:1px solid #c9974a;color:#f2d488;}
+.foSpecRow button:disabled{opacity:.3;border-color:#5a4830;}
+.foSpecRow.on{background:#241a10;}
+.foPoints{margin-top:6px;padding:5px 6px;background:#0e0b08;border:1px solid #c9974a;border-radius:4px;
+  display:flex;justify-content:space-between;font-size:11px;color:#f2d488;}
+.foDer{font-size:11px;}
+.foDer .row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #2a2118;gap:6px;}
+.foDer .row span:first-child{color:#cbb89a;}
+.foDer .row span:last-child{color:#8fce6a;font-weight:700;}
+.foAvatar{text-align:center;padding:6px 0 4px;}
+.foAvatar .art{font-size:42px;line-height:1;filter:drop-shadow(0 2px 0 #000);}
+.foAvatar .sub{font-size:10px;color:#c9974a;margin-top:4px;}
+.foSkillRow{display:grid;grid-template-columns:18px 1fr auto auto;align-items:center;gap:4px;
+  padding:3px 0;border-bottom:1px solid #2a2118;font-size:11px;}
+.foSkillRow.on{background:#241a10;}
+.foSkillRow .tag{width:14px;height:14px;border-radius:50%;border:2px solid #8a3030;background:#1a1010;padding:0;margin:0;}
+.foSkillRow .tag.on{background:#e05050;box-shadow:0 0 6px #e0505088;}
+.foSkillRow .sn{color:#cbb89a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.foSkillRow .pct{color:#8fce6a;font-weight:800;min-width:36px;text-align:right;}
+.foSkillRow .trn{color:#c9974a;font-size:10px;min-width:28px;text-align:right;}
+.foTagBar{margin-top:6px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#f2d488;
+  padding:5px 6px;background:#0e0b08;border:1px solid #5a4830;border-radius:4px;}
+.foInfo{display:grid;grid-template-columns:72px 1fr;gap:8px;background:#2a2418;border:2px solid #8a7040;
+  border-radius:6px;padding:8px;margin:6px 0;min-height:88px;}
+.foInfo .ico{font-size:40px;text-align:center;line-height:72px;background:#1a1510;border:1px solid #5a4830;border-radius:4px;}
+.foInfo .ttl{font-size:13px;color:#f2d488;font-weight:800;margin-bottom:4px;}
+.foInfo .txt{font-size:11px;color:#d8c49a;line-height:1.45;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;}
+.foFoot{display:flex;gap:6px;margin-top:4px;position:sticky;bottom:0;background:linear-gradient(180deg,transparent,#1a1510 30%);
+  padding-top:10px;}
+.foFoot button{flex:1;min-height:44px;border-radius:8px;font-family:var(--font-display);font-size:14px;}
+.foTabs{display:flex;gap:4px;margin-bottom:6px;}
+.foTabs button{flex:1;min-height:36px;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  background:#1a1510;border:2px solid #5a4830;color:#cbb89a;border-radius:4px 4px 0 0;font-family:ui-monospace,Menlo,monospace;}
+.foTabs button.on{background:#2a2118;border-color:#c9974a;color:#f2d488;}
+.foPerkOwned{font-size:11px;}
+.foPerkOwned .row{display:flex;gap:8px;align-items:center;padding:5px 4px;border-bottom:1px solid #2a2118;cursor:pointer;}
+.foPerkOwned .row.on{background:#241a10;}
+.foPerkOwned .row .ic{font-size:20px;width:28px;text-align:center;}
+.foPerkOwned .row .nm{color:#8fce6a;font-weight:700;}
+.foPerkOwned .empty{color:#8a7a60;padding:10px 4px;font-size:11px;}
+
+/* --- Выбор перка (Fallout 2 PICK A PERK) --- */
+#perkModal{z-index:290;align-items:center;padding:10px;background:#000c;}
+#perkModal .foPerkBox{
+  width:100%;max-width:440px;max-height:92%;margin:0 auto;padding:0;overflow:hidden;
+  background:#1a1510;border:3px solid #6a5438;border-radius:6px;
+  display:flex;flex-direction:column;
+  box-shadow:inset 0 0 0 1px #3a2e1c, 0 8px 28px #000a;
+}
+.foPerkTitle{padding:10px 12px 8px;text-align:center;font-family:var(--font-display);
+  font-size:16px;letter-spacing:2px;color:#f2d488;border-bottom:2px solid #5a4830;
+  background:linear-gradient(180deg,#2a2118,#1a1510);}
+.foPerkBody{display:grid;grid-template-columns:1fr 1.15fr;gap:0;min-height:280px;flex:1;overflow:hidden;}
+.foPerkList{overflow:auto;-webkit-overflow-scrolling:touch;background:#0e0b08;border-right:2px solid #5a4830;
+  font-family:ui-monospace,Menlo,monospace;}
+.foPerkItem{padding:8px 10px;font-size:12px;color:#8fce6a;border-bottom:1px solid #2a2118;cursor:pointer;
+  line-height:1.3;}
+.foPerkItem:hover{background:#1a1510;}
+.foPerkItem.on{background:#243018;color:#b8f090;box-shadow:inset 3px 0 0 #8fce6a;}
+.foPerkItem.have{opacity:.45;text-decoration:line-through;}
+.foPerkDetail{background:#2a2418;padding:12px;overflow:auto;display:flex;flex-direction:column;gap:10px;
+  border-left:1px solid #8a7040;}
+.foPerkDetail .pt{font-size:15px;font-weight:800;color:#1a1510;background:#d4c49a;padding:4px 8px;
+  border:1px solid #8a7040;font-family:var(--font-display);letter-spacing:1px;}
+.foPerkDetail .pd{font-size:12px;color:#2a2118;line-height:1.5;background:#d8cba8;padding:8px;
+  border:1px solid #8a7040;flex:1;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;}
+.foPerkDetail .pi{font-size:56px;text-align:center;line-height:1.1;padding:8px;background:#1a1510;
+  border:2px solid #5a4830;border-radius:4px;filter:grayscale(.2);}
+.foPerkDetail .pe{font-size:11px;color:#5a4030;font-family:ui-monospace,Menlo,monospace;}
+.foPerkFoot{display:flex;gap:8px;padding:10px;border-top:2px solid #5a4830;background:#1a1510;}
+.foPerkFoot button{flex:1;min-height:46px;font-family:var(--font-display);font-size:14px;letter-spacing:1px;
+  position:relative;padding-left:28px;}
+.foPerkFoot button::before{content:"";position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  width:12px;height:12px;border-radius:50%;background:#8a2020;box-shadow:inset 0 1px 0 #c04040,0 0 0 2px #3a1010;}
+.foPerkFoot .btn-hard::before{background:#c03030;box-shadow:inset 0 1px 0 #f06060,0 0 0 2px #3a1010,0 0 8px #c0303088;}
 
 /* Модалки внутри #app — absolute, лист над футером */
 #app > .modal{
@@ -815,7 +979,7 @@ body > .modal{
   }
   #app.uiOpen #uiScreen{ bottom:var(--bottom-nav-h); }
   #uiScreen.open{display:flex !important;pointer-events:auto;}
-  #app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble{visibility:hidden;}
+  #app.uiOpen #hud,#app.uiOpen #statusBar,#app.uiOpen #bubble,#app.uiOpen #feedPanel{visibility:hidden;}
   .uiHead{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--panel);border-bottom:2px solid var(--line);flex:none;}
   .btn-back{width:36px;height:36px;padding:0;border:2px solid var(--line);background:#12151d;color:var(--gold);font-size:16px;flex:none;}
   .uiTitle{flex:1;font-size:10px;color:var(--gold);line-height:1.4;}
@@ -858,12 +1022,35 @@ body > .modal{
   .uiOpp.fav{border-color:var(--green);}
   .uiTag{font-size:6px;padding:2px 6px;border:1px solid var(--line);color:var(--dim);border-radius:8px;}
   .uiTag.on{color:var(--green);border-color:var(--green);}
-  .uiMineList{display:flex;flex-direction:column;gap:8px;}
-  .uiMineCard{display:flex;align-items:center;gap:10px;padding:12px;background:var(--panel2);border:2px solid var(--line);text-align:left;color:var(--txt);border-radius:4px;}
+  .uiMineList{display:flex;flex-direction:column;gap:6px;}
+  .uiMineCard,button.btn-mine.uiMineCard{
+    display:grid;grid-template-columns:36px 1fr;gap:6px 8px;align-items:center;
+    width:100%;padding:8px;background:var(--panel2);border:2px solid var(--line);
+    text-align:left;color:var(--txt);border-radius:4px;
+  }
   .uiMineCard.sel{border-color:var(--gold);box-shadow:0 0 0 1px #e8b93c44;}
-  .uiMineCard.t0{--mc:#e8b93c}.uiMineCard.t1{--mc:#5aa7e8}.uiMineCard.t2{--mc:#ff8a4a}.uiMineCard.t3{--mc:#7ae8dc}.uiMineCard.t4{--mc:#b97ae8}
-  .uiMineIc{font-size:26px;flex:none;filter:drop-shadow(0 0 6px var(--mc,#888));}
+  .uiMineCard.locked{opacity:.55;}
+  .uiMineCard.t0{--mc:#e8b93c}.uiMineCard.t1{--mc:#5aa7e8}.uiMineCard.t2{--mc:#ff8a4a}
+  .uiMineCard.t3{--mc:#7ae8dc}.uiMineCard.t4{--mc:#b97ae8}
+  .uiMineIc{font-size:22px;flex:none;filter:drop-shadow(0 0 6px var(--mc,#888));}
+  .uiMineMain{min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .uiMineTop{display:flex;align-items:center;justify-content:space-between;gap:6px;}
   .uiMineCard b{font-size:9px;display:block;color:var(--mc,var(--gold));}
+  .uiMineColRow{display:flex;justify-content:space-between;gap:6px;font-size:7px;color:var(--dim);}
+  .uiMineBonusShort{color:var(--mc,var(--gold));max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .uiMineHero{background:var(--panel2);border:2px solid var(--gold);border-radius:4px;padding:8px;margin-bottom:8px;}
+  .uiMineHeroTop{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .uiMineHeroRock{font-size:22px;}
+  .uiMineHero b{font-size:9px;color:var(--gold);display:block;}
+  .uiMineStats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px;text-align:center;}
+  .uiMineStats .k{display:block;font-size:6px;color:var(--dim);}
+  .uiMineStats b{font-size:8px;color:var(--txt);}
+  .uiMineSetHint{margin-top:4px;font-size:7px;color:var(--gold);}
+  .uiMineStrip{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;}
+  .uiMineChip{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;background:var(--panel2);border:1px solid var(--line);border-radius:4px;font-size:7px;}
+  .uiMineChip.on{border-color:var(--gold);}
+  .uiMineChip.done{border-color:var(--green,#6ea862);}
+  .uiTag.go{color:var(--gold);border-color:var(--gold);}
   .uiTavExt{position:relative;height:100px;background:linear-gradient(180deg,#2a1f14,#12151d);border:2px solid #5d4326;border-radius:4px;margin-bottom:10px;overflow:hidden;}
   .uiTavRoof{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:32px;}
   .uiTavSign{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--gold);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;}
@@ -896,12 +1083,18 @@ body > .modal{
 
   <!-- B. Статус -->
   <div id="statusBar">
-    <div class="cell"><div class="k">РАНГ</div><div class="v" id="statMiner" title="Звание по бороде">—</div></div>
+    <button type="button" class="cell" id="statMinerCell" title="Бороды · звание">
+      <div class="k">РАНГ</div><div class="v" id="statMiner">—</div>
+    </button>
     <div class="cell"><div class="k">ШТОЛЬНЯ</div><div class="v" id="statMine">1-1</div></div>
     <div class="cell"><div class="k">ДОБЫЧА</div><div class="v" id="statLoot">—</div></div>
   </div>
 
-  <div id="bubble" class="bubble" aria-live="polite"></div>
+  <div id="bubble" class="bubble" aria-hidden="true"></div>
+  <section id="feedPanel" aria-live="polite" aria-label="Лента событий">
+    <div id="feedEmpty">Борин: копай — здесь появятся добыча, покупки и прокачка</div>
+    <div id="feedLines"></div>
+  </section>
 
   <div id="view">
     <!-- D. Сцена + C. боковое меню -->
@@ -1218,17 +1411,8 @@ body > .modal{
       <div class="rockname">жила: <b id="rockName">Валун</b></div>
     </div>
 
-    <!-- E. Характеристики -->
-    <div id="statStrip">
-      <div class="pw"><span class="pwk">ATK</span><b id="pAtk">—</b></div>
-      <div class="pw"><span class="pwk">DEF</span><b id="pDef">—</b></div>
-      <div class="pw"><span class="pwk">СИЛ</span><b id="pStr">—</b></div>
-      <div class="pw"><span class="pwk">КРИТ</span><b id="pCrit">—</b></div>
-      <div class="pw"><span class="pwk">СМБ</span><b id="pCmb">—</b></div>
-      <div class="pw"><span class="pwk">УДАЧА</span><b id="pLck">—</b></div>
-      <div class="pw"><span class="pwk">СКОР</span><b id="pSpd">—</b></div>
-      <div class="pw"><span class="pwk">КРЕПЬ</span><b id="pTou">—</b></div>
-    </div>
+    <!-- E. Характеристики = кликабельные апгрейды (нижняя сетка скрыта) -->
+    <div id="statStrip"></div>
 
     <!-- F. Экипировка -->
     <div id="gearSection">
@@ -1238,9 +1422,9 @@ body > .modal{
     <!-- G. Действия -->
     <div id="actionBar">
       <button type="button" id="lootChest" title="Тап — вытянуть · надеть/продать">📦<span id="bagBadge2"></span></button>
-      <button type="button" id="powerUp" title="Тап — шансы и апгрейд">
+      <button type="button" id="powerUp" title="Тап — апгрейд сумки">
         <b id="bagAreaLvl">СУМКА УР 1</b>
-        <span id="bagAreaTimer">тап — шансы</span>
+        <span id="bagAreaTimer">—</span>
         <i id="bagUpDot" aria-hidden="true">↑</i>
       </button>
       <button type="button" id="auto" title="Тап — вкл/выкл · удержи — порог">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
@@ -1324,6 +1508,7 @@ body > .modal{
     <div class="box">
       <h3>⚙ Настройки</h3>
       <div class="metarow"><span>Музыка</span><button id="setMusic">🔊 вкл</button></div>
+      <div class="metarow"><span>Всплывающие окна</span><button id="setToasts" type="button" onclick="toggleToasts()">💬 вкл</button></div>
       <div class="metarow"><span>Устав Горы</span><button onclick="showIntro()">📜 читать</button></div>
       <div class="metarow"><span>Админка</span><button type="button" onclick="location.href='admin.html'">⛏ открыть</button></div>
       <div class="metarow"><span>Честность гачи</span><button onclick="openFairness()">🔐 открыть</button></div>
@@ -1364,6 +1549,28 @@ body > .modal{
       <div class="sub" id="metaSub"></div>
       <div id="metaBody"></div>
       <button style="margin-top:12px" onclick="document.getElementById('metaModal').style.display='none'">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Лист персонажа в духе Fallout 2 -->
+  <div class="modal" id="charModal">
+    <div class="box foSheetBox">
+      <div id="charSheet"></div>
+    </div>
+  </div>
+
+  <!-- Выбор перка (Fallout 2 PICK A PERK) -->
+  <div class="modal" id="perkModal">
+    <div class="box foPerkBox">
+      <div class="foPerkTitle">ВЫБЕРИ ПЕРК</div>
+      <div class="foPerkBody">
+        <div class="foPerkList" id="perkList"></div>
+        <div class="foPerkDetail" id="perkDetail"></div>
+      </div>
+      <div class="foPerkFoot">
+        <button type="button" class="btn btn-hard" id="perkDoneBtn" onclick="confirmPerkPick()">ГОТОВО</button>
+        <button type="button" class="btn btn-soft" onclick="cancelPerkPick()">ОТМЕНА</button>
+      </div>
     </div>
   </div>
 
@@ -1501,6 +1708,15 @@ const BALANCE = {
      чтобы не ронять кадр. */
   bags:{ perVein:1, perBoss:3, autoSec:2, cap:9999, maxPerTick:400,
     upgradeSec:45, skipGems:5 },   /* док §Экипировка: апгрейд сумки за софт + время */
+  /* SPECIAL в духе Fallout 2: 7 черт + очки навыков за «уровень шахтёра».
+     Не ломает треадмилл: % от черт капнут, тренировка слабее карточных уровней. */
+  special:{
+    start:5, pool:5, attrMax:10, attrPct:1.2, attrPctCap:12,
+    veinsPerLv:35, maxLv:40, ptsBase:5, ptsPerInt:1,
+    tagSlots:3, tagCost:1, untagCost:2, trainMult:0.5, trainCap:15
+  },
+  /* Перки как в Fallout 2: выбор каждые N уровней шахтёра. % маленькие + кап — треадмилл цел. */
+  perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:10 },
   /* Яйца и расчёски — отдельные ресурсы гачи (док §Питомцы, §Девушки → адаптация) */
   gacha:{ eggDropPct:4, combDropPct:4, eggBossPct:12, combBossPct:12,
     eggDailyReward:3, combDailyReward:2 },
@@ -1910,7 +2126,12 @@ function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
   if(beardLevel()>before){ const w=beardWisdom();
     showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK",true);
     sayQuip("Борода стала гуще и седее. Клан кланяется.",4);
-    Platform.logEvent("beard_rank",{lv:w.lv}); } }
+    Platform.logEvent("beard_rank",{lv:w.lv});
+    /* ранг бороды ≈ level-up: +1 очко SPECIAL (как перк/атрибут в FO) */
+    ensureSpecial();
+    if((S.specialPool||0)<99){ S.specialPool=(S.specialPool||0)+1;
+      showToast("🧬","Черта гнома","","+1 очко SPECIAL","распредели в Навыках",true); }
+  } }
 const MUG_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAlklEQVR4nGNkQAIiYjL/GbCAN6+eMMLYjMiKH9w8hk09g4K6FVwTE1YVeAALzHRvTQ6G7AAnBm0FEcIakIGdxnMU/qEbknAnv3n1hBFDAzq4+uANg7cmBwMDAwPDVgaZ/0T5AdmZGDbAnIAAb1B4JIcSURquPkDYQtDT2goiDF3bnzAwMEBinGgnkR3TKGmJkOkMDAwMAC1BK8eiEIVdAAAAAElFTkSuQmCC";
 const EQ={helm:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYFi0ZDmGXFxMJAMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/6oZ2og1rbajE6Su6+QinRbAEQCrApQ+rN0XEZP4HBIeRYw8DAwMDw4a1qzCCEGcckesjBgbCSX0UjIJRMApGwSgYBaNg5AAA0+gilt+FcIcAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAgklEQVR4nGNkIAKIiMn8Z2BgYGg+1YAhV2sGEXvz6gkjPjPwSsIswWYBNgvxWcZE0AQqAbw+EhGT+e+9y4dow7a6bcHpK7r5CKdFsARAKsClD6s3RcRk/utV65BjDwMDAwPDpdYrGEGIM47I9REDA+GkPgpGwSgYBaNgFIyCUTByAAC8DCKWRuwWgQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYKhffwVDrjFQh4GBgYHhzasnjPjMwCsJswSbBdgsxGcZE0ETqATw+khETOa/28QzRBu2K98Ep6/o5iOcFsESAKkAlz6s3hQRk/mvHddGjj0MDAwMDFcXVWEEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEA41QillL+UEcAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYNg76QqGnHOeDgMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/pSlniDYseo4JTl/RzUc4LYIlAFIBLn1YvSkiJvM/176NHHsYGBgYGCYfrMIIQpxxRK6PGBgIJ/VRMApGwSgYBaNgFIyCkQMA+1gilhY0scgAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYLgzqQdDTiWvhIGBgYHhzasnjPjMwCsJswSbBdgsxGcZE0ETqATw+khETOb/lZQ4og3TmbMIp6/o5iOcFsESAKkAlz6s3hQRk/nfZ29Jjj0MDAwMDEUHj2MEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEA3TwilhCvh1IAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYLizOwVDTsV1DgMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/K4sViDZMJ/YBTl/RzUc4LYIlAFIBLn1YvSkiJvO/L5uPHHsYGBgYGIqmfsIIQpxxRK6PGBgIJ/VRMApGwSgYBaNgFIyCkQMA3dwilhE4rsAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhklEQVR4nGNkIAKIiMn8Z2BgYJhy6wyGXI6aCQMDAwPDm1dPGPGZgVcSZgk2C7BZiM8yJoImUAng9ZGImMz/tEsHiDZslp4DTl/RzUc4LYIlAFIBLn1YvSkiJvPfsaeOHHsYGBgYGPaXNGEEIc44ItdHDAyEk/ooGAWjYBSMglEwCkbByAEADE8iljHn+CAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhElEQVR4nO2SqxGAMBAFF2oIUZEUQhd4uqACusDTBYUgUUAPQaHIjwyD4dbe5O283BUkoLSxAPvU32ZVOwBwbGsRyggOL4lL4BKGZGU04SWCjZQ2dh+a5LCqn72tPmvkFV0H8BTfO2dNpY0d2zrHA0A3Lbcv9O4otxHET10QBEEQBOE/nOqoIpYZ3VCvAAAAAElFTkSuQmCC"],robe:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusEBwWE4DdmwdhVBi7FaJCIm83/RkuWEHIkTxMVEYljGRLZpJAK6WcSCS+LmnQdUtWgEBd3+PdtwatrYysrgX/2bOhaJiUvi1JQ6iYFBTJwke4ZhHBFdBJECiCn7RsEIBgAqnB9NtFTJoQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAiklEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiaw0KswXrVOjgNudTKgKIWm8VYXSIiJvO/+VQDIUfiBLVmDRiWMZFtGomAbhbhjKMTH85Q1aIRFHRXF13Eqel0qiqD6ezb1LGIT54fpybnXa/wyjMwPMYQGX5xhLOMwle2EQLElH2jYAQDAKHyIVlw380vAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusHacW04Dbm6qIqgxVgtEhGT+V+//gohR+IEjYE6GJYxkW0aiYBuFrHgkjj+6AdVLRpBQXd9y3Scms7V3GcwalGkjkV8kso4NTnMVWbgkyTJnmEYR0QXQaQAYsq+UTCCAQBQ/B9RgqTjOQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusG59m04DZl8sIqgxVgtEhGT+b930hVCjsQJnPN0MCxjIts0EgHdLGLBJfHi0g+qWjSCgm7Nyek4Nc2acp8hLUeROhbJCCnj1NRUp8wgI0SSPcMwjogugkgBxJR9o2AEAwAInR99/e+v9wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhElEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusF99pY4DSk6eJygxVgtEhGT+X9nUg8hR+IEKnklGJYxkW0aiYBuFrHgkvhx6RJVLRpBQTf95EmcmhqmSDM05DyljkXKQkI4NS2u+45XHhsYfnFEdBFECiCm7BsFIxgAAH6NIIjVz6qrAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAh0lEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusF92Xw4DSma+omgxVgtEhGT+X9ndwohR+IEKq5zMCxjIts0EgHdLGLBJfHjxR6qWjSCgm76mqc4NTUU2TI09B2mjkXKMpw4NS1edQavPAPDbwyR4RdHRBdBpABiyr5RMIIBAM8QIYUodzoJAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAhUlEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiag1MBusGOPXU4Ddlf0kTQYqwWiYjJ/J9y6wwhR+IEOWomGJYxkW0aiYBuFrHgkrj04wtVLRpBQXdy+lycmvZEPGVwWSFNHYuElBVxago7rcggpEySPcMwjogugkgBxJR9o2AEAwCpEx+lS25tigAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAiklEQVR4nGNgGAWjYBSMguEPGIlVKCIm8x+X3JtXTwiaw0KswfPCVXAakrSSAUUtNouxukRETOb/65WVhByJE4iGt2NYxkS2aSQCulmEM44Y7h2nqkUjKOh6d17Dqam4UYeht/4KdSxSE+fDqWnztEd45RkYXmGIDL84wllG4SvbCAFiyr5RMIIBALDrIK9/fnFPAAAAAElFTkSuQmCC"],boots:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf+LlizHKhcXE8mATw6bZSy4LGJgYGC4eecBWXLYABNJqikAeH109fJ5suSwAQBd9hwlC1cEJAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf/NpxqwytWaNTDgk8NmGQsuixgYGBhOfDhDlhw2wESSagoAXh89PviALDlsAAA6KhwdTZ+vNAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf/1669glWsM1GHAJ4fNMhZcFjEwMDAcf/SDLDlsgIkk1RQAvD56enYXWXLYAAB2BhwnLd0C+wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf97J13BKuecp8OATw6bZSy4LGJgYGB4cekHWXLYABNJqikAeH104vYusuSwAQCZFhwrXqNGIQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf93JvVglVPJK2HAJ4fNMhZcFjEwMDD8uHSJLDlsgIkk1RQAvD7adfs2WXLYAABr7hwlDkNQKQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf93dqdglVNxncOATw6bZSy4LGJgYGD48WIPWXLYABNJqikAeH2068Q7suSwAQBsJBwlmikQMQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf9Tbp3BKpejZsKATw6bZSy4LGJgYGC49OMLWXLYABNJqikAeH10e9c+suSwAQCyBBwviSzxOgAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAXklEQVR4nGNgGAWjYBSMglEwCkbBKBgFo4AEwIhPUkRM5j828TevnjDikyPJIhExmf+vV1ZilRMNb2fAJ4fNMhZcFjEwMDAw3DtOnhwWwESSagoAXh9tvvCELDlsAABeKholP5+NlQAAAABJRU5ErkJggg=="],glove:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqJFS5ZjaI6LiSTKMkL6WZAFb955QJTLcQF8+pkoMpkEQDeL6JYYRsEoGAWUAwD2kyM2n6bFRAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqLmUw0YmmvNGoiyjJB+FmTBEx/OEONwnACffiaKTCYB0M0iuiWGUTAKRgHlAABQXSMU5FMA2wAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqL69VcwNDcG6hBlGSH9LMiCxx/9IM7pOAA+/UwUmUwCoJtFdEsMo2AUjALKAQBrZiNOSiZ/4AAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqK9k65gaHbO0yHKMkL6WZAFX1z6QZzTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwASGyNwudbjZwAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqI7k3owNKvklRBlGSH9LMiCPy5dIs7pOAA+/UwUmUwCoJtFdEsMo2AUjALKAQA7aCNEspER+QAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqI7u1MwNKu4ziHKMkL6WZAFf7zYQ5zTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwA7vCNEb5+IaQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAWElEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqIpt85gaM5RMyHKMkL6WZAFL/34QpzTcQB8+pkoMpkEQDeL6JYYRsEoGAWUAwCHXyOITiF8BAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAV0lEQVR4nGNgGAWjYBSMglEwCgYeMCJzRMRk/qMrePPqCSO6GC6ATz8jsqLXKysxNIuGtxNlGSH9LCii944T5XKcAI9+JspMJh7QzSK6JYZRMApGAeUAABVbIVYeKPGkAAAAAElFTkSuQmCC"],pack:["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaUlEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxBASH4ZTcsHbVf2pZxkQNQwaVRSzauoY4JTesXUU1i4Zh0DEwMDBcvXweQwJfkJID6OsjarseGxiGiQFbQqAFoFuhOgpGARwAAHulF2/IDsdcAAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax6FXr4JS81Mrwn1qWMVHDkEFlEYusvQJOyUutV6hm0TAMOgYGBobHBx9gSOALUnIAfX1EbddjA8MwMWBLCLQAdCtUR8EogAMA7nYWsti6JtAAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxaMe14ZS8uqjqP7UsY6KGIYPKIhZpYzecklcXVVHNomEYdAwMDAxPz+7CkMAXpOQA+vqI2q7HBoZhYsCWEGgB6FaojoJRAAcASY8XZMG+HxMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAaElEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax5Nq34ZScfLDqP7UsY6KGIYPKIhYLVTeckpMPVlHNomEYdAwMDAwnbu/CkMAXpOQA+vqI2q7HBoZhYsCWEGgB6FaojoJRAAcA5ywXUDXUuFMAAAAASUVORK5CYII=","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax9Nlb4pQsOnj8P7UsY6KGIYPKIhY3VVXcsgePU82iYRh0DAwMDLtu38aQwBukZAD6+ojarscGhmFiwJYQaAHoVqiOglEABwCwvxb3JqNiMAAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhax9GXz4ZQsmirzn1qWMVHDkEFlEYubhRBu2amfqGbRMAw6BgYGhl0n3mFI4A1SMgB9fURt12MDwzAxYEsItAB0K1RHwSiAAwCYXhYgAqkESQAAAABJRU5ErkJggg==","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZklEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRahaFLpqF06L9JU1Us4yJGoYMKotYVN2ccEruZ2iimkXDMOgYGBgYbu/ahyGBL0jJAfT1EbVdjw0Mw8SALSHQAtCtUB0FowAOAOm/FxCvxoj1AAAAAElFTkSuQmCC","data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAeCAYAAAAy2w7YAAAAZ0lEQVR4nGNgGAWjYBSMggEDjCJiMv9xSb559YSRWhaxzAtXwSmZtJLhP7UsY6KGIYPKIhZfAxncsivvUM2iYRh0DAwMDJsvPMGQwBukZAD6+ojarscGhmFiwJYQaAHoVqiOglEABwCkTRYh0dh1awAAAABJRU5ErkJggg=="]};
 
@@ -1991,11 +2212,23 @@ function skipBagUpgrade(){
   if(!S.bagActive) return false;
   const gems=bagSkipGems();
   if((S.gems||0)>=gems){
-    S.gems-=gems; S.bagActive.end=Date.now();
+    S.gems-=gems;
+    S.bagActive.end=Date.now();
+    bagSkipArmed=false;
+    Platform.logEvent("bag_skip",{gems, paid:true});
+    showToast("⏩","Пропущено!","","−"+gems+" 💎","сумка → ур."+(S.bag+1));
     finishBagUpgrade();
     return true;
   }
-  Platform.showRewarded(ok=>{ if(ok && S.bagActive){ S.bagActive.end=Date.now(); finishBagUpgrade(); } }, "bag_skip");
+  showToast("💎","Мало кристаллов","","Нужно "+gems+" 💎","смотри рекламу — или копи");
+  Platform.showRewarded(ok=>{
+    if(ok && S.bagActive){
+      S.bagActive.end=Date.now();
+      bagSkipArmed=false;
+      Platform.logEvent("bag_skip",{gems, paid:false, ad:true});
+      finishBagUpgrade();
+    }
+  }, "bag_skip");
   return false;
 }
 function rollVeinExtras(isBoss){
@@ -2073,6 +2306,8 @@ function stat(id){
   for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
   v+=stickerBonus(id);                                  // стикеры (PDF)
   if(id==="luck") v+=beardWisdom().luckAdd;                              // Мудрость Бороды
+  { const sp=specialBonusPct(id); if(sp) v*=(1+sp/100); }               // SPECIAL-черты (FO2)
+  { const pk=perkBonusPct(id); if(pk) v*=(1+pk/100); }                   // перки (FO2)
   const sets=S.sets||{};
   if(id==="atk"&&sets.berserk) v*=1.5;
   if(id==="crit"&&sets.berserk) v+=20;
@@ -2208,7 +2443,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, wheelSpins:0, pvpWins:0, protein:200, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
     growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
       waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
       ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
@@ -2269,11 +2504,52 @@ const KO_SCREENS=[
   ["ТЫ НЕ ПРОКОПАЕШЬ!","Жила встала стеной, как седой волшебник на мосту. Прокачайся — и мост твой."],
   ["БОРОДА ЗАПЫЛИЛАСЬ","Энергия кончилась раньше породы. Эль, отдых, апгрейды — и снова в забой."]
 ];
+/* ---------- лента событий (добыча / покупки / прокачка / реплики) ---------- */
+const FEED_CAP=4;
+var feedBuf=[];
 let quipHide=0, quipNext=6;
+function renderFeed(){
+  const lines=$("feedLines"), empty=$("feedEmpty");
+  if(!lines) return;
+  if(!feedBuf.length){
+    lines.innerHTML="";
+    if(empty) empty.style.display="";
+    return;
+  }
+  if(empty) empty.style.display="none";
+  lines.innerHTML=feedBuf.map(e=>
+    `<div class="feedLine ${esc(e.kind||"")}"><b>${esc(e.who)}:</b> ${esc(e.text)}</div>`
+  ).join("");
+}
+function pushFeed(who, text, kind){
+  const t=String(text||"").replace(/\s+/g," ").trim();
+  if(!t) return;
+  const w=String(who||"Событие");
+  const k=kind||"event";
+  const last=feedBuf[feedBuf.length-1];
+  if(last && last.who===w && last.text===t) return;
+  feedBuf.push({who:w, text:t, kind:k});
+  while(feedBuf.length>FEED_CAP) feedBuf.shift();
+  renderFeed();
+}
+function feedWhoFromToast(rar, name, extra){
+  const blob=[rar,name,extra].filter(Boolean).join(" ");
+  if(/прокач|апгрейд|ПРОПУСК|сумк|SPECIAL|перк|трен\.|Ур\./i.test(blob)) return {who:"Прокачка", kind:"up"};
+  if(/купл|магазин|пак|реклам|No-Ads|стартер|вейглист|самоцвет/i.test(blob)) return {who:"Куплено", kind:"buy"};
+  if(/надето|продано|сундук|находк|дубликат|коллекц|питомец|COMMON|RARE|EPIC|LEGENDARY|EXOTIC|MYTHIC|ASCENDED|COSMIC/i.test(blob))
+    return {who:"Добыча", kind:"loot"};
+  if(/Борин|реплик|забой|бород/i.test(blob)) return {who:"Борин", kind:"quip"};
+  return {who:"Событие", kind:importantFeedKind(blob)};
+}
+function importantFeedKind(blob){
+  if(/уровен|престиж|ЗОВ|СЕТ СОБРАН/i.test(blob)) return "hot";
+  return "event";
+}
 function sayQuip(t,dur){
-  const b=$("bubble"); if(!b) return;
-  b.innerHTML="<b>Борин:</b> "+t; b.classList.add("show");
-  quipHide=dur||3; quipNext=9+Math.random()*8;
+  pushFeed("Борин", t, "quip");
+  quipNext=9+Math.random()*(dur?dur+4:8);
+  quipHide=0;
+  const b=$("bubble"); if(b) b.classList.remove("show");
 }
 
 /* ---------- боевой тик (§5) ---------- */
@@ -2471,6 +2747,8 @@ function breakVein(){
   } else { S.stageIdx++; S.stage++; }
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
+  S.veinsBroken=(S.veinsBroken||0)+1;
+  try{ checkMinerLevelUp(true); }catch(e){}
   rollVeinExtras(rock.isBoss);
   checkDepthMark(prevIdx); submitMyScore();
   if(rock.isBoss) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
@@ -2648,17 +2926,14 @@ function hireGeo(){
 function tryBagUpgrade(){
   if(bagUpgrading()){
     const gems=bagSkipGems();
+    /* 1-й тап во время таймера — показать цену; 2-й — списать 💎 и завершить */
     if(!bagSkipArmed){
       bagSkipArmed=true;
       render();
-      showToast("⏩","Пропуск ожидания","","💎"+gems,"ещё тап — сразу ур."+(S.bag+1));
+      showToast("⏩","Пропуск ожидания","","ещё тап → −"+gems+" 💎","сразу ур."+(S.bag+1));
       return false;
     }
-    if((S.gems||0)<gems){
-      showToast("💎","Мало кристаллов","","Нужно "+gems+" 💎","или реклама");
-    }
-    skipBagUpgrade();
-    return true;
+    return skipBagUpgrade();
   }
   bagSkipArmed=false;
   if(S.bag>=50) return false;
@@ -2667,11 +2942,8 @@ function tryBagUpgrade(){
   return true;
 }
 if($("energyBox")) $("energyBox").onclick=()=>reinforceMine();
-/* Сумка УР: шансы/апгрейд; во время таймера — пропуск (двойной тап) */
-function onPowerUpClick(){
-  if(bagUpgrading()){ tryBagUpgrade(); return; }
-  openChest(true);
-}
+/* Сумка УР: цена → таймер → 1-й тап цена 💎, 2-й тап пропуск → снова цена */
+function onPowerUpClick(){ tryBagUpgrade(); }
 if($("powerUp")) $("powerUp").onclick=()=>onPowerUpClick();
 /* АВТО: короткий тап = вкл/выкл, long-press = порог фильтра */
 (function wireAutoBtn(){
@@ -2773,8 +3045,7 @@ function loop(now){
     idleAcc%=1; }
   if(aleAnim>0) aleAnim-=rawDt;
   else if(!dead){ aleNext-=rawDt; if(aleNext<=0){ sipAle(); aleNext=35+Math.random()*30; } }
-  if(quipHide>0){ quipHide-=rawDt; if(quipHide<=0) $("bubble").classList.remove("show"); }
-  else if(!dead){ quipNext-=rawDt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
+  if(!dead){ quipNext-=rawDt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
   tickPetMood(rawDt);
   render();
   requestAnimationFrame(loop);
@@ -2890,18 +3161,34 @@ function claimBonusChest(){
   Platform.logEvent("bonus_chest",{});
   save(); render();
 }
+function buyUpgrade(id){
+  const u=UPGRADES.find(x=>x.id===id); if(!u) return false;
+  if(statCapped(u.id)) return false;
+  const c=upCost(u);
+  if((S.gold||0)<c){
+    showToast("🪙","Мало золота","",fmt(c)+" нужно");
+    return false;
+  }
+  S.gold-=c; S.lvls[u.id]++;
+  if(u.id==="energy") S.energy=Math.min(S.energy+u.step,stat("energy"));
+  if(S.ftue&&!S.ftue.u){ S.ftue.u=1; const el=$("u_"+u.id); if(el&&el.classList) el.classList.remove("pulse"); }
+  Platform.logEvent("upgrade",{id:u.id,lv:S.lvls[u.id]});
+  pushFeed("Прокачка", (STRIP_LABEL[u.id]||u.k)+" → ур."+(S.lvls[u.id]|0)+" · −"+fmt(c)+" 🪙", "up");
+  save(); render();
+  return true;
+}
+const STRIP_LABEL={atk:"ATK",energy:"ЭНЕР",spd:"СКОР",tough:"DEF",crit:"КРИТ",luck:"УДАЧА",mining:"СИЛ",stone:"STONE"};
 function buildUpgrades(){
-  const box=$("upgrades"); box.innerHTML="";
+  const box=$("statStrip")||$("upgrades"); if(!box) return;
+  box.innerHTML="";
   UPGRADES.forEach(u=>{
     const d=document.createElement("div"); d.className="u"; d.id="u_"+u.id;
-    d.innerHTML=`<div class="k">${u.k}</div><div class="lv">Ур. 0</div><div class="v"></div><div class="c"></div><button class="btn btn-soft">+</button>`;
-    d.querySelector("button").onclick=()=>{
-      if(statCapped(u.id)) return;                       // кап: не тратить впустую
-      const c=upCost(u);
-      if(S.gold>=c){ S.gold-=c; S.lvls[u.id]++; if(u.id==="energy") S.energy=Math.min(S.energy+u.step,stat("energy"));
-        if(S.ftue&&!S.ftue.u){ S.ftue.u=1; d.querySelector("button").classList.remove("pulse"); }
-        save(); }
-    };
+    d.innerHTML=`<div class="k">${STRIP_LABEL[u.id]||u.k}</div><div class="lv">Ур. 0</div><div class="v"></div><div class="c"></div><button type="button" class="btn btn-soft" aria-hidden="true">+</button>`;
+    const val=d.querySelector(".v"); if(u.id==="atk"&&val) val.id="pAtk";
+    const doBuy=e=>{ if(e&&e.stopPropagation) e.stopPropagation(); buyUpgrade(u.id); };
+    d.onclick=doBuy;
+    d.title="Тап — прокачать";
+    const btn=d.querySelector("button"); if(btn) btn.onclick=doBuy;
     box.appendChild(d);
   });
 }
@@ -3148,17 +3435,24 @@ function render(){
   setTxt("sCrit",Math.round(stat("crit"))+"%");
   setTxt("sLuck",Math.round(stat("luck"))+"%");
   { const st=stat("stone"); setTxt("sStone",(st>=1000?fmt(st):Math.round(st))+"%"); }
-  { // строка статов как в референсе
-    const setPw=(id,v)=>setTxt(id,v);
-    setPw("pAtk", fmt(stat("atk")));
-    setPw("pDef", fmt(Math.round(stat("tough"))));
-    setPw("pStr", fmt(Math.round(stat("mining"))));
-    setPw("pCrit", Math.round(stat("crit"))+"%");
-    setPw("pCmb", Math.round(stat("stamina"))+"%");
-    setPw("pLck", Math.round(stat("luck"))+"%");
-    setPw("pSpd", stat("spd").toFixed(1));
-    setPw("pTou", Math.round(S.durab==null?MINE_DURAB.max:S.durab)+"%");
-  }
+  UPGRADES.forEach(u=>{
+    const d=$("u_"+u.id); if(!d) return;
+    const btn=d.querySelector("button"), val=d.querySelector(".v"), cost=d.querySelector(".c"), lv=d.querySelector(".lv");
+    if(!val||!cost) return;
+    const capped=statCapped(u.id);
+    const c=upCost(u);
+    const can=!capped && (S.gold||0)>=c;
+    if(lv) setTxt(lv,"Ур. "+(S.lvls[u.id]|0));
+    setTxt(val,u.fmt(stat(u.id)));
+    setTxt(cost,capped?"MAX":(fmt(c)+" 🪙"));
+    if(d.classList){ d.classList.toggle("can", !!can); d.classList.toggle("maxed", !!capped); }
+    if(btn){
+      const wantDisabled=!can;
+      if(btn.disabled!==wantDisabled) btn.disabled=wantDisabled;
+      const txt=capped?"✓":"+";
+      if(btn.textContent!==txt) setTxt(btn,txt);
+    }
+  });
   { const rn=$("rockName"), en=$("refEnemyName"), en2=$("enemyName");
     const txt=(rn&&rn.textContent||"ПОРОДА").replace(/ \(босс\)$/i,"").toUpperCase();
     if(en) setTxt(en,txt); if(en2) setTxt(en2,txt); }
@@ -3189,10 +3483,10 @@ function render(){
   // FTUE-подсказки: пульс только когда якорь доступен; toggle — не дёргаем класс каждый кадр
   { const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
     UPGRADES.forEach(u=>{
-      const row=$("u_"+u.id), btn=row&&row.querySelector("button");
-      if(!btn||!btn.classList) return;
+      const row=$("u_"+u.id);
+      if(!row||!row.classList) return;
       const want=!!(S.ftue && !S.ftue.u && u.id===cheapest.id && S.gold>=upCost(cheapest));
-      btn.classList.toggle("pulse", want);
+      row.classList.toggle("pulse", want);
     });
   }
   { const pu=$("powerUp");
@@ -3208,19 +3502,32 @@ function render(){
   if($("bagBadge2")){ const n=S.bags||0; setTxt("bagBadge2",n>99?"99+":n); $("bagBadge2").style.display=n>0?"flex":"none"; }
   if($("bagAreaLvl")){
     if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","ПРОПУСК 💎"+bagSkipGems());
+    else if(bagUpgrading()) setTxt("bagAreaLvl","СУМКА… "+bagUpgradeLeft()+"с");
+    else if(S.bag>=50) setTxt("bagAreaLvl","СУМКА МАКС");
     else setTxt("bagAreaLvl","СУМКА УР "+S.bag);
   }
   if($("bagAreaTimer")){
     const bt=$("bagAreaTimer");
     if(bagUpgrading()){
-      const left=bagUpgradeLeft()+"с до ур."+(S.bag+1);
-      setTxt(bt, bagSkipArmed ? ("тап → 💎"+bagSkipGems()+" · "+left) : left);
-    } else setTxt(bt,"тап — шансы");
+      setTxt(bt, bagSkipArmed
+        ? ("тап ещё раз → −"+bagSkipGems()+" 💎")
+        : ("тап — пропуск · 💎"+bagSkipGems()));
+    } else if(S.bag>=50) setTxt(bt,"предел");
+    else setTxt(bt, fmt(bagCost())+" 🪙 · тап");
   }
   { const dot=$("bagUpDot");
     if(dot){
-      const can=!bagUpgrading() && S.bag<50 && (S.gold||0)>=bagCost();
-      dot.style.display=can?"block":"none";
+      const busy=bagUpgrading();
+      const can=!busy && S.bag<50 && (S.gold||0)>=bagCost();
+      if(busy){
+        dot.style.display="block";
+        setTxt(dot, bagSkipArmed?"💎":"⏩");
+        dot.title=bagSkipArmed?("Тап — списать "+bagSkipGems()+" 💎"):"Тап — цена пропуска";
+      } else {
+        setTxt(dot,"↑");
+        dot.style.display=can?"block":"none";
+        dot.title="";
+      }
     }
   }
   { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){
@@ -3235,20 +3542,21 @@ function render(){
       if("disabled"in lc) lc.disabled=false; } }
   { const pu=$("powerUp");
     if(pu){
-      const busy=bagUpgrading(), maxed=S.bag>=50, poor=!busy&&!maxed&&(S.gold||0)<bagCost();
-      /* панель шансов всегда открывается; disabled только на капе без апгрейда в процессе */
+      const busy=bagUpgrading(), maxed=S.bag>=50;
+      const poor=!busy&&!maxed&&(S.gold||0)<bagCost();
       const off=maxed && !busy;
       if("disabled"in pu){ if(pu.disabled!==!!off) pu.disabled=!!off; }
-      setOp(pu,off?"0.55":"1");
+      setOp(pu,(off||poor)?"0.55":"1");
       if(pu.classList){
-        pu.classList.toggle("off",!!off);
+        pu.classList.toggle("off",!!(off||poor));
+        pu.classList.toggle("busyBag", !!busy);
         pu.classList.toggle("skipOffer", !!(busy && bagSkipArmed));
       }
       pu.title=busy
         ? (bagSkipArmed
           ? ("Пропуск за 💎"+bagSkipGems()+" — тап ещё раз")
           : ("Идёт апгрейд · тап — цена пропуска"))
-        : (maxed?"Максимум":"Шансы дропа и апгрейд");
+        : (maxed?"Максимум":(poor?"Нужно "+fmt(bagCost())+" 🪙":"Апгрейд за "+fmt(bagCost())+" 🪙"));
     }
   }
   if(S.geo){
@@ -3262,20 +3570,6 @@ function render(){
   const mineKey=S.mine%MINES.length;
   { const got=Object.keys(S.col[mineKey]||{}).length;
   setTxt("colCount",got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":""))); }
-  UPGRADES.forEach(u=>{
-    const d=$("u_"+u.id); if(!d) return;
-    const btn=d.querySelector("button"), val=d.querySelector(".v"), cost=d.querySelector(".c"), lv=d.querySelector(".lv");
-    if(!btn||!val||!cost) return;
-    const capped=statCapped(u.id);
-    const c=upCost(u);
-    if(lv) setTxt(lv,"Ур. "+(S.lvls[u.id]|0));
-    setTxt(val,u.fmt(stat(u.id)));
-    setTxt(cost,capped?"MAX":(fmt(c)+" 🪙"));
-    const wantDisabled=capped||S.gold<c;
-    if(btn.disabled!==wantDisabled) btn.disabled=wantDisabled;
-    const txt=capped?"✓":"+";
-    if(btn.textContent!==txt) setTxt(btn,txt);
-  });
   updateFtueHint();
 }
 function hideFtueTip(tip){
@@ -3287,7 +3581,7 @@ function hideFtueTip(tip){
 function ftueOverlayOpen(){
   const intro=$("introOv"); if(intro&&intro.classList&&intro.classList.contains("on")) return true;
   const ui=$("uiScreen"); if(ui&&ui.style.display==="flex") return true;
-  for(const id of ["dropModal","chestModal","metaModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay"]){
+  for(const id of ["dropModal","chestModal","metaModal","charModal","perkModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay"]){
     const m=$(id); if(m&&m.style.display==="flex") return true;
   }
   return false;
@@ -3499,17 +3793,23 @@ function showToast(icon,rar,rcls,name,extra,important){
   lastLogMsg=(/^<img\b/i.test(String(icon||""))?"💎":(icon||""))+" "+head+(extra?(" · "+extra):"");
   logBuf.push({icon:icon||"",rar:rar||"",rc:(rcls||"").trim(),name:name||"",extra:extra||"",important:!!important});
   while(logBuf.length>LOG_CAP) logBuf.shift();
-  if(logPage!==0) logPage++;                       // держим позицию при чтении истории
-  if(logPage>logTotalPages()-1) logPage=0;         // выпало за буфер — прыгаем к свежим
+  if(logPage!==0) logPage++;
+  if(logPage>logTotalPages()-1) logPage=0;
   renderLog();
+  /* статичная лента — всегда, даже если тосты выключены */
+  try{
+    const fw=feedWhoFromToast(rar,name,extra);
+    const body=[head,extra].filter(x=>x&&(""+x).trim()).join(" · ");
+    pushFeed(fw.who, body, important?"hot":fw.kind);
+  }catch(e){}
   const t=$("toast");
-  if(t){
-    const rc=(rcls||"").trim().replace(/[^a-zA-Z0-9_-]/g,"");
-    t.innerHTML=`<div class="big">${toastIconHtml(icon)}</div><div class="r ${rc}">${esc(rar||"")}</div><div class="nm">${esc(name||"")}</div><div class="vl">${esc(extra||"")}</div>`;
-    t.style.display="block";
-    clearTimeout(toastHideT);
-    toastHideT=setTimeout(function(){ if(t) t.style.display="none"; }, important?2800:1800);
-  }
+  if(!t) return;
+  if(!toastsOn){ t.style.display="none"; return; }
+  const rc=(rcls||"").trim().replace(/[^a-zA-Z0-9_-]/g,"");
+  t.innerHTML=`<div class="big">${toastIconHtml(icon)}</div><div class="r ${rc}">${esc(rar||"")}</div><div class="nm">${esc(name||"")}</div><div class="vl">${esc(extra||"")}</div>`;
+  t.style.display="block";
+  clearTimeout(toastHideT);
+  toastHideT=setTimeout(function(){ if(t) t.style.display="none"; }, important?2800:1800);
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];
@@ -3618,6 +3918,19 @@ const SAVE_VER=2;
 function ensureDurab(d){ if(d && d.durab==null) d.durab=MINE_DURAB.max; return d; }
 function ensureCards(d){ if(!d) return d;
   if(!d.skillCards) d.skillCards={};
+  if(!d.skills) d.skills={};
+  { const B=BALANCE.special||{}, start=B.start||5;
+    if(!d.special){ d.special={}; SPECIAL_DEFS.forEach(x=>{ d.special[x.id]=start; }); }
+    SPECIAL_DEFS.forEach(x=>{ if(d.special[x.id]==null) d.special[x.id]=start; });
+    if(d.specialPool==null) d.specialPool=B.pool||5;
+    if(d.skillPts==null) d.skillPts=0;
+    if(d.minerLv==null) d.minerLv=0;
+    if(d.veinsBroken==null) d.veinsBroken=0;
+    if(!d.skillTags) d.skillTags=[];
+    if(!d.trained) d.trained={};
+    if(!Array.isArray(d.perks)) d.perks=[];
+    if(d.perkPicks==null) d.perkPicks=0;
+    if(!Array.isArray(d.traits)) d.traits=[]; }
   if(!d.stickers||typeof d.stickers!=='object') d.stickers={};
   if(typeof d.gymXP!=='number'||!isFinite(d.gymXP)||d.gymXP<0) d.gymXP=0;
   if(d.chestKeys==null) d.chestKeys=1;   // ключи от ларей — свой ресурс, не ключи ивентов
@@ -3775,6 +4088,22 @@ function bindSaveLifecycle(){
 
 /* ---------- музыка подгорных чертогов (WebAudio, без файлов) ---------- */
 let AC=null, MG=null, DL=null, musicOn=(localStorage.getItem("oredeep_music")!=="off");
+let toastsOn=(localStorage.getItem("oredeep_toasts")!=="off");
+function toastToggleLabel(){ return toastsOn?"💬 вкл":"🚫 выкл"; }
+function syncToastToggleBtns(){
+  const label=toastToggleLabel();
+  const a=$("setToasts"), b=$("uiSetToasts");
+  if(a) a.textContent=label;
+  if(b) b.textContent=label;
+}
+function toggleToasts(){
+  toastsOn=!toastsOn;
+  try{ localStorage.setItem("oredeep_toasts",toastsOn?"on":"off"); }catch(e){}
+  syncToastToggleBtns();
+  const t=$("toast");
+  if(!toastsOn && t){ t.style.display="none"; clearTimeout(toastHideT); }
+  if(toastsOn) showToast("💬","Всплывающие окна","","включены","можно снова выключить в настройках");
+}
 let nextBeat=0, beatN=0, musicTimer=null, chordIdx=0, arpStep=0;
 const BPM=60, SPB=60/BPM;
 const SCALE=[146.83,174.61,196,220,261.63,293.66];
@@ -4040,6 +4369,519 @@ function claimOffline(mult){
    ============================================================ */
 function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub").innerHTML=sub;
   $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
+
+/* ---------- SPECIAL гнома (вдохновлено Fallout 2) ----------
+   S P E C I A L → семь черт. Уровень шахтёра за жилы даёт очки навыков
+   (формула близка к FO: база + бонус от Ума). Теги ×3 дешевле тренировать.
+   Карточные навыки из ларей остаются; тренировка — параллельный слой. */
+const SPECIAL_DEFS=[
+  {id:"s", n:"Сила",         letter:"S", stats:["atk"],          tip:"Удар киркой"},
+  {id:"p", n:"Восприятие",   letter:"P", stats:["mining","crit"], tip:"Видеть трещины в жиле"},
+  {id:"e", n:"Выносливость", letter:"E", stats:["energy","tough"], tip:"Держать штольню"},
+  {id:"c", n:"Харизма",      letter:"C", stats:["stone"],         tip:"Торг со скупщиком"},
+  {id:"i", n:"Ум",           letter:"I", stats:[],                tip:"Больше очков навыков за уровень"},
+  {id:"a", n:"Ловкость",     letter:"A", stats:["spd"],           tip:"Темп ударов"},
+  {id:"l", n:"Удача",        letter:"L", stats:["luck"],          tip:"Нюх на жилу"}
+];
+function ensureSpecial(){
+  const B=BALANCE.special||{};
+  const start=B.start||5;
+  if(!S.special){ S.special={}; SPECIAL_DEFS.forEach(d=>{ S.special[d.id]=start; }); }
+  SPECIAL_DEFS.forEach(d=>{ if(S.special[d.id]==null) S.special[d.id]=start; });
+  if(S.specialPool==null) S.specialPool=B.pool||5;
+  if(S.skillPts==null) S.skillPts=0;
+  if(S.minerLv==null) S.minerLv=0;
+  if(S.veinsBroken==null) S.veinsBroken=0;
+  if(!S.skillTags) S.skillTags=[];
+  if(!S.trained) S.trained={};
+  if(!Array.isArray(S.perks)) S.perks=[];
+  if(S.perkPicks==null) S.perkPicks=0;
+  if(!Array.isArray(S.traits)) S.traits=[];
+}
+function specialAttr(id){ ensureSpecial(); return S.special[id]|0; }
+function specialPtsPerLevel(){
+  ensureSpecial();
+  const B=BALANCE.special||{};
+  const i=Math.max(0, specialAttr("i")-(B.start||5));
+  let pts=(B.ptsBase||5)+i*(B.ptsPerInt||1);
+  if(typeof hasTrait==="function" && hasTrait("gifted")){
+    const t=TRAIT_DEFS.find(x=>x.id==="gifted");
+    pts=Math.max(1, Math.floor(pts*((t&&t.ptsMult)||0.8)));
+  }
+  return pts;
+}
+function minerLevelTarget(){
+  const B=BALANCE.special||{};
+  const per=B.veinsPerLv||35, max=B.maxLv||40;
+  return Math.min(max, Math.floor((S.veinsBroken||0)/per));
+}
+function checkMinerLevelUp(announce){
+  ensureSpecial();
+  let gained=0, pts=0, perkGain=0;
+  const every=(BALANCE.perks&&BALANCE.perks.everyLv)||3;
+  while((S.minerLv||0)<minerLevelTarget()){
+    S.minerLv=(S.minerLv||0)+1;
+    const add=specialPtsPerLevel();
+    S.skillPts=(S.skillPts||0)+add;
+    gained++; pts+=add;
+    if(S.minerLv%every===0){ S.perkPicks=(S.perkPicks||0)+1; perkGain++; }
+  }
+  if(gained && announce){
+    const sub=perkGain?("+"+pts+" очк. · перк ×"+perkGain):("+"+pts+" очк. навыков · Ум "+specialAttr("i"));
+    showToast("📈","УРОВЕНЬ ШАХТЁРА","", "ур."+S.minerLv, sub, true);
+    sayQuip(perkGain?"Уровень — и Гора шепчет новый перк. Выбирай.":"Ещё жила за спиной. Руки помнят — голова считает очки.",4);
+    Platform.logEvent("miner_level",{lv:S.minerLv,pts:S.skillPts,perk:perkGain});
+  }
+  return gained;
+}
+function specialBonusPct(statId){
+  if(typeof BALANCE==="undefined"||!BALANCE.special) return 0;
+  ensureSpecial();
+  const B=BALANCE.special, start=B.start||5;
+  let pct=0;
+  for(const d of SPECIAL_DEFS){
+    if(!d.stats||d.stats.indexOf(statId)<0) continue;
+    const over=Math.max(0, specialAttr(d.id)-start);
+    pct+=over*(B.attrPct||1.2);
+  }
+  return Math.min(B.attrPctCap||12, pct);
+}
+
+/* ---------- Перки (Fallout 2) ---------- */
+const PERK_DEFS=[
+  {id:"aware",    n:"Чутьё породы",     ico:"🔭", stats:["mining"],
+    desc:"Ты видишь слабые места в жиле. Чутьё пласта растёт — меньше слепых ударов."},
+  {id:"hth",      n:"Тяжёлый удар",     ico:"💪", stats:["atk"],
+    desc:"Кирка ложится тяжелее. Каждый замах выгрызает больше породы."},
+  {id:"cautious", n:"Осторожный забой", ico:"🛡", stats:["tough"],
+    desc:"Не лезешь под обвал зря. Крепь держит дольше — меньше штрафов от усталости."},
+  {id:"heal",     n:"Быстрое дыхание",  ico:"❤", stats:["regen"],
+    desc:"Лёгкие шахтёра восстанавливаются быстрее. Энергия ползёт вверх даже в забое."},
+  {id:"sequence", n:"Ранний удар",      ico:"⚡", stats:["spd"],
+    desc:"Ты бьёшь первым. Темп ударов выше — жила сыплется раньше, чем успеет «ответить»."},
+  {id:"night",    n:"Фонарь в глазах",  ico:"🕯", stats:["luck"],
+    desc:"В полумраке штольни находишь то, что другие пропускают. Удача на находки."},
+  {id:"presence", n:"Торг у скупщика",  ico:"💰", stats:["stone"],
+    desc:"Даже камень тебя слушает. Больше золота с каждой жилы."},
+  {id:"lifegiver",n:"Живучий",          ico:"🫀", stats:["energy"],
+    desc:"Запас сил больше. Дольше стоишь у забоя, пока остальные уже сидят в таверне."},
+  {id:"crits",    n:"Меткий критик",    ico:"🎯", stats:["crit"],
+    desc:"Бьёшь в трещину. Шанс критического удара растёт."},
+  {id:"fortune",  n:"Искатель удачи",   ico:"🍀", stats:["luck"],
+    desc:"Гора иногда улыбается. Чаще натыкаешься на жирные жилы и редкий лут."},
+  {id:"stam",     n:"Несгибаемый",      ico:"🫁", stats:["stamina"],
+    desc:"Комбо не обрывается так легко. Дыхалка держит ритм забоя."},
+  {id:"pockets",  n:"Глубокие карманы", ico:"🎒", stats:["stone","luck"],
+    desc:"В карманах всегда находится ещё горсть. Чуть больше золота и удачи на дроп."}
+];
+const TRAIT_DEFS=[
+  {id:"gifted", n:"Одарённый", ico:"✨",
+    desc:"Ум и руки от природы. +1 ко всем SPECIAL сразу, но уровни шахтёра дают на 20% меньше очков навыков.",
+    specialAdd:1, ptsMult:0.8},
+  {id:"small", n:"Коренастый", ico:"🪨",
+    desc:"Низкий, крепкий. +крепь, но медленнее машет киркой (−темп).",
+    statsPlus:["tough"], statsMinus:["spd"]}
+];
+function hasPerk(id){ ensureSpecial(); return (S.perks||[]).indexOf(id)>=0; }
+function hasTrait(id){ ensureSpecial(); return (S.traits||[]).indexOf(id)>=0; }
+function perkDef(id){ return PERK_DEFS.find(p=>p.id===id); }
+function traitDef(id){ return TRAIT_DEFS.find(t=>t.id===id); }
+function perkBonusPct(statId){
+  if(typeof BALANCE==="undefined"||!BALANCE.perks) return 0;
+  ensureSpecial();
+  const B=BALANCE.perks, pct=B.pct||2, cap=B.pctCap||16;
+  let n=0;
+  for(const id of (S.perks||[])){
+    const d=perkDef(id); if(!d||!d.stats) continue;
+    if(d.stats.indexOf(statId)>=0) n++;
+  }
+  for(const id of (S.traits||[])){
+    const t=traitDef(id); if(!t) continue;
+    if(t.statsPlus&&t.statsPlus.indexOf(statId)>=0) n+=1.5;
+    if(t.statsMinus&&t.statsMinus.indexOf(statId)>=0) n-=1.5;
+  }
+  return Math.max(-cap, Math.min(cap, n*pct));
+}
+function availablePerks(){
+  ensureSpecial();
+  const max=(BALANCE.perks&&BALANCE.perks.maxOwned)||10;
+  if((S.perks||[]).length>=max) return [];
+  return PERK_DEFS.filter(p=>!hasPerk(p.id));
+}
+function canPickPerk(){ ensureSpecial(); return (S.perkPicks||0)>0 && availablePerks().length>0; }
+function perkPickOpen(){ const m=$("perkModal"); return !!(m&&m.style.display==="flex"); }
+function openPerkPick(){
+  ensureSpecial(); checkMinerLevelUp(false);
+  if(!canPickPerk()){
+    showToast("📜","Нечего выбирать","",(S.perkPicks||0)<1?"Перк каждые "+((BALANCE.perks&&BALANCE.perks.everyLv)||3)+" ур. шахтёра":"Все перки взяты");
+    window._charTab="perks"; openCharSheet(); return false;
+  }
+  window._perkSel=(availablePerks()[0]||{}).id||null;
+  renderPerkPick();
+  const m=$("perkModal"); if(m) m.style.display="flex";
+  return true;
+}
+function closePerkPick(){ const m=$("perkModal"); if(m) m.style.display="none"; }
+function selectPerkPreview(id){
+  if(!perkDef(id)||hasPerk(id)) return;
+  window._perkSel=id; renderPerkPick();
+}
+function renderPerkPick(){
+  const list=$("perkList"), det=$("perkDetail"); if(!list||!det) return;
+  const avail=availablePerks();
+  const sel=window._perkSel && avail.some(p=>p.id===window._perkSel) ? window._perkSel : (avail[0]&&avail[0].id);
+  window._perkSel=sel;
+  list.innerHTML=avail.map(p=>{
+    const on=p.id===sel?" on":"";
+    return `<div class="foPerkItem${on}" onclick="selectPerkPreview('${p.id}')">${esc(p.n)}</div>`;
+  }).join("")||`<div class="foPerkItem have">Пусто</div>`;
+  const p=perkDef(sel);
+  if(!p){ det.innerHTML=`<div class="pd">Нет доступных перков.</div>`; return; }
+  const eff=(p.stats||[]).map(s=>s.toUpperCase()).join(", ");
+  const pct=(BALANCE.perks&&BALANCE.perks.pct)||2;
+  det.innerHTML=`<div class="pt">${esc(p.n)}</div>
+    <div class="pd">${esc(p.desc)}</div>
+    <div class="pi">${p.ico||"📜"}</div>
+    <div class="pe">Эффект: +${pct}% к ${eff} (с общим капом перков)</div>`;
+  const done=$("perkDoneBtn"); if(done) done.disabled=!sel;
+}
+function confirmPerkPick(){
+  ensureSpecial();
+  const id=window._perkSel, p=perkDef(id);
+  if(!p||!canPickPerk()||hasPerk(id)){ showToast("📜","Нельзя","","Выбери другой перк"); return false; }
+  S.perkPicks=(S.perkPicks||0)-1;
+  S.perks.push(id);
+  if(p.id==="comprehend"){ /* reserved */ }
+  Platform.logEvent("perk_pick",{id, left:S.perkPicks});
+  showToast(p.ico||"📜","ПЕРК!", "", p.n, (p.stats||[]).map(s=>s.toUpperCase()).join(" · "), true);
+  sayQuip("Новая привычка вросла в кости. Гора кивает.",3);
+  sfxGear(); save(); closePerkPick();
+  window._charTab="perks";
+  if(charSheetOpen()) renderCharSheet();
+  else openCharSheet();
+  if((S.perkPicks||0)>0 && availablePerks().length) setTimeout(()=>openPerkPick(), 280);
+  return true;
+}
+function cancelPerkPick(){
+  closePerkPick();
+  if(charSheetOpen()){ window._charTab="perks"; renderCharSheet(); }
+}
+function canPickTrait(id){
+  ensureSpecial();
+  if(hasTrait(id)) return false;
+  if((S.traits||[]).length>=2) return false;
+  return !!traitDef(id);
+}
+function pickTrait(id){
+  ensureSpecial();
+  const t=traitDef(id); if(!t||!canPickTrait(id)) return false;
+  S.traits.push(id);
+  if(t.specialAdd){
+    SPECIAL_DEFS.forEach(d=>{ S.special[d.id]=Math.min((BALANCE.special.attrMax||10), specialAttr(d.id)+t.specialAdd); });
+  }
+  Platform.logEvent("trait_pick",{id}); save();
+  showToast(t.ico||"✨","ЧЕРТА","",t.n);
+  window._charTab="perks"; refreshSpecialUi();
+  return true;
+}
+function isSkillTagged(id){ ensureSpecial(); return (S.skillTags||[]).indexOf(id)>=0; }
+function trainCost(id){
+  const B=BALANCE.special||{};
+  return isSkillTagged(id)?(B.tagCost||1):(B.untagCost||2);
+}
+function canTagSkill(id){
+  ensureSpecial();
+  if(!SKILL_DEFS.some(s=>s.id===id)) return false;
+  if(isSkillTagged(id)) return false;
+  return (S.skillTags||[]).length<(BALANCE.special.tagSlots||3);
+}
+function charSheetOpen(){
+  const m=$("charModal"); return !!(m&&m.style.display==="flex");
+}
+function refreshSpecialUi(tab){
+  if(charSheetOpen()) renderCharSheet();
+}
+function tagSkill(id){
+  ensureSpecial();
+  if(!canTagSkill(id)){ showToast("🏷","Нельзя отметить","","Уже отмечен или нет слотов","макс "+(BALANCE.special.tagSlots||3)); return false; }
+  S.skillTags.push(id);
+  Platform.logEvent("skill_tag",{id}); save();
+  if(typeof window._charFocus!=="undefined") window._charFocus={kind:"skill",id};
+  refreshSpecialUi("train");
+  return true;
+}
+function untagSkill(id){
+  ensureSpecial();
+  S.skillTags=(S.skillTags||[]).filter(x=>x!==id);
+  save(); refreshSpecialUi("train");
+}
+function toggleSkillTag(id){
+  if(isSkillTagged(id)) untagSkill(id); else tagSkill(id);
+}
+function spendSpecial(id){
+  ensureSpecial();
+  const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
+  const max=BALANCE.special.attrMax||10;
+  if((S.specialPool||0)<1){ showToast("🧬","Нет очков SPECIAL","","Растут с рангом бороды"); return false; }
+  if(specialAttr(id)>=max){ showToast("🧬","Потолок","","Макс "+max+" · "+d.n); return false; }
+  S.specialPool--; S.special[id]=specialAttr(id)+1;
+  Platform.logEvent("special_up",{id,v:S.special[id]});
+  showToast("🧬",d.letter+" "+d.n,"","="+S.special[id], d.tip);
+  window._charFocus={kind:"special",id};
+  save(); refreshSpecialUi("special");
+  return true;
+}
+function refundSpecial(id){
+  ensureSpecial();
+  const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
+  const start=BALANCE.special.start||5;
+  if(specialAttr(id)<=start){ showToast("🧬","База","","Ниже "+start+" нельзя"); return false; }
+  S.special[id]=specialAttr(id)-1; S.specialPool=(S.specialPool||0)+1;
+  window._charFocus={kind:"special",id};
+  save(); refreshSpecialUi("special");
+  return true;
+}
+function canTrainSkill(id){
+  ensureSpecial();
+  const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
+  const cap=BALANCE.special.trainCap||15;
+  if(((S.trained||{})[id]||0)>=cap) return false;
+  const stCap=STAT_CAPS[sd.stat];
+  if(stCap!=null && stat(sd.stat)>=stCap-1e-9) return false;
+  return (S.skillPts||0)>=trainCost(id);
+}
+function trainSkill(id){
+  ensureSpecial();
+  const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
+  const cost=trainCost(id);
+  if(!canTrainSkill(id)){
+    if((S.skillPts||0)<cost) showToast("📈","Мало очков","","Нужно "+cost+", есть "+(S.skillPts||0),"ломай жилы — будет уровень");
+    else showToast("🔒","Потолок тренировки","",sd.n);
+    return false;
+  }
+  S.skillPts-=cost;
+  S.trained[id]=((S.trained||{})[id]||0)+1;
+  dailyProgress("skill",1);
+  Platform.logEvent("skill_train",{id,lv:S.trained[id],tag:isSkillTagged(id)});
+  sfxGear();
+  showToast("📈","Тренировка","r"+sd.r, sd.n+" · трен."+S.trained[id],
+    "−"+cost+" очк."+(isSkillTagged(id)?" · тег":""));
+  window._charFocus={kind:"skill",id};
+  save(); refreshSpecialUi("train");
+  return true;
+}
+function foGrade(v){
+  const g=["","Плох","Слаб","Так себе","Средн","Хорош","Отлич","Велик","Герой","Легенда","Миф"];
+  return g[Math.max(1,Math.min(10,v|0))]||"—";
+}
+function skillSheetPct(id){
+  const d=SKILL_DEFS.find(s=>s.id===id); if(!d) return 0;
+  const card=(typeof skillLv==="function"?skillLv(id):0)|0;
+  const tr=(S.trained||{})[id]|0;
+  const tag=isSkillTagged(id)?12:0;
+  return Math.min(99, 18 + card*9 + tr*4 + tag);
+}
+function foStatTxt(id){
+  const pct=id==="crit"||id==="luck"||id==="mining";
+  const v=stat(id);
+  return pct?(Math.round(v)+"%"):fmt(v);
+}
+const FO_SPECIAL_INFO={
+  s:{ico:"💪", txt:"Сила рук и кирки. Точки выше базы усиливают ATK (с капом). Без силы жила стоит вечность."},
+  p:{ico:"👁", txt:"Восприятие пласта. Растёт mining и крит — видишь слабые места породы раньше, чем остальные."},
+  e:{ico:"🛡", txt:"Выносливость шахтёра. Больше энергии и крепости — дольше комбо до «устала кирка»."},
+  c:{ico:"💰", txt:"Харизма у скупщика. Больше золота (STONE) за жилу — умеешь торговаться даже с камнем."},
+  i:{ico:"🧠", txt:"Ум старателя. Каждый уровень шахтёра даёт больше очков навыков. Качай I — учись быстрее."},
+  a:{ico:"⚡", txt:"Ловкость забоя. Темп ударов (SPD) — сколько раз кирка стучит в секунду."},
+  l:{ico:"🍀", txt:"Удача в забое. Шанс находки и жирных жил. Гора любит везучих — или делает вид."}
+};
+const FO_SKILL_ICO={crit_up:"🎯",atk_up:"⛏",luck_up:"💎",stone_up:"🪙",energy_up:"💨",mining_up:"🧭",tough_up:"🪵",regen_up:"❤",stam_up:"🫁"};
+function charFocus(kind,id){
+  window._charFocus={kind,id};
+  renderCharSheet();
+}
+function closeCharSheet(){
+  const m=$("charModal"); if(m) m.style.display="none";
+  closePerkPick();
+}
+function openCharSheet(focus){
+  ensureSpecial(); checkMinerLevelUp(false);
+  if(focus&&focus.tab) window._charTab=focus.tab;
+  if(focus&&focus.kind) window._charFocus=focus;
+  else if(!window._charFocus) window._charFocus={kind:"special",id:"s"};
+  if(!window._charTab) window._charTab="stats";
+  const meta=$("metaModal"); if(meta) meta.style.display="none";
+  closePerkPick();
+  renderCharSheet();
+  const m=$("charModal"); if(m) m.style.display="flex";
+}
+function setCharTab(tab){
+  window._charTab=tab||"stats";
+  renderCharSheet();
+}
+function renderCharSheet(){
+  ensureSpecial();
+  const el=$("charSheet"); if(!el) return;
+  const B=BALANCE.special||{}, max=B.attrMax||10, start=B.start||5;
+  const tab=window._charTab||"stats";
+  const focus=window._charFocus||{kind:"special",id:"s"};
+  const w=(typeof beardWisdom==="function")?beardWisdom():{title:"Борода"};
+  const age=1+(S.minerLv|0)+(S.prestigeLv|0);
+  const eMax=Math.max(1,stat("energy")|0), eCur=Math.max(0,Math.min(eMax,(S.energy!=null?S.energy:eMax)|0));
+  const status=eCur/eMax<0.25?"Устал":(eCur/eMax<0.55?"Дышит":"В строю");
+  const tabs=`<div class="foTabs">
+    <button type="button" class="${tab==="stats"?"on":""}" onclick="setCharTab('stats')">Статы</button>
+    <button type="button" class="${tab==="perks"?"on":""}" onclick="setCharTab('perks')">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
+  </div>`;
+
+  if(tab==="perks"){
+    const owned=(S.perks||[]).map(id=>{
+      const p=perkDef(id); if(!p) return "";
+      const on=focus.kind==="perk"&&focus.id===id?" on":"";
+      return `<div class="row${on}" onclick="charFocus('perk','${id}')"><span class="ic">${p.ico}</span><span class="nm">${esc(p.n)}</span></div>`;
+    }).join("")||`<div class="empty">Пока пусто. Перк каждые ${((BALANCE.perks&&BALANCE.perks.everyLv)||3)} ур. шахтёра.</div>`;
+    const traitRows=TRAIT_DEFS.map(t=>{
+      const have=hasTrait(t.id), can=canPickTrait(t.id);
+      return `<div class="row${have?" on":""}" onclick="charFocus('trait','${t.id}')">
+        <span class="ic">${t.ico}</span><span class="nm">${esc(t.n)}${have?" · ✓":""}</span>
+        ${!have&&can?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();pickTrait('${t.id}')">взять</button>`:""}
+      </div>`;
+    }).join("");
+    let infoIco="📜", infoTtl="Перки", infoTxt="Как в Fallout 2: каждые несколько уровней — новый перк. Выбери из списка.";
+    if(focus.kind==="perk"){
+      const p=perkDef(focus.id);
+      if(p){ infoIco=p.ico; infoTtl=p.n; infoTxt=p.desc+" Эффект: +"+((BALANCE.perks&&BALANCE.perks.pct)||2)+"% к "+(p.stats||[]).map(s=>s.toUpperCase()).join(", ")+"."; }
+    }else if(focus.kind==="trait"){
+      const t=traitDef(focus.id);
+      if(t){ infoIco=t.ico; infoTtl=t.n; infoTxt=t.desc; }
+    }
+    el.innerHTML=tabs+
+      `<div class="foHead">
+        <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
+        <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
+        <div class="foCell"><span class="k">Перки</span><span class="v">${(S.perks||[]).length}/${(BALANCE.perks&&BALANCE.perks.maxOwned)||10}</span></div>
+        <div class="foCell"><span class="k">Выбор</span><span class="v">${S.perkPicks||0}</span></div>
+      </div>
+      <div class="foPanel" style="margin-bottom:6px">
+        <h4>Перки</h4>
+        <div class="foPerkOwned">${owned}</div>
+        ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" style="width:100%;margin-top:8px" onclick="openPerkPick()">ВЫБРАТЬ ПЕРК · ${S.perkPicks}</button>`:""}
+      </div>
+      <div class="foPanel" style="margin-bottom:6px">
+        <h4>Черты (Traits)</h4>
+        <div class="foPerkOwned">${traitRows}</div>
+        <div class="sub" style="margin-top:6px;color:#8a7a60">До 2 черт. У каждой есть цена.</div>
+      </div>
+      <div class="foInfo">
+        <div class="ico">${infoIco}</div>
+        <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
+      </div>
+      <div class="foFoot">
+        <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Статы</button>
+        <button type="button" class="btn btn-hard" onclick="closeCharSheet()">ГОТОВО</button>
+      </div>`;
+    return;
+  }
+
+  const specRows=SPECIAL_DEFS.map(d=>{
+    const v=specialAttr(d.id);
+    const canUp=(S.specialPool||0)>0 && v<max;
+    const canDn=v>start;
+    const on=focus.kind==="special"&&focus.id===d.id?" on":"";
+    return `<div class="foSpecRow${on}" onclick="charFocus('special','${d.id}')">
+      <span class="let">${d.letter}</span><span class="nm">${d.n}</span>
+      <span class="grade">${foGrade(v)}</span><span class="num">${String(v).padStart(2,"0")}</span>
+      <button type="button" onclick="event.stopPropagation();refundSpecial('${d.id}')" ${canDn?"":"disabled"}>−</button>
+      <button type="button" onclick="event.stopPropagation();spendSpecial('${d.id}')" ${canUp?"":"disabled"}>+</button>
+    </div>`;
+  }).join("");
+
+  const derRows=[
+    ["Энергия", eCur+"/"+eMax],
+    ["Крепь (DEF)", foStatTxt("tough")],
+    ["Урон (ATK)", foStatTxt("atk")],
+    ["Темп", foStatTxt("spd")+"/с"],
+    ["Чутьё", foStatTxt("mining")],
+    ["Крит", foStatTxt("crit")],
+    ["Удача", foStatTxt("luck")],
+    ["Жадность", foStatTxt("stone")],
+    ["Реген", foStatTxt("regen")],
+    ["Дыхалка", foStatTxt("stamina")],
+    ["Ур. шахтёра", String(S.minerLv||0)],
+    ["Престиж", String(S.prestigeLv||0)]
+  ].map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("");
+
+  const skillRows=SKILL_DEFS.map(d=>{
+    const pct=skillSheetPct(d.id), tagged=isSkillTagged(d.id), cost=trainCost(d.id), ok=canTrainSkill(d.id);
+    const on=focus.kind==="skill"&&focus.id===d.id?" on":"";
+    return `<div class="foSkillRow${on}" onclick="charFocus('skill','${d.id}')">
+      <button type="button" class="tag${tagged?" on":""}" title="Тег" onclick="event.stopPropagation();toggleSkillTag('${d.id}')"></button>
+      <span class="sn">${d.n}</span>
+      <span class="pct">${pct}%</span>
+      <button type="button" class="trn" onclick="event.stopPropagation();trainSkill('${d.id}')" ${ok?"":"disabled"} title="Тренировка −${cost}">+${cost}</button>
+    </div>`;
+  }).join("");
+
+  let infoIco="🧔", infoTtl="Дворф", infoTxt="Выбери черту SPECIAL или навык — здесь будет подсказка, как в Pip-Boy.";
+  if(focus.kind==="special"){
+    const d=SPECIAL_DEFS.find(x=>x.id===focus.id), info=FO_SPECIAL_INFO[focus.id]||{};
+    if(d){ infoIco=info.ico||"🧬"; infoTtl=d.letter+". "+d.n+" · "+specialAttr(d.id);
+      infoTxt=(info.txt||d.tip)+(d.stats&&d.stats.length?(" Влияет: "+d.stats.map(s=>s.toUpperCase()).join(", ")+"."):" Влияет на очки навыков за уровень."); }
+  }else if(focus.kind==="skill"){
+    const d=SKILL_DEFS.find(x=>x.id===focus.id);
+    if(d){
+      const tr=(S.trained||{})[d.id]|0, card=(typeof skillLv==="function"?skillLv(d.id):0)|0;
+      infoIco=FO_SKILL_ICO[d.id]||"📜"; infoTtl=d.n+" · "+skillSheetPct(d.id)+"%";
+      infoTxt="Карта ур."+card+" · тренировка "+tr+"/"+(B.trainCap||15)+". +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+d.stat.toUpperCase()+" за трен. Тег: тренировка за "+(B.tagCost||1)+" очк. вместо "+(B.untagCost||2)+".";
+    }
+  }
+
+  el.innerHTML=tabs+
+    `<div class="foHead">
+      <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
+      <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
+      <div class="foCell"><span class="k">Стаж</span><span class="v">${age}</span></div>
+      <div class="foCell"><span class="k">Ранг</span><span class="v">${esc(w.title||"—")}</span></div>
+    </div>
+    <div class="foGrid">
+      <div class="foPanel">
+        <h4>S.P.E.C.I.A.L.</h4>
+        ${specRows}
+        <div class="foPoints"><span>Очки черт</span><b>${S.specialPool||0}</b></div>
+      </div>
+      <div>
+        <div class="foPanel" style="margin-bottom:6px">
+          <h4>Состояние</h4>
+          <div class="foDer">
+            <div class="row"><span>Энергия</span><span>${eCur}/${eMax}</span></div>
+            <div class="row"><span>Статус</span><span>${status}</span></div>
+          </div>
+          <div class="foAvatar"><div class="art">🧔</div><div class="sub">вид ${((S.look|0)%6)+1}</div></div>
+        </div>
+        <div class="foPanel">
+          <h4>Боевые</h4>
+          <div class="foDer">${derRows}</div>
+        </div>
+      </div>
+    </div>
+    <div class="foPanel" style="margin-bottom:6px">
+      <h4>Навыки · теги и тренировка</h4>
+      ${skillRows}
+      <div class="foTagBar"><span>Теги ${(S.skillTags||[]).length}/${B.tagSlots||3}</span>
+        <span>Очки навыков <b>${S.skillPts||0}</b></span></div>
+    </div>
+    <div class="foInfo">
+      <div class="ico">${infoIco}</div>
+      <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
+    </div>
+    <div class="foFoot">
+      <button type="button" class="btn btn-soft" onclick="closeCharSheet();openSkills('cards')">Ларь карт</button>
+      ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" onclick="openPerkPick()">ПЕРК · ${S.perkPicks}</button>`:""}
+      <button type="button" class="btn btn-hard" onclick="closeCharSheet()">ГОТОВО</button>
+    </div>`;
+}
+
+
 const SKILL_DEFS=[
   {id:"crit_up",  n:"Точный удар",    stat:"crit",  per:1.5, r:1},
   {id:"atk_up",   n:"Сила забоя",     stat:"atk",   per:8,   r:0},
@@ -4052,9 +4894,26 @@ const SKILL_DEFS=[
   {id:"stam_up",  n:"Дыхалка",        stat:"stamina",per:6,  r:3}    // шанс продлить комбо (PDF: Stamina)
 ];
 const SKILL_RAR=["Common","Rare","Epic","Legendary"];
-function skillBonus(id){ const lv=(S.skills&&S.skills[id])||0; if(!lv) return 0;
-  const d=SKILL_DEFS.find(s=>s.id===id); return d?d.per*lv:0; }
-function openSkills(){
+function skillBonus(id){
+  const d=SKILL_DEFS.find(s=>s.id===id); if(!d) return 0;
+  const cardLv=(S.skills&&S.skills[id])||0;
+  const trainLv=(S.trained&&S.trained[id])||0;
+  const tm=(BALANCE.special&&BALANCE.special.trainMult)!=null?BALANCE.special.trainMult:0.5;
+  return d.per*cardLv + d.per*trainLv*tm;
+}
+function openSkills(tab){
+  ensureSpecial(); checkMinerLevelUp(false);
+  tab=tab||"cards";
+  if(tab==="special"||tab==="train"||tab==="sheet"){
+    openCharSheet(tab==="train"?{kind:"skill",id:(SKILL_DEFS[0]&&SKILL_DEFS[0].id)||"atk_up"}:{kind:"special",id:"s"});
+    return;
+  }
+  const tabBar=`<div class="btnrow" style="margin-bottom:10px;flex-wrap:wrap">
+    <button class="btn ${tab==="cards"?"btn-hard":"btn-soft"}" onclick="openSkills('cards')">Карты</button>
+    <button class="btn btn-soft" onclick="openCharSheet()">Лист · SPECIAL</button>
+    <button class="btn btn-soft" onclick="openCharSheet({tab:'perks'})">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
+    <button class="btn btn-soft" onclick="openCharSheet({kind:'skill',id:'atk_up'})">Тренировка${(S.skillPts||0)>0?(" · "+S.skillPts):""}</button>
+  </div>`;
   const chests=BALANCE.skillChests.map(ch=>{
     const ok = ch.keyCost ? (S.chestKeys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
     const price = ch.keyCost ? (ch.keyCost+" 🗝") : (ch.gemCost+" 💎");
@@ -4063,6 +4922,7 @@ function openSkills(){
   }).join("");
   const rows=SKILL_DEFS.map(d=>{
     const lv=skillLv(d.id), cards=cardsOf(d.id), need=cardsNeeded(d.id), pro=proteinNeeded(d.id);
+    const tr=(S.trained||{})[d.id]||0;
     const cap=STAT_CAPS[d.stat], cur=stat(d.stat);
     const pct=(d.stat==="crit"||d.stat==="luck"||d.stat==="mining");
     const curTxt=pct?(Math.round(cur)+"%"):fmt(cur);
@@ -4071,15 +4931,15 @@ function openSkills(){
     const ok=canUpSkill(d.id);
     const sub=maxed
       ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} на максимуме · ${curTxt}${capTxt}</span>`
-      : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}<br>карты ${cards}/${need} · пиво ${pro} 🍺</span>`;
+      : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}<br>карты ${cards}/${need} · пиво ${pro} 🍺${tr?(" · трен."+tr):""}${isSkillTagged(d.id)?" · 🏷":""}</span>`;
     const btn=maxed
       ? `<button class="btn btn-soft" disabled style="opacity:.4">макс</button>`
       : `<button class="btn btn-soft" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"открыть":"ур."+(lv+1)}</button>`;
     return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
   }).join("");
   metaOpen("Навыки добычи",
-    "Карты копятся из ларей. Новая карта открывает ур.1; апгрейд с ур.L требует L карт и пива. Пиво 🍺 "+Math.floor(S.protein||0)+" · ключи от ларей 🗝 "+(S.chestKeys||0),
-    `<div class="sub" style="margin-bottom:6px">Лари со скилл-картами:</div>${chests}
+    "Ларь карт. Лист персонажа — SPECIAL и тренировка. Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0),
+    tabBar+`<div class="sub" style="margin-bottom:6px">Лари со скилл-картами:</div>${chests}
      <div class="sub" style="margin:12px 0 6px">Навыки:</div>${rows}`);
 }
 /* ---------- Скиллы как карточки (док §Скиллы) ---------- */
@@ -4570,7 +5430,9 @@ function openProfile(){
     '<div class="metarow"><span>Глубина прогона</span><span><b>'+Math.min(S.stageIdx,BALANCE.run.len)+'/'+BALANCE.run.len+'</b></span></div>'+
     '<div class="metarow"><span>Рекорд глубины</span><span><b>'+fmt(S.bestDepth||depth)+' м</b></span></div>'+
     '<div class="metarow"><span>Престиж · спусков</span><span>'+(S.prestigeLv||0)+' · '+(S.prestigeRuns||0)+'</span></div>'+
-    '<div class="metarow"><span>Мудрость Бороды</span><button class="btn btn-soft" onclick="openBeard()">'+w.title+'</button></div>'+'<div class="metarow"><span>Зал</span><span>ур.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
+    '<div class="metarow"><span>Мудрость Бороды</span><button class="btn btn-soft" onclick="openBeard()">'+w.title+'</button></div>'+
+    '<div class="metarow"><span>SPECIAL</span><button class="btn btn-soft" onclick="openCharSheet()">Лист · пул '+(S.specialPool||0)+'</button></div>'+
+    '<div class="metarow"><span>Зал</span><span>ур.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
     '<div class="metarow"><span>Побед в PvP · кубков</span><span>'+(S.pvpWins||0)+' · '+fmt(S.trophies||0)+'</span></div>'+
     '<div class="metarow"><span>Имя</span><span><input id="profName" value="'+esc(playerName())+'" maxlength="18" style="width:110px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px;font-size:9px"><button class="btn btn-soft" style="margin-left:6px" onclick="'+setName+'">✓</button></span></div>';
   $("profModal").style.display="flex"; Platform.logEvent("profile_view",{});
@@ -4652,7 +5514,11 @@ function renderChestCard(){
   const nb=nextBagName(lvl);
   const upSec=BALANCE.bags.upgradeSec||45;
   const timerPct=upNow? Math.max(0,100*(1-bagUpgradeLeft()/upSec)) : 0;
-  const timerLbl=upNow? ("Улучшение… "+bagUpgradeLeft()+"с") : ("~"+upSec+"с после оплаты");
+  const timerLbl=upNow
+    ? (bagSkipArmed
+      ? ("Тап ещё раз → −"+bagSkipGems()+" 💎 · "+bagUpgradeLeft()+"с")
+      : ("Улучшение… "+bagUpgradeLeft()+"с · тап — цена пропуска"))
+    : ("~"+upSec+"с после оплаты");
   let pend="";
   if(chestPending){
     pend=chestPendingCardHtml(chestPending);
@@ -4674,8 +5540,12 @@ function renderChestCard(){
       +'<div class="chTimer"><div class="chTimerBar"><div class="chTimerFill" style="width:'+timerPct.toFixed(1)+'%"></div></div>'
       +'<span class="sub" id="chTimerLbl">'+timerLbl+'</span></div>'
       +'<div class="btnrow" style="margin-top:8px">'
-      +'<button class="btn btn-hard" id="chUpBtn" onclick="chestUpgrade()" '+(canUp?'':'disabled')+'>'+(upNow?'Идёт апгрейд…':'Апгрейд · '+fmt(c)+' 🪙')+'</button>'
-      +'<button id="chSkipBtn" onclick="chestSkip()" '+(upNow?'':'disabled')+' title="пропустить ожидание">Пропуск ⏩ · 💎'+bagSkipGems()+'</button>'
+      +'<button class="btn btn-hard" id="chUpBtn" onclick="chestUpgrade()" '+(atCap?'disabled':'')+'>'
+      +(upNow
+        ? (bagSkipArmed?("Пропуск · 💎"+bagSkipGems()):("Идёт… "+bagUpgradeLeft()+"с · тап"))
+        : ("Апгрейд · "+fmt(c)+" 🪙"))
+      +'</button>'
+      +'<button id="chSkipBtn" onclick="chestSkip()" '+(upNow?'':'disabled')+' title="сразу пропустить за кристаллы">Пропуск ⏩ · 💎'+bagSkipGems()+'</button>'
       +'</div></div>';
   }
   el.innerHTML='<div class="uiSub" style="margin-bottom:10px">Сундук находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
@@ -4743,12 +5613,14 @@ function sellChestItem(){
   if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
 }
 function chestUpgrade(){
-  if(bagUpgrading()){ showToast("🧰","Идёт апгрейд","","Осталось "+bagUpgradeLeft()+"с"); return; }
+  if(bagUpgrading()){ tryBagUpgrade(); renderChestCard(); return; }
   if(!startBagUpgrade()) return;
   renderChestCard();
 }
 function chestSkip(){
-  if(!S.bagActive){ showToast("⏩","Нечего пропускать","","Сначала запусти апгрейд"); return; }
+  if(!bagUpgrading()){ showToast("⏩","Нечего пропускать","","Сначала запусти апгрейд"); return; }
+  /* в окне сундука кнопка «Пропуск» — сразу за 💎 (без второго тапа) */
+  bagSkipArmed=true;
   skipBagUpgrade();
   renderChestCard();
 }
@@ -5103,6 +5975,8 @@ function switchTab(name){
     const onMine = name==="Mine";
     const sc=$("scene"); if(sc&&sc.style) sc.style.display = onMine ? "" : "none";
     const pw=$("pwStrip"); if(pw&&pw.style) pw.style.display = onMine ? "" : "none";
+    const ss=$("statStrip"); if(ss&&ss.style) ss.style.display = onMine ? "" : "none";
+    const fp=$("feedPanel"); if(fp&&fp.style) fp.style.display = onMine ? "" : "none";
     const lw=$("logWrap"); if(lw&&lw.style) lw.style.display = onMine ? "" : "none";
   }
   if(S&&S.ftue&&name==="Meta"&&!S.ftue.t){ S.ftue.t=1; save(); }
@@ -5116,7 +5990,7 @@ function switchTab(name){
 }
 /* Что сейчас требует внимания игрока — по одному признаку на вкладку. */
 function badges(){
-  const skillReady = SKILL_DEFS.some(d=>canUpSkill(d.id)) || (S.chestKeys||0)>0;
+  const skillReady = SKILL_DEFS.some(d=>canUpSkill(d.id)) || (S.chestKeys||0)>0 || (S.skillPts||0)>0 || (S.perkPicks||0)>0;
   const petReady   = Object.keys(S.petBox||{}).some(k=>{ const [t,r]=k.split("_").map(Number); return canMergePet(t,r); });
   const geoReady   = !!S.geo && (geoMaterials()>0 || canAscendGeo());
   const lootReady  = (S.boxes||[]).length>0;
@@ -5139,6 +6013,7 @@ function renderBadges(){
   setDot("ndotPets",b.petReady||b.geoReady);
   setDot("dotSkills",b.skillReady); setDot("dotPets",b.petReady||b.geoReady);
   setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotDailySide",b.dailyReady); setDot("dotLoot",b.lootReady);
+  { const up=$("skillsUp"); if(up&&up.classList) up.classList.toggle("on", !!(S.skillPts>0 || (S.perkPicks||0)>0 || SKILL_DEFS.some(d=>canUpSkill(d.id)))); }
   try{ updateGrowthDot(); }catch(e){}
 }
 /* Аура и эмблемы активных Сетов Подземелья прямо на дворфе. */
@@ -5732,6 +6607,7 @@ load();
 try{ switchTab((S&&S.tab)||"Mine"); }catch(e){}
 try{ maybeAutoIntro(); }catch(e){}
 try{ buildUpgrades(); }catch(e){}
+try{ renderFeed(); }catch(e){}
 try{ renderGear(); }catch(e){}
 try{ newRock(); }catch(e){}
 try{ render(); }catch(e){}
@@ -5740,6 +6616,7 @@ try{ checkOffline(); }catch(e){}
 try{ growthOnBoot(); }catch(e){}
 try{ checkStreak(); }catch(e){}
 { const sm=$("setMusic"); if(sm) sm.textContent=musicOn?"🔊 вкл":"🔇 выкл"; }
+{ if(typeof syncToastToggleBtns==="function") syncToastToggleBtns(); }
 const SPEEDS=[1,2,3,10,100];
 { const sb=$("speedBtn");
   if(sb) sb.onclick=()=>{

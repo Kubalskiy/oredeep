@@ -35,6 +35,8 @@
 
   const metaPanels = [
     ["skills", () => openSkills()],
+    ["charSheet", () => openCharSheet()],
+    ["perkPick", () => { S.perkPicks=1; openPerkPick(); }],
     ["wheel", () => openWheel()],
     ["events", () => openEvents()],
     ["workouts", () => openWorkouts()],

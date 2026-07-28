@@ -121,7 +121,13 @@ let allDisabled=true;
 for(const u of UPGRADES){ if(!__ids["u_"+u.id]._q["button"].disabled) allDisabled=false; }
 T("без золота все 8 кнопок апгрейдов заблокированы", allDisabled);
 T("гача без расчёсок заблокирована", (S.combs||0)<1);
-T("кнопка сумки открывает шансы даже без золота", $("powerUp") && !$("powerUp").disabled);
+{ S.bag=1; S.gold=0; S.bagActive=null; bagSkipArmed=false; render();
+  const b0=S.bag;
+  if($("powerUp")&&$("powerUp").onclick) $("powerUp").onclick();
+  T("сумка без золота: клик не стартует и не открывает шансы",
+    !S.bagActive && S.bag===b0 && (!$("chestModal")||$("chestModal").style.display!=="flex"));
+  T("на кнопке сумки видна цена апгрейда",
+    /🪙/.test((__ids.bagAreaTimer&&__ids.bagAreaTimer.textContent)||"")); }
 { const g0=S.gold, l0=S.lvls.atk; __ids.u_atk._q["button"].onclick();
   T("клик по заблокированной кнопке ничего не делает", S.gold===g0 && S.lvls.atk===l0); }
 
@@ -605,6 +611,55 @@ S.keys=5; S.chestKeys=0; S.gems=0; S.skillCards={};
 T("нет ключей от ларей — ларь не открыть (ключи ивентов не тратятся)", openSkillChest("wood")===false && S.keys===5);
 T("миграция карт", (function(){ const d={}; ensureCards(d); return !!d.skillCards; })());
 
+console.log("\n[29b] SPECIAL + тренировка (Fallout 2 vibe)");
+localStorage.removeItem("oredeep_v3"); load();
+ensureSpecial();
+T("SPECIAL стартует с 5 по всем чертам", SPECIAL_DEFS.every(d=>specialAttr(d.id)===5));
+T("есть пул SPECIAL", (S.specialPool||0)>=5);
+{ const a0=stat("atk"); spendSpecial("s");
+  T("Сила поднимает ATK", specialAttr("s")===6 && stat("atk")>a0); }
+{ S.veinsBroken=BALANCE.special.veinsPerLv; S.minerLv=0; S.skillPts=0;
+  const g=checkMinerLevelUp(false);
+  T("уровень шахтёра даёт очки навыков", g>=1 && S.minerLv>=1 && S.skillPts>=BALANCE.special.ptsBase); }
+{ S.skillPts=10; S.skillTags=[]; S.trained={};
+  T("тег навыка ставится", tagSkill("atk_up")===true && isSkillTagged("atk_up"));
+  const cTag=trainCost("atk_up"), cRaw=BALANCE.special.untagCost;
+  T("тег дешевле тренировки", cTag===BALANCE.special.tagCost && cTag<cRaw);
+  const p0=S.skillPts; trainSkill("atk_up");
+  T("тренировка тратит очки и качает слой", S.trained.atk_up===1 && S.skillPts===p0-cTag);
+  const b0=skillBonus("atk_up");
+  S.skills.atk_up=1;
+  T("тренировка суммируется с картами", skillBonus("atk_up")>b0); }
+{ S.special.i=8; S.skillPts=0; S.minerLv=0; S.veinsBroken=BALANCE.special.veinsPerLv;
+  checkMinerLevelUp(false);
+  T("Ум даёт больше очков за уровень", S.skillPts>=BALANCE.special.ptsBase+3); }
+{ const p0=S.specialPool, v0=specialAttr("s");
+  spendSpecial("s"); refundSpecial("s");
+  T("refund SPECIAL возвращает очко", specialAttr("s")===v0 && S.specialPool===p0); }
+{ openCharSheet(); 
+  T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("S.P.E.C.I.A.L")>=0);
+  closeCharSheet();
+  T("лист персонажа закрывается", $("charModal").style.display!=="flex"); }
+
+console.log("\n[29c] Перки (Fallout 2 PICK A PERK)");
+localStorage.removeItem("oredeep_v3"); load();
+ensureSpecial();
+T("перки стартуют пустыми", (S.perks||[]).length===0 && (S.perkPicks||0)===0);
+{ S.veinsBroken=BALANCE.special.veinsPerLv*3; S.minerLv=0; S.skillPts=0; S.perkPicks=0;
+  checkMinerLevelUp(false);
+  T("каждые 3 ур. шахтёра — выбор перка", S.minerLv>=3 && (S.perkPicks||0)>=1); }
+{ S.perkPicks=1; S.perks=[];
+  const a0=stat("atk");
+  window._perkSel="hth";
+  T("confirmPerkPick берёт перк", confirmPerkPick()===true && hasPerk("hth") && S.perkPicks===0);
+  T("перк поднимает стат", stat("atk")>a0);
+  closePerkPick(); closeCharSheet(); }
+{ S.traits=[]; const p0=specialPtsPerLevel();
+  pickTrait("gifted");
+  T("черта Одарённый берётся", hasTrait("gifted") && specialAttr("s")>=6);
+  T("Одарённый режет очки навыков", specialPtsPerLevel()<p0 || specialPtsPerLevel()<=Math.floor(p0*0.8)+1);
+  closeCharSheet(); }
+
 console.log("\n[30] Ключи ларей отделены от ключей ивентов");
 localStorage.removeItem("oredeep_v3"); load();
 S.keys=2; S.chestKeys=2; S.skillCards={};
@@ -627,6 +682,7 @@ switchTab("Meta"); T("вкладка запоминается в сейве", S.
 switchTab("МУСОР"); T("неизвестная вкладка падает в Забой", S.tab==="Mine");
 S.gold=0; S.chestKeys=0; S.petBox={}; S.geo=null; S.boxes=[]; S.wkActive=null; S.bags=0; S.autoRoll=false;
 S.skills={}; S.skillCards={}; S.protein=0; S.prestigeLv=0; S.stageIdx=1;
+S.skillPts=0; S.specialPool=0; S.trained={}; S.skillTags=[];
 S.daily={day:todayStr(),prog:{},tok:0,claimed:[]};
 S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
 T("нечего делать — бейджи погашены", (function(){ const b=badges(); return !b.mine && !b.hero && !b.meta; })());
@@ -1047,8 +1103,13 @@ switchTab("Meta");
 T("switchTab прокручивает view наверх", __ids.view.scrollTop===0);
 T("switchTab подсвечивает вкладку Меты", __ids.tabMeta.classList.contains("on"));
 switchTab("Mine"); render();
-T("полоса боевых статов существует", !!__ids.pwStrip);
-T("полоса боевых статов заполнена АТК", __ids.pAtk.textContent!=="" && __ids.pAtk.textContent!=="—");
+T("полоса боевых статов существует", !!__ids.statStrip || !!__ids.pwStrip);
+T("полоса боевых статов заполнена АТК", (()=>{
+  const v=(__ids.pAtk&&__ids.pAtk.textContent)||"";
+  const u=(__ids.u_atk&&__ids.u_atk.querySelector&&__ids.u_atk.querySelector(".v"));
+  const t=v||(u&&u.textContent)||"";
+  return t!=="" && t!=="—";
+})());
 
 console.log("\n[48] Окно сундука: открыть/надеть/продать/апгрейд");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1086,6 +1147,17 @@ closeChest();
   T("showToast показывает #toast", __ids.toast.style.display==="block" && /проверка/.test(__ids.toast.innerHTML||"")); }
 { showToast('<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="oreimg big">',"COMMON","r0","Уголёк","тест img",true);
   T("toast рендерит oreimg, не текст тега", /<img\b/i.test(__ids.toast.innerHTML||"") && !/&lt;img/i.test(__ids.toast.innerHTML||"")); }
+{ const prev=toastsOn; toastsOn=false;
+  showToast("🧪","скрыто","r0","не видно","",true);
+  T("toastsOff прячет #toast", __ids.toast.style.display!=="block");
+  toastsOn=prev; }
+{ feedBuf=[]; pushFeed("Борин","Так глубоко даже налоговая не доберётся.","quip");
+  T("лента показывает реплику", /Борин/.test((__ids.feedLines&&__ids.feedLines.innerHTML)||"")
+    && /налоговая/.test((__ids.feedLines&&__ids.feedLines.innerHTML)||""));
+  showToast("⛏","COMMON","r0","Питомец","надето! старьё — скупщику +8");
+  T("лента пишет добычу", /Добыча/.test((__ids.feedLines&&__ids.feedLines.innerHTML)||""));
+  buyUpgrade && (S.gold=1e9, buyUpgrade("atk"));
+  T("лента пишет прокачку", /Прокачка/.test((__ids.feedLines&&__ids.feedLines.innerHTML)||"")); }
 
 console.log("\n[48] Sprint 1: яйца, расчёски, таймер сумки, FTUE");
 localStorage.removeItem("oredeep_v3"); load();
