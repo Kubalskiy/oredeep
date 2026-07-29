@@ -239,11 +239,23 @@ T("эль не превышает максимум", S.energy<=stat("energy"));
   UIS.close(); }
 { openSkills("cards");
   const cardsHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
-  T("навыки: Тренировка ведёт в пивные", /openWorkouts\(/.test(cardsHtml));
+  T("навыки: табы ведут в openSkills", /openSkills\('train'\)/.test(cardsHtml) && /openSkills\('sheet'\)/.test(cardsHtml));
   openSkills("train");
-  T("openSkills('train') = пивные тренировки", UIS.id==="panel" && /Тренировки/.test(($("uiTitle")&&$("uiTitle").textContent)||"")
-    && /drinkBeer\(/.test(($("uiBody")&&$("uiBody").innerHTML)||""));
-  UIS.close(); }
+  const trainHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("openSkills('train') держит табы и тренировки", UIS.id==="panel"
+    && /skillsTabs|openSkills\('cards'\)/.test(trainHtml) && /drinkBeer\(/.test(trainHtml));
+  openSkills("sheet");
+  const sheetHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("openSkills('sheet') полный лист + табы ларя", UIS.id==="panel"
+    && /skillsTabs|openSkills\('cards'\)/.test(sheetHtml)
+    && /foGrid|foSpecRow|Боевые|К\.Р\.А\.С\.А\.В\.А/i.test(sheetHtml)
+    && /Навыки добычи/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  openSkills("perks");
+  const perksHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("openSkills('perks') полный лист перков + табы", UIS.id==="panel"
+    && /openSkills\('sheet'\)/.test(perksHtml) && /Черты|Перки/i.test(perksHtml)
+    && /Навыки добычи/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  closeSkillsShell(); }
 { UIS.open("tavern","ale");
   const h=($("uiBody")&&$("uiBody").innerHTML)||"";
   T("стойка: выпить и метры", /drinkBeer\(/.test(h) && /uiTavMeters/.test(h));
@@ -703,10 +715,14 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="К.Р.А.С.А.В
   T("лист: только +, без − и сброса", /spendSpecial\('a'\)/.test(html)
     && !/refundSpecial\(/.test(html) && !/resetSpecial\(/.test(html));
 }
-{ openCharSheet(); 
+{ openCharSheet({kind:"special",id:"s"});
   T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("К.Р.А.С.А.В.А")>=0);
   closeCharSheet();
-  T("лист персонажа закрывается", $("charModal").style.display!=="flex"); }
+  T("лист персонажа закрывается", $("charModal").style.display!=="flex");
+  openSkills("sheet");
+  T("навыки: шапка Навыки добычи", (($("uiTitle")&&$("uiTitle").textContent)||"")==="Навыки добычи"
+    && /skillsTabs|openSkills\('cards'\)/.test((($("uiBody")&&$("uiBody").innerHTML)||"")));
+  closeSkillsShell(); }
 
 console.log("\n[29c] Перки");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1226,7 +1242,9 @@ closeChest();
   T("индикатор апгрейда сумки при ресурсах", __ids.bagUpDot && __ids.bagUpDot.style.display==="block");
   T("лейбл СУМКА УР на action bar", /СУМКА УР/.test((__ids.bagAreaLvl&&__ids.bagAreaLvl.textContent)||"")); }
 { showToast("🧪","ТОСТ","r3","проверка","видно",true);
-  T("showToast показывает #toast", __ids.toast.style.display==="block" && /проверка/.test(__ids.toast.innerHTML||"")); }
+  T("showToast показывает #toast", __ids.toast.style.display==="block" && /проверка/.test(__ids.toast.innerHTML||""));
+  hideToast();
+  T("тап по toast скрывает его", __ids.toast.style.display!=="block"); }
 { showToast('<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="oreimg big">',"COMMON","r0","Уголёк","тест img",true);
   T("toast рендерит oreimg, не текст тега", /<img\b/i.test(__ids.toast.innerHTML||"") && !/&lt;img/i.test(__ids.toast.innerHTML||"")); }
 { const prev=toastsOn; toastsOn=false;

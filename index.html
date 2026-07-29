@@ -71,24 +71,28 @@ button:disabled{opacity:.45;cursor:default;}
 }
 @media(min-width:520px){ #app{ border-radius:20px; height:min(96vh, 980px); } }
 
-/* A. Шапка — одна строка, согласованные кегли */
+/* A. Шапка — дворф+ник | ресурсы | бургер */
 #hud{
-  flex:none;display:flex;align-items:center;gap:6px;
+  flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;
   padding:8px 10px;background:linear-gradient(180deg,#1f170d,#140f09);
   border-bottom:2px solid var(--border);
+}
+#hud .hudLeft{
+  display:flex;align-items:center;gap:6px;min-width:0;flex:0 1 auto;max-width:42%;
 }
 #avatar{
   width:40px;height:40px;min-width:40px;border-radius:50%;
   background:var(--bgPanelAlt);border:2px solid var(--borderLight);
   display:flex;align-items:center;justify-content:center;font-size:20px;padding:0;
+  flex:none;
 }
-#hud .who{flex:1 1 64px;min-width:0;max-width:120px;display:flex;flex-direction:column;gap:1px;}
+#hud .who{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px;}
 #nickname{font-family:var(--font-display);font-size:16px;color:var(--gold);letter-spacing:.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1;}
 #hudPrestige{font-size:10px;color:var(--goldMuted);line-height:1;}
 #hud .money{
-  display:flex;flex-direction:row;align-items:center;gap:5px;
-  flex:0 1 auto;min-width:0;text-align:right;flex-wrap:nowrap;
+  display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;
+  flex:1 1 auto;min-width:0;text-align:center;flex-wrap:nowrap;
 }
 #gemsBtn{
   display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:999px;
@@ -102,7 +106,7 @@ button:disabled{opacity:.45;cursor:default;}
 #menu{
   width:40px;height:40px;min-width:40px;border-radius:var(--r-sm);
   background:var(--bgPanelAlt);border:2px solid var(--borderLight);
-  font-size:18px;color:var(--textPrimary);
+  font-size:18px;color:var(--textPrimary);flex:none;
 }
 
 /* B. Статус */
@@ -658,6 +662,8 @@ button:disabled{opacity:.45;cursor:default;}
 }
 #charSheet{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 8px 12px;
   font-family:var(--font-body);color:#d8c49a;}
+#charSheet .skillsTabs,#uiBody .skillsTabs{margin-bottom:8px;}
+#uiBody .foInPanel{font-family:var(--font-body);color:#d8c49a;}
 .foHead{display:grid;grid-template-columns:1.4fr .7fr .7fr .9fr;gap:4px;margin-bottom:6px;}
 .foCell{background:#0e0b08;border:2px solid #5a4830;border-radius:4px;padding:5px 7px;min-height:36px;}
 .foCell .k{display:block;font-size:10px;letter-spacing:1px;color:#c9974a;text-transform:uppercase;
@@ -793,8 +799,8 @@ body > .modal{
 .oreimg.big{width:44px;height:44px;}
 /* Внутри #app + absolute: иначе fixed цепляется к viewport и падает ниже рамки игры */
 #toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
-  border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:none;
-  font-family:var(--font-body);}
+  border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:auto;cursor:pointer;
+  font-family:var(--font-body);touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 #toast .big{font-size:30px;}
 #toast .r{font-weight:400;font-size:16px;text-transform:uppercase;letter-spacing:1px;font-family:var(--font-display);}
 #toast .nm{font-size:16px;font-weight:400;margin:2px 0;font-family:var(--font-display);}
@@ -1012,7 +1018,7 @@ body > .modal{
     font-family:var(--font-display);letter-spacing:.5px;}
 
   #toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
-    border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:none;}
+    border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:auto;cursor:pointer;}
 
   #toast .big{font-size:30px;}
 
@@ -1216,10 +1222,12 @@ body > .modal{
 <div id="app">
   <!-- A. Шапка -->
   <header id="hud">
-    <button type="button" id="avatar" title="профиль">🧔</button>
-    <div class="who">
-      <div id="nickname">БЕЗБОРОДЫЙ</div>
-      <span id="hudPrestige"></span>
+    <div class="hudLeft">
+      <button type="button" id="avatar" title="профиль">🧔</button>
+      <div class="who">
+        <div id="nickname">БЕЗБОРОДЫЙ</div>
+        <span id="hudPrestige"></span>
+      </div>
     </div>
     <div class="money">
       <button type="button" id="gemsBtn" onclick="UIS.open('shop','gems')">💎 <span id="gems">0</span></button>
@@ -4017,6 +4025,14 @@ function renderLog(){
   if(logPage===0 && typeof g.scrollHeight==="number") g.scrollTop=g.scrollHeight;
 }
 let toastHideT=0;
+function hideToast(e){
+  if(e){
+    if(e.preventDefault) e.preventDefault();
+    if(e.stopPropagation) e.stopPropagation();
+  }
+  clearTimeout(toastHideT);
+  const t=$("toast"); if(t) t.style.display="none";
+}
 function toastIconHtml(icon){
   const s=String(icon||"");
   /* Ore-дроп передаёт <img class="oreimg"> — его нельзя esc() */
@@ -4045,6 +4061,15 @@ function showToast(icon,rar,rcls,name,extra,important){
   t.style.display="block";
   clearTimeout(toastHideT);
   toastHideT=setTimeout(function(){ if(t) t.style.display="none"; }, important?2800:1800);
+}
+if($("toast")){
+  /* pointerdown: не даём ghost-click уйти в кнопку под тостом после hide */
+  $("toast").addEventListener("pointerdown", function(e){
+    if(e.preventDefault) e.preventDefault();
+    if(e.stopPropagation) e.stopPropagation();
+    hideToast();
+  }, {passive:false});
+  $("toast").onclick=hideToast;
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];
@@ -4798,7 +4823,7 @@ function openPerkPick(){
   ensureSpecial(); checkMinerLevelUp(false);
   if(!canPickPerk()){
     showToast("📜","Нечего выбирать","",(S.perkPicks||0)<1?"Перк каждые "+((BALANCE.perks&&BALANCE.perks.everyLv)||3)+" ур. шахтёра":"Все перки взяты");
-    window._charTab="perks"; openCharSheet(); return false;
+    window._charTab="perks"; openCharSheet({tab:"perks"}); return false;
   }
   window._perkSel=(availablePerks()[0]||{}).id||null;
   renderPerkPick();
@@ -4841,14 +4866,16 @@ function confirmPerkPick(){
   sayQuip("Новая привычка вросла в кости. Гора кивает.",3);
   sfxGear(); save(); closePerkPick();
   window._charTab="perks";
-  if(charSheetOpen()) renderCharSheet();
-  else openCharSheet();
+  if(_skillsShellTab!=null) openSkills("perks");
+  else if(charSheetOpen()) renderCharSheet();
+  else openSkills("perks");
   if((S.perkPicks||0)>0 && availablePerks().length) setTimeout(()=>openPerkPick(), 280);
   return true;
 }
 function cancelPerkPick(){
   closePerkPick();
-  if(charSheetOpen()){ window._charTab="perks"; renderCharSheet(); }
+  if(_skillsShellTab!=null) openSkills(_skillsShellTab==="train"||_skillsShellTab==="cards"?_skillsShellTab:"perks");
+  else if(charSheetOpen()){ window._charTab="perks"; renderCharSheet(); }
 }
 function canPickTrait(id){
   ensureSpecial();
@@ -4884,6 +4911,8 @@ function charSheetOpen(){
 }
 function refreshSpecialUi(tab){
   if(charSheetOpen()) renderCharSheet();
+  else if(_skillsShellTab==="sheet"||_skillsShellTab==="perks"||_skillsShellTab==="cards")
+    openSkills(_skillsShellTab);
 }
 function tagSkill(id){
   ensureSpecial();
@@ -5001,18 +5030,32 @@ const FO_SKILL_INFO={
 };
 function charFocus(kind,id){
   window._charFocus={kind,id};
-  renderCharSheet();
+  if(_skillsShellTab==="sheet"||_skillsShellTab==="perks") openSkills(_skillsShellTab);
+  else renderCharSheet();
 }
 function closeCharSheet(){
   const m=$("charModal"); if(m) m.style.display="none";
   closePerkPick();
 }
+function closeSkillsShell(){
+  _skillsShellTab=null;
+  closeCharSheet();
+  try{ if(typeof UIS!=="undefined") UIS.close(); }catch(e){}
+  const meta=$("metaModal"); if(meta) meta.style.display="none";
+}
 function openCharSheet(focus){
   ensureSpecial(); checkMinerLevelUp(false);
-  if(focus&&focus.tab) window._charTab=focus.tab;
-  if(focus&&focus.kind) window._charFocus=focus;
-  else if(!window._charFocus) window._charFocus={kind:"special",id:"s"};
+  /* С фокусом (тесты/глубокие ссылки) — модалка; иначе единая оболочка «Навыки добычи». */
+  if(!(focus&&focus.kind)){
+    openSkills((focus&&focus.tab==="perks")?"perks":"sheet");
+    return;
+  }
+  _skillsShellTab=null;
+  if(focus.tab) window._charTab=focus.tab;
+  else window._charTab=(focus.kind==="perk"||focus.kind==="trait")?"perks":"stats";
+  window._charFocus=focus;
   if(!window._charTab) window._charTab="stats";
+  try{ if(typeof UIS!=="undefined"&&UIS.id==="panel") UIS.close(); }catch(e){}
   const meta=$("metaModal"); if(meta) meta.style.display="none";
   closePerkPick();
   renderCharSheet();
@@ -5020,21 +5063,29 @@ function openCharSheet(focus){
 }
 function setCharTab(tab){
   window._charTab=tab||"stats";
+  if(_skillsShellTab!=null){
+    openSkills(tab==="perks"?"perks":"sheet");
+    return;
+  }
   renderCharSheet();
 }
-function renderCharSheet(){
+function buildCharSheetHtml(inShell){
   ensureSpecial();
-  const el=$("charSheet"); if(!el) return;
-  const B=BALANCE.special||{}, max=B.attrMax||10, start=B.start||5;
+  const B=BALANCE.special||{}, max=B.attrMax||10;
+  if(inShell) window._charTab=_skillsShellTab==="perks"?"perks":"stats";
   const tab=window._charTab||"stats";
   const focus=window._charFocus||{kind:"special",id:"s"};
   const w=(typeof beardWisdom==="function")?beardWisdom():{title:"Борода"};
   const age=1+(S.minerLv|0)+(S.prestigeLv|0);
   const eMax=Math.max(1,stat("energy")|0), eCur=Math.max(0,Math.min(eMax,(S.energy!=null?S.energy:eMax)|0));
-  const tabs=`<div class="foTabs">
+  /* В оболочке ларя верхние Карты/Лист/Перки/Тренировка заменяют СТАТЫ/ПЕРКИ */
+  const tabs=inShell?"":`<div class="foTabs">
     <button type="button" class="${tab==="stats"?"on":""}" onclick="setCharTab('stats')">Статы</button>
     <button type="button" class="${tab==="perks"?"on":""}" onclick="setCharTab('perks')">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
   </div>`;
+  const doneBtn=inShell
+    ?`<button type="button" class="btn btn-hard" onclick="closeSkillsShell()">ГОТОВО</button>`
+    :`<button type="button" class="btn btn-hard" onclick="closeCharSheet()">ГОТОВО</button>`;
 
   if(tab==="perks"){
     const owned=(S.perks||[]).map(id=>{
@@ -5057,7 +5108,7 @@ function renderCharSheet(){
       const t=traitDef(focus.id);
       if(t){ infoIco=t.ico; infoTtl=t.n; infoTxt=t.desc; }
     }
-    el.innerHTML=tabs+
+    return tabs+
       `<div class="foHead">
         <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
         <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
@@ -5080,16 +5131,14 @@ function renderCharSheet(){
       </div>
       <div class="foFoot">
         <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Статы</button>
-        <button type="button" class="btn btn-hard" onclick="closeCharSheet()">ГОТОВО</button>
+        ${doneBtn}
       </div>`;
-    return;
   }
 
   const specRows=SPECIAL_DEFS.map(d=>{
     const v=specialAttr(d.id);
     const canUp=(S.specialPool||0)>0 && v<max;
     const on=focus.kind==="special"&&focus.id===d.id?" on":"";
-    /* Только «+»: вложение окончательное, откат запрещён. */
     return `<div class="foSpecRow${on}">
       <span class="nm" onclick="charFocus('special','${d.id}')">${d.n}</span>
       <span class="foSpecCtrl">
@@ -5117,8 +5166,6 @@ function renderCharSheet(){
   const skillRows=SKILL_DEFS.map(d=>{
     const pct=skillSheetPct(d.id), tagged=isSkillTagged(d.id), cost=trainCost(d.id), ok=canTrainSkill(d.id);
     const on=focus.kind==="skill"&&focus.id===d.id?" on":"";
-    /* Кнопки сами ловят тап; имя/% только фокус — без onclick на всей строке,
-       иначе на мобиле клик по + иногда съедался re-render'ом фокуса. */
     return `<div class="foSkillRow${on}">
       <button type="button" class="tag${tagged?" on":""}" title="${tagged?"Снять тег":"Тег · дешевле качать"}"
         onclick="toggleSkillTag('${d.id}')"></button>
@@ -5144,7 +5191,7 @@ function renderCharSheet(){
     }
   }
 
-  el.innerHTML=tabs+
+  return tabs+
     `<div class="foHead">
       <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
       <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
@@ -5173,12 +5220,17 @@ function renderCharSheet(){
         <span>Очки навыков <b>${S.skillPts||0}</b></span></div>
     </div>
     <div class="foFoot">
-      <button type="button" class="btn btn-soft" onclick="closeCharSheet();openSkills('cards')">Ларь карт</button>
+      ${inShell
+        ?`<button type="button" class="btn btn-soft" onclick="openSkills('cards')">Карты</button>`
+        :`<button type="button" class="btn btn-soft" onclick="closeCharSheet();openSkills('cards')">Ларь карт</button>`}
       ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" onclick="openPerkPick()">ПЕРК · ${S.perkPicks}</button>`:""}
-      <button type="button" class="btn btn-hard" onclick="closeCharSheet()">ГОТОВО</button>
+      ${doneBtn}
     </div>`;
 }
-
+function renderCharSheet(){
+  const el=$("charSheet"); if(!el) return;
+  el.innerHTML=buildCharSheetHtml(false);
+}
 
 const SKILL_DEFS=[
   {id:"crit_up",  n:"Точный удар",    stat:"crit",  per:1.5, r:1},
@@ -5188,8 +5240,8 @@ const SKILL_DEFS=[
   {id:"energy_up",n:"Второе дыхание", stat:"energy",per:15,  r:1},
   {id:"mining_up",n:"Чутьё пласта",   stat:"mining",per:2,   r:2},
   {id:"tough_up", n:"Дубовая крепь",  stat:"tough", per:6,   r:3},
-  {id:"regen_up", n:"Второе сердце",  stat:"regen", per:3,   r:2},   // лечение энергии/с (PDF: Regen)
-  {id:"stam_up",  n:"Дыхалка",        stat:"stamina",per:6,  r:3}    // шанс продлить комбо (PDF: Stamina)
+  {id:"regen_up", n:"Второе сердце",  stat:"regen", per:3,   r:2},
+  {id:"stam_up",  n:"Дыхалка",        stat:"stamina",per:6,  r:3}
 ];
 const SKILL_RAR=["Common","Rare","Epic","Legendary"];
 function skillBonus(id){
@@ -5199,44 +5251,67 @@ function skillBonus(id){
   const tm=(BALANCE.special&&BALANCE.special.trainMult)!=null?BALANCE.special.trainMult:0.5;
   return d.per*cardLv + d.per*trainLv*tm;
 }
+/** Текущая вкладка оболочки «Навыки» (карточки/лист/перки/тренировка). null = не в ней. */
+let _skillsShellTab=null;
+function skillsTabBar(tab){
+  return `<div class="btnrow skillsTabs" style="margin-bottom:10px;flex-wrap:wrap">
+    <button class="btn ${tab==="cards"?"btn-hard":"btn-soft"}" onclick="openSkills('cards')">Карты</button>
+    <button class="btn ${tab==="sheet"?"btn-hard":"btn-soft"}" onclick="openSkills('sheet')">Лист · КРАСАВА</button>
+    <button class="btn ${tab==="perks"?"btn-hard":"btn-soft"}" onclick="openSkills('perks')">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
+    <button class="btn ${tab==="train"?"btn-hard":"btn-soft"}" onclick="openSkills('train')">Тренировка${(S.wkPts||0)>0?(" · "+(S.wkPts|0)):""}</button>
+  </div>`;
+}
 function openSkills(tab){
   ensureSpecial(); checkMinerLevelUp(false);
   tab=tab||"cards";
-  if(tab==="train"||tab==="workouts"){ openWorkouts(); return; }
-  if(tab==="special"||tab==="sheet"){ openCharSheet({kind:"special",id:"s"}); return; }
-  const tabBar=`<div class="btnrow" style="margin-bottom:10px;flex-wrap:wrap">
-    <button class="btn ${tab==="cards"?"btn-hard":"btn-soft"}" onclick="openSkills('cards')">Карты</button>
-    <button class="btn btn-soft" onclick="openCharSheet()">Лист · КРАСАВА</button>
-    <button class="btn btn-soft" onclick="openCharSheet({tab:'perks'})">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
-    <button class="btn btn-soft" onclick="openWorkouts()">Тренировка${(S.wkPts||0)>0?(" · "+(S.wkPts|0)):""}</button>
-  </div>`;
-  const chests=BALANCE.skillChests.map(ch=>{
-    const ok = ch.keyCost ? (S.chestKeys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
-    const price = ch.keyCost ? (ch.keyCost+" 🗝") : (ch.gemCost+" 💎");
-    return `<div class="metarow"><span>${ch.n}<br><span class="sub">${ch.cards} карт · гарантия <b class="r${ch.minR}">${SKILL_RAR[ch.minR]}</b>+</span></span>
-      <button class="${ch.keyCost?"btn btn-soft":"btn btn-hard"}" onclick="openSkillChest('${ch.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${price}</button></div>`;
-  }).join("");
-  const rows=SKILL_DEFS.map(d=>{
-    const lv=skillLv(d.id), cards=cardsOf(d.id), need=cardsNeeded(d.id), pro=proteinNeeded(d.id);
-    const tr=(S.trained||{})[d.id]||0;
-    const cap=STAT_CAPS[d.stat], cur=stat(d.stat);
-    const pct=(d.stat==="crit"||d.stat==="luck"||d.stat==="mining");
-    const curTxt=pct?(Math.round(cur)+"%"):fmt(cur);
-    const maxed=cap!=null && cur>=cap-1e-9;
-    const capTxt=cap!=null?` / макс ${cap}${pct?"%":""}`:"";
-    const ok=canUpSkill(d.id);
-    const sub=maxed
-      ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} на максимуме · ${curTxt}${capTxt}</span>`
-      : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}<br>карты ${cards}/${need} · пиво ${pro} 🍺${tr?(" · трен."+tr):""}${isSkillTagged(d.id)?" · 🏷":""}</span>`;
-    const btn=maxed
-      ? `<button class="btn btn-soft" disabled style="opacity:.4">макс</button>`
-      : `<button class="btn btn-soft" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"открыть":"ур."+(lv+1)}</button>`;
-    return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · ур.${lv}<br>${sub}</span>${btn}</div>`;
-  }).join("");
-  metaOpen("Навыки добычи",
-    "Ларь карт. Лист персонажа — КРАСАВА и тренировка. Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0),
-    tabBar+`<div class="sub" style="margin-bottom:6px">Лари со скилл-картами:</div>${chests}
-     <div class="sub" style="margin:12px 0 6px">Навыки:</div>${rows}`);
+  if(tab==="workouts") tab="train";
+  if(tab==="special") tab="sheet";
+  const cm=$("charModal"); if(cm) cm.style.display="none";
+  closePerkPick();
+  _skillsShellTab=tab;
+  const tabBar=skillsTabBar(tab);
+  let body="", sub="Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0);
+  if(tab==="sheet"||tab==="perks"){
+    window._charTab=tab==="perks"?"perks":"stats";
+    body=`<div class="foInPanel">${buildCharSheetHtml(true)}</div>`;
+    sub=tab==="perks"
+      ?"Перки и черты · пиво 🍺 "+Math.floor(S.protein||0)
+      :"КРАСАВА · очки черт "+(S.specialPool||0)+" · пиво 🍺 "+Math.floor(S.protein||0);
+  } else if(tab==="train"){
+    ensureWorkouts(S);
+    body=workoutsPanelHtml();
+    sub="Выпей пиво → очки → путь тренировки";
+  } else {
+    tab="cards"; _skillsShellTab="cards";
+    const chests=BALANCE.skillChests.map(ch=>{
+      const ok = ch.keyCost ? (S.chestKeys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
+      const price = ch.keyCost ? (ch.keyCost+" 🗝") : (ch.gemCost+" 💎");
+      return `<div class="metarow"><span>${ch.n}<br><span class="sub">${ch.cards} карт · гарантия <b class="r${ch.minR}">${SKILL_RAR[ch.minR]}</b>+</span></span>
+        <button class="${ch.keyCost?"btn btn-soft":"btn btn-hard"}" onclick="openSkillChest('${ch.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${price}</button></div>`;
+    }).join("");
+    const rows=SKILL_DEFS.map(d=>{
+      const lv=skillLv(d.id), cards=cardsOf(d.id), need=cardsNeeded(d.id), pro=proteinNeeded(d.id);
+      const tr=(S.trained||{})[d.id]||0;
+      const cap=STAT_CAPS[d.stat], cur=stat(d.stat);
+      const pct=(d.stat==="crit"||d.stat==="luck"||d.stat==="mining");
+      const curTxt=pct?(Math.round(cur)+"%"):fmt(cur);
+      const maxed=cap!=null && cur>=cap-1e-9;
+      const capTxt=cap!=null?` / макс ${cap}${pct?"%":""}`:"";
+      const ok=canUpSkill(d.id);
+      const subRow=maxed
+        ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} на максимуме · ${curTxt}${capTxt}</span>`
+        : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · сейчас ${curTxt}${capTxt}<br>карты ${cards}/${need} · пиво ${pro} 🍺${tr?(" · трен."+tr):""}${isSkillTagged(d.id)?" · 🏷":""}</span>`;
+      const btn=maxed
+        ? `<button class="btn btn-soft" disabled style="opacity:.4">макс</button>`
+        : `<button class="btn btn-soft" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"открыть":"ур."+(lv+1)}</button>`;
+      return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · ур.${lv}<br>${subRow}</span>${btn}</div>`;
+    }).join("");
+    body=`<div class="sub" style="margin-bottom:6px">Лари со скилл-картами:</div>${chests}
+      <div class="sub" style="margin:12px 0 6px">Навыки:</div>${rows}`;
+    sub="Ларь карт. Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0);
+  }
+  metaOpen("Навыки добычи", sub, tabBar+body);
+  if(tab==="train") workoutsBindRefresh();
 }
 /* ---------- Скиллы как карточки (док §Скиллы) ---------- */
 function cardsOf(id){ return (S.skillCards||{})[id]||0; }
@@ -5265,7 +5340,7 @@ function upSkill(id){
   S.skills=S.skills||{}; S.skills[id]=skillLv(id)+1;
   dailyProgress("skill",1); Platform.logEvent("skill_up",{id,lv:S.skills[id]}); sfxGear();
   showToast("🃏","Навык прокачан","r"+sd.r,sd.n+" ур."+S.skills[id],"−"+need+" карт · −"+pro+" 🍺");
-  save(); render(); openSkills();
+  save(); render(); openSkills(_skillsShellTab||"cards");
   return true;
 }
 /* Сундуки: гарантируют минимальную редкость карты, остальное — случайно. */
@@ -5290,7 +5365,7 @@ function openSkillChest(chestId){
   showToast("🎴","Ларь открыт","",ch.n,got.join(" · "),true);
   Platform.logEvent("skill_chest",{id:chestId}); sfxGear(); save(); render();
   if(typeof UIS!=="undefined" && UIS.id==="shop") UIS.render("shop");
-  else openSkills();
+  else openSkills(_skillsShellTab||"cards");
   return true;
 }
 function openWheel(){
@@ -6011,6 +6086,7 @@ function upgradeMug(){
   if(typeof UIS!=="undefined" && UIS.id==="tavern") UIS.render();
   const mm=$("metaModal");
   if(mm&&mm.style.display==="flex"&&($("metaTitle")||{}).textContent==="Тренировки") openWorkouts();
+  if(_skillsShellTab==="train") openSkills("train");
   return true;
 }
 function drinkBeer(){
@@ -6035,15 +6111,14 @@ function drinkBeer(){
   Platform.logEvent("ale_drink",{pts, cost, mul});
   save(); render();
   const onTrain=typeof UIS!=="undefined" && UIS.id==="panel"
-    && /Тренировки/.test(($("uiTitle")&&$("uiTitle").textContent)||"");
+    && (/Тренировки|Навыки/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
   const mm=$("metaModal");
-  if(onTrain || (mm&&mm.style.display==="flex"&&($("metaTitle")||{}).textContent==="Тренировки")) openWorkouts();
+  if(_skillsShellTab==="train" || onTrain || (mm&&mm.style.display==="flex"&&($("metaTitle")||{}).textContent==="Тренировки")) refreshWorkoutsUi();
   if(typeof UIS!=="undefined" && UIS.id==="tavern") UIS.render();
   return true;
 }
-function openWorkouts(){
+function workoutsPanelHtml(){
   ensureWorkouts(S);
-  clearInterval(_wkRefreshT);
   const W=BALANCE.workouts, beer=Math.floor(S.protein||0), pts=S.wkPts|0;
   const drinkCost=mugDrinkCost(), drinkPts=mugDrinkPts(), mul=mugTier().mul;
   const canDrink=beer>=drinkCost && Date.now()>=_drinkCdUntil;
@@ -6081,19 +6156,42 @@ function openWorkouts(){
     }
     return `<div class="metarow"><span><b>${nm}</b> · ур.${lv}<br><span style="color:var(--dim)">пост. буст · сейчас +${workoutBonus(p)}%</span></span>${btn}</div>`;
   }).join("");
+  return head+rows;
+}
+function refreshWorkoutsUi(){
+  if(_skillsShellTab==="train") openSkills("train");
+  else openWorkouts();
+}
+function workoutsBindRefresh(){
+  clearInterval(_wkRefreshT);
+  if(!S.wkActive){ _wkRefreshT=0; return; }
+  _wkRefreshT=setInterval(()=>{
+    if(_skillsShellTab==="train"){
+      const on=typeof UIS!=="undefined" && UIS.id==="panel"
+        && /Навыки/.test(($("uiTitle")&&$("uiTitle").textContent)||"");
+      if(!on){ clearInterval(_wkRefreshT); _wkRefreshT=0; return; }
+      if(!S.wkActive){ clearInterval(_wkRefreshT); _wkRefreshT=0; openSkills("train"); return; }
+      openSkills("train");
+      return;
+    }
+    const m=$("metaModal"), ttl=$("metaTitle");
+    const onPanel=typeof UIS!=="undefined" && UIS.id==="panel"
+      && /Тренировки/.test(($("uiTitle")&&$("uiTitle").textContent)||"");
+    if(!onPanel && (!m||m.style.display!=="flex"||!ttl||ttl.textContent!=="Тренировки")){
+      clearInterval(_wkRefreshT); _wkRefreshT=0; return;
+    }
+    if(!S.wkActive){ clearInterval(_wkRefreshT); _wkRefreshT=0; openWorkouts(); return; }
+    openWorkouts();
+  },1000);
+}
+function openWorkouts(){
+  ensureWorkouts(S);
+  _skillsShellTab=null;
+  clearInterval(_wkRefreshT);
   metaOpen("Тренировки",
-    "Выпей пиво → получи очки → запусти путь. Пассив: +"+W.proteinPerHour+" 🍺/ч.",
-    head+rows);
-  if(S.wkActive){
-    _wkRefreshT=setInterval(()=>{
-      const m=$("metaModal"), ttl=$("metaTitle");
-      if(!m||m.style.display!=="flex"||!ttl||ttl.textContent!=="Тренировки"){
-        clearInterval(_wkRefreshT); _wkRefreshT=0; return;
-      }
-      if(!S.wkActive){ clearInterval(_wkRefreshT); _wkRefreshT=0; openWorkouts(); return; }
-      openWorkouts();
-    },1000);
-  } else { _wkRefreshT=0; }
+    "Выпей пиво → получи очки → запусти путь. Пассив: +"+BALANCE.workouts.proteinPerHour+" 🍺/ч.",
+    workoutsPanelHtml());
+  workoutsBindRefresh();
 }
 function startWorkout(path){
   ensureWorkouts(S);
@@ -6107,7 +6205,7 @@ function startWorkout(path){
   S.wkActive={path, end:Date.now()+Math.round((W.timerSec||30)*1000)};
   Platform.logEvent("workout_start",{path,cost});
   showToast("💪","Тренировка", "", WK_PATH_NAME[path]||path, "−"+cost+" очк.");
-  save(); render(); openWorkouts();
+  save(); render(); refreshWorkoutsUi();
   return true;
 }
 function claimWorkout(){
@@ -6118,7 +6216,7 @@ function claimWorkout(){
   addGymXP(GYM_XP.perWorkout);
   dailyProgress("feast",1);
   showToast("🗝","Ключ от ларя","","Тренировка окончена · +"+workoutBonus(p)+"% "+(WK_PATH_NAME[p]||p),"всего ключей: "+S.chestKeys);
-  sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); openWorkouts();
+  sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); refreshWorkoutsUi();
   return true;
 }
 function skipWorkout(){
@@ -6126,7 +6224,7 @@ function skipWorkout(){
   if(!S.wkActive) return false;
   if((S.gems||0)<cost){ showToast("💎","Мало кристаллов","","нужно "+cost); return false; }
   S.gems-=cost; S.wkActive.end=Date.now();
-  save(); render(); openWorkouts();
+  save(); render(); refreshWorkoutsUi();
   return true;
 }
 function workoutBonus(id){ const lv=(S.workouts&&S.workouts[id])||0; if(!lv) return 0;

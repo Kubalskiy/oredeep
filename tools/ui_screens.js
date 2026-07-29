@@ -66,6 +66,7 @@ const UIS={
     }
     this.setChrome(false);
     this.id=null; this.tab=null; this._stack=[]; this._lastMeta=null;
+    try{ if(typeof _skillsShellTab!=="undefined") _skillsShellTab=null; }catch(e){}
     try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   },
   /** Назад: из panel/push → предыдущий экран (напр. Союзники); иначе закрыть. */
@@ -936,7 +937,7 @@ function uiWire(){
   if($("navTavBtn")) $("navTavBtn").onclick=()=>UIS.open("tavern","ale");
   if($("navPvp")) $("navPvp").onclick=()=>UIS.open("pvp");
   if($("navShop")) $("navShop").onclick=()=>UIS.open("shop","offers");
-  if($("navSkills")) $("navSkills").onclick=()=>openCharSheet();
+  if($("navSkills")) $("navSkills").onclick=()=>openSkills("sheet");
   if($("navMines")) $("navMines").onclick=()=>UIS.open("mines");
   const ml=$("mineLabel");
   if(ml){ ml.style.cursor="pointer"; ml.title="Штольни"; ml.onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); UIS.open("mines"); }; }
