@@ -107,21 +107,22 @@ button:disabled{opacity:.45;cursor:default;}
 
 /* B. Статус */
 #statusBar{
-  flex:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;
-  padding:8px 10px;background:#100c08;border-bottom:1px solid var(--border);
+  flex:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;
+  padding:4px 5px;background:#100c08;border-bottom:1px solid var(--border);
 }
 #statusBar .cell{
-  background:var(--bgPanel);border:1px solid var(--border);border-radius:var(--r-sm);
-  padding:7px 6px;text-align:center;color:inherit;font:inherit;width:100%;
+  background:var(--bgPanel);border:1px solid var(--border);border-radius:4px;
+  padding:3px 4px;text-align:center;color:inherit;font:inherit;width:100%;
+  min-height:0;
 }
 #statusBar button.cell{cursor:pointer;-webkit-tap-highlight-color:transparent;}
 #statusBar button.cell:active{transform:scale(.98);border-color:var(--goldMuted);}
-#statusBar .k{font-size:10px;letter-spacing:1px;color:var(--textMuted);font-family:var(--font-display);}
-#statusBar .v{font-family:var(--font-display);font-size:16px;color:var(--textPrimary);margin-top:2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#statusBar .k{font-size:8px;letter-spacing:.5px;color:var(--textMuted);font-family:var(--font-display);line-height:1.1;}
+#statusBar .v{font-family:var(--font-display);font-size:11px;color:var(--textPrimary);margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;}
 #statMine{color:#7eb6e8;}
 #statLoot{color:var(--goldMuted);}
-#statMiner{color:var(--gold);font-size:14px;}
+#statMiner{color:var(--gold);font-size:10px;}
 
 /* Скролл */
 #view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overflow-x:hidden;position:relative;}
@@ -341,27 +342,33 @@ button:disabled{opacity:.45;cursor:default;}
 @keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
 #bubble{display:none!important;} /* заменено на #feedPanel */
 #feedPanel{
-  flex:none;margin:6px 10px 8px;display:flex;flex-direction:column;gap:4px;
-  max-height:168px;overflow:hidden;pointer-events:none;
+  flex:none;margin:4px 10px 6px;display:flex;flex-direction:column;gap:2px;
+  height:76px;overflow:hidden;pointer-events:none;
 }
-#feedLines{display:flex;flex-direction:column;gap:4px;}
+#feedLines{display:flex;flex-direction:column;gap:2px;height:100%;}
 .feedLine{
-  padding:7px 12px;border-radius:14px;background:#0a0c10;
-  border:1px solid var(--goldMuted);font-size:12px;line-height:1.35;
-  color:var(--textBody);text-align:center;font-family:var(--font-body);
-  white-space:normal;overflow:visible;word-break:break-word;
-  box-shadow:0 2px 8px #0008;
+  height:24px;box-sizing:border-box;flex:none;
+  padding:0 10px;border-radius:999px;background:#0a0c10;
+  border:1px solid var(--goldMuted);font-size:11px;line-height:1.2;
+  color:var(--textBody);font-family:var(--font-body);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;box-shadow:0 1px 4px #0006;
 }
-.feedLine b{color:var(--gold);font-weight:400;margin-right:4px;font-family:var(--font-display);font-size:14px;}
+.feedLine .feedTxt{
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-align:center;max-width:100%;
+}
+.feedLine b{color:var(--gold);font-weight:400;margin-right:4px;font-family:var(--font-display);font-size:12px;}
 .feedLine.quip{border-color:#8a7040;}
 .feedLine.loot{border-color:#6a8a50;}
 .feedLine.buy{border-color:#6a7ab0;}
 .feedLine.up{border-color:#c9974a;}
 .feedLine.hot{border-color:var(--gold);background:#141008;}
 #feedEmpty{
-  padding:7px 12px;border-radius:14px;background:#0a0c10;
-  border:1px dashed #5a4830;font-size:12px;color:var(--textMuted);text-align:center;
-  font-family:var(--font-body);white-space:normal;word-break:break-word;
+  height:24px;box-sizing:border-box;padding:0 10px;border-radius:999px;background:#0a0c10;
+  border:1px dashed #5a4830;font-size:11px;color:var(--textMuted);text-align:center;
+  font-family:var(--font-body);display:flex;align-items:center;justify-content:center;
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
 }
 #setAura,#setRing,#prestigeMark,#paperdoll{position:absolute;pointer-events:none;}
 #paperdoll{inset:0;z-index:7;display:none;}
@@ -635,14 +642,21 @@ button:disabled{opacity:.45;cursor:default;}
 .foDer .row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #2a2118;gap:4px;min-width:0;}
 .foDer .row span:first-child{color:#cbb89a;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .foDer .row span:last-child{color:#8fce6a;font-weight:600;font-family:var(--font-display);font-size:13px;flex:none;}
-.foSkillRow{display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;align-items:center;gap:4px;
-  padding:4px 0;border-bottom:1px solid #2a2118;font-size:12px;font-family:var(--font-body);}
+.foSkillRow{display:grid;grid-template-columns:40px minmax(0,1fr) auto 48px;align-items:center;gap:4px;
+  padding:2px 0;border-bottom:1px solid #2a2118;font-size:12px;font-family:var(--font-body);}
 .foSkillRow.on{background:#241a10;}
-.foSkillRow .tag{width:14px;height:14px;border-radius:50%;border:2px solid #8a3030;background:#1a1010;padding:0;margin:0;}
-.foSkillRow .tag.on{background:#e05050;box-shadow:0 0 6px #e0505088;}
-.foSkillRow .sn{color:#cbb89a;overflow:visible;min-width:0;font-size:12px;font-weight:600;white-space:normal;line-height:1.2;}
-.foSkillRow .pct{color:#8fce6a;font-weight:400;min-width:34px;text-align:right;font-family:var(--font-display);font-size:14px;}
-.foSkillRow .trn{color:#c9974a;font-size:12px;min-width:26px;text-align:right;font-family:var(--font-display);}
+.foSkillRow .tag{width:36px;height:36px;min-width:36px;border-radius:8px;border:2px solid #8a3030;background:#1a1010;padding:0;margin:0;
+  display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.foSkillRow .tag::after{content:"";width:12px;height:12px;border-radius:50%;background:#2a1515;border:1px solid #5a3030;}
+.foSkillRow .tag.on{border-color:#e05050;background:#2a1212;box-shadow:inset 0 0 0 1px #e0505088;}
+.foSkillRow .tag.on::after{background:#e05050;box-shadow:0 0 6px #e0505088;border-color:#ff8080;}
+.foSkillRow .sn{color:#cbb89a;overflow:visible;min-width:0;font-size:12px;font-weight:600;white-space:normal;line-height:1.2;cursor:pointer;padding:8px 2px;}
+.foSkillRow .pct{color:#8fce6a;font-weight:400;min-width:34px;text-align:right;font-family:var(--font-display);font-size:14px;cursor:pointer;padding:8px 2px;}
+.foSkillRow .trn{min-width:48px;min-height:36px;padding:0 6px;margin:0;border-radius:6px;
+  color:#f2d488;font-size:14px;font-family:var(--font-display);font-weight:400;
+  background:#2a2118;border:1px solid #c9974a;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.foSkillRow .trn:disabled,.foSkillRow .trn.dim{opacity:.4;border-color:#5a4830;color:#8a7a60;}
+.foSkillRow .trn:active{transform:scale(.96);}
 .foTagBar{margin-top:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#f2d488;
   padding:5px 6px;background:#0e0b08;border:1px solid #5a4830;border-radius:4px;font-family:var(--font-display);}
 .foInfo{display:grid;grid-template-columns:64px 1fr;gap:8px;background:#2a2418;border:2px solid #8a7040;
@@ -1072,15 +1086,49 @@ body > .modal{
   .uiMineChip.on{border-color:var(--gold);}
   .uiMineChip.done{border-color:var(--green,#6ea862);}
   .uiTag.go{color:var(--gold);border-color:var(--gold);}
-  .uiTavExt{position:relative;height:100px;background:linear-gradient(180deg,#2a1f14,#12151d);border:2px solid #5d4326;border-radius:4px;margin-bottom:10px;overflow:hidden;}
-  .uiTavRoof{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:32px;}
-  .uiTavSign{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--gold);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;}
-  .uiColPick{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--panel2);border:2px solid var(--acc,#555);color:var(--txt);border-radius:4px;}
-  .uiColEm{font-size:28px;}
-  .uiColHead{display:flex;align-items:center;gap:8px;padding:10px;border:2px solid var(--acc);border-radius:4px;margin-bottom:10px;color:var(--acc);}
-  .uiColHead span{font-size:24px;}
-  .uiRankRow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:8px;}
-  .uiRankN{width:18px;height:18px;display:flex;align-items:center;justify-content:center;background:#1b2029;border:1px solid var(--line);font-size:7px;color:var(--dim);flex:none;}
+  .uiTavExt{position:relative;height:88px;background:
+    radial-gradient(ellipse at 50% 120%,#3a2818 0%,transparent 55%),
+    linear-gradient(180deg,#2e2218 0%,#14100c 70%,#0c0a08 100%);
+    border:2px solid #6a4a28;border-radius:8px;margin-bottom:10px;overflow:hidden;}
+  .uiTavExt::before{content:"";position:absolute;inset:0;background:
+    repeating-linear-gradient(90deg,transparent 0 18px,#0001 18px 19px);opacity:.35;pointer-events:none;}
+  .uiTavRoof{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:36px;
+    filter:drop-shadow(0 4px 8px #000a);}
+  .uiTavSign{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    font-size:14px;font-family:var(--font-display);color:var(--gold);letter-spacing:.5px;
+    white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;
+    padding:2px 10px;background:#0a0806cc;border:1px solid #5a4830;border-radius:6px;}
+  .uiTavMeters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
+  .uiTavMeter{text-align:center;padding:8px 4px;background:#120e0a;border:1px solid #5a4830;border-radius:8px;}
+  .uiTavMeter .k{display:block;font-size:10px;color:var(--dim);font-family:var(--font-display);letter-spacing:.4px;}
+  .uiTavMeter .v{display:block;font-size:18px;color:var(--gold);font-family:var(--font-display);margin-top:2px;line-height:1.1;}
+  .uiTavMeter .s{display:block;font-size:10px;color:var(--dim);margin-top:2px;}
+  .uiTavPath{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:8px 6px;border-bottom:1px solid #2a2118;}
+  .uiTavPath:last-child{border-bottom:0;}
+  .uiTavPath b{font-size:13px;font-family:var(--font-body);color:#e8dcc0;font-weight:600;}
+  .uiTavPath .uiSub{font-size:11px;margin-top:1px;}
+  .uiTavPath .btn{flex:none;min-height:36px;padding:6px 10px;font-size:12px;}
+  .uiTavTip{padding:8px 10px;background:#1a1510;border:1px dashed #5a4830;border-radius:8px;
+    font-size:12px;line-height:1.45;color:#cbb89a;margin:8px 0 10px;font-family:var(--font-body);}
+  .uiTavTip b{color:var(--gold);font-family:var(--font-display);font-weight:400;font-size:13px;}
+  .uiRankRow{display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid var(--line);
+    font-size:13px;font-family:var(--font-body);}
+  .uiRankRow.me{background:#241a10;border-radius:6px;border:1px solid #c9974a;padding:8px;margin:4px 0;}
+  .uiRankN{width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:#1b2029;
+    border:1px solid var(--line);font-size:11px;color:var(--dim);flex:none;font-family:var(--font-display);border-radius:4px;}
+  .uiRankRow.me .uiRankN{border-color:var(--gold);color:var(--gold);}
+  .uiRankRow b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+  .uiRankRow .uiSub{flex:none;font-size:11px;font-family:var(--font-display);}
+  .uiGrid.tav{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .uiGrid.tav .uiSlot{min-height:88px;border-radius:8px;padding:12px 8px;}
+  .uiGrid.tav .uiSlotIc{font-size:26px;}
+  .uiGrid.tav .uiSlotNm{font-size:12px;font-family:var(--font-body);font-weight:600;}
+  .uiGrid.tav .uiSlotSub{font-size:11px;}
+  .uiCard.tav .uiCardIc{font-size:32px;}
+  .uiCard.tav .uiCardBody b{font-size:14px;font-family:var(--font-display);font-weight:400;color:var(--gold);}
+  .uiCard.tav .uiSub{font-size:11px;line-height:1.4;}
+  .uiSec.tav{font-size:13px;font-family:var(--font-display);letter-spacing:.6px;margin:12px 0 8px;}
 
 </style>
 </head>
@@ -1782,7 +1830,15 @@ const BALANCE = {
     pityX:[0,25,50,100,250],
     pityW:[[80,20,0,0],[65,30,5,0],[50,35,13,2],[40,35,20,5],[15,20,45,20]] },
   wheel:{ cost:[30,50,70,100,140,190,250,320,400,490,590,700,820], centerMul:1500 },
-  workouts:{ paths:7, step:50, weeklyCapMin:10080, proteinPerHour:5, proteinCapH:8 },
+  /* Тренировки: пиво → глоток → очки → путь с таймером.
+     protein — кружка (пассив +5/ч); wkPts — очки, которыми платят за путь. */
+  workouts:{
+    paths:7, step:50, weeklyCapMin:10080,
+    proteinPerHour:5, proteinCapH:8,
+    drinkCost:5, drinkPts:5, drinkCdSec:1.2,
+    costBase:10, costPerLv:5, timerSec:30, skipGems:5,
+    maxLv:50
+  },
   pvpDayLimit:10, pvpCandidates:5,   // 5 ИИ-ботов · дневной лимит гонок
   pvp:{ raceSec:180, thresholds:[100,150,200,250,300,350,400,450,500,1000],
         rewards:[0,200,500,1000,2000,3500,5000,7500,10000,12500],
@@ -2481,7 +2537,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
     growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
       waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
       ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
@@ -2543,7 +2599,7 @@ const KO_SCREENS=[
   ["БОРОДА ЗАПЫЛИЛАСЬ","Энергия кончилась раньше породы. Эль, отдых, апгрейды — и снова в забой."]
 ];
 /* ---------- лента событий (добыча / покупки / прокачка / реплики) ---------- */
-const FEED_CAP=4;
+const FEED_CAP=3;
 var feedBuf=[];
 let quipHide=0, quipNext=6;
 function renderFeed(){
@@ -2556,7 +2612,7 @@ function renderFeed(){
   }
   if(empty) empty.style.display="none";
   lines.innerHTML=feedBuf.map(e=>
-    `<div class="feedLine ${esc(e.kind||"")}"><b>${esc(e.who)}:</b> ${esc(e.text)}</div>`
+    `<div class="feedLine ${esc(e.kind||"")}"><span class="feedTxt"><b>${esc(e.who)}:</b> ${esc(e.text)}</span></div>`
   ).join("");
 }
 function pushFeed(who, text, kind){
@@ -3078,8 +3134,8 @@ function loop(now){
   }
   idleAcc+=dt;
   if(idleAcc>=1){ const w=Math.floor(idleAcc); refillKeys(); S.gold+=idlePerSec()*w;
-    S.protein=Math.min(BALANCE.workouts.proteinCapH*BALANCE.workouts.proteinPerHour,
-      (S.protein||0)+BALANCE.workouts.proteinPerHour/3600*w);   // +5/час, кап 8ч
+    { const W=BALANCE.workouts, cap=W.proteinCapH*W.proteinPerHour, cur=S.protein||0;
+      if(cur<cap) S.protein=Math.min(cap, cur+W.proteinPerHour/3600*w); }  // +5/ч только до капа пассива
     idleAcc%=1; }
   if(aleAnim>0) aleAnim-=rawDt;
   else if(!dead){ aleNext-=rawDt; if(aleNext<=0){ sipAle(); aleNext=35+Math.random()*30; } }
@@ -3363,6 +3419,11 @@ function updateMiner(){
     $("mlBeard").src=BEARD_STYLES[w.lenStyle];
     $("mlBeard").style.filter="grayscale("+w.grey.toFixed(2)+") brightness("+(1+w.grey*0.7).toFixed(2)+")"; }
   $("aleMug").src=MUG_ICON;
+  const mug=$("aleMug");
+  if(mug&&!mug._drinkWired){
+    mug._drinkWired=1; mug.style.cursor="pointer"; mug.title="Выпить пиво → очки тренировок";
+    mug.onclick=function(e){ if(e&&e.stopPropagation) e.stopPropagation(); drinkBeer(); };
+  }
   const L={pack:"mlPack",robe:"mlRobe",boots:"mlBoots",glove:"mlGlove",helm:"mlHelm"};
   for(const k in L){
     const el=$(L[k]);
@@ -4059,9 +4120,16 @@ function sanitizeState(d){
 
 /* Доинициализация полей. ВАЖНО: применяется и к свежему состоянию тоже —
    иначе у нового игрока fair/science остаются null и экраны падают. */
+function ensureWorkouts(d){ if(!d) return d;
+  if(d.wkPts==null||!isFinite(d.wkPts)||d.wkPts<0) d.wkPts=0;
+  if(!d.workouts||typeof d.workouts!=="object") d.workouts={};
+  if(d.wkActive && (typeof d.wkActive.end!=="number"||!d.wkActive.path)) d.wkActive=null;
+  return d;
+}
 function ensureAll(d){
   ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d);
   ensureCards(d); ensureFair(d); ensureScience(d); ensureGacha(d); ensureBonus(d); ensureGrowth(d);
+  ensureWorkouts(d);
   return d;
 }
 function ensureGacha(d){ if(!d) return d;
@@ -4732,8 +4800,9 @@ function canTrainSkill(id){
   const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
   const cap=BALANCE.special.trainCap||15;
   if(((S.trained||{})[id]||0)>=cap) return false;
-  const stCap=STAT_CAPS[sd.stat];
-  if(stCap!=null && stat(sd.stat)>=stCap-1e-9) return false;
+  /* Кап боевого стата НЕ блокирует тренировку: слой S.trained и % на листе
+     всё равно растут; stat() сам режет бой. Иначе «Точный удар» у капа крита
+     выглядел мёртвым — особенно с дешёвым тегом (+1). */
   return (S.skillPts||0)>=trainCost(id);
 }
 function trainSkill(id){
@@ -4741,8 +4810,11 @@ function trainSkill(id){
   const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
   const cost=trainCost(id);
   if(!canTrainSkill(id)){
-    if((S.skillPts||0)<cost) showToast("📈","Мало очков","","Нужно "+cost+", есть "+(S.skillPts||0),"ломай жилы — будет уровень");
-    else showToast("🔒","Потолок тренировки","",sd.n);
+    const tr=((S.trained||{})[id]||0), cap=BALANCE.special.trainCap||15;
+    if(tr>=cap) showToast("🔒","Потолок тренировки","",sd.n,"макс трен. "+cap);
+    else if((S.skillPts||0)<cost) showToast("📈","Мало очков","","Нужно "+cost+", есть "+(S.skillPts||0),
+      isSkillTagged(id)?"тег: дешевле":"отметь тегом — дешевле");
+    else showToast("🔒","Нельзя","",sd.n);
     return false;
   }
   S.skillPts-=cost;
@@ -4750,8 +4822,10 @@ function trainSkill(id){
   dailyProgress("skill",1);
   Platform.logEvent("skill_train",{id,lv:S.trained[id],tag:isSkillTagged(id)});
   sfxGear();
+  const stCap=STAT_CAPS[sd.stat];
+  const soft=stCap!=null && stat(sd.stat)>=stCap-1e-9;
   showToast("📈","Тренировка","r"+sd.r, sd.n+" · трен."+S.trained[id],
-    "−"+cost+" очк."+(isSkillTagged(id)?" · тег":""));
+    "−"+cost+" очк."+(isSkillTagged(id)?" · тег":"")+(soft?" · стат на капе":""));
   window._charFocus={kind:"skill",id};
   save(); refreshSpecialUi("train");
   return true;
@@ -4913,11 +4987,15 @@ function renderCharSheet(){
   const skillRows=SKILL_DEFS.map(d=>{
     const pct=skillSheetPct(d.id), tagged=isSkillTagged(d.id), cost=trainCost(d.id), ok=canTrainSkill(d.id);
     const on=focus.kind==="skill"&&focus.id===d.id?" on":"";
-    return `<div class="foSkillRow${on}" onclick="charFocus('skill','${d.id}')">
-      <button type="button" class="tag${tagged?" on":""}" title="Тег" onclick="event.stopPropagation();toggleSkillTag('${d.id}')"></button>
-      <span class="sn">${d.n}</span>
-      <span class="pct">${pct}%</span>
-      <button type="button" class="trn" onclick="event.stopPropagation();trainSkill('${d.id}')" ${ok?"":"disabled"} title="Тренировка −${cost}">+${cost}</button>
+    /* Кнопки сами ловят тап; имя/% только фокус — без onclick на всей строке,
+       иначе на мобиле клик по + иногда съедался re-render'ом фокуса. */
+    return `<div class="foSkillRow${on}">
+      <button type="button" class="tag${tagged?" on":""}" title="${tagged?"Снять тег":"Тег · дешевле качать"}"
+        onclick="toggleSkillTag('${d.id}')"></button>
+      <span class="sn" onclick="charFocus('skill','${d.id}')">${d.n}</span>
+      <span class="pct" onclick="charFocus('skill','${d.id}')">${pct}%</span>
+      <button type="button" class="trn${ok?"":" dim"}" title="Тренировка −${cost}"
+        onclick="trainSkill('${d.id}')">+${cost}</button>
     </div>`;
   }).join("");
 
@@ -5774,40 +5852,127 @@ function rollPet(){
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
 }
 
-/* --- Тренировки: таймеры + пиво (§10) --- */
+/* --- Тренировки: пить пиво → очки → путь с таймером (§10) --- */
+const WK_PATH_NAME={energy:"Энергия",atk:"Урон",tough:"Крепёж",mining:"Чутьё",crit:"Крит",stone:"Жадность",luck:"Удача"};
+let _wkRefreshT=0, _drinkCdUntil=0;
+function workoutCost(path){
+  const W=BALANCE.workouts, lv=(S.workouts&&S.workouts[path])||0;
+  return (W.costBase||10)+(W.costPerLv||5)*lv;
+}
+function drinkBeer(){
+  ensureWorkouts(S);
+  const W=BALANCE.workouts, cost=W.drinkCost|0, pts=W.drinkPts|0;
+  if(Date.now()<_drinkCdUntil){ showToast("🍺","Глоток","","подожди мгновение"); return false; }
+  if((S.protein||0)<cost){ showToast("🍺","Мало пива","","нужно "+cost+" 🍺, есть "+Math.floor(S.protein||0)); return false; }
+  S.protein-=cost;
+  S.wkPts=(S.wkPts||0)+pts;
+  _drinkCdUntil=Date.now()+Math.round((W.drinkCdSec||1.2)*1000);
+  const mug=$("aleMug");
+  if(mug){ mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
+    clearTimeout(drinkBeer._t); drinkBeer._t=setTimeout(()=>mug.classList.remove("sip"),2450); }
+  aleAnim=2.4;
+  S.energy=Math.min(stat("energy"), S.energy+stat("energy")*0.08);
+  sayQuip(ALE_QUIPS[Math.floor(Math.random()*ALE_QUIPS.length)], 3);
+  jingleFind();
+  showToast("🍺","Выпито","r1","+"+pts+" очк. тренировок","всего "+(S.wkPts|0));
+  Platform.logEvent("ale_drink",{pts, cost});
+  save(); render();
+  const onTrain=typeof UIS!=="undefined" && UIS.id==="panel"
+    && /Тренировки/.test(($("uiTitle")&&$("uiTitle").textContent)||"");
+  const mm=$("metaModal");
+  if(onTrain || (mm&&mm.style.display==="flex"&&($("metaTitle")||{}).textContent==="Тренировки")) openWorkouts();
+  if(typeof UIS!=="undefined" && UIS.id==="tavern") UIS.render();
+  return true;
+}
 function openWorkouts(){
+  ensureWorkouts(S);
+  clearInterval(_wkRefreshT);
+  const W=BALANCE.workouts, beer=Math.floor(S.protein||0), pts=S.wkPts|0;
+  const drinkCost=W.drinkCost|0, drinkPts=W.drinkPts|0;
+  const canDrink=beer>=drinkCost && Date.now()>=_drinkCdUntil;
+  const head=`<div class="metarow" style="align-items:stretch;gap:8px">
+    <div style="flex:1;text-align:center;padding:8px;background:#120e0a;border:1px solid #5a4830;border-radius:8px">
+      <div style="font-size:11px;color:var(--dim)">Пиво</div>
+      <div style="font-size:22px;color:var(--gold);font-family:var(--font-display)">🍺 ${beer}</div>
+      <div style="font-size:10px;color:var(--dim)">+${W.proteinPerHour}/ч · кап ${W.proteinCapH*W.proteinPerHour}</div>
+    </div>
+    <div style="flex:1;text-align:center;padding:8px;background:#120e0a;border:1px solid #5a4830;border-radius:8px">
+      <div style="font-size:11px;color:var(--dim)">Очки тренировок</div>
+      <div style="font-size:22px;color:#8fce6a;font-family:var(--font-display)">💪 ${pts}</div>
+      <div style="font-size:10px;color:var(--dim)">пей пиво → копи очки</div>
+    </div>
+  </div>
+  <button class="btn btn-hard btn-wide" style="margin:8px 0 12px;min-height:48px;font-size:16px"
+    onclick="drinkBeer()" ${canDrink?"":"disabled"}>Выпить 🍺${drinkCost} → +${drinkPts} очк.</button>`;
   const rows=BALANCE.workoutPaths.map((p,i)=>{
     const lv=(S.workouts&&S.workouts[p])||0;
     const active=S.wkActive&&S.wkActive.path===p;
-    const cost=20+lv*5;    // пиво за старт шага
+    const cost=workoutCost(p);
+    const maxed=lv>=(W.maxLv||W.step||50);
+    const nm=WK_PATH_NAME[p]||p.toUpperCase();
     let btn;
     if(active){
       const left=Math.max(0,Math.ceil((S.wkActive.end-Date.now())/1000));
-      btn=left>0?`<button onclick="skipWorkout()">⏱ ${left}с · пропуск 💎5</button>`
-                :`<button class="btn btn-soft" onclick="claimWorkout()">Забрать +${BALANCE.workoutStepPct[i]}%</button>`;
-    } else btn=`<button class="btn btn-soft" onclick="startWorkout('${p}',${cost})" ${(S.protein||0)<cost?"disabled":""}>+${BALANCE.workoutStepPct[i]}% ${p.toUpperCase()} · 🍺${cost}</button>`;
-    return `<div class="metarow"><span>${p.toUpperCase()} · ур.${lv}<br><span style="color:var(--dim)">пост. буст к стату</span></span>${btn}</div>`;
+      const skip=W.skipGems||5;
+      btn=left>0
+        ?`<button class="btn btn-soft" onclick="skipWorkout()">⏱ ${left}с · 💎${skip}</button>`
+        :`<button class="btn btn-soft" onclick="claimWorkout()">Забрать +${BALANCE.workoutStepPct[i]}%</button>`;
+    } else if(maxed){
+      btn=`<button class="btn btn-soft" disabled>МАКС</button>`;
+    } else {
+      btn=`<button class="btn btn-soft" onclick="startWorkout('${p}')" ${pts<cost||S.wkActive?"disabled":""}>+${BALANCE.workoutStepPct[i]}% · 💪${cost}</button>`;
+    }
+    return `<div class="metarow"><span><b>${nm}</b> · ур.${lv}<br><span style="color:var(--dim)">пост. буст · сейчас +${workoutBonus(p)}%</span></span>${btn}</div>`;
   }).join("");
-  metaOpen("Улучшения-таймеры","🍺 Пиво +5/ч (кап 8ч) — топливо тренировок. 7 путей, шаг 50, кап 10080 мин (§10).",rows);
+  metaOpen("Тренировки",
+    "Выпей пиво → получи очки → запусти путь. Пассив: +"+W.proteinPerHour+" 🍺/ч.",
+    head+rows);
+  if(S.wkActive){
+    _wkRefreshT=setInterval(()=>{
+      const m=$("metaModal"), ttl=$("metaTitle");
+      if(!m||m.style.display!=="flex"||!ttl||ttl.textContent!=="Тренировки"){
+        clearInterval(_wkRefreshT); _wkRefreshT=0; return;
+      }
+      if(!S.wkActive){ clearInterval(_wkRefreshT); _wkRefreshT=0; openWorkouts(); return; }
+      openWorkouts();
+    },1000);
+  } else { _wkRefreshT=0; }
 }
-function startWorkout(path,cost){
-  if(S.wkActive||(S.protein||0)<cost) return;
-  S.protein-=cost;
-  S.wkActive={path, end:Date.now()+30000};   // демо-таймер 30с (в проде — минуты)
-  Platform.logEvent("workout_start",{path}); save(); render(); openWorkouts();
+function startWorkout(path){
+  ensureWorkouts(S);
+  if(S.wkActive){ showToast("💪","Уже тренируешься","",WK_PATH_NAME[S.wkActive.path]||S.wkActive.path); return false; }
+  if(BALANCE.workoutPaths.indexOf(path)<0) return false;
+  const W=BALANCE.workouts, lv=(S.workouts&&S.workouts[path])||0;
+  if(lv>=(W.maxLv||W.step||50)){ showToast("🔒","Потолок пути","",WK_PATH_NAME[path]||path); return false; }
+  const cost=workoutCost(path);
+  if((S.wkPts||0)<cost){ showToast("💪","Мало очков","","нужно "+cost+", есть "+(S.wkPts|0)+" · выпей пива"); return false; }
+  S.wkPts-=cost;
+  S.wkActive={path, end:Date.now()+Math.round((W.timerSec||30)*1000)};
+  Platform.logEvent("workout_start",{path,cost});
+  showToast("💪","Тренировка", "", WK_PATH_NAME[path]||path, "−"+cost+" очк.");
+  save(); render(); openWorkouts();
+  return true;
 }
 function claimWorkout(){
-  if(!S.wkActive||Date.now()<S.wkActive.end) return;
+  if(!S.wkActive||Date.now()<S.wkActive.end) return false;
   const p=S.wkActive.path; S.workouts=S.workouts||{}; S.workouts[p]=(S.workouts[p]||0)+1;
   S.wkActive=null;
-  S.chestKeys=(S.chestKeys||0)+1;            // док: тренировки в зале выдают ключи
-  addGymXP(GYM_XP.perWorkout);               // Gym XP за тренировку (PDF)
-  showToast("🗝","Ключ от ларя","","Тренировка окончена","всего: "+S.chestKeys);
+  S.chestKeys=(S.chestKeys||0)+1;
+  addGymXP(GYM_XP.perWorkout);
+  showToast("🗝","Ключ от ларя","","Тренировка окончена · +"+workoutBonus(p)+"% "+(WK_PATH_NAME[p]||p),"всего ключей: "+S.chestKeys);
   sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); openWorkouts();
+  return true;
 }
-function skipWorkout(){ if(!S.wkActive) return; if((S.gems||0)<5) return; S.gems-=5; S.wkActive.end=Date.now(); render(); openWorkouts(); }
+function skipWorkout(){
+  const W=BALANCE.workouts, cost=W.skipGems||5;
+  if(!S.wkActive) return false;
+  if((S.gems||0)<cost){ showToast("💎","Мало кристаллов","","нужно "+cost); return false; }
+  S.gems-=cost; S.wkActive.end=Date.now();
+  save(); render(); openWorkouts();
+  return true;
+}
 function workoutBonus(id){ const lv=(S.workouts&&S.workouts[id])||0; if(!lv) return 0;
-  const i=BALANCE.workoutPaths.indexOf(id); return i<0?0:BALANCE.workoutStepPct[i]*lv; }  // % буст
+  const i=BALANCE.workoutPaths.indexOf(id); return i<0?0:BALANCE.workoutStepPct[i]*lv; }
 
 /* --- Дейлики: жетоны + трек (§8) --- */
 function dailyReset(){ const t=todayStr(); if(!S.daily) S.daily={day:t,prog:{},tok:0,claimed:[]};

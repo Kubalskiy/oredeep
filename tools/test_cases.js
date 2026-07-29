@@ -226,9 +226,19 @@ T("эль не превышает максимум", S.energy<=stat("energy"));
   T("назад с питомца → Союзники", UIS.id==="tavern" && UIS.tab==="mates");
   UIS.close(); }
 { UIS.open("tavern","feast"); openWorkouts();
-  T("тренировки открываются поверх таверны", UIS.id==="panel" && /Улучшения-таймеры/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  T("тренировки открываются поверх таверны", UIS.id==="panel" && /Тренировки|Улучшения-таймеры/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
   UIS.back();
   T("назад из тренировок → Застолья", UIS.id==="tavern" && UIS.tab==="feast");
+  UIS.close(); }
+{ UIS.open("tavern","ale");
+  const h=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("стойка: выпить и метры", /drinkBeer\(/.test(h) && /uiTavMeters/.test(h));
+  UIS.setTab("feast");
+  const f=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("застолья: быстрые пути и все тренировки", /openWorkouts\(/.test(f) && /startWorkout\(/.test(f));
+  UIS.setTab("rank");
+  const r=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("кубки: игрок в рейтинге", /uiRankRow me/.test(r) || / · ты/.test(r));
   UIS.close(); }
 // миграция старого сейва без бороды
 localStorage.setItem("oredeep_v3", JSON.stringify({gold:1,stageIdx:3}));
@@ -330,12 +340,19 @@ for(let i=0;i<30;i++) rollPet();
 T("питомец приручён после роллов", !!S.pet && typeof S.pet.t==="number");
 { const st=PET_TYPES[S.pet.t].stat; const before=stat(st);
   T("питомец даёт % к своему стату", petBonus(st)>0); }
-// тренировки: провизия → таймер → буст
-S.protein=1000; S.wkActive=null; S.workouts={};
-const e0=stat("energy"); startWorkout("energy",20);
-T("тренировка стартовала, провизия списана", !!S.wkActive && S.protein===980);
-S.wkActive.end=Date.now()-1; claimWorkout();
-T("тренировка завершена: буст к стату", (S.workouts.energy||0)===1 && stat("energy")>e0);
+// тренировки: пиво → очки → таймер → буст
+S.protein=0; S.wkPts=0; S.wkActive=null; S.workouts={}; _drinkCdUntil=0;
+T("глоток без пива не проходит", drinkBeer()===false);
+S.protein=1000; _drinkCdUntil=0;
+{ const p0=S.protein, cost=BALANCE.workouts.drinkCost, pts=BALANCE.workouts.drinkPts;
+  T("выпил пиво → очки тренировок", drinkBeer()===true && S.protein===p0-cost && S.wkPts===pts); }
+_drinkCdUntil=0;
+S.wkPts=1000;
+{ const cost=workoutCost("energy"), pts0=S.wkPts, e0=stat("energy");
+  startWorkout("energy");
+  T("тренировка стартовала, очки списаны", !!S.wkActive && S.wkActive.path==="energy" && S.wkPts===pts0-cost);
+  S.wkActive.end=Date.now()-1; claimWorkout();
+  T("тренировка завершена: буст к стату", (S.workouts.energy||0)===1 && stat("energy")>e0); }
 // дейлики: прогресс + жетоны + клейм
 S.daily={day:todayStr(),prog:{},tok:0,claimed:[]};
 for(let i=0;i<30;i++) dailyProgress("break",1);
@@ -632,6 +649,27 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="К.Р.А.С.А.В
   const b0=skillBonus("atk_up");
   S.skills.atk_up=1;
   T("тренировка суммируется с картами", skillBonus("atk_up")>b0); }
+{ S.skillPts=50; S.skillTags=[]; S.trained={}; S.skills={};
+  let taggedTrainOk=true, failId="";
+  for(const d of SKILL_DEFS){
+    S.skillTags=[];
+    tagSkill(d.id);
+    const cost=trainCost(d.id), p0=S.skillPts;
+    if(!canTrainSkill(d.id) || !trainSkill(d.id) || (S.trained[d.id]|0)<1 || S.skillPts!==p0-cost){
+      taggedTrainOk=false; failId=d.id+" can="+canTrainSkill(d.id)+" tr="+((S.trained||{})[d.id]|0); break;
+    }
+  }
+  T("все навыки качаются с тегом ("+(failId||"ok")+")", taggedTrainOk);
+  S.skillTags=["crit_up"]; S.skillPts=16; S.trained={};
+  openCharSheet({kind:"skill",id:"crit_up"});
+  const html=($("charSheet")&&$("charSheet").innerHTML)||"";
+  T("лист: Точный удар с тегом кликабелен",
+    /trainSkill\('crit_up'\)/.test(html) && !/trainSkill\('crit_up'\)"[^>]*\bdisabled\b/.test(html));
+  /* даже у капа крита тренировка с тегом проходит */
+  S.skillTags=["crit_up"]; S.skillPts=5; S.trained={}; S.lvls.crit=99; S.skills={};
+  T("крит на капе — тегнутый Точный удар всё равно качается",
+    canTrainSkill("crit_up")===true && trainSkill("crit_up")===true && (S.trained.crit_up|0)===1);
+}
 { S.special.i=8; S.skillPts=0; S.minerLv=0; S.veinsBroken=BALANCE.special.veinsPerLv;
   checkMinerLevelUp(false);
   T("Ум даёт больше очков за уровень", S.skillPts>=BALANCE.special.ptsBase+3); }

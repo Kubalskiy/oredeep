@@ -19,8 +19,14 @@ const UI_ART_COLS=[
 ];
 
 const UI_TAV_RANKS=[
-  {n:"Каменный Кубок",xp:1200,r:1},{n:"Медный Кубок",xp:980,r:2},{n:"Железный Кубок",xp:760,r:3},
-  {n:"Серебряный Кубок",xp:540,r:4},{n:"Золотой Кубок",xp:320,r:5},{n:"Платиновый Кубок",xp:110,r:6}
+  {n:"Каменный Кубок",xp:1200},{n:"Медный Кубок",xp:980},{n:"Железный Кубок",xp:760},
+  {n:"Серебряный Кубок",xp:540},{n:"Золотой Кубок",xp:320},{n:"Платиновый Кубок",xp:110}
+];
+const UI_TAV_TIPS=[
+  "Борин: эль не для красоты. Пей — копи очки — качай застолье.",
+  "Стойка помнит каждого. Уважение (Gym XP) растёт от тренировок, PvP и дейликов.",
+  "Тегнутый навык на листе дешевле. А тут — пиво в очки, очки в силу.",
+  "Пустой кружки не бывает: +5 🍺/ч капается само, пока ты в забое."
 ];
 
 /* Фейковый PvP-рейтинг по кубкам (отдельно от Стены Горы по глубине) */
@@ -436,42 +442,128 @@ const UIS={
     const lv=gymLevel(), xp=S.gymXP||0;
     const nextAt=GYM_LEVELS[lv+1], atCur=GYM_LEVELS[lv]||0;
     const gymPct=nextAt!=null?Math.min(100,Math.round((xp-atCur)/(nextAt-atCur)*100)):100;
+    const beer=Math.floor(S.protein||0), pts=S.wkPts|0;
+    const W=BALANCE.workouts||{}, drinkCost=W.drinkCost||5, drinkPts=W.drinkPts||5;
+    const names=(typeof WK_PATH_NAME==="object"&&WK_PATH_NAME)||{};
+    const tip=UI_TAV_TIPS[(Math.floor(Date.now()/60000)+lv)%UI_TAV_TIPS.length];
+    const facade='<div class="uiTavExt"><div class="uiTavRoof">🍺</div><div class="uiTavSign">'+esc(playerName())+'</div></div>';
+    const meters='<div class="uiTavMeters">'
+      +'<div class="uiTavMeter"><span class="k">ПИВО</span><span class="v">🍺 '+beer+'</span><span class="s">+'+((W.proteinPerHour)|5)+'/ч</span></div>'
+      +'<div class="uiTavMeter"><span class="k">ОЧКИ</span><span class="v">💪 '+pts+'</span><span class="s">из глотков</span></div>'
+      +'<div class="uiTavMeter"><span class="k">ЗАЛ</span><span class="v">'+lv+'</span><span class="s">+'+gymPerkPct()+'% статы</span></div>'
+      +'</div>';
+    const gymCard=this.card("🏋","Уважение · зал ур."+lv,
+      fmt(xp)+(nextAt!=null?(" / "+fmt(nextAt)+" XP"):" · макс"),
+      this.bar(gymPct)
+      +'<div class="uiSub" style="margin-top:4px">Тренировки, PvP, дейлики, дарение артефактов</div>',
+      "tav");
+
     this.$("uiTitle").textContent="Таверна";
-    this.$("uiHeadAct").innerHTML='<span class="uiPill">Gym '+lv+'</span>';
-    this.$("uiTabs").innerHTML=this.tabs(["ale","feast","mates","friends","rank"],
-      ["Эль","Застолья","Союзники","Друзья","Рейтинг"],tab);
-    let body='<div class="uiTavExt"><div class="uiTavRoof">🍺</div><div class="uiTavSign">'+esc(playerName())+'</div></div>';
+    this.$("uiHeadAct").innerHTML='<span class="uiPill">Зал '+lv+' · +'+gymPerkPct()+'%</span>';
+    this.$("uiTabs").innerHTML=this.tabs(
+      ["ale","feast","mates","friends","rank"],
+      ["Стойка","Застолья","Стол","Друзья","Кубки"],
+      tab);
+
+    let body="";
     if(tab==="ale"){
-      body+=this.card("🍺","Пассивный эль","+12% энергии за глоток",
-        '<button class="btn btn-soft btn-wide" onclick="sipAle()">Выпить</button><div class="uiSub" style="margin-top:6px">Следующий тост через ~'+Math.ceil(aleNext||20)+' ударов</div>');
+      const eCur=Math.floor(S.energy||0), eMax=Math.floor(stat("energy")||1);
+      body=facade+meters
+        +'<div class="uiTavTip"><b>Борин у стойки.</b> '+esc(tip)+'</div>'
+        +this.card("🍺","Выпить кружку",
+          "−"+drinkCost+" 🍺 → +"+drinkPts+" очк. тренировок · чуть энергии",
+          '<button class="btn btn-hard btn-wide" style="min-height:48px;font-size:15px" onclick="drinkBeer()">Выпить 🍺'+drinkCost+'</button>'
+          +'<div class="uiSub" style="margin-top:6px">Энергия '+eCur+'/'+eMax+' · авто-глоток в забое тоже бывает</div>',
+          "tav")
+        +'<div class="uiBtnStack">'
+        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">💪 К застольям</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">🧬 Лист · навыки</button>'
+        +'</div>';
     } else if(tab==="feast"){
-      body+=this.card("💪","Застолья · тренировки","7 путей · 🍺 "+(S.protein||0),
-        '<button class="btn btn-hard btn-wide" onclick="openWorkouts()">Открыть тренировки</button>');
-      body+=this.card("🏋","Gym XP · уважение",fmt(xp)+(nextAt!=null?(" / "+fmt(nextAt)):""),
-        this.bar(gymPct)+'<div class="uiSub" style="margin-top:4px">+'+gymPerkPct()+'% ко всем статам</div>');
+      const active=S.wkActive;
+      let activeHtml="";
+      if(active){
+        const left=Math.max(0,Math.ceil((active.end-Date.now())/1000));
+        const nm=names[active.path]||active.path;
+        activeHtml=this.card("⏱","Идёт: "+nm, left>0?("осталось "+left+"с"):"готово — забери!",
+          left>0
+            ?('<button class="btn btn-soft btn-wide" onclick="skipWorkout()">Пропуск 💎'+(W.skipGems||5)+'</button>')
+            :('<button class="btn btn-hard btn-wide" onclick="claimWorkout()">Забрать награду</button>'),
+          "tav");
+      }
+      const paths=(BALANCE.workoutPaths||[]).slice(0,4).map((p,i)=>{
+        const lvP=(S.workouts&&S.workouts[p])||0;
+        const cost=typeof workoutCost==="function"?workoutCost(p):((W.costBase||10)+(W.costPerLv||5)*lvP);
+        const pct=(BALANCE.workoutStepPct&&BALANCE.workoutStepPct[i])||0;
+        const nm=names[p]||p;
+        const busy=!!S.wkActive;
+        const maxed=lvP>=(W.maxLv||W.step||50);
+        const btn=maxed
+          ?'<button class="btn btn-soft" disabled>МАКС</button>'
+          :(busy
+            ?'<button class="btn btn-soft" disabled>занято</button>'
+            :'<button class="btn btn-soft" onclick="startWorkout(\''+p+'\')" '+(pts<cost?"disabled":"")+'>💪'+cost+'</button>');
+        return '<div class="uiTavPath"><div><b>'+esc(nm)+'</b><div class="uiSub">ур.'+lvP+' · +'+pct+'%/ур · сейчас +'+(typeof workoutBonus==="function"?workoutBonus(p):0)+'%</div></div>'+btn+'</div>';
+      }).join("");
+      body=meters
+        +activeHtml
+        +this.card("💪","Застолье",
+          "Пиво → очки → путь. Полный список из "+(BALANCE.workoutPaths||[]).length+" путей.",
+          '<button class="btn btn-soft btn-wide" onclick="drinkBeer()">Выпить 🍺'+drinkCost+' → +'+drinkPts+' очк.</button>'
+          +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWorkouts()">Все тренировки</button>',
+          "tav")
+        +'<div class="uiSec tav">Быстрые пути</div>'
+        +'<div class="uiCard tav" style="display:block;padding:4px 8px">'+paths+'</div>'
+        +gymCard;
     } else if(tab==="mates"){
       const geoSlot=S.geo
         ? this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r,"UIS.push('beards','merge')")
-        : this.slot("❔","Вакансия","найми бороду","","UIS.push('beards','gacha')");
+        : this.slot("❔","Борода","найми старейшину","","UIS.push('beards','gacha')");
       const petSlot=S.pet
         ? this.slot("🐕",PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.push('pets','gacha')")
-        : this.slot("❔","Питомец","яйца","","UIS.push('pets','gacha')");
-      body+=this.grid([
-        this.slot("🧔","Борин","наставник","","openBorinMentor()"),
-        geoSlot,
-        petSlot,
-        this.slot("👥","Клан","скоро","","openClanSoon()")
-      ]);
+        : this.slot("❔","Питомец","яйца ждут","","UIS.push('pets','gacha')");
+      body=facade
+        +'<div class="uiTavTip"><b>Стол компании.</b> Наставник, борода, зверь и будущий клан — кто сидит рядом в забое.</div>'
+        +'<div class="uiSec tav">Кто за столом</div>'
+        +'<div class="uiGrid tav">'
+        +this.slot("🧔","Борин","наставник","","openBorinMentor()")
+        +geoSlot+petSlot
+        +this.slot("👥","Клан","скоро","","openClanSoon()")
+        +'</div>';
     } else if(tab==="friends"){
+      const code=(typeof growthInviteCode==="function")?growthInviteCode():"ORE-????";
       const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Код принят','',c,'друг добавится в сетевой версии');}";
-      body='<div class="uiSub">Добавить друга по коду</div>'
-        +'<div class="uiRow"><input id="uiFriendCode" class="uiInp wide" placeholder="ORE-XXXX" maxlength="12">'
-        +'<button class="btn btn-soft btn-tiny" onclick="'+addFn+'">+</button></div>'
-        +'<div class="uiEmpty" style="margin-top:12px">Список собутыльников — в сетевой версии.</div>';
+      body=facade
+        +'<div class="uiTavTip"><b>Собутыльники.</b> Пока сеть варится — зови по коду. Рефералы и вехи живут в профиле.</div>'
+        +this.card("🤝","Код друга","введи чужой — или отдай свой",
+          '<div class="uiRow" style="border:0;padding:6px 0"><input id="uiFriendCode" class="uiInp wide" placeholder="ORE-XXXX" maxlength="12" style="max-width:100%">'
+          +'<button class="btn btn-soft btn-tiny" onclick="'+addFn+'">+</button></div>'
+          +'<div class="uiSub">Твой код роста: <b style="color:var(--gold)">'+esc(code)+'</b></div>',
+          "tav")
+        +'<div class="uiBtnStack">'
+        +'<button class="btn btn-hard btn-wide" onclick="UIS.open(\'profile\',\'growth\')">👥 Рефералы и вехи</button>'
+        +(typeof shareInvite==="function"
+          ?'<button class="btn btn-soft btn-wide" onclick="shareInvite()">Поделиться ссылкой</button>':"")
+        +'</div>'
+        +'<div class="uiEmpty" style="padding:16px 8px">Список собутыльников онлайн — в сетевой версии.</div>';
     } else {
-      body+='<div class="uiSec">Рейтинг таверн</div>'
-        +UI_TAV_RANKS.map((t,i)=>'<div class="uiRankRow"><span class="uiRankN">'+(i+1)+'</span><b>'+t.n+'</b><span class="uiSub">'+t.xp+' Gym XP</span></div>').join("")
-        +'<div class="uiSub" style="margin-top:8px;text-align:center">+ фейковые таверны для атмосферы</div>';
+      /* Кубки: игрок вставлен в таблицу по Gym XP */
+      const mine={n:playerName(), xp:xp, me:true};
+      const board=UI_TAV_RANKS.map(t=>({n:t.n, xp:t.xp, me:false})).concat([mine])
+        .sort((a,b)=>b.xp-a.xp);
+      const rows=board.map((t,i)=>
+        '<div class="uiRankRow'+(t.me?" me":"")+'"><span class="uiRankN">'+(i+1)+'</span><b>'
+        +esc(t.n)+(t.me?" · ты":"")+'</b><span class="uiSub">'+fmt(t.xp)+' XP</span></div>'
+      ).join("");
+      const nextPerk=GYM_PERKS.find(pk=>lv<pk.lv);
+      body=facade+gymCard
+        +'<div class="uiSec tav">Рейтинг таверн</div>'
+        +rows
+        +'<div class="uiSub" style="margin-top:8px;text-align:center">'
+        +(nextPerk
+          ?('Следующий перк зала: «'+nextPerk.n+'» (+'+nextPerk.pct+'%) с ур.'+nextPerk.lv)
+          :'Перки зала на максимуме')
+        +'</div>';
     }
     this.$("uiBody").innerHTML=body;
   },
@@ -699,5 +791,5 @@ if(typeof metaOpen==="function"){
 
 ["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","ascendGeo","hireGeo","buyGems","buyPack","claimDaily",
  "chestOpenOne","chestUpgrade","chestSkip","upSkill","openSkillChest","spinWheel","playEvent","sciAnswer","sciSkip",
- "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout",
+ "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout","startWorkout","drinkBeer",
  "toggleFair","setFairClient","revealFair","setPlayerName","buyStickerPack","giftStickers","sipAle"].forEach(uiWrap);
