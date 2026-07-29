@@ -12,10 +12,10 @@ const UI_MINES=[
 ];
 
 const UI_ART_COLS=[
-  {id:"mountain",n:"Гора",ic:"⛰",c:"#e8b93c"},
-  {id:"deep",n:"Глубины",ic:"🕳",c:"#5aa7e8"},
-  {id:"forge",n:"Кузня",ic:"🔨",c:"#ff8a4a"},
-  {id:"tavern",n:"Таверна",ic:"🍺",c:"#7ae8dc"}
+  {id:"mountain",n:"Гора",   ic:'<img class="uiColArt" src="art/ic_col_mountain.png" alt="">',c:"#e8b93c"},
+  {id:"deep",    n:"Глубины",ic:'<img class="uiColArt" src="art/ic_col_deep.png" alt="">',    c:"#5aa7e8"},
+  {id:"forge",   n:"Кузня",  ic:'<img class="uiColArt" src="art/ic_col_forge.png" alt="">',   c:"#ff8a4a"},
+  {id:"tavern",  n:"Таверна",ic:'<img class="uiColArt" src="art/ic_col_tavern.png" alt="">',  c:"#7ae8dc"}
 ];
 
 const UI_TAV_RANKS=[
@@ -51,6 +51,7 @@ const UIS={
     const el=this.$("uiScreen"); if(!el) return;
     el.style.display="flex";
     el.style.pointerEvents="auto";
+    el.dataset.scr=this.id||"";   // фоновая живопись экрана подбирается по id
     if(el.classList) el.classList.add("open");
     this.setChrome(true);
     try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
@@ -297,7 +298,7 @@ const UIS={
           this.bar(pityPct) +
           rarRU.map((nm,i)=>this.row(nm,'~'+geoOddsPct[i].toFixed(2)+'%')).join("")
         )
-        +'<div class="uiGachaStage"><div class="uiGachaEgg">🪮</div></div>'
+        +'<div class="uiGachaStage"><img class="uiGachaArt" src="art/ic_beard.png" alt=""></div>'
         +'<button class="btn btn-hard btn-wide" onclick="hireGeo();UIS.render(\'beards\')" '+(S.combs<1?"disabled":"")+'>Нанять · 🪮 1</button>'
         +'<div class="uiSub" style="text-align:center;margin:8px 0">Энергия: '+enCur+' / '+enMax+' ('+enPct+'%)</div>'
         +healthLine;
