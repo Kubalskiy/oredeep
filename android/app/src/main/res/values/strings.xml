@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ORE DEEP</string>
+    <string name="title_activity_main">ORE DEEP</string>
+    <string name="package_name">com.oredeep.game</string>
+    <string name="custom_url_scheme">com.oredeep.game</string>
+</resources>

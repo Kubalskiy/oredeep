@@ -35,8 +35,6 @@
 
   const metaPanels = [
     ["skills", () => openSkills()],
-    ["charSheet", () => openCharSheet()],
-    ["perkPick", () => { S.perkPicks=1; openPerkPick(); }],
     ["wheel", () => openWheel()],
     ["events", () => openEvents()],
     ["workouts", () => openWorkouts()],
@@ -56,6 +54,16 @@
     T(id + " metaModal не используется", document.getElementById("metaModal").style.display !== "flex");
     T(id + " (legacy) футер на месте", document.getElementById("bottomNav").style.display !== "none");
   }
+
+  /* Лист / перки — собственные модалки (#charModal / #perkModal), не UIS */
+  closeAllPanels();
+  openCharSheet();
+  T("charSheet → charModal", document.getElementById("charModal").style.display === "flex");
+  T("charSheet не открывает metaModal", document.getElementById("metaModal").style.display !== "flex");
+  closeCharSheet();
+  S.perkPicks=1; openPerkPick();
+  T("perkPick → perkModal", document.getElementById("perkModal").style.display === "flex");
+  closePerkPick();
 
   closeAllPanels();
   T("UIS.close закрывает экран", document.getElementById("uiScreen").style.display !== "flex");
