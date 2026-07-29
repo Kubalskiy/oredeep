@@ -111,7 +111,8 @@ S.bags = 2; S.autoRoll = false; render();
 T("«Открыть» активна при сумках", canOpenBag());
 { const b0 = S.bags; openBag();
   T("«Открыть» тратит ровно 1 сумку", S.bags === b0 - 1); }
-{ const on0 = S.autoRoll; toggleAutoRoll();
+{ SLOTS.forEach(sl => { S.gear[sl.id] = { s:sl.id, r:1, m:1, i:1 }; });
+  const on0 = S.autoRoll; toggleAutoRoll();
   T("«Auto» переключает режим", S.autoRoll === !on0);
   render();
   T("«Auto» подсвечена при включении", $("auto").classList.contains("on")); }
@@ -120,11 +121,14 @@ T("«Открыть» активна при сумках", canOpenBag());
   S.autoRollTier = 7; cycleAutoTier();
   T("порог заворачивается Cosmic → Common", S.autoRollTier === 0); }
 { // авто-открытие крутится в игровом цикле
+  const b = BALANCE.bags, s0 = b.autoUnlockSlots, r0 = b.autoUnlockRares;
+  b.autoUnlockSlots = 0; b.autoUnlockRares = 0;
   S.autoRoll = true; S.autoRollTier = 7; S.bags = 3; S.gold = 0; dead = false;
   const b0 = S.bags;
   for (let i = 0; i < 200; i++) frame(50);           // 10 виртуальных секунд
   T("Auto Roll сам тратит сумки в цикле", S.bags < b0, "было " + b0 + ", стало " + S.bags);
-  S.autoRoll = false; }
+  S.autoRoll = false;
+  b.autoUnlockSlots = s0; b.autoUnlockRares = r0; }
 
 /* ---------- 5. Питомцы: merge ---------- */
 console.log("\n[E] Питомцы: кнопки слияния");

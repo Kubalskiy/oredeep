@@ -66,16 +66,29 @@
     T(id + " открывает экран", r === true && ok(), "got UIS.id=" + UIS.id + " r=" + r);
   }
   closeAllPanels();
+  fire($("navShop"));
+  T("navShop подсвечен", $("navShop").classList.contains("on"));
+  fire($("navShop"));
+  T("повторный navShop возвращает в забой", !UIS.id && !$("navShop").classList.contains("on"));
+  closeAllPanels();
   fire($("navSkills"));
-  T("navSkills открывает навыки", modalOpen() && /Навык|навык|Лар|Скилл/i.test(modalTitleText() + modalBodyHtml()));
+  T("navSkills открывает лист навыков", UIS.id === "panel" && _skillsShellTab === "sheet");
+  fire($("navSkills"));
+  T("повторный navSkills закрывает лист", !UIS.id && (_skillsShellTab==null));
 
   console.log("\n[BTN-STATE] Toggle .on и лейблы");
   localStorage.removeItem("oredeep_v3"); load(); render(); wireInlineFromHtml();
-  { const a = $("auto"); const on0 = a.classList.contains("on");
+  { const a = $("auto");
+    fire(a); render();
+    T("Auto без экипа остаётся закрыт", S.autoRoll === false);
+    T("Auto лейбл замок", ($("autoLbl2").textContent || "").includes("🔒"));
+    SLOTS.forEach(sl => { S.gear[sl.id] = { s:sl.id, r:1, m:1, i:1 }; });
+    render();
+    const on0 = a.classList.contains("on");
     fire(a); render();
     T("Auto клик переключает S.autoRoll", S.autoRoll === true);
     T("Auto получает .on", a.classList.contains("on") === true && on0 === false);
-    T("Auto лейбл ВКЛ", ($("autoLbl2").textContent || "").includes("ВКЛ"));
+    T("Auto лейбл порог", /Rare|Epic|Legend|Exotic|Myth|Ascend|Cosmic|\+/i.test($("autoLbl2").textContent || ""));
     fire(a); render();
     T("Auto повторно снимает .on", !a.classList.contains("on") && S.autoRoll === false);
     T("Auto лейбл ВЫКЛ", ($("autoLbl2").textContent || "").includes("ВЫКЛ"));
@@ -106,6 +119,8 @@
     const b0 = S.bag;
     fire($("powerUp"));
     T("СИЛА без золота не стартует апгрейд", !S.bagActive && S.bag === b0);
+    T("СИЛА без золота открывает лист шансов", $("chestModal").style.display === "flex");
+    closeChest();
   }
   { S.durab = MINE_DURAB.max; S.gold = 1e9; const g0 = S.gold;
     fire($("energyBox"));
@@ -117,6 +132,9 @@
   { ensureBonus(S); S.bonusReadyAt = 0;
     const g0 = S.gold, b0 = S.bags || 0;
     fire($("bonusChest"));
+    T("бонус открывает окно награды", UIS.id === "panel"
+      && /Бонус/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+    grantBonusChest(1);
     T("бонус +золото", S.gold > g0);
     T("бонус +1 сумка", (S.bags || 0) === b0 + 1);
     const g1 = S.gold, b1 = S.bags;
@@ -144,9 +162,12 @@
   }
   { S.bag = 1; S.gold = bagCost() * 5; S.bagActive = null;
     fire($("powerUp"));
+    T("СИЛА открывает лист шансов", $("chestModal").style.display === "flex" && !S.bagActive);
+    chestUpgrade();
     T("СИЛА стартует таймер апгрейда", !!S.bagActive);
     S.bagActive.end = Date.now(); finishBagUpgrade();
     T("СИЛА инкремент уровня сумки", S.bag === 2);
+    closeChest();
   }
   { // апгрейд ATK +
     buildUpgrades();

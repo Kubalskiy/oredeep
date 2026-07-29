@@ -53,6 +53,7 @@ const UIS={
     el.style.pointerEvents="auto";
     if(el.classList) el.classList.add("open");
     this.setChrome(true);
+    try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
     Platform.logEvent("ui_screen",{id:this.id,tab:this.tab});
     try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   },
@@ -67,6 +68,7 @@ const UIS={
     this.setChrome(false);
     this.id=null; this.tab=null; this._stack=[]; this._lastMeta=null;
     try{ if(typeof _skillsShellTab!=="undefined") _skillsShellTab=null; }catch(e){}
+    try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
     try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   },
   /** Назад: из panel/push → предыдущий экран (напр. Союзники); иначе закрыть. */
@@ -934,11 +936,28 @@ function closeAllPanels(){
 function uiWire(){
   if($("avatar")) $("avatar").onclick=()=>UIS.open("profile");
   if($("menu")) $("menu").onclick=()=>UIS.open("settings");
-  if($("navTavBtn")) $("navTavBtn").onclick=()=>UIS.open("tavern","ale");
-  if($("navPvp")) $("navPvp").onclick=()=>UIS.open("pvp");
-  if($("navShop")) $("navShop").onclick=()=>UIS.open("shop","offers");
-  if($("navSkills")) $("navSkills").onclick=()=>openSkills("sheet");
-  if($("navMines")) $("navMines").onclick=()=>UIS.open("mines");
+  function navGo(id, openFn){
+    return function(){
+      try{ if(typeof closeCharSheet==="function") closeCharSheet(); }catch(e){}
+      if(UIS.id===id){ UIS.close(); return; }
+      openFn();
+    };
+  }
+  if($("navTavBtn")) $("navTavBtn").onclick=navGo("tavern", ()=>UIS.open("tavern","ale"));
+  if($("navPvp")) $("navPvp").onclick=navGo("pvp", ()=>UIS.open("pvp"));
+  if($("navShop")) $("navShop").onclick=navGo("shop", ()=>UIS.open("shop","offers"));
+  if($("navMines")) $("navMines").onclick=navGo("mines", ()=>UIS.open("mines"));
+  if($("navSkills")) $("navSkills").onclick=function(){
+    /* Skills shell живёт в UIS panel — повторный тап закрывает в забой */
+    if(UIS.id==="panel" && typeof _skillsShellTab!=="undefined" && _skillsShellTab!=null){
+      UIS.close();
+      return;
+    }
+    try{ if(typeof closeCharSheet==="function") closeCharSheet(); }catch(e){}
+    if(UIS.id) UIS.close();
+    openSkills("sheet");
+    try{ syncBottomNav(); }catch(e){}
+  };
   const ml=$("mineLabel");
   if(ml){ ml.style.cursor="pointer"; ml.title="Штольни"; ml.onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); UIS.open("mines"); }; }
   const sm=$("statMine");
@@ -949,6 +968,7 @@ function uiWire(){
     rank.title="Бороды · звание";
     rank.onclick=()=>UIS.open("beards","rank");
   }
+  try{ syncBottomNav(); }catch(e){}
 }
 function uiWrap(name){
   const prev=globalThis[name];

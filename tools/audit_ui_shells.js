@@ -55,12 +55,12 @@
     T(id + " (legacy) футер на месте", document.getElementById("bottomNav").style.display !== "none");
   }
 
-  /* Лист / перки — собственные модалки (#charModal / #perkModal), не UIS */
+  /* Лист навыков — оболочка UIS panel; перки — #perkModal */
   closeAllPanels();
   openCharSheet();
-  T("charSheet → charModal", document.getElementById("charModal").style.display === "flex");
+  T("charSheet → skills shell", UIS.id === "panel" && _skillsShellTab === "sheet");
   T("charSheet не открывает metaModal", document.getElementById("metaModal").style.display !== "flex");
-  closeCharSheet();
+  closeSkillsShell();
   S.perkPicks=1; openPerkPick();
   T("perkPick → perkModal", document.getElementById("perkModal").style.display === "flex");
   closePerkPick();

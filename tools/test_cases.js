@@ -131,8 +131,9 @@ T("гача без расчёсок заблокирована", (S.combs||0)<1)
 { S.bag=1; S.gold=0; S.bagActive=null; bagSkipArmed=false; render();
   const b0=S.bag;
   if($("powerUp")&&$("powerUp").onclick) $("powerUp").onclick();
-  T("сумка без золота: клик не стартует и не открывает шансы",
-    !S.bagActive && S.bag===b0 && (!$("chestModal")||$("chestModal").style.display!=="flex"));
+  T("сумка без золота: лист шансов без старта апгрейда",
+    !S.bagActive && S.bag===b0 && $("chestModal")&&$("chestModal").style.display==="flex");
+  closeChest();
   T("на кнопке сумки видна цена апгрейда",
     /🪙/.test((__ids.bagAreaTimer&&__ids.bagAreaTimer.textContent)||"")); }
 { const g0=S.gold, l0=S.lvls.atk; __ids.u_atk._q["button"].onclick();
@@ -599,7 +600,8 @@ T("Auto Roll ниже порога: продажа, золото пришло", 
 S.autoRollTier=0; S.gear={}; S.bags=30;
 while(S.bags>0) autoOpenBag();
 T("Auto Roll с порога и выше: предметы в слоты", Object.keys(S.gear).length>0);
-S.autoRollTier=7; cycleAutoTier(); T("порог циклится 7→0", S.autoRollTier===0);
+S.autoRollTier=7; SLOTS.forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:1,m:1,i:1}; });
+cycleAutoTier(); T("порог циклится 7→0", S.autoRollTier===0);
 T("миграция сумок", (function(){ const d={}; ensureBags(d); return d.bags===0 && d.autoRoll===false && d.autoRollTier===4; })());
 
 console.log("\n[28] Merge питомцев и старейшин (док §Питомцы, §Девушки)");
@@ -993,6 +995,8 @@ T("на этапе первого уровня престиж уже досту�
 console.log("\n[40] Auto Roll: пропускная способность, лог, кнопка");
 localStorage.removeItem("oredeep_v3"); load();
 S.bag=16; S.autoRoll=true; S.autoRollTier=7; S.speed=100; S.bags=0;
+{ const b=BALANCE.bags, s0=b.autoUnlockSlots, r0=b.autoUnlockRares;
+  b.autoUnlockSlots=0; b.autoUnlockRares=0;
 S.stageIdx=300; S.lvls.atk=200; S.lvls.energy=500; S.lvls.luck=200; newRock(); dead=false;
 { let peak=0, lines=0; const _st=showToast; showToast=function(){ lines++; };
   for(let i=0;i<600;i++){ if(dead) closeOverlay(); frame(16); peak=Math.max(peak,S.bags); }
@@ -1008,6 +1012,7 @@ T("при Auto ON ручная «Открыть» заблокирована", !
 S.autoRoll=false; render();
 T("при Auto OFF «Открыть» активна", canOpenBag());
 { const b0=S.bags; openBag(); T("«Открыть» открывает ровно одну сумку", S.bags===b0-1); }
+  b.autoUnlockSlots=s0; b.autoUnlockRares=r0; }
 // таймеры сбрасываются при load: первый кадр не прокручивает тысячи ударов
 localStorage.removeItem("oredeep_v3"); load();
 S.stageIdx=1; S.lvls.atk=999; newRock();
@@ -1015,8 +1020,11 @@ hitTimer=999;                    // симулируем «зависший» т
 load();                          // load обязан его обнулить
 T("load() сбрасывает hitTimer", hitTimer===0);
 { S.bag=16; S.autoRoll=true; S.autoRollTier=7; S.speed=100; S.bags=0; S.lvls.atk=200; newRock(); dead=false;
+  const b=BALANCE.bags, s0=b.autoUnlockSlots, r0=b.autoUnlockRares;
+  b.autoUnlockSlots=0; b.autoUnlockRares=0;
   frame(16);
-  T("первый кадр не прокручивает бесконечные удары (предохранитель)", S.bags<=50, "сумок "+S.bags); }
+  T("первый кадр не прокручивает бесконечные удары (предохранитель)", S.bags<=50, "сумок "+S.bags);
+  b.autoUnlockSlots=s0; b.autoUnlockRares=r0; }
 
 console.log("\n[41] Ограниченный прогон: свод, ворота престижа, читаемость");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1361,7 +1369,8 @@ dead=false; S.durab=40; S.gold=Math.max(S.gold||0, reinforceCost()*3);
   T("старт пишет dur по уровню", !!S.bagActive && S.bagActive.dur===bagUpgradeSec(20)
     && S.bagActive.from===20);
   S.bagActive=null; }
-{ S.autoRoll=true; render();
+{ SLOTS.forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:1,m:1,i:1}; });
+  S.autoRoll=true; render();
   const ab=$("auto");
   T("видимый Auto получает класс on", !!(ab&&ab.classList&&ab.classList.contains("on"))); }
 { ensureGrowth(S); S.growth.referredBy="AAAAAA";

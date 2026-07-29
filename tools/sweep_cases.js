@@ -166,6 +166,7 @@ else OK("при 100% крепи риск обвала = 0");
 console.log("\n[7] Auto Roll: очередь не растёт даже у переусиленного дворфа");
 localStorage.removeItem("oredeep_v3"); load();
 S.bag = 16; S.autoRoll = true; S.autoRollTier = 7; S.speed = 100; S.bags = 0; S.gold = 0;
+BALANCE.bags.autoUnlockSlots = 0; BALANCE.bags.autoUnlockRares = 0;
 S.stageIdx = 300; S.lvls.atk = 200; S.lvls.energy = 500; S.lvls.luck = 200; newRock(); dead = false;
 {
   let peak = 0, lines = 0;
@@ -181,6 +182,7 @@ S.stageIdx = 300; S.lvls.atk = 200; S.lvls.energy = 500; S.lvls.luck = 200; newR
 // накопленная очередь разбирается после включения Auto
 localStorage.removeItem("oredeep_v3"); load();
 S.bag = 16; S.bags = 495; S.autoRoll = true; S.autoRollTier = 7; S.speed = 1; dead = false; newRock();
+BALANCE.bags.autoUnlockSlots = 0; BALANCE.bags.autoUnlockRares = 0;
 for (let i = 0; i < 400; i++) frame(50);
 if (S.bags !== 0) BUG("AutoRoll", `накопленные 495 сумок не разобраны за 20 сек: осталось ${S.bags}`);
 else OK("накопленные 495 сумок разобраны");
