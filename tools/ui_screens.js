@@ -22,12 +22,6 @@ const UI_TAV_RANKS=[
   {n:"Каменный Кубок",xp:1200},{n:"Медный Кубок",xp:980},{n:"Железный Кубок",xp:760},
   {n:"Серебряный Кубок",xp:540},{n:"Золотой Кубок",xp:320},{n:"Платиновый Кубок",xp:110}
 ];
-const UI_TAV_TIPS=[
-  "Борин: эль не для красоты. Пей — копи очки — качай застолье.",
-  "Стойка помнит каждого. Уважение (Gym XP) растёт от тренировок, PvP и дейликов.",
-  "Тегнутый навык на листе дешевле. А тут — пиво в очки, очки в силу.",
-  "Пустой кружки не бывает: +5 🍺/ч капается само, пока ты в забое."
-];
 
 /* Фейковый PvP-рейтинг по кубкам (отдельно от Стены Горы по глубине) */
 const UI_PVP_BOARD=[
@@ -264,23 +258,66 @@ const UIS={
 
   renderBeards(){
     const tab=this.tab||"gacha";
+    const rarRU=["Обычная","Редкая","Эпическая","Легендарная"];
     this.$("uiTitle").textContent="Бороды";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🪮 '+(S.combs||0)+'</span>';
     this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","ascend","rank","gallery"],
       ["Гача","Слияние","Восхожд.","Ранг","Галерея"],tab);
-    let body="";
+
+    const w=(typeof beardWisdom==="function")?beardWisdom():{lv:0,goldPct:0,luckAdd:0,title:"—"};
+    const enMax=(typeof stat==="function")?Math.max(1,stat("energy")|0):1;
+    const enCur=Math.max(0,Math.min(enMax,(S.energy!=null?S.energy:enMax)|0));
+    const enPct=enMax?Math.round(enCur/enMax*100):0;
+
     const cur=S.geo?('<div class="uiBanner r'+S.geo.r+'">'+S.geo.n
       +((S.geo.asc||0)?' ✦'+S.geo.asc:'')
       +' · +'+geoPct(S.geo).toFixed(0)+'% '+GEO_TYPES[S.geo.t].stat.toUpperCase()+'</div>'):"";
+
+    const rolls=S.geoRolls||0;
+    const pityXs=(BALANCE.geo&&BALANCE.geo.pityX)||[];
+    let pityI=0; while(pityI<pityXs.length-1 && rolls>=pityXs[pityI+1]) pityI++;
+    const pityX0=pityXs[pityI]??0, pityX1=pityXs[Math.min(pityI+1,pityXs.length-1)]??pityX0;
+    const pityPct=(pityX1===pityX0)?100:Math.max(0,Math.min(100,Math.round((rolls-pityX0)/(pityX1-pityX0)*100)));
+    const geoW=(typeof geoWeights==="function")?geoWeights(rolls):[25,25,25,25];
+    const geoWSum=geoW.reduce((a,b)=>a+b,0)||1;
+    const geoOddsPct=geoW.map(v=>v/geoWSum*100);
+
+    let body="";
+    const healthLine='<div class="uiSub" style="margin-top:8px;color:var(--dim);line-height:1.35">' +
+      'Энергия убывает в забое (каждый «выстрел» породы её сжигает). ' +
+      'Чтобы борода росла без пауз — держи энергию в зелёной зоне: пей 🍺 и качай Реген/Крепёж.</div>';
+
     if(tab==="gacha"){
-      body=cur+'<div class="uiGachaStage"><div class="uiGachaEgg">🪮</div></div>'
-        +'<div class="uiSub" style="text-align:center;margin:8px 0">Роллов: '+(S.geoRolls||0)+'</div>'
-        +'<button class="btn btn-hard btn-wide" onclick="hireGeo();UIS.render(\'beards\')" '+(S.combs<1?"disabled":"")+'>Нанять · 🪮 1</button>';
+      body=cur
+        +this.card("🪮","Жалость Горы","Шансы на редкость растут по числу роллов",
+          '<div class="uiSub" style="margin-bottom:6px">Роллов: '+rolls+' · порог: '+pityX1+' → Leg ~'+geoOddsPct[3].toFixed(2)+'%</div>' +
+          this.bar(pityPct) +
+          rarRU.map((nm,i)=>this.row(nm,'~'+geoOddsPct[i].toFixed(2)+'%')).join("")
+        )
+        +'<div class="uiGachaStage"><div class="uiGachaEgg">🪮</div></div>'
+        +'<button class="btn btn-hard btn-wide" onclick="hireGeo();UIS.render(\'beards\')" '+(S.combs<1?"disabled":"")+'>Нанять · 🪮 1</button>'
+        +'<div class="uiSub" style="text-align:center;margin:8px 0">Энергия: '+enCur+' / '+enMax+' ('+enPct+'%)</div>'
+        +healthLine;
     } else if(tab==="merge"){
-      body=cur+(S.geo
-        ? this.card("👷",S.geo.n,"ур. "+(S.geo.lv||1)+" · материал: "+geoMaterials(),
-            '<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(geoMaterials()<1?"disabled":"")+'>Поглотить дубликаты</button>')
-        : '<div class="uiEmpty">Сначала найми бороду на вкладке Гача.</div>');
+      if(!S.geo){
+        body='<div class="uiEmpty">Сначала найми бороду на вкладке Гача.</div>';
+      } else {
+        const total=geoMaterials();
+        const counts=[0,0,0,0];
+        for(const k in (S.geoBox||{})){
+          if(!S.geoBox[k]) continue;
+          const r=Number(k.split("_")[1]);
+          if(r<=S.geo.r) counts[r]=(counts[r]||0)+S.geoBox[k];
+        }
+        const newLv=(S.geo.lv||1)+total;
+        body=cur
+          +this.card("👷",S.geo.n,"ур. "+(S.geo.lv||1)+" → после слияния ур. "+newLv+" · материал: "+total,
+            rarRU.map((nm,r)=>this.row(nm, String(counts[r]||0))).join("")
+            +'<div class="uiSub" style="margin-top:6px">Кормятся материалы редкости ≤ '+rarRU[S.geo.r]+'.</div>'
+            +'<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(total<1?"disabled":"")+'>Поглотить дубликаты</button>'
+          )
+          +healthLine;
+      }
     } else if(tab==="ascend"){
       const B=BALANCE.merge;
       if(!S.geo){
@@ -288,23 +325,91 @@ const UIS={
       } else {
         const isLeg=S.geo.r===GEO_RAR.length-1;
         const ascOk=canAscendGeo();
+        const lv=(S.geo.lv||1);
+        const lvOk=lv>=B.ascendLv;
+        const gemsHave=S.gems||0;
+        const gemsOk=gemsHave>=B.ascendGems;
         const why=!isLeg ? ("нужен "+GEO_RAR[GEO_RAR.length-1])
-          : ((S.geo.lv||1)<B.ascendLv ? ("нужен ур."+B.ascendLv+" (есть "+(S.geo.lv||1)+")")
-          : ((S.gems||0)<B.ascendGems ? ("нужно "+B.ascendGems+" 💎 (есть "+fmt(S.gems||0)+")") : ""));
-        body=cur+this.card("✦","Восхождение ✦"+((S.geo.asc||0)+1),
+          : (!lvOk ? ("нужен ур."+B.ascendLv+" (есть "+lv+")")
+          : (!gemsOk ? ("нужно "+B.ascendGems+" 💎 (есть "+fmt(gemsHave)+")") : ""));
+        const lvPct=isLeg?Math.min(100,Math.round(lv/B.ascendLv*100)):0;
+        const gemsPct=isLeg?Math.min(100,Math.round(gemsHave/B.ascendGems*100)):0;
+        const afterPct=geoPct({t:S.geo.t,r:S.geo.r,lv:1,asc:(S.geo.asc||0)+1});
+        const ascStep=(S.geo.asc||0)+1;
+        body=cur+this.card("✦","Восхождение ✦"+ascStep,
           "+"+B.ascendPct+"% к бонусу · уровень сбрасывается в 1 · "+B.ascendGems+" 💎",
           (isLeg
-            ? '<button class="btn btn-hard btn-wide" onclick="ascendGeo()" '+(ascOk?"":"disabled")+'>Восхождение · '+B.ascendGems+' 💎</button>'
+            ? '<div class="uiSub">Прогресс: уровень '+lv+'/'+B.ascendLv+'</div>' + this.bar(lvPct) +
+              '<div class="uiSub" style="margin-top:6px">Гемы: '+fmt(gemsHave)+' / '+fmt(B.ascendGems)+'</div>' + this.bar(gemsPct) +
+              '<div class="uiSub" style="margin-top:8px">После восхождения: ~'+afterPct.toFixed(0)+'% '+GEO_TYPES[S.geo.t].stat.toUpperCase()+'</div>' +
+              '<button class="btn btn-hard btn-wide" onclick="ascendGeo()" '+(ascOk?"":"disabled")+'>Восхождение · '+B.ascendGems+' 💎</button>'
               +(why?'<div class="uiSub" style="margin-top:8px;color:#e8a24a">'+why+'</div>':"")
             : '<div class="uiEmpty">🔒 Только для '+GEO_RAR[GEO_RAR.length-1]+'. Сливай дубликаты на вкладке Слияние до легендарки.</div>'));
       }
     } else if(tab==="rank"){
-      const w=beardWisdom(), need=beardNextXP(w.lv), have=S.beardXP||0;
-      const pct=w.lv>=BEARD_RANKS.length-1?100:Math.min(100,Math.round(have/need*100));
-      body=this.card("🧔",w.title,"+"+w.goldPct+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK",this.bar(pct)+
-        '<div class="uiSub" style="margin-top:6px">'+(w.lv>=BEARD_RANKS.length-1?"МАКСИМУМ":fmt(have)+" / "+fmt(need)+" XP")+'</div>');
+      const need=beardNextXP(w.lv), have=S.beardXP||0;
+      const maxLv=BEARD_RANKS.length-1;
+      const pct=w.lv>=maxLv?100:Math.min(100,Math.round(have/need*100));
+      const remXp=Math.max(0,need-have);
+      const untilVeins=Math.ceil(remXp/2);
+      const untilBoss=Math.ceil(remXp/12);
+      const nextRank=Math.min(maxLv,w.lv+1);
+      const nextGold=nextRank*3, nextLuck=nextRank*0.4;
+      body=cur+this.card("🧔",w.title,
+        "+"+w.goldPct+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK",
+        this.bar(pct) +
+        '<div class="uiSub" style="margin-top:6px">'+(w.lv>=maxLv?"МАКСИМУМ":fmt(have)+" / "+fmt(need)+" XP · осталось "+fmt(remXp)+" XP")+'</div>' +
+        '<div class="uiSub" style="margin-top:8px">Рост ранга: +2 XP за обычную жилу, +12 XP за босса.</div>' +
+        '<div class="uiSub" style="margin-top:6px;color:#e8a24a">До следующего ранга: ~'+untilVeins+' жил или ~'+untilBoss+' босса.</div>'
+      )
+      +this.card("⚙️","Сложность & токеномика",
+        "бороды = гем-сток + фарм частоты (энергия)",
+        '<div class="uiSub">Твой бонус к доходу растёт с рангом, а восхождение старейшины тратит гемы: '+BALANCE.merge.ascendGems+'💎 за ступень.</div>' +
+        '<div class="uiSub" style="margin-top:8px">Главное топливо прогресса — не гемы, а частота забоя: если энергия упадёт в ноль, ты остановишься.</div>' +
+        '<div class="uiSub" style="margin-top:8px">Держи Энергию: сейчас '+enCur+'/'+enMax+' ('+enPct+'%).</div>' +
+        healthLine
+      );
     } else {
-      body=this.grid(GEO_TYPES.map((g,i)=>this.slot("💇",g.names[0],g.stat.toUpperCase(),"")));
+      const totalGeoMats=Object.values(S.geoBox||{}).reduce((a,b)=>a+(b||0),0);
+      const curT=S.geo?S.geo.t:null;
+      const dealTxt=S.geo
+        ? (S.geo.n+" · "+rarRU[S.geo.r]+" · ур."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):""))
+        : "пока никого";
+      const FAMILY_LORE={
+        atk:"Дворф учится бить точнее: сила растёт — и забой быстрее отдаёт жилу.",
+        energy:"Знахарки не «лечат» магией — они не дают энергии падать слишком быстро.",
+        stone:"Счёт камням ведут с уважением: больше жадности — жирнее награда."
+      };
+
+      body=cur
+        +this.card("📚","Галерея старейшин","Коллекция расчётёскных материалов · всего в сундуке: "+totalGeoMats,
+          '<div class="uiSub">В деле: '+dealTxt+'</div>' +
+          '<div class="uiSub" style="margin-top:8px">Старейшины — это твоя артель. Один в работе, остальные копятся в сундуке как дубликаты.</div>' +
+          '<div class="uiSub" style="margin-top:8px">Как читается дорога: роллы 🪮 дают либо нового старейшину в дело, либо материалы редкости ≤ твоей.</div>' +
+          '<div class="uiSub" style="margin-top:8px">Слияние превращает дубликаты в уровень и жирит бонус. Восхождение на Легендарной — гем-сток за «ступень ✦».</div>' +
+          '<div class="uiSub" style="margin-top:8px;color:#e8a24a">Лор-напоминание: энергия убывает в забое — держи её зелёной зоной, иначе рост встанет.</div>'
+        )
+        +this.grid(GEO_TYPES.map((g,i)=>{
+          let bestR=-1, cnt=0;
+          for(const k in (S.geoBox||{})){
+            if(!S.geoBox[k]) continue;
+            const [t,r]=k.split("_").map(Number);
+            if(t!==i) continue;
+            cnt+=(S.geoBox[k]||0);
+            if(r>bestR) bestR=r;
+          }
+          const inDeal = !!S.geo && S.geo.t===i;
+          if(inDeal) bestR=(S.geo.r||bestR);
+          const sub=inDeal
+            ? ("в деле · "+(bestR>=0?rarRU[bestR]:"")+" · ур."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):"")+
+              " · +"+Math.round(geoPct(S.geo))+"%")
+            : (bestR>=0
+              ? ("в сундуке · "+rarRU[bestR]+" · +"+(GEO_TYPES[i].pct[bestR]||0)+"% (lv1) · дубликатов "+cnt)
+              : "пока пусто · нанять на «Гача»");
+          const cls=(bestR>=0||inDeal?"":"lock");
+          return this.slot("💇",g.names[0],g.stat.toUpperCase(),
+            sub+(bestR>=0?(" · "+FAMILY_LORE[g.stat]):""), cls);
+        }));
     }
     this.$("uiBody").innerHTML=body;
   },
@@ -443,10 +548,94 @@ const UIS={
     const nextAt=GYM_LEVELS[lv+1], atCur=GYM_LEVELS[lv]||0;
     const gymPct=nextAt!=null?Math.min(100,Math.round((xp-atCur)/(nextAt-atCur)*100)):100;
     const beer=Math.floor(S.protein||0), pts=S.wkPts|0;
-    const W=BALANCE.workouts||{}, drinkCost=W.drinkCost||5, drinkPts=W.drinkPts||5;
+    const W=BALANCE.workouts||{};
+    const mug=typeof mugTier==="function"?mugTier():{mul:1,max:true,next:null};
+    const drinkCost=typeof mugDrinkCost==="function"?mugDrinkCost():(W.drinkCost||5);
+    const drinkPts=typeof mugDrinkPts==="function"?mugDrinkPts():(W.drinkPts||5);
     const names=(typeof WK_PATH_NAME==="object"&&WK_PATH_NAME)||{};
-    const tip=UI_TAV_TIPS[(Math.floor(Date.now()/60000)+lv)%UI_TAV_TIPS.length];
-    const facade='<div class="uiTavExt"><div class="uiTavRoof">🍺</div><div class="uiTavSign">'+esc(playerName())+'</div></div>';
+    const talk=(typeof borinBarTalk==="function")
+      ? borinBarTalk()
+      : {tag:"Борин у стойки.", text:"Эль не для красоты. Пей — копи очки — качай застолье."};
+    /* Пиксель-арт «стена Бреттос»: подсвеченные цветные бутылки на полках,
+       фонарь, бочки и Борин за стойкой. Сетка 240×80, рисуем rect'ами. */
+    const TAV_COLS=["#f0a028","#4a8ce0","#f4cc42","#58c04c","#e0503c","#9a62d8","#46c8c8","#f07830"];
+    let tavBtls="";
+    [[10,94],[140,224]].forEach((u,ui)=>{
+      [8,24,40].forEach((y,ri)=>{
+        for(let x=u[0],i=0;x<=u[1];x+=9,i++)
+          tavBtls+='<use href="#tavBtl" x="'+x+'" y="'+y+'" fill="'+TAV_COLS[(i+ri*3+ui*5)%TAV_COLS.length]+'"/>';
+      });
+    });
+    const facade='<div class="uiTavExt">'
+      +'<svg class="uiTavArt" viewBox="0 0 240 80" preserveAspectRatio="none" aria-hidden="true">'
+      +'<defs>'
+      +'<g id="tavBtl"><rect x="0" y="3" width="5" height="7"/><rect x="1" y="0" width="3" height="3" fill="#241a12"/><rect x="1" y="4" width="1" height="5" fill="#ffffff59"/></g>'
+      +'<radialGradient id="tavGlow"><stop offset="0%" stop-color="#ffe2a0c8"/><stop offset="35%" stop-color="#f2b45f3d"/><stop offset="100%" stop-color="#f2b45f00"/></radialGradient>'
+      +'<radialGradient id="tavVig"><stop offset="0%" stop-color="#00000000"/><stop offset="62%" stop-color="#00000000"/><stop offset="100%" stop-color="#000000c9"/></radialGradient>'
+      +'<linearGradient id="tavBarG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8a5a2c"/><stop offset="55%" stop-color="#4a2b14"/><stop offset="100%" stop-color="#1c0f08"/></linearGradient>'
+      +'</defs>'
+      +'<g shape-rendering="crispEdges">'
+      +'<rect width="240" height="80" fill="#160e08"/>'
+      +'<rect x="0" y="21" width="240" height="1" fill="#0c0805"/><rect x="0" y="37" width="240" height="1" fill="#0c0805"/><rect x="0" y="53" width="240" height="1" fill="#0c0805"/>'
+      +'</g>'
+      +'<ellipse cx="120" cy="22" rx="128" ry="62" fill="url(#tavGlow)"/>'
+      +'<g shape-rendering="crispEdges">'
+      +'<rect x="9" y="8" width="94" height="10" fill="#f8d288" opacity=".16"/><rect x="9" y="24" width="94" height="10" fill="#f8d288" opacity=".13"/><rect x="9" y="40" width="94" height="10" fill="#f8d288" opacity=".10"/>'
+      +'<rect x="137" y="8" width="94" height="10" fill="#f8d288" opacity=".16"/><rect x="137" y="24" width="94" height="10" fill="#f8d288" opacity=".13"/><rect x="137" y="40" width="94" height="10" fill="#f8d288" opacity=".10"/>'
+      +tavBtls
+      +'<rect x="6" y="18" width="98" height="3" fill="#5a3a1e"/><rect x="6" y="18" width="98" height="1" fill="#8a5c2e"/>'
+      +'<rect x="6" y="34" width="98" height="3" fill="#5a3a1e"/><rect x="6" y="34" width="98" height="1" fill="#8a5c2e"/>'
+      +'<rect x="6" y="50" width="98" height="3" fill="#5a3a1e"/><rect x="6" y="50" width="98" height="1" fill="#8a5c2e"/>'
+      +'<rect x="136" y="18" width="98" height="3" fill="#5a3a1e"/><rect x="136" y="18" width="98" height="1" fill="#8a5c2e"/>'
+      +'<rect x="136" y="34" width="98" height="3" fill="#5a3a1e"/><rect x="136" y="34" width="98" height="1" fill="#8a5c2e"/>'
+      +'<rect x="136" y="50" width="98" height="3" fill="#5a3a1e"/><rect x="136" y="50" width="98" height="1" fill="#8a5c2e"/>'
+      +'<rect x="6" y="4" width="228" height="2" fill="#3a2412"/>'
+      +'<rect x="6" y="4" width="3" height="49" fill="#3a2412"/><rect x="101" y="4" width="3" height="49" fill="#3a2412"/>'
+      +'<rect x="136" y="4" width="3" height="49" fill="#3a2412"/><rect x="231" y="4" width="3" height="49" fill="#3a2412"/>'
+      +'<rect x="104" y="6" width="32" height="48" fill="#1b120a"/>'
+      +'<rect x="104" y="6" width="2" height="48" fill="#2c1c10"/><rect x="134" y="6" width="2" height="48" fill="#2c1c10"/>'
+      +'<rect x="119" y="2" width="2" height="4" fill="#4c4438"/>'
+      +'<rect x="115" y="6" width="10" height="2" fill="#2c2620"/>'
+      +'<rect x="114" y="8" width="12" height="10" fill="#3a3128"/>'
+      +'<rect x="116" y="10" width="8" height="6" fill="#ffdf96"/>'
+      +'<rect x="119" y="11" width="2" height="4" fill="#fff6d0"/>'
+      +'</g>'
+      +'<path d="M112 18 L100 58 L140 58 L128 18 Z" fill="#ffdf9a2b"/>'
+      +'<ellipse cx="120" cy="34" rx="14" ry="12" fill="#f7c46c26"/>'
+      +'<g shape-rendering="crispEdges">'
+      +'<rect x="105" y="46" width="30" height="12" fill="#4c3018"/>'
+      +'<rect x="112" y="46" width="16" height="12" fill="#6d4526"/>'
+      +'<rect x="113" y="26" width="14" height="4" fill="#b97c22"/>'
+      +'<rect x="111" y="31" width="2" height="3" fill="#d99c63"/><rect x="127" y="31" width="2" height="3" fill="#d99c63"/>'
+      +'<rect x="113" y="29" width="14" height="10" fill="#ecb37c"/>'
+      +'<rect x="115" y="31" width="4" height="1" fill="#8a5c1c"/><rect x="121" y="31" width="4" height="1" fill="#8a5c1c"/>'
+      +'<rect x="116" y="32" width="2" height="2" fill="#201409"/><rect x="122" y="32" width="2" height="2" fill="#201409"/>'
+      +'<rect x="119" y="33" width="2" height="3" fill="#d9985f"/>'
+      +'<rect x="114" y="37" width="12" height="2" fill="#eab33a"/>'
+      +'<rect x="111" y="39" width="18" height="7" fill="#d89b26"/>'
+      +'<rect x="113" y="46" width="14" height="5" fill="#c98d1e"/>'
+      +'<rect x="115" y="51" width="10" height="4" fill="#b87d18"/>'
+      +'<rect x="112" y="42" width="2" height="9" fill="#b87d18"/><rect x="126" y="42" width="2" height="9" fill="#b87d18"/>'
+      +'<rect x="85" y="46" width="9" height="3" fill="#fff3d8"/><rect x="86" y="49" width="7" height="7" fill="#d9a441"/><rect x="93" y="51" width="2" height="4" fill="#b9873a"/>'
+      +'<rect x="146" y="46" width="9" height="3" fill="#fff3d8"/><rect x="147" y="49" width="7" height="7" fill="#d9a441"/><rect x="145" y="51" width="2" height="4" fill="#b9873a"/>'
+      +'<rect x="0" y="56" width="240" height="2" fill="#c08a46"/>'
+      +'<rect x="0" y="58" width="240" height="7" fill="url(#tavBarG)"/>'
+      +'<rect x="40" y="58" width="1" height="7" fill="#3a2110"/><rect x="80" y="58" width="1" height="7" fill="#3a2110"/><rect x="160" y="58" width="1" height="7" fill="#3a2110"/><rect x="200" y="58" width="1" height="7" fill="#3a2110"/>'
+      +'<rect x="0" y="65" width="240" height="15" fill="#1c1109"/>'
+      +'<rect x="0" y="65" width="240" height="1" fill="#5a3a1c"/>'
+      +'<rect x="8" y="60" width="24" height="20" fill="#6b4423"/>'
+      +'<rect x="8" y="60" width="2" height="2" fill="#160e08"/><rect x="30" y="60" width="2" height="2" fill="#160e08"/>'
+      +'<rect x="8" y="64" width="24" height="2" fill="#2a1a0c"/><rect x="8" y="74" width="24" height="2" fill="#2a1a0c"/>'
+      +'<rect x="15" y="60" width="1" height="20" fill="#55351b"/><rect x="24" y="60" width="1" height="20" fill="#55351b"/>'
+      +'<rect x="208" y="60" width="24" height="20" fill="#6b4423"/>'
+      +'<rect x="208" y="60" width="2" height="2" fill="#160e08"/><rect x="230" y="60" width="2" height="2" fill="#160e08"/>'
+      +'<rect x="208" y="64" width="24" height="2" fill="#2a1a0c"/><rect x="208" y="74" width="24" height="2" fill="#2a1a0c"/>'
+      +'<rect x="215" y="60" width="1" height="20" fill="#55351b"/><rect x="224" y="60" width="1" height="20" fill="#55351b"/>'
+      +'<rect x="58" y="28" width="1" height="1" fill="#ffe9b7" opacity=".55"/><rect x="176" y="24" width="1" height="1" fill="#ffe9b7" opacity=".5"/><rect x="98" y="12" width="1" height="1" fill="#ffe9b7" opacity=".45"/><rect x="150" y="43" width="1" height="1" fill="#ffe9b7" opacity=".4"/>'
+      +'</g>'
+      +'<rect width="240" height="80" fill="url(#tavVig)"/>'
+      +'</svg>'
+      +'</div>';
     const meters='<div class="uiTavMeters">'
       +'<div class="uiTavMeter"><span class="k">ПИВО</span><span class="v">🍺 '+beer+'</span><span class="s">+'+((W.proteinPerHour)|5)+'/ч</span></div>'
       +'<div class="uiTavMeter"><span class="k">ОЧКИ</span><span class="v">💪 '+pts+'</span><span class="s">из глотков</span></div>'
@@ -467,17 +656,40 @@ const UIS={
 
     let body="";
     if(tab==="ale"){
-      const eCur=Math.floor(S.energy||0), eMax=Math.floor(stat("energy")||1);
+      const eCur=Math.floor(S.energy||0), eMax=Math.max(1,Math.floor(stat("energy")||1));
+      const ePct=Math.min(100,Math.round(eCur/eMax*100));
+      const canDrink=beer>=drinkCost;
+      const sips=Math.floor(beer/Math.max(1,drinkCost));
+      const up=mug.next
+        ? ('<button type="button" class="btn btn-soft btn-wide uiTavMugUp" onclick="upgradeMug()" '
+          +((S.gems||0)>=(mug.next.gems|0)?"":"disabled")+'>'
+          +'Ап кружки → ×'+mug.next.mul+' · 💎'+(mug.next.gems|0)+'</button>')
+        : '<div class="uiSub" style="margin-top:8px;text-align:center">Кружка макс · ×'+mug.mul+' за тап</div>';
+      const drinkBody=
+        '<div class="uiTavDeal">'
+        +'<span class="uiTavChip cost">−'+drinkCost+' пива</span>'
+        +'<span class="uiTavChip gain">+'+drinkPts+' очков</span>'
+        +'<span class="uiTavChip soft">×'+mug.mul+' глоток'+(mug.mul>1?"а":"")+'</span>'
+        +'</div>'
+        +'<button type="button" class="uiTavDrinkBtn" onclick="drinkBeer()" '+(canDrink?"":"disabled")+'>'
+        +'<span>Выпить '+(mug.mul>1?("×"+mug.mul):"кружку")+'</span>'
+        +'<span class="cost">🍺 '+drinkCost+'</span>'
+        +'</button>'
+        +up
+        +'<div class="uiTavEnergy">'
+        +'<div class="row"><span>Энергия</span><b>'+eCur+' / '+eMax+'</b></div>'
+        +'<div class="uiBar"><div class="uiBarFill" style="width:'+ePct+'%"></div></div>'
+        +'<div class="uiSub" style="margin-top:6px">Авто-глоток в забое · кружка ур.'+(mug.i+1)+'</div>'
+        +'</div>';
       body=facade+meters
-        +'<div class="uiTavTip"><b>Борин у стойки.</b> '+esc(tip)+'</div>'
-        +this.card("🍺","Выпить кружку",
-          "−"+drinkCost+" 🍺 → +"+drinkPts+" очк. тренировок · чуть энергии",
-          '<button class="btn btn-hard btn-wide" style="min-height:48px;font-size:15px" onclick="drinkBeer()">Выпить 🍺'+drinkCost+'</button>'
-          +'<div class="uiSub" style="margin-top:6px">Энергия '+eCur+'/'+eMax+' · авто-глоток в забое тоже бывает</div>',
-          "tav")
+        +'<div class="uiTavTip"><b>'+esc(talk.tag)+'</b> '+esc(talk.text)+'</div>'
+        +'<div class="uiTavDrink">'+this.card("🍺","Кружка ×"+mug.mul,
+          canDrink?("В запасе "+beer+" · хватит на "+sips+" тап"+(sips===1?"":"а"))
+            :("Мало пива · нужно "+drinkCost+", есть "+beer),
+          drinkBody,"tav")+'</div>'
         +'<div class="uiBtnStack">'
-        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">💪 К застольям</button>'
-        +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">🧬 Лист · навыки</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">К застольям</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">Лист · навыки</button>'
         +'</div>';
     } else if(tab==="feast"){
       const active=S.wkActive;
@@ -791,5 +1003,6 @@ if(typeof metaOpen==="function"){
 
 ["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","ascendGeo","hireGeo","buyGems","buyPack","claimDaily",
  "chestOpenOne","chestUpgrade","chestSkip","upSkill","openSkillChest","spinWheel","playEvent","sciAnswer","sciSkip",
- "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout","startWorkout","drinkBeer",
+ "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout","startWorkout","drinkBeer","upgradeMug",
+ "spendSpecial",
  "toggleFair","setFairClient","revealFair","setPlayerName","buyStickerPack","giftStickers","sipAle"].forEach(uiWrap);

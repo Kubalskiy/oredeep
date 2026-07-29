@@ -133,21 +133,32 @@ button:disabled{opacity:.45;cursor:default;}
   background:radial-gradient(ellipse at 50% 60%, #2a2014 0%, #140f09 70%);
   border-bottom:1px solid var(--border);
 }
+#scene::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(ellipse at 50% 48%, transparent 46%, #00000088 100%);}
 #scene.t0{--c1:#2c2721;--c2:#171310;--gemc:#e8b93c;}
 #scene.t1{--c1:#222b39;--c2:#131824;--gemc:#5aa7e8;}
 #scene.t2{--c1:#38221a;--c2:#1f110c;--gemc:#ff8a4a;}
 #scene.t3{--c1:#20313b;--c2:#121f28;--gemc:#7ae8dc;}
 #scene.t4{--c1:#272033;--c2:#151021;--gemc:#b97ae8;}
 #decor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+#decor .dust{opacity:0;animation:dustFloat 7s linear infinite;}
+#decor .d2{animation-delay:1.4s;animation-duration:8.5s;}
+#decor .d3{animation-delay:2.8s;animation-duration:6s;}
+#decor .d4{animation-delay:4.2s;animation-duration:9s;}
+#decor .d5{animation-delay:5.5s;animation-duration:7.5s;}
+@keyframes dustFloat{0%{opacity:0;transform:translate(0,0)}12%{opacity:.45}70%{opacity:.2}100%{opacity:0;transform:translate(16px,-52px)}}
 
 #sideMenu{position:absolute;left:8px;top:18px;display:flex;flex-direction:column;gap:4px;z-index:8;}
 #sideMenu .btn-side{
   width:52px;min-height:48px;border-radius:var(--r-sm);
-  background:var(--bgPanelAlt);border:2px solid var(--borderLight);
+  background:linear-gradient(180deg,#242019 0%,#161310 100%);
+  border:1px solid #4c3d28;
+  box-shadow:0 2px 0 #000a, inset 0 1px 0 #ffffff0f;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   font-size:9px;color:var(--textMuted);padding:3px;position:relative;
   font-family:var(--font-display);letter-spacing:.5px;
 }
+#sideMenu .btn-side:active{transform:translateY(1px);box-shadow:0 1px 0 #000a, inset 0 1px 0 #ffffff0f;}
 #sideMenu .btn-side b{font-size:17px;line-height:1;margin-bottom:1px;color:var(--gold);}
 #sideMenu .dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;
   background:var(--danger);display:none;box-shadow:0 0 6px var(--danger);}
@@ -155,27 +166,53 @@ button:disabled{opacity:.45;cursor:default;}
 
 #boost2x{
   position:absolute;right:8px;top:8px;z-index:8;min-height:44px;padding:6px 10px;
-  background:var(--bgPanel);border:2px solid var(--borderLight);border-radius:var(--r-sm);
+  background:linear-gradient(180deg,#242019 0%,#141110 100%);
+  border:1px solid #5a4830;border-radius:var(--r-sm);
+  box-shadow:0 2px 0 #000c, inset 0 1px 0 #ffffff10;
   font-family:var(--font-display);font-size:14px;color:var(--textMuted);line-height:1.2;text-align:center;
 }
-#boost2x.on{border-color:var(--income);color:var(--income);}
-#boost2x b{display:block;color:var(--gold);font-size:15px;}
+#boost2x.on{border-color:var(--income);color:var(--income);
+  box-shadow:0 0 14px #7ec86f2e, 0 2px 0 #000c, inset 0 1px 0 #ffffff10;}
+#boost2x b{display:block;color:var(--gold);font-size:15px;text-shadow:0 1px 2px #000;}
 
 #enemyPane{position:absolute;right:8px;top:62px;width:54%;z-index:7;text-align:right;pointer-events:none;}
-#enemyName{font-family:var(--font-display);font-size:16px;color:var(--gold);letter-spacing:1px;
-  text-shadow:0 1px 3px #000;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hpTrack{height:12px;border-radius:6px;background:#0008;border:1px solid #000;overflow:hidden;position:relative;}
-.hpTrack .fill{height:100%;background:linear-gradient(180deg,#e07a5a,#d4674a);width:100%;transition:width .2s;}
+#enemyName{display:inline-block;max-width:100%;font-family:var(--font-display);font-size:15px;color:#ffd88a;
+  letter-spacing:1.2px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:2px 10px 3px;background:linear-gradient(180deg,#100c08e6,#070605e6);
+  border:1px solid #5f4a2c;border-bottom-color:#3a2d1c;border-radius:7px;
+  box-shadow:0 2px 8px #0009, inset 0 1px 0 #ffffff0c;text-shadow:0 1px 2px #000, 0 0 10px #f2b45f33;}
+.hpTrack{height:14px;border-radius:7px;background:linear-gradient(180deg,#05060a,#111420);
+  border:1px solid #000;overflow:hidden;position:relative;
+  box-shadow:0 1px 0 #ffffff12, inset 0 2px 4px #000c;}
+.hpTrack .ghost{position:absolute;left:0;top:0;height:100%;width:100%;
+  background:#ffce7ab8;transition:width .7s cubic-bezier(.2,.7,.3,1) .22s;}
+.hpTrack .fill{position:relative;height:100%;width:100%;
+  background:linear-gradient(180deg,#ff9a66 0%,#e0603a 45%,#a83824 100%);
+  box-shadow:inset 0 1px 0 #ffd9b555;transition:width .16s;}
+.hpTrack .fill::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 30%,#ffffff26 46%,transparent 58%);
+  animation:hpSheen 3.4s linear infinite;}
+@keyframes hpSheen{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+.hpTrack.low .fill{background:linear-gradient(180deg,#ff7a5a,#c23020 55%,#8a1c12);
+  animation:hpPanic .8s ease-in-out infinite;}
+@keyframes hpPanic{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
 #hpTxt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-display);font-size:13px;color:#fff;text-shadow:0 1px 2px #000;}
+  font-family:var(--font-display);font-size:13px;color:#fff;text-shadow:0 1px 2px #000, 0 0 3px #000;}
 
 #bonusChest{
   position:absolute;right:8px;bottom:10px;z-index:8;width:72px;min-height:64px;
-  background:var(--bgPanelAlt);border:2px solid var(--borderLight);border-radius:var(--r-sm);
+  background:linear-gradient(180deg,#242019 0%,#141110 100%);
+  border:1px solid #5a4830;border-radius:var(--r-sm);
+  box-shadow:0 2px 0 #000c, inset 0 1px 0 #ffffff10;
   padding:6px 4px;text-align:center;font-family:var(--font-display);
 }
-#bonusChest.ready{border-color:var(--gold);box-shadow:0 0 0 1px #f2d48855;}
+#bonusChest.ready{border-color:var(--gold);animation:bonusGlow 1.6s ease-in-out infinite;}
+@keyframes bonusGlow{
+  0%,100%{box-shadow:0 0 4px #f2c86a33, 0 2px 0 #000c, inset 0 1px 0 #ffffff10;}
+  50%{box-shadow:0 0 18px #f2c86a77, 0 2px 0 #000c, inset 0 1px 0 #ffffff10;}}
 #bonusChest .ic{font-size:22px;line-height:1;}
+#bonusChest.ready .ic{animation:chestWiggle 1.6s ease-in-out infinite;}
+@keyframes chestWiggle{0%,64%,100%{transform:rotate(0)}72%{transform:rotate(-9deg)}82%{transform:rotate(9deg)}92%{transform:rotate(-4deg)}}
 #bonusChest .t{font-size:12px;color:var(--goldMuted);margin-top:2px;}
 #bonusChest .tm{font-size:14px;color:var(--textPrimary);}
 
@@ -184,11 +221,15 @@ button:disabled{opacity:.45;cursor:default;}
   display:flex;align-items:center;gap:6px;cursor:pointer;
 }
 #energyBox.warn .enTrack{border-color:#e8a24a;}
-#energyBox.crit .enTrack{border-color:#e87a7a;box-shadow:0 0 0 1px #e87a7a55;}
-#energyBox .bolt{font-size:16px;}
-.enTrack{flex:1;height:10px;border-radius:5px;background:#0008;overflow:hidden;border:1px solid #0006;}
-.enTrack .fill{height:100%;background:linear-gradient(180deg,#7ec86f,#6ea862);width:100%;}
-#energyTxt{font-family:var(--font-display);font-size:13px;color:var(--textMuted);white-space:nowrap;}
+#energyBox.crit .enTrack{border-color:#e87a7a;box-shadow:0 0 8px #e87a7a44, inset 0 2px 4px #000c;}
+#energyBox .bolt{font-size:16px;filter:drop-shadow(0 0 4px #ffd76a77);}
+.enTrack{flex:1;height:12px;border-radius:6px;overflow:hidden;position:relative;
+  background:linear-gradient(180deg,#04070a,#0c120e);border:1px solid #000;
+  box-shadow:0 1px 0 #ffffff10, inset 0 2px 4px #000c;}
+.enTrack .fill{height:100%;width:100%;transition:width .25s;
+  background:linear-gradient(180deg,#a8e87a 0%,#5da84e 55%,#3d7a34 100%);
+  box-shadow:inset 0 1px 0 #e8ffd055;}
+#energyTxt{font-family:var(--font-display);font-size:13px;color:var(--textMuted);white-space:nowrap;text-shadow:0 1px 2px #000;}
 
 #miner{position:absolute;left:calc(16% + 1cm);bottom:42px;width:95px;height:110px;z-index:4;
   transform-origin:70% 85%;animation:bob 2.6s ease-in-out infinite;}
@@ -380,10 +421,17 @@ button:disabled{opacity:.45;cursor:default;}
 #cart{display:none;}
 #speedBtn{display:none;}
 
-.dmgnum{position:absolute;font-weight:800;font-size:15px;color:#ffd76a;text-shadow:0 1px 2px #000;
-  pointer-events:none;animation:rise .8s ease-out forwards;font-family:var(--font-display);}
-.dmgnum.crit{color:#ff8a4a;font-size:19px;}
+.dmgnum{position:absolute;font-weight:800;font-size:17px;color:#ffe9a0;
+  text-shadow:0 0 6px #ffb84a55, 0 2px 2px #000, 0 0 2px #000;
+  pointer-events:none;animation:rise .85s cubic-bezier(.2,.7,.3,1) forwards;font-family:var(--font-display);}
+.dmgnum.crit{color:#ff9a4a;font-size:24px;
+  text-shadow:0 0 12px #ff6a2a77, 0 2px 2px #000, 0 0 2px #000;
+  animation:critPop .9s cubic-bezier(.2,.7,.3,1) forwards;}
 @keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
+@keyframes critPop{0%{opacity:1;transform:translateY(0) scale(.6)}
+  16%{transform:translateY(-8px) scale(1.28)}
+  30%{transform:translateY(-14px) scale(1)}
+  100%{opacity:0;transform:translateY(-54px) scale(1)}}
 .shard,.chip{position:absolute;pointer-events:none;animation:fly .7s ease-out forwards;}
 @keyframes fly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
 .pulse{animation:pulseBtn 1.1s ease-in-out infinite;}
@@ -623,20 +671,23 @@ button:disabled{opacity:.45;cursor:default;}
   border-bottom:1px solid #3a2e1c;padding-bottom:3px;font-family:var(--font-display);font-weight:400;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .foSpecRow{display:flex;align-items:center;justify-content:space-between;gap:4px;
-  padding:4px 1px;border-bottom:1px solid #2a2118;cursor:pointer;}
+  padding:3px 0;border-bottom:1px solid #2a2118;}
 .foSpecRow:last-child{border-bottom:none;}
 .foSpecRow .nm{color:#f2d488;font-weight:600;flex:1 1 auto;min-width:0;
   font-size:12px;line-height:1.15;white-space:nowrap;font-family:var(--font-body);
-  overflow:hidden;text-overflow:ellipsis;}
-.foSpecCtrl{display:flex;align-items:center;gap:2px;flex:0 0 auto;}
-.foSpecRow .num{color:#8fce6a;font-weight:400;text-align:center;font-size:14px;min-width:24px;
+  overflow:hidden;text-overflow:ellipsis;cursor:pointer;padding:6px 2px;}
+.foSpecCtrl{display:flex;align-items:center;gap:4px;flex:0 0 auto;}
+.foSpecRow .num{color:#8fce6a;font-weight:400;text-align:center;font-size:15px;min-width:28px;
   font-variant-numeric:tabular-nums;font-family:var(--font-display);}
-.foSpecRow button{width:20px;height:20px;padding:0;margin:0;border-radius:3px;font-size:14px;line-height:1;
-  background:#2a2118;border:1px solid #c9974a;color:#f2d488;flex:none;font-family:var(--font-display);}
-.foSpecRow button:disabled{opacity:.3;border-color:#5a4830;}
-.foSpecRow.on{background:#241a10;}
+.foSpecRow button{width:32px;height:32px;min-width:32px;padding:0;margin:0;border-radius:6px;font-size:18px;line-height:1;
+  background:#2a2118;border:1px solid #c9974a;color:#f2d488;flex:none;font-family:var(--font-display);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.foSpecRow button:disabled,.foSpecRow button.dim{opacity:.35;border-color:#5a4830;color:#8a7a60;}
+.foSpecRow button:active{transform:scale(.94);}
+.foSpecRow.on{background:#241a10;border-radius:4px;}
 .foPoints{margin-top:auto;padding:4px 5px;background:#0e0b08;border:1px solid #c9974a;border-radius:4px;
-  display:flex;justify-content:space-between;font-size:12px;color:#f2d488;font-family:var(--font-display);}
+  display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;color:#f2d488;font-family:var(--font-display);}
+.foPoints .btn{min-height:28px;padding:4px 8px;font-size:11px;flex:none;}
 .foDer{font-size:11px;flex:1;display:flex;flex-direction:column;justify-content:space-between;
   font-family:var(--font-body);min-width:0;}
 .foDer .row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted #2a2118;gap:4px;min-width:0;}
@@ -1086,18 +1137,22 @@ body > .modal{
   .uiMineChip.on{border-color:var(--gold);}
   .uiMineChip.done{border-color:var(--green,#6ea862);}
   .uiTag.go{color:var(--gold);border-color:var(--gold);}
-  .uiTavExt{position:relative;height:88px;background:
-    radial-gradient(ellipse at 50% 120%,#3a2818 0%,transparent 55%),
-    linear-gradient(180deg,#2e2218 0%,#14100c 70%,#0c0a08 100%);
-    border:2px solid #6a4a28;border-radius:8px;margin-bottom:10px;overflow:hidden;}
+  .uiTavExt{position:relative;height:148px;background:#120d09;
+    border:2px solid #7a542d;border-radius:10px;margin-bottom:10px;overflow:hidden;
+    box-shadow:0 10px 30px #0006 inset, 0 2px 10px #0004, 0 0 0 1px #b37a3640 inset;}
   .uiTavExt::before{content:"";position:absolute;inset:0;background:
     repeating-linear-gradient(90deg,transparent 0 18px,#0001 18px 19px);opacity:.35;pointer-events:none;}
-  .uiTavRoof{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:36px;
-    filter:drop-shadow(0 4px 8px #000a);}
-  .uiTavSign{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-    font-size:14px;font-family:var(--font-display);color:var(--gold);letter-spacing:.5px;
+  .uiTavArt{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .uiTavPlaque{position:absolute;left:50%;bottom:36px;transform:translateX(-50%);display:flex;flex-direction:column;
+    align-items:center;gap:1px;padding:4px 12px 5px;background:#120d09f0;border:1px solid #8a6233;border-radius:8px;
+    box-shadow:0 6px 18px #0007, 0 0 0 1px #d29b4a22 inset;}
+  .uiTavPlaque b{font-size:15px;font-family:var(--font-display);font-weight:400;color:#ffd27a;line-height:1;}
+  .uiTavPlaque span{font-size:9px;color:#c8b79b;line-height:1;}
+  .uiTavSign{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+    font-size:15px;font-family:var(--font-display);color:#ffdc96;letter-spacing:.8px;
     white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;
-    padding:2px 10px;background:#0a0806cc;border:1px solid #5a4830;border-radius:6px;}
+    padding:3px 12px;background:#0a0806dd;border:1px solid #7a572f;border-radius:8px;
+    box-shadow:0 4px 14px #0006, 0 0 0 1px #d29b4a1c inset;}
   .uiTavMeters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
   .uiTavMeter{text-align:center;padding:8px 4px;background:#120e0a;border:1px solid #5a4830;border-radius:8px;}
   .uiTavMeter .k{display:block;font-size:10px;color:var(--dim);font-family:var(--font-display);letter-spacing:.4px;}
@@ -1125,9 +1180,34 @@ body > .modal{
   .uiGrid.tav .uiSlotIc{font-size:26px;}
   .uiGrid.tav .uiSlotNm{font-size:12px;font-family:var(--font-body);font-weight:600;}
   .uiGrid.tav .uiSlotSub{font-size:11px;}
-  .uiCard.tav .uiCardIc{font-size:32px;}
-  .uiCard.tav .uiCardBody b{font-size:14px;font-family:var(--font-display);font-weight:400;color:var(--gold);}
-  .uiCard.tav .uiSub{font-size:11px;line-height:1.4;}
+  .uiCard.tav .uiCardIc{font-size:28px;line-height:1;align-self:flex-start;margin-top:2px;}
+  .uiCard.tav .uiCardBody b{font-size:15px;font-family:var(--font-display);font-weight:400;color:#ffd27a;letter-spacing:.3px;}
+  .uiCard.tav .uiSub{font-size:11px;line-height:1.4;color:#a89880;}
+  .uiTavDrink{margin-bottom:10px;}
+  .uiTavDrink .uiCard{align-items:flex-start;padding:12px;background:#14100c;border-color:#6a4e2c;
+    box-shadow:0 0 0 1px #d29b4a18 inset;}
+  .uiTavDeal{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px;}
+  .uiTavChip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;
+    font-size:11px;font-family:var(--font-body);line-height:1.2;border:1px solid #5a4830;background:#1a1510;color:#d4c4a8;}
+  .uiTavChip.cost{border-color:#7a3a2a;color:#e8a090;background:#1a100e;}
+  .uiTavChip.gain{border-color:#3a5a32;color:#b8d89a;background:#10180e;}
+  .uiTavChip.soft{border-color:#4a4a5a;color:#a8b0c0;background:#12141a;}
+  .uiTavDrinkBtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;
+    margin:0;padding:12px 14px;border-radius:8px;border:1px solid #a07830;
+    background:linear-gradient(180deg,#6a4e1c 0%,#3e2c10 100%);
+    color:#ffe9b0;font-family:var(--font-display);font-size:16px;font-weight:400;letter-spacing:.6px;
+    box-shadow:inset 0 1px 0 #c9a05055, 0 2px 0 #1a1008;}
+  .uiTavDrinkBtn:disabled{opacity:.45;filter:grayscale(.25);}
+  .uiTavDrinkBtn .cost{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;
+    background:#0e0a06cc;border:1px solid #8a6233;color:#ffd27a;font-size:13px;letter-spacing:0;}
+  .uiTavMugUp{margin-top:8px;min-height:40px;font-size:13px;}
+  .uiTavEnergy{margin-top:10px;}
+  .uiTavEnergy .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#a89880;margin-bottom:4px;}
+  .uiTavEnergy .row b{color:#e8dcc0;font-weight:600;font-family:var(--font-body);}
+  .uiTavEnergy .uiBar{height:6px;margin-top:0;border-color:#3a3024;background:#0a0806;}
+  .uiTavEnergy .uiBarFill{background:linear-gradient(90deg,#3a6a4a,#7cbc6a);}
+  .uiBtnStack{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+  .uiBtnStack .btn{margin-top:0;min-height:44px;}
   .uiSec.tav{font-size:13px;font-family:var(--font-display);letter-spacing:.6px;margin:12px 0 8px;}
 
 </style>
@@ -1177,6 +1257,14 @@ body > .modal{
             <stop offset="0" stop-color="rgba(255,214,122,0.10)"/>
             <stop offset="1" stop-color="rgba(255,214,122,0)"/>
           </radialGradient>
+          <radialGradient id="minerGlow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="rgba(255,190,110,0.15)"/>
+            <stop offset="1" stop-color="rgba(255,190,110,0)"/>
+          </radialGradient>
+          <linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="rgba(255,222,150,0.09)"/>
+            <stop offset="1" stop-color="rgba(255,222,150,0)"/>
+          </linearGradient>
         </defs>
         <rect width="430" height="240" fill="url(#deep)"/>
         <ellipse cx="215" cy="150" rx="150" ry="120" fill="var(--c2)"/>
@@ -1186,6 +1274,15 @@ body > .modal{
         <ellipse cx="215" cy="150" rx="150" ry="120" fill="url(#tunGlow)"/>
         <path d="M0 0 H120 Q60 60 40 130 Q30 200 0 240 Z" fill="var(--c1)"/>
         <path d="M430 0 H310 Q370 60 390 130 Q400 200 430 240 Z" fill="var(--c1)"/>
+        <polygon points="130,20 205,20 255,240 95,240" fill="url(#shaft)"/>
+        <ellipse cx="150" cy="205" rx="115" ry="58" fill="url(#minerGlow)"/>
+        <g fill="#ffe9b7">
+          <circle class="dust" cx="120" cy="92" r="1.4"/>
+          <circle class="dust d2" cx="205" cy="120" r="1.1"/>
+          <circle class="dust d3" cx="165" cy="70" r="1.5"/>
+          <circle class="dust d4" cx="265" cy="95" r="1.1"/>
+          <circle class="dust d5" cx="95" cy="150" r="1.2"/>
+        </g>
         <rect x="0" y="8" width="430" height="12" fill="#5d4326"/>
         <rect x="18" y="16" width="13" height="224" fill="#523a20"/>
         <rect x="399" y="16" width="13" height="224" fill="#523a20"/>
@@ -1207,6 +1304,7 @@ body > .modal{
       <div id="enemyPane">
         <div id="enemyName">Порода</div><span id="refEnemyName" style="display:none"></span>
         <div class="hpTrack" id="hpBar">
+          <div class="ghost" id="hpGhost" style="width:100%"></div>
           <div class="fill" id="hpFill" style="width:100%"></div>
           <span id="hpTxt"></span>
         </div>
@@ -1742,17 +1840,29 @@ const BALANCE = {
     {rar:"EPIC",gems:600,skill:2,pet:2},{rar:"LEGENDARY",gems:1800,skill:3,pet:3}],
   gymPerks:["WORKOUT_SPEED","IDLE_CASH","HP_GEAR_BOOST","ATK_GEAR_BOOST","DEF_GEAR_BOOST","COMBO_STAT"],
   gymTiers:["Slate","Bronze","Silver","Gold","Amethyst","Amber"],
-  chestCosts:{ rare:50, epic:140, legendary:280 },   // §10.3 сундуки навыков (💎)
+  chestCosts:{ rare:100, epic:300, legendary:700 },   // §10.3 сундуки навыков (💎) · donor-tuned: 2× дороже
   petPower:[1,3,9,27],
   workoutPaths:["energy","atk","tough","mining","crit","stone","luck"],
   workoutStepPct:[15,12,10,8,6,10,5],
+  /* Дейлики §8: чеклист по core-loop + таверна/бороды (жечь эль, застолья, артель).
+     7×10 = 70 жетонов с заданий; реклама +30 (1/день) → до 100; потолок трека 150. */
   dailyQuests:[
-    {id:"break",n:"Разбей 30 жил",need:30,tok:10},
-    {id:"find",n:"Найди 5 камней",need:5,tok:10},
-    {id:"pvp",n:"Выиграй 2 PvP",need:2,tok:10},
-    {id:"bag",n:"Открой 20 сумок",need:20,tok:10},
-    {id:"skill",n:"Прокачай навык",need:1,tok:10}],
-  dailyTrack:[[25,"ключ ×1"],[50,"яйцо ×3"],[100,"кристаллы ×50"],[150,"образец ×1"]],
+    {id:"break",ic:"⛏",n:"Разнеси 30 жил",need:30,tok:10,
+      lore:"Гора кормит тех, кто стучит без устали."},
+    {id:"find",ic:"💎",n:"Вынь 5 камней из породы",need:5,tok:10,
+      lore:"Самоцвет в жиле — знак, что Гора слышит."},
+    {id:"bag",ic:"🎒",n:"Вскрой 15 сумок",need:15,tok:10,
+      lore:"Скупщик Нори уже греет кривые весы."},
+    {id:"drink",ic:"🍺",n:"Глотни эля у Борина ×5",need:5,tok:10,
+      lore:"Жжёт горло, копит силу. Здоровье тоже."},
+    {id:"feast",ic:"💪",n:"Закончи 1 застолье",need:1,tok:10,
+      lore:"Уважение зала растёт за столом, не за речами."},
+    {id:"pvp",ic:"⚔",n:"Победи 2 на арене",need:2,tok:10,
+      lore:"На арене пьют только победители."},
+    {id:"geo",ic:"💇",n:"Найми или слей геолога",need:1,tok:10,
+      lore:"Артель старейшин не терпит пустоты."}],
+  dailyTrack:[[25,"🗝 ключ ×1"],[50,"🥚 яйцо ×3"],[100,"💎 кристаллы ×50"],[150,"🪮 расчёска ×2"]],
+  dailyAdTok:30,
   noAdsPrice:"49.99",
   shardYield:[0,0,5,15,40,100,250,600],
   fuseCost:(t)=>Math.round(15*Math.pow(3,t)),
@@ -1775,11 +1885,12 @@ const BALANCE = {
      ×100), очередь росла бесконечно: приход 5.1 сумки за кадр против разбора 0.80.
      Теперь за тик разбирается вся очередь, но не больше maxPerTick за раз —
      чтобы не ронять кадр. */
-  bags:{ perVein:1, perBoss:3, autoSec:2, cap:9999, maxPerTick:400,
+  bags:{ perVein:1, perBoss:3, autoSec:3, cap:9999, maxPerTick:400,
     /* Апгрейд сумки: софт + таймер; пропуск за 💎. Оба растут с ур. сумки
-       (lv1: 30с/3💎 → lv49: ~5м/61💎). base + perLv*(bag-1). */
-    upgradeSecBase:30, upgradeSecPerLv:6,
-    skipGemsBase:3, skipGemsPerLv:1.2 },
+       (lv1: 3м/20💎 → lv49: ~36м/164💎). base + perLv*(bag-1).
+       DONOR: полный сумка 1→50 = ~17ч таймера ИЛИ ~4508 💎 (≈$10 IAP). */
+    upgradeSecBase:180, upgradeSecPerLv:45,
+    skipGemsBase:20, skipGemsPerLv:3 },
   /* КРАСАВА: 7 черт + очки навыков за «уровень шахтёра».
      Не ломает треадмилл: % от черт капнут, тренировка слабее карточных уровней. */
   special:{
@@ -1789,9 +1900,11 @@ const BALANCE = {
   },
   /* Перки: выбор каждые N уровней шахтёра. % маленькие + кап — треадмилл цел. */
   perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:10 },
-  /* Яйца и расчёски — отдельные ресурсы гачи (док §Питомцы, §Девушки → адаптация) */
-  gacha:{ eggDropPct:4, combDropPct:4, eggBossPct:12, combBossPct:12,
-    eggDailyReward:3, combDailyReward:2 },
+  /* Яйца и расчёски — отдельные ресурсы гачи (док §Питомцы, §Девушки → адаптация)
+     DONOR-TUNE: рейты гачи ×0.5 — полный сбор питомцев/бород = ~2 недели активной игры
+     ИЛИ ускорение через покупные яйца/расчёски (награды за дейлики/PvP). */
+  gacha:{ eggDropPct:2, combDropPct:2, eggBossPct:6, combBossPct:6,
+    eggDailyReward:2, combDailyReward:1 },
   /* Гильдия Рудознатцев — человеческая разметка (модель Zooniverse/Foldit).
      Ценен не процессор игрока (игра ест ~1.3% ядра), а его глаз и суждение.
      goldRate — доля контрольных заданий с известным ответом: по ним считаем
@@ -1801,11 +1914,13 @@ const BALANCE = {
      Питомцы: 3 одинаковых → 1 СЛУЧАЙНЫЙ следующей редкости (не «тот же выше»).
      Старейшины: целевой поглощает материалы равной/меньшей редкости и растёт
      в уровне; восхождение доступно легендарному с ур. ascendLv за кристаллы. */
-  merge:{ petCost:3, geoLvPct:20, ascendLv:5, ascendGems:500, ascendPct:100 },
+  merge:{ petCost:3, geoLvPct:12, ascendLv:8, ascendGems:1200, ascendPct:100 },
+  /* Бороды (старейшины): слияние +12%/ур (было 20) — дольше фарм дублей;
+     восхождение с ур.8 за 1200💎 — основной гем-сток меты бород. */
   /* DoT питомцев (PDF §Питомцы): семейство даёт периодику по породе + дебаф.
      dpsFrac — доля ATK/сек; defCut/spdCut — снижение защиты/темпа ответа породы. */
   petDot:{ dpsFrac:[0.06,0.14,0.30,0.60,1.10], defCut:[0.05,0.10,0.18,0.30,0.45], spdCut:[0.04,0.08,0.14,0.24,0.38] },
-  petCraft:{ needLegendaries:3, gems:400 },   // PDF: после 3 Legendary, крафт за конкретных питомцев + гемы → Exotic
+  petCraft:{ needLegendaries:3, gems:1000 },   // PDF: после 3 Legendary, крафт за конкретных питомцев + гемы → Exotic (donor: 1000💎)
   /* Скиллы как карточки (док §Скиллы): копии копятся, апгрейд с ур.L на L+1
      требует L копий и пиво (протеин). Сундуки: чем реже — тем больше карт и
      тем выше гарантированная редкость. */
@@ -1827,16 +1942,22 @@ const BALANCE = {
   skillUpMul:0.7, skillRollW:[0.56,0.27,0.12,0.05],
   geo:{ power:[1,3,9,27], levels:15,
     thresholds:[100,175,275,400,550,750,1000,1300,1650,2100,2650,3350,4250,5350,7000],
-    pityX:[0,25,50,100,250],
-    pityW:[[80,20,0,0],[65,30,5,0],[50,35,13,2],[40,35,20,5],[15,20,45,20]] },
+    /* DONOR-TUNE: pity растянут — Legendary ощутимо ближе к 150–350 роллам;
+       F2P копит расчёски месяцами, донор докупает 🪮 на рынке. */
+    pityX:[0,50,100,180,400],
+    pityW:[[85,15,0,0],[72,26,2,0],[55,32,11,2],[42,34,16,8],[18,24,38,20]] },
   wheel:{ cost:[30,50,70,100,140,190,250,320,400,490,590,700,820], centerMul:1500 },
   /* Тренировки: пиво → глоток → очки → путь с таймером.
-     protein — кружка (пассив +5/ч); wkPts — очки, которыми платят за путь. */
+     protein — кружка (пассив +5/ч); wkPts — очки, которыми платят за путь.
+     DONOR-TUNE: таймер 4 мин × 350 уровней = ~23ч чистого ожидания на все пути,
+     плюс сильно возросший протеиновый сток. Скип за 25💎/уровень. */
   workouts:{
     paths:7, step:50, weeklyCapMin:10080,
     proteinPerHour:5, proteinCapH:8,
     drinkCost:5, drinkPts:5, drinkCdSec:1.2,
-    costBase:10, costPerLv:5, timerSec:30, skipGems:5,
+    /* Кружка: уровень множит глотки за тап (1→2→5→10→20). Ап за 💎 — donor sink. */
+    mug:[{mul:1},{mul:2,gems:40},{mul:5,gems:120},{mul:10,gems:350},{mul:20,gems:900}],
+    costBase:30, costPerLv:15, timerSec:240, skipGems:25,
     maxLv:50
   },
   pvpDayLimit:10, pvpCandidates:5,   // 5 ИИ-ботов · дневной лимит гонок
@@ -1869,7 +1990,7 @@ const BALANCE = {
     prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"кристаллы", res:"gems", ic:"💎" },
     crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", res:"gems", ic:"💎", flat:10 },
     critterDen:{ maxLvl:10, total:8000, first:100, currency:"золото", res:"gold", ic:"🪙", mult:50 } },
-  keyMax:2, keyRefillSec:Math.round(3.8*3600),   // 2/2, рефилл ~3ч48м
+  keyMax:2, keyRefillSec:Math.round(6*3600),   // 2/2, рефилл 6ч (donor-tuned — ключи дороже) 
   /* Штольни 2–5 (Спринт 3): дополнительные ресурсы за жилу/босса.
      Числа живут в BALANCE; логика — в breakVein(). */
   minesExtra:[
@@ -1880,7 +2001,9 @@ const BALANCE = {
     { res:"chestKeys", ic:"🗝", name:"Ключ от ларя", label:"🗝", pct:8,  vein:1, boss:2  }
   ],
   shop:{ gemPacks:[250,900,3500],
-    comeback:[[250,10000],[900,50000],[1500,100000],[2500,175000],[4000,300000],[10000,1000000]] }
+    comeback:[[250,10000],[900,50000],[1500,100000],[2500,175000],[4000,300000],[10000,1000000]],
+    /* паки расчёсок за 💎 — донорский шорткат к бородам (существующий рынок) */
+    combPacks:[[5,60],[20,200],[80,700]] },
 };
 function solveGeometricRatio(n, total, first){
   if(first<=0||n<1||total<first*n) return 1;
@@ -2012,7 +2135,7 @@ function anchored(arr, idx){
    Шмот растёт линейно от глубины (1+idx/60) — этот рост нейтрализуем множителем
    gearComp, иначе игрок медленно уползал бы в ваншот.
    resp (темп ответа породы) НЕ эскалируем — иначе энергия сгорала бы мгновенно. */
-const DEPTH={ escStart:200, rampBlocks:20, hpMul:22 };   // CALIB: ограниченный прогон (run.len), ~6 сек/жилу, дуга сигма 0.23
+const DEPTH={ escStart:200, rampBlocks:20, hpMul:44 };   // CALIB donor-tuned: ~12 сек/жилу поздно (было ~6), полный прогон ~2.5ч (было ~1.5ч) — форма треадмилла сохранена
 function atkLevelsPerBlock(){
   const G=BALANCE.idle.growth*Math.pow(BALANCE.idle.damp,0.4);
   const g=UPGRADES.find(u=>u.id==="atk").g;
@@ -2194,14 +2317,15 @@ const BEARD_LEN_ORDER=[3,2,0,1,4];   // Козлиная<Раздвоенная<
 const BEARD_RANKS=[
   "Пушок","Щетина","Борода Новобранца","Окладистая Гордость",
   "Косматый Ветеран","Седеющий Мастер","Серебряная Борода","ПАТРИАРХ ГОРЫ"];
-function beardLevel(){ const xp=S.beardXP||0; return Math.min(BEARD_RANKS.length-1, Math.floor(Math.log((xp/80)+1)/Math.log(1.7))); }
+/* DONOR-TUNE: XP-кривая жестче (база 140, g=1.85) — до «Патриарха» месяцы копа, а не дни. */
+function beardLevel(){ const xp=S.beardXP||0; return Math.min(BEARD_RANKS.length-1, Math.floor(Math.log((xp/140)+1)/Math.log(1.85))); }
 function beardWisdom(){
   const lv=beardLevel();
   return { lv, goldPct:lv*3, luckAdd:lv*0.4, title:BEARD_RANKS[lv],
     lenStyle:BEARD_LEN_ORDER[Math.min(4, Math.round(lv*4/(BEARD_RANKS.length-1)))],
     grey:Math.min(1, lv/(BEARD_RANKS.length-1)) };
 }
-function beardNextXP(lv){ return Math.round(80*(Math.pow(1.7,lv+1)-1)); }
+function beardNextXP(lv){ return Math.round(140*(Math.pow(1.85,lv+1)-1)); }
 function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
   if(beardLevel()>before){ const w=beardWisdom();
     showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK",true);
@@ -2237,14 +2361,13 @@ const DROP_CHANCE=35;                                   // CALIB, босс: 100%
 const bagCost=()=> Math.round(veinReward()*(4+S.bag));  // растёт с прогрессом и уровнем
 
 /* ---------- гача геологов с pity (GDD §7.2, якоря 1:1) ---------- */
-const GEO_PITY_X=BALANCE.geo.pityX;
-const GEO_PITY_W=BALANCE.geo.pityW;
 function geoWeights(rolls){
-  const x=Math.max(0,Math.min(250,rolls));
-  let i=0; while(i<GEO_PITY_X.length-1 && GEO_PITY_X[i+1]<x) i++;
-  if(i===GEO_PITY_X.length-1) return GEO_PITY_W[i].slice();
-  const t=(x-GEO_PITY_X[i])/(GEO_PITY_X[i+1]-GEO_PITY_X[i]);
-  return GEO_PITY_W[i].map((v,j)=>lerp(v,GEO_PITY_W[i+1][j],t));
+  const X=BALANCE.geo.pityX, W=BALANCE.geo.pityW;
+  const x=Math.max(0,Math.min(X[X.length-1],rolls));
+  let i=0; while(i<X.length-1 && X[i+1]<x) i++;
+  if(i===X.length-1) return W[i].slice();
+  const t=(x-X[i])/(X[i+1]-X[i]);
+  return W[i].map((v,j)=>lerp(v,W[i+1][j],t));
 }
 /* сила ×3/ступень (§7.2): бонус к случайному стату */
 const GEO_TYPES=[
@@ -3012,6 +3135,7 @@ function hireGeo(){
     boxAdd(S.geoBox,t,r,1);                          // дубликат — материал для слияния
     showToast("👷",GEO_RAR[r],"r"+r,name,"в артель · материал для слияния");
   }
+  dailyProgress("geo",1);
   save(); render();
   return true;
 }
@@ -3520,7 +3644,10 @@ function render(){
     const hp=$("hudPrestige"); if(hp) setTxt(hp,(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""); }
 
   { const hp=$("hudPrestige"); if(hp) setTxt(hp,(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""); }
-  setWidth("hpFill",Math.max(0,S.rockHP/rock.hp*100)+"%");
+  { const hpPct=Math.max(0,S.rockHP/rock.hp*100);
+    setWidth("hpFill",hpPct+"%");
+    setWidth("hpGhost",hpPct+"%");
+    const hb=$("hpBar"); if(hb&&hb.classList) hb.classList.toggle("low",hpPct<28); }
   setOp("cracks",(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2));
   setTxt("hpTxt",fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp));
   setWidth("enFill",Math.max(0,S.energy/stat("energy")*100)+"%");
@@ -4124,6 +4251,9 @@ function ensureWorkouts(d){ if(!d) return d;
   if(d.wkPts==null||!isFinite(d.wkPts)||d.wkPts<0) d.wkPts=0;
   if(!d.workouts||typeof d.workouts!=="object") d.workouts={};
   if(d.wkActive && (typeof d.wkActive.end!=="number"||!d.wkActive.path)) d.wkActive=null;
+  if(d.mugLv==null||!isFinite(d.mugLv)||d.mugLv<0) d.mugLv=0;
+  const mugMax=((BALANCE.workouts&&BALANCE.workouts.mug)||[{mul:1}]).length-1;
+  if(d.mugLv>mugMax) d.mugLv=mugMax;
   return d;
 }
 function ensureAll(d){
@@ -4785,15 +4915,16 @@ function spendSpecial(id){
   save(); refreshSpecialUi("special");
   return true;
 }
+/* Вложения в КРАСАВА окончательные — откат запрещён (как в SPECIAL Fallout). */
 function refundSpecial(id){
   ensureSpecial();
-  const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
-  const start=BALANCE.special.start||5;
-  if(specialAttr(id)<=start){ showToast("🧬","База","","Ниже "+start+" нельзя"); return false; }
-  S.special[id]=specialAttr(id)-1; S.specialPool=(S.specialPool||0)+1;
-  window._charFocus={kind:"special",id};
-  save(); refreshSpecialUi("special");
-  return true;
+  const d=SPECIAL_DEFS.find(x=>x.id===id);
+  showToast("🧬","Навсегда","",d?d.n:"Черта","вкачал — назад нельзя");
+  return false;
+}
+function resetSpecial(){
+  showToast("🧬","Навсегда","","Перекачки нет","новые очки — только в пустые слоты");
+  return false;
 }
 function canTrainSkill(id){
   ensureSpecial();
@@ -4957,14 +5088,13 @@ function renderCharSheet(){
   const specRows=SPECIAL_DEFS.map(d=>{
     const v=specialAttr(d.id);
     const canUp=(S.specialPool||0)>0 && v<max;
-    const canDn=v>start;
     const on=focus.kind==="special"&&focus.id===d.id?" on":"";
-    return `<div class="foSpecRow${on}" onclick="charFocus('special','${d.id}')">
-      <span class="nm">${d.n}</span>
+    /* Только «+»: вложение окончательное, откат запрещён. */
+    return `<div class="foSpecRow${on}">
+      <span class="nm" onclick="charFocus('special','${d.id}')">${d.n}</span>
       <span class="foSpecCtrl">
         <span class="num">${String(v).padStart(2,"0")}</span>
-        <button type="button" onclick="event.stopPropagation();refundSpecial('${d.id}')" ${canDn?"":"disabled"}>−</button>
-        <button type="button" onclick="event.stopPropagation();spendSpecial('${d.id}')" ${canUp?"":"disabled"}>+</button>
+        <button type="button" class="${canUp?"":"dim"}" title="Вложить очко навсегда" onclick="spendSpecial('${d.id}')">+</button>
       </span>
     </div>`;
   }).join("");
@@ -5072,15 +5202,13 @@ function skillBonus(id){
 function openSkills(tab){
   ensureSpecial(); checkMinerLevelUp(false);
   tab=tab||"cards";
-  if(tab==="special"||tab==="train"||tab==="sheet"){
-    openCharSheet(tab==="train"?{kind:"skill",id:(SKILL_DEFS[0]&&SKILL_DEFS[0].id)||"atk_up"}:{kind:"special",id:"s"});
-    return;
-  }
+  if(tab==="train"||tab==="workouts"){ openWorkouts(); return; }
+  if(tab==="special"||tab==="sheet"){ openCharSheet({kind:"special",id:"s"}); return; }
   const tabBar=`<div class="btnrow" style="margin-bottom:10px;flex-wrap:wrap">
     <button class="btn ${tab==="cards"?"btn-hard":"btn-soft"}" onclick="openSkills('cards')">Карты</button>
     <button class="btn btn-soft" onclick="openCharSheet()">Лист · КРАСАВА</button>
     <button class="btn btn-soft" onclick="openCharSheet({tab:'perks'})">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
-    <button class="btn btn-soft" onclick="openCharSheet({kind:'skill',id:'atk_up'})">Тренировка${(S.skillPts||0)>0?(" · "+S.skillPts):""}</button>
+    <button class="btn btn-soft" onclick="openWorkouts()">Тренировка${(S.wkPts||0)>0?(" · "+(S.wkPts|0)):""}</button>
   </div>`;
   const chests=BALANCE.skillChests.map(ch=>{
     const ok = ch.keyCost ? (S.chestKeys||0)>=ch.keyCost : (S.gems||0)>=ch.gemCost;
@@ -5536,6 +5664,7 @@ function mergeGeo(){
     eaten+=S.geoBox[k]; delete S.geoBox[k];
   }
   S.geo.lv=(S.geo.lv||1)+eaten;
+  dailyProgress("geo",1);
   showToast("👷","Слияние!","r"+S.geo.r,S.geo.n+" ур."+S.geo.lv,"поглощено "+eaten+" · +"+geoPct(S.geo).toFixed(0)+"% "+GEO_TYPES[S.geo.t].stat.toUpperCase(),true);
   Platform.logEvent("geo_merge",{lv:S.geo.lv,eaten}); sfxGear(); save(); render();
   return true;
@@ -5859,9 +5988,35 @@ function workoutCost(path){
   const W=BALANCE.workouts, lv=(S.workouts&&S.workouts[path])||0;
   return (W.costBase||10)+(W.costPerLv||5)*lv;
 }
+function mugTier(){
+  ensureWorkouts(S);
+  const M=(BALANCE.workouts&&BALANCE.workouts.mug)||[{mul:1}];
+  const i=Math.min(S.mugLv|0, M.length-1);
+  return {i, mul:(M[i].mul||1), next:i+1<M.length?M[i+1]:null, max:i>=M.length-1};
+}
+function mugDrinkCost(){ return (BALANCE.workouts.drinkCost|5)*mugTier().mul; }
+function mugDrinkPts(){ return (BALANCE.workouts.drinkPts|5)*mugTier().mul; }
+function upgradeMug(){
+  ensureWorkouts(S);
+  const t=mugTier();
+  if(t.max||!t.next){ showToast("🍺","Кружка на максимуме","","×"+t.mul+" за глоток"); return false; }
+  const cost=t.next.gems|0;
+  if((S.gems||0)<cost){ showToast("💎","Мало кристаллов","","нужно "+cost+" 💎, есть "+fmt(S.gems||0)); return false; }
+  S.gems-=cost;
+  S.mugLv=(S.mugLv|0)+1;
+  const mul=mugTier().mul;
+  showToast("🍺","Кружка ап!","","теперь ×"+mul+" за тап","−"+cost+" 💎");
+  Platform.logEvent("mug_upgrade",{lv:S.mugLv,mul,cost});
+  sfxGear(); save(); render();
+  if(typeof UIS!=="undefined" && UIS.id==="tavern") UIS.render();
+  const mm=$("metaModal");
+  if(mm&&mm.style.display==="flex"&&($("metaTitle")||{}).textContent==="Тренировки") openWorkouts();
+  return true;
+}
 function drinkBeer(){
   ensureWorkouts(S);
-  const W=BALANCE.workouts, cost=W.drinkCost|0, pts=W.drinkPts|0;
+  const W=BALANCE.workouts, mul=mugTier().mul;
+  const cost=(W.drinkCost|0)*mul, pts=(W.drinkPts|0)*mul;
   if(Date.now()<_drinkCdUntil){ showToast("🍺","Глоток","","подожди мгновение"); return false; }
   if((S.protein||0)<cost){ showToast("🍺","Мало пива","","нужно "+cost+" 🍺, есть "+Math.floor(S.protein||0)); return false; }
   S.protein-=cost;
@@ -5871,11 +6026,13 @@ function drinkBeer(){
   if(mug){ mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
     clearTimeout(drinkBeer._t); drinkBeer._t=setTimeout(()=>mug.classList.remove("sip"),2450); }
   aleAnim=2.4;
-  S.energy=Math.min(stat("energy"), S.energy+stat("energy")*0.08);
-  sayQuip(ALE_QUIPS[Math.floor(Math.random()*ALE_QUIPS.length)], 3);
+  const eGain=0.08*Math.min(mul,5);
+  S.energy=Math.min(stat("energy"), S.energy+stat("energy")*eGain);
+  dailyProgress("drink",mul);
+  sayQuip(beerLoreQuip(), 4);
   jingleFind();
-  showToast("🍺","Выпито","r1","+"+pts+" очк. тренировок","всего "+(S.wkPts|0));
-  Platform.logEvent("ale_drink",{pts, cost});
+  showToast("🍺",mul>1?("Залпом ×"+mul):"Выпито","r1","+"+pts+" очк. тренировок","всего "+(S.wkPts|0));
+  Platform.logEvent("ale_drink",{pts, cost, mul});
   save(); render();
   const onTrain=typeof UIS!=="undefined" && UIS.id==="panel"
     && /Тренировки/.test(($("uiTitle")&&$("uiTitle").textContent)||"");
@@ -5888,7 +6045,7 @@ function openWorkouts(){
   ensureWorkouts(S);
   clearInterval(_wkRefreshT);
   const W=BALANCE.workouts, beer=Math.floor(S.protein||0), pts=S.wkPts|0;
-  const drinkCost=W.drinkCost|0, drinkPts=W.drinkPts|0;
+  const drinkCost=mugDrinkCost(), drinkPts=mugDrinkPts(), mul=mugTier().mul;
   const canDrink=beer>=drinkCost && Date.now()>=_drinkCdUntil;
   const head=`<div class="metarow" style="align-items:stretch;gap:8px">
     <div style="flex:1;text-align:center;padding:8px;background:#120e0a;border:1px solid #5a4830;border-radius:8px">
@@ -5899,7 +6056,7 @@ function openWorkouts(){
     <div style="flex:1;text-align:center;padding:8px;background:#120e0a;border:1px solid #5a4830;border-radius:8px">
       <div style="font-size:11px;color:var(--dim)">Очки тренировок</div>
       <div style="font-size:22px;color:#8fce6a;font-family:var(--font-display)">💪 ${pts}</div>
-      <div style="font-size:10px;color:var(--dim)">пей пиво → копи очки</div>
+      <div style="font-size:10px;color:var(--dim)">кружка ×${mul}</div>
     </div>
   </div>
   <button class="btn btn-hard btn-wide" style="margin:8px 0 12px;min-height:48px;font-size:16px"
@@ -5959,6 +6116,7 @@ function claimWorkout(){
   S.wkActive=null;
   S.chestKeys=(S.chestKeys||0)+1;
   addGymXP(GYM_XP.perWorkout);
+  dailyProgress("feast",1);
   showToast("🗝","Ключ от ларя","","Тренировка окончена · +"+workoutBonus(p)+"% "+(WK_PATH_NAME[p]||p),"всего ключей: "+S.chestKeys);
   sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); openWorkouts();
   return true;
@@ -5975,24 +6133,87 @@ function workoutBonus(id){ const lv=(S.workouts&&S.workouts[id])||0; if(!lv) ret
   const i=BALANCE.workoutPaths.indexOf(id); return i<0?0:BALANCE.workoutStepPct[i]*lv; }
 
 /* --- Дейлики: жетоны + трек (§8) --- */
-function dailyReset(){ const t=todayStr(); if(!S.daily) S.daily={day:t,prog:{},tok:0,claimed:[]};
-  if(S.daily.day!==t){ S.daily={day:t,prog:{},tok:0,claimed:[]}; } }
+function dailyReset(){ const t=todayStr(); if(!S.daily) S.daily={day:t,prog:{},tok:0,claimed:[],adTok:false};
+  if(S.daily.day!==t){ S.daily={day:t,prog:{},tok:0,claimed:[],adTok:false}; }
+  if(S.daily.adTok==null) S.daily.adTok=false; }
+function dailyQuestMaxTok(){
+  return BALANCE.dailyQuests.reduce((s,q)=>s+(q.tok|0),0)+(BALANCE.dailyAdTok|0);
+}
 function dailyProgress(id,amt){ dailyReset(); const q=BALANCE.dailyQuests.find(x=>x.id===id); if(!q) return;
   const p=S.daily.prog; const was=p[id]||0; if(was>=q.need) return;
   p[id]=was+amt;
-  if(p[id]>=q.need && was<q.need){ S.daily.tok+=q.tok; showToast("✓","Задание!","",q.n,"+"+q.tok+" жетонов"); }
+  if(p[id]>=q.need && was<q.need){
+    S.daily.tok+=q.tok;
+    showToast("✓","Задание!","",q.ic?q.ic+" "+q.n:q.n,"+"+q.tok+" жетонов");
+  }
 }
 function openDaily(){
   dailyReset();
+  const maxTok=dailyQuestMaxTok();
+  const tok=S.daily.tok||0;
+  const doneN=BALANCE.dailyQuests.filter(q=>(S.daily.prog[q.id]||0)>=q.need).length;
+  const tip=[
+    "Борин: эль не для красоты. Пей — копи очки — качай застолье.",
+    "Борин: жила без удара — как кружка без пены. Бери кирку.",
+    "Борин шепчет: артель старейшин помнит тех, кто не забывает расчёску.",
+    "Борин: на арене пьют победители. Остальные — воду."
+  ][(Math.floor(Date.now()/60000)+doneN)%4];
+  const head='<div style="padding:10px 8px;margin-bottom:8px;background:#120e0a;border:1px solid #5a4830;border-radius:10px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">'
+    +'<span style="font-family:var(--font-display);color:var(--gold);font-size:15px">Жетоны сегодня</span>'
+    +'<b style="color:var(--gold)">'+tok+'</b><span style="color:var(--dim);font-size:12px">/ '+maxTok+'</span></div>'
+    +'<div class="uiBar" style="margin-top:6px"><div class="uiBarFill" style="width:'+Math.min(100,tok/150*100)+'%;background:linear-gradient(90deg,#8a5a28,#e0b35a)"></div></div>'
+    +'<div style="margin-top:6px;font-size:11px;color:var(--dim)">Сделано '+doneN+'/'+BALANCE.dailyQuests.length
+    +' · трек до 150 · реклама +'+(BALANCE.dailyAdTok|30)+'</div></div>'
+    +'<div style="padding:8px 10px;margin-bottom:10px;border:1px dashed #6a5438;border-radius:8px;font-size:12px;color:#c9a66a;line-height:1.35">'
+    +esc(tip)+'</div>';
   const qrows=BALANCE.dailyQuests.map(q=>{
     const p=Math.min(S.daily.prog[q.id]||0,q.need);
-    return `<div class="metarow"><span>${q.n}<br><span style="color:var(--dim)">${p}/${q.need}</span></span><span style="color:var(--gold)">${p>=q.need?"✓ +"+q.tok:"+"+q.tok+" жет."}</span></div>`;
+    const ok=p>=q.need, pct=Math.round(p/q.need*100);
+    return '<div class="metarow" style="align-items:flex-start;flex-direction:column;gap:4px">'
+      +'<div style="display:flex;width:100%;justify-content:space-between;gap:8px;align-items:flex-start">'
+      +'<span><b>'+(q.ic||"·")+' '+esc(q.n)+'</b><br>'
+      +'<span style="color:var(--dim);font-size:11px">'+(q.lore?esc(q.lore)+" · ":"")+p+'/'+q.need+'</span></span>'
+      +'<span style="color:'+(ok?"var(--green)":"var(--gold)")+';white-space:nowrap">'+(ok?"✓ +"+q.tok:"+"+q.tok+" жет.")+'</span></div>'
+      +'<div class="uiBar" style="width:100%"><div class="uiBarFill" style="width:'+pct+'%;background:'+(ok?"#4a9a5a":"#8a6230")+'"></div></div>'
+      +'</div>';
   }).join("");
-  const trows=BALANCE.dailyTrack.map(([need,rew],i)=>{
-    const done=(S.daily.claimed||[]).includes(i), can=S.daily.tok>=need && !done;
-    return `<div class="metarow"><span>${need} жетонов → ${rew}</span>${done?"<span style=color:var(--green)>✓</span>":`<button class="btn btn-soft" onclick="claimDaily(${i},${need})" ${can?"":"disabled"}>Забрать</button>`}</div>`;
-  }).join("");
-  metaOpen("Дейлики","Жетонов сегодня: "+(S.daily.tok||0)+"/150 (§8)",qrows+"<div style='height:8px'></div>"+trows);
+  const trows='<div style="margin:10px 0 4px;font-size:12px;color:var(--dim);letter-spacing:.4px">НАГРАДЫ ЗА ЖЕТОНЫ</div>'
+    +BALANCE.dailyTrack.map(([need,rew],i)=>{
+      const done=(S.daily.claimed||[]).includes(i), can=tok>=need && !done;
+      return '<div class="metarow"><span>'+need+' жет. → '+esc(rew)+'</span>'
+        +(done?'<span style="color:var(--green)">✓</span>'
+          :'<button class="btn btn-soft" onclick="claimDaily('+i+','+need+')" '+(can?"":"disabled")+'>Забрать</button>')
+        +'</div>';
+    }).join("");
+  const adTok=BALANCE.dailyAdTok|30;
+  const adDone=!!S.daily.adTok;
+  const ad='<div class="metarow" style="margin-top:6px"><span>📺 Реклама · +'+adTok+' жетонов'
+    +'<br><span style="color:var(--dim);font-size:11px">1 раз в сутки · дожимает трек</span></span>'
+    +(adDone?'<span style="color:var(--green)">✓</span>'
+      :'<button class="btn btn-soft" onclick="claimDailyAd()">Смотреть</button>');
+  metaOpen("Дейлики",
+    "Смена с рассветом · жечь эль, качать артель, бить жилы",
+    head+qrows+'<div style="height:6px"></div>'+trows+ad);
+}
+function claimDailyAd(){
+  dailyReset();
+  if(S.daily.adTok){ showToast("📺","Уже взято","","завтра снова"); return; }
+  const grant=()=>{
+    dailyReset();
+    if(S.daily.adTok) return;
+    S.daily.adTok=true;
+    const n=BALANCE.dailyAdTok|30;
+    S.daily.tok=(S.daily.tok||0)+n;
+    showToast("📺","Жетоны!","","+"+n+" к треку дейликов");
+    Platform.logEvent("daily_ad",{tok:n});
+    try{ if(typeof growthTrackAd==="function") growthTrackAd(); }catch(e){}
+    save(); render(); openDaily();
+  };
+  try{
+    if(Platform&&Platform.showRewarded){ Platform.showRewarded(ok=>{ if(ok) grant(); }, "daily_tok"); return; }
+  }catch(e){}
+  grant();
 }
 function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.claimed||[]).includes(i)) return;
   S.daily.claimed.push(i); addGymXP(GYM_XP.perDaily);
@@ -6070,13 +6291,83 @@ const EX_QUIPS=[
   "Говорят, дворфихи любят богатых. Значит, я почти неотразим!",
   "Развелись из-за храпа. Мой храп — как обвал. Естественно."
 ];
+const BORIN_GOSSIP_QUIPS=[
+  "В Хрустальных Чертогах кто-то опять подменил мифрил крашеным стеклом.",
+  "Тан с пятого чертога клянётся, что лично спорил с Горой. Проиграл, конечно.",
+  "У скупщика Нори кошель толще совести. Потому и весы у него кривые.",
+  "В Безднах нашли каску без дворфа. Каска была трезвее хозяина.",
+  "У арены новый чемпион, но пьёт он как эльф. Долго не протянет.",
+  "Вчера тут сидел геолог и уверял, что камни с ним разговаривают. Я верю. Он тоже каменный.",
+  "Говорят, в штольне «Зоопарк» крыса украла яйцо питомца. Крыса теперь чемпион арены.",
+  "Нори клянётся, что честный. Честный — пока не видит чужой сумки.",
+  "Кто-то слил легендарного геолога в артель… и потом рыдал в ту же кружку.",
+  "В третьем чертоге опять спорят, чья борода длиннее. Пока судят — эль кончается."
+];
+const BORIN_LORE_QUIPS=[
+  "Первую стойку в этих пещерах собрали из сломанной вагонетки и дверей старой шахты.",
+  "Если в тишине слышно, как капает эль, значит где-то рядом трескается жила.",
+  "Старые кланы мерили богатство не золотом, а тем, сколько кружек выдержит стол после победы.",
+  "Борода седеет не от лет, а от глубины, на которой ты не дрогнул.",
+  "Раньше в Подгорном Огне варили такой эль, что им можно было чистить кирки.",
+  "У Горы память длиннее любой бороды. Всё, что добыл честно, она возвращает сторицей.",
+  "Жетон дейлика — это не монета. Это клятва: сегодня ты не лежал мордой в шлаке.",
+  "Артель старейшин помнит имена. Пустая стойка — позор клана, не экономия расчёсок.",
+  "Застолье качает не мышцы — уважение. А уважение Гора считает громче золота.",
+  "Говорят, первый кубок выковали из кирки павшего чемпиона. Пили из него только стоя."
+];
+const BORIN_JOKE_QUIPS=[
+  "Бывшая говорила, борода колется. Теперь борода длиннее наших отношений.",
+  "За ту, что ушла к эльфу. Надеюсь, у него уши мёрзнут!",
+  "Моя бывшая была как редкий камень: блестит, копнёшь — одни долги.",
+  "Сказала: «выбирай — я или кирка». Кирка хоть мозг не пилит.",
+  "Бывшая ушла с моим золотом. Зато борода при мне, ха!",
+  "Она хотела бриллиант. Я нашёл. Себе. Правильное решение.",
+  "Развелись из-за храпа. Мой храп — как обвал. Естественно.",
+  "Эльф заказал «что полегче». Налил воды. Он обиделся. Я тоже.",
+  "Клиент спросил: «это крафтовое?» Я сказал: «это горное». Он кивнул, как умный.",
+  "Пил за здоровье. Здоровье ушло в забой. Я — за ним с кружкой."
+];
+const BORIN_HINT_QUIPS=[
+  "Эль не для красоты. Пей — копи очки — качай застолье.",
+  "Стойка помнит каждого. Уважение растёт от тренировок, PvP и дейликов.",
+  "Тегнутый навык на листе дешевле. А тут — пиво в очки, очки в силу.",
+  "Пустой кружки не бывает: +5 🍺/ч капается само, пока ты в забое.",
+  "Авто-глоток в забое тоже бывает — Гора не любит сухих глоток.",
+  "Жетоны дейликов — дожимай трек. Реклама раз в сутки тоже льёт в кубок."
+];
+function beerLoreQuip(){
+  const roll=Math.random();
+  const pool=roll<0.22 ? ALE_QUIPS
+    : roll<0.48 ? BORIN_JOKE_QUIPS
+    : roll<0.74 ? BORIN_GOSSIP_QUIPS
+    : BORIN_LORE_QUIPS;
+  const line=pool[Math.floor(Math.random()*pool.length)];
+  if(pool===ALE_QUIPS) return line;
+  if(pool===BORIN_JOKE_QUIPS) return "Борин шутит: "+line;
+  if(pool===BORIN_GOSSIP_QUIPS) return "Борин шепчет: "+line;
+  return "Борин тянет басню: "+line;
+}
+/* Лента у стойки: детерминированная ротация (меняетя раз в ~45с). */
+function borinBarTalk(){
+  const packs=[
+    {tag:"Борин шутит.", pool:BORIN_JOKE_QUIPS},
+    {tag:"Борин травит сплетню.", pool:BORIN_GOSSIP_QUIPS},
+    {tag:"Борин тянет басню.", pool:BORIN_LORE_QUIPS},
+    {tag:"Борин советует.", pool:BORIN_HINT_QUIPS}
+  ];
+  const tick=Math.floor(Date.now()/45000);
+  const salt=((S&&S.wkPts)|0)+((S&&S.daily&&S.daily.tok)|0)*3+((S&&S.veinsBroken)|0);
+  const i=(tick*7+salt*11)>>>0;
+  const pack=packs[i%packs.length];
+  const line=pack.pool[(i+tick)%pack.pool.length];
+  return {tag:pack.tag, text:line};
+}
 function sipAle(){
   const mug=$("aleMug"); mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
   clearTimeout(sipAle._t); sipAle._t=setTimeout(()=>mug.classList.remove("sip"),2450);
   aleAnim=2.4;
   S.energy=Math.min(stat("energy"), S.energy+stat("energy")*0.12);   // +12% энергии
-  const pool=Math.random()<0.55?EX_QUIPS:ALE_QUIPS;
-  sayQuip(pool[Math.floor(Math.random()*pool.length)], 4);
+  sayQuip(beerLoreQuip(), 4);
   jingleFind();
   Platform.logEvent("ale_sip",{});
 }
@@ -7065,6 +7356,6 @@ bindSaveLifecycle();
   }
 })();
 </script>
-<script src="tools/ui_screens.js?v=4"></script>
+<script src="tools/ui_screens.js?v=7"></script>
 </body>
 </html>

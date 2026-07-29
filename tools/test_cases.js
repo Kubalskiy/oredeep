@@ -11,9 +11,16 @@ T("сумка lvl50 без Common/Rare", bagWeights(50)[0]===0 && bagWeights(50)
 let sumsOk=true;
 for(let l=1;l<=50;l++){ const s=bagWeights(l).reduce((a,b)=>a+b,0); if(Math.abs(s-100)>0.7){sumsOk=false;break;} }
 T("веса сумки нормированы (1..50)", sumsOk);
-T("pity(0) = [80,20,0,0]", JSON.stringify(geoWeights(0))===JSON.stringify([80,20,0,0]));
-T("pity(250) = [15,20,45,20]", JSON.stringify(geoWeights(250))===JSON.stringify([15,20,45,20]));
-T("pity(50) Epic=13", Math.abs(geoWeights(50)[2]-13)<0.01);
+T("pity(0) = [85,15,0,0]", JSON.stringify(geoWeights(0))===JSON.stringify([85,15,0,0]));
+{
+  const p=geoWeights(250);
+  T("pity(250) = ~[34.36,30.82,23,11.82]",
+    Math.abs(p[0]-34.3636)<0.05 &&
+    Math.abs(p[1]-30.8182)<0.05 &&
+    Math.abs(p[2]-23)<0.05 &&
+    Math.abs(p[3]-11.8182)<0.05);
+}
+T("pity(50) Epic=2", Math.abs(geoWeights(50)[2]-2)<0.01);
 T("множители деталей ×2.2 (8 тиров)", RAR_POW.length===8 && RAR_POW[7]===250);
 T("ценности камней 1..1500", RAR_MULT[0]===1 && RAR_MULT[7]===1500);
 T("якоря породы: HP(1)=225, HP(50000)=1e7", anchored(ANCHOR_HP,1)===225 && anchored(ANCHOR_HP,50000)===1e7);
@@ -230,6 +237,13 @@ T("эль не превышает максимум", S.energy<=stat("energy"));
   UIS.back();
   T("назад из тренировок → Застолья", UIS.id==="tavern" && UIS.tab==="feast");
   UIS.close(); }
+{ openSkills("cards");
+  const cardsHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("навыки: Тренировка ведёт в пивные", /openWorkouts\(/.test(cardsHtml));
+  openSkills("train");
+  T("openSkills('train') = пивные тренировки", UIS.id==="panel" && /Тренировки/.test(($("uiTitle")&&$("uiTitle").textContent)||"")
+    && /drinkBeer\(/.test(($("uiBody")&&$("uiBody").innerHTML)||""));
+  UIS.close(); }
 { UIS.open("tavern","ale");
   const h=($("uiBody")&&$("uiBody").innerHTML)||"";
   T("стойка: выпить и метры", /drinkBeer\(/.test(h) && /uiTavMeters/.test(h));
@@ -346,6 +360,11 @@ T("глоток без пива не проходит", drinkBeer()===false);
 S.protein=1000; _drinkCdUntil=0;
 { const p0=S.protein, cost=BALANCE.workouts.drinkCost, pts=BALANCE.workouts.drinkPts;
   T("выпил пиво → очки тренировок", drinkBeer()===true && S.protein===p0-cost && S.wkPts===pts); }
+_drinkCdUntil=0;
+{ S.mugLv=0; S.gems=1000; const g0=S.gems; T("ап кружки ×1→×2", upgradeMug()===true && S.mugLv===1 && mugTier().mul===2 && S.gems===g0-40);
+  S.protein=1000; _drinkCdUntil=0; const p0=S.protein, pts0=S.wkPts;
+  T("глоток ×2 списывает 10 пива", drinkBeer()===true && S.protein===p0-10 && S.wkPts===pts0+10); }
+S.mugLv=0;
 _drinkCdUntil=0;
 S.wkPts=1000;
 { const cost=workoutCost("energy"), pts0=S.wkPts, e0=stat("energy");
@@ -588,13 +607,13 @@ T("материал только равной/меньшей редкости", 
 { const p0=geoPct(S.geo); mergeGeo();
   T("старейшина растёт в уровне и бонусе", S.geo.lv===4 && geoPct(S.geo)>p0);
   T("слишком редкий материал не съеден", boxCountAt(S.geoBox,2,3)===1); }
-S.geo={t:0,r:2,n:"X",lv:9,asc:0}; S.gems=1000;
+S.geo={t:0,r:2,n:"X",lv:9,asc:0}; S.gems=BALANCE.merge.ascendGems+10;
 T("восхождение только для легендарного", ascendGeo()===false);
 S.geo={t:0,r:3,n:"Дед",lv:4,asc:0};
 T("восхождение требует уровня", ascendGeo()===false);
-S.geo.lv=5; { const p0=geoPct(S.geo); ascendGeo();
+S.geo.lv=BALANCE.merge.ascendLv; { const p0=geoPct(S.geo); const g0=S.gems; ascendGeo();
   T("восхождение: ступень+1, уровень в 1, гемы списаны, бонус вырос",
-    S.geo.asc===1 && S.geo.lv===1 && S.gems===1000-BALANCE.merge.ascendGems && geoPct(S.geo)>p0); }
+    S.geo.asc===1 && S.geo.lv===1 && S.gems===g0-BALANCE.merge.ascendGems && geoPct(S.geo)>p0); }
 { S.geo={t:0,r:GEO_RAR.length-1,n:"Дед",lv:BALANCE.merge.ascendLv,asc:1}; S.gems=BALANCE.merge.ascendGems+10;
   UIS.open("beards","ascend");
   const body=($("uiBody")&&$("uiBody").innerHTML)||"";
@@ -674,8 +693,16 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="К.Р.А.С.А.В
   checkMinerLevelUp(false);
   T("Ум даёт больше очков за уровень", S.skillPts>=BALANCE.special.ptsBase+3); }
 { const p0=S.specialPool, v0=specialAttr("s");
-  spendSpecial("s"); refundSpecial("s");
-  T("refund КРАСАВА возвращает очко", specialAttr("s")===v0 && S.specialPool===p0); }
+  spendSpecial("s");
+  T("вкачка КРАСАВА окончательная", specialAttr("s")===v0+1 && S.specialPool===p0-1);
+  T("откат КРАСАВА запрещён", refundSpecial("s")===false && specialAttr("s")===v0+1 && S.specialPool===p0-1);
+  T("сброс КРАСАВА запрещён", resetSpecial()===false && specialAttr("s")===v0+1); }
+{ S.specialPool=0; S.special={s:8,p:5,e:10,c:6,i:5,a:7,l:5};
+  openCharSheet({kind:"special",id:"a"});
+  const html=($("charSheet")&&$("charSheet").innerHTML)||"";
+  T("лист: только +, без − и сброса", /spendSpecial\('a'\)/.test(html)
+    && !/refundSpecial\(/.test(html) && !/resetSpecial\(/.test(html));
+}
 { openCharSheet(); 
   T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("К.Р.А.С.А.В.А")>=0);
   closeCharSheet();
@@ -1057,6 +1084,12 @@ S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; S.bags=5; S.bag=50;
 openBag();
 T("открытие сумки двигает дейлик", (S.daily.prog.bag||0)===1);
 T("дейлик «открой сумки» существует", BALANCE.dailyQuests.some(q=>q.id==="bag"));
+T("дейлик на эль у Борина", BALANCE.dailyQuests.some(q=>q.id==="drink"&&q.need===5));
+T("дейлик на застолье", BALANCE.dailyQuests.some(q=>q.id==="feast"));
+T("дейлик на геолога", BALANCE.dailyQuests.some(q=>q.id==="geo"));
+{ S.daily={day:todayStr(),prog:{},tok:0,claimed:[],adTok:false}; S.protein=1000; _drinkCdUntil=0;
+  for(let i=0;i<5;i++){ _drinkCdUntil=0; drinkBeer(); }
+  T("5 глотков закрывают дейлик drink", (S.daily.prog.drink||0)>=5 && S.daily.tok>=10); }
 
 console.log("\n[44] DoT питомцев: Bleed/Shock/Splash (PDF)");
 localStorage.removeItem("oredeep_v3"); load();
