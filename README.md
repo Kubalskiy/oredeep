@@ -83,7 +83,10 @@ node tools/audit_buttons.js    # привязка кнопок
 ```bash
 npm install && npm run sync && npx cap open android
 npm run art    # пиксель-арт → art/*.png → base64 в index.html
+npm run aab    # release AAB для Google Play (нужен Android SDK + keystore)
 ```
+
+Полный чеклист заливки в стор: [`docs/STORE_ANDROID.md`](./docs/STORE_ANDROID.md).
 
 Нативные SDK идут через `Platform` в `index.html` (web-стабы → AdMob / Firebase / Billing в сборке).
 

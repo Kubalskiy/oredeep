@@ -4,3 +4,16 @@ node_modules/
 .idea/
 bun.lock
 www
+
+# Android / Play signing — никогда не коммитить
+android/keystore.properties
+android/KEYSTORE_BACKUP.txt
+android/*.keystore
+android/*.jks
+*.keystore
+*.jks
+android/app/build/
+android/.gradle/
+android/local.properties
+android/captures/
+google-services.json

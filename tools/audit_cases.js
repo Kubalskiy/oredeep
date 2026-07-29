@@ -28,11 +28,14 @@ console.log("      " + uniq.join(", "));
 console.log("\n[B] Обработчики .onclick привязаны");
 for (const id of ["geoName", "geoDesc", "navSkills", "speedBtn",
                   "tabMineBtn", "tabHeroBtn", "tabMetaBtn", "introGo", "miner",
-                  "lootChest", "powerUp", "auto", "avatar", "menu",
+                  "powerUp", "avatar", "menu",
                   "navShop", "navMines", "navTavBtn", "navPvp"]) {
   const el = document.getElementById(id);
   T("#" + id + " имеет onclick", !!(el && typeof el.onclick === "function"));
 }
+/* lootChest / auto — long-press через addEventListener (в stub он no-op, .onclick намеренно null) */
+T("#lootChest в DOM + openChest", !!document.getElementById("lootChest") && typeof openChest === "function");
+T("#auto в DOM + toggleAutoRoll", !!document.getElementById("auto") && typeof toggleAutoRoll === "function");
 T("hireGeo функция", typeof hireGeo === "function");
 T("tryBagUpgrade функция", typeof tryBagUpgrade === "function");
 T("openCollection функция", typeof openCollection === "function");
@@ -179,14 +182,15 @@ boxAdd(S.geoBox, 0, 0, 3); openGeoGuild();
   click(mg.call);
   T("слияние подняло уровень на число материалов", S.geo.lv === 4);
 }
-S.geo = { t: 0, r: 3, n: "Дед", lv: 5, asc: 0 }; S.gems = BALANCE.merge.ascendGems; openGeoGuild();
+const needLv = BALANCE.merge.ascendLv;
+S.geo = { t: 0, r: 3, n: "Дед", lv: needLv, asc: 0 }; S.gems = BALANCE.merge.ascendGems; openGeoGuild();
 {
   const ag = modalButtons().find(b => b.call.startsWith("ascendGeo"));
-  T("легендарный с ур.5 и гемами — восхождение активно", ag.disabled === false);
-  const g0 = S.gems; click(ag.call);
+  T("легендарный с ур."+needLv+" и гемами — восхождение активно", !!ag && ag.disabled === false);
+  const g0 = S.gems; if(ag) click(ag.call);
   T("восхождение списало гемы и подняло ступень", S.geo.asc === 1 && S.geo.lv === 1 && S.gems === g0 - BALANCE.merge.ascendGems);
 }
-S.geo = { t: 0, r: 3, n: "Дед", lv: 5, asc: 0 }; S.gems = 0; openGeoGuild();
+S.geo = { t: 0, r: 3, n: "Дед", lv: needLv, asc: 0 }; S.gems = 0; openGeoGuild();
 {
   const ag = modalButtons().find(b => b.call.startsWith("ascendGeo"));
   T("без гемов восхождение заблокировано", ag.disabled === true);
