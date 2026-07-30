@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
 <style>
-/* UI_SPEC.md — дизайн с нуля */
+
 :root{
   --bg:#140f09;
   --bgPanel:#1c150c;
@@ -29,7 +29,7 @@
   --font-display:"VT323", monospace;
   --font-body:"Space Grotesk", sans-serif;
   --font-ui:var(--font-body);
-  /* compat aliases used by remaining modal CSS snippets */
+  
   --panel:var(--bgPanel);
   --panel2:var(--bgPanelAlt);
   --line:var(--border);
@@ -39,7 +39,7 @@
   --red:var(--danger);
   --blue:#5aa7e8;
   --c1:#2c2721; --c2:#171310; --gemc:#e8b93c;
-  /* #bottomNav: padding 4+4 + btn 52 + safe-area */
+  
   --bottom-nav-h: calc(60px + env(safe-area-inset-bottom, 0px));
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -50,7 +50,6 @@ button{font-family:inherit;border:0;cursor:pointer;color:inherit;background:tran
 button:active{transform:scale(.97);}
 button:disabled{opacity:.45;cursor:default;}
 
-/* Скролл под цвет меню (тёмный трек, золотой бегунок) */
 *{scrollbar-width:thin;scrollbar-color:var(--goldMuted) var(--bgPanelAlt);}
 *::-webkit-scrollbar{width:8px;height:8px;}
 *::-webkit-scrollbar-track{background:var(--bgPanelAlt);border-left:1px solid var(--border);}
@@ -72,7 +71,6 @@ button:disabled{opacity:.45;cursor:default;}
 }
 @media(min-width:520px){ #app{ border-radius:20px; height:min(96vh, 980px); } }
 
-/* A. Шапка — дворф+ник | ресурсы | бургер */
 #hud{
   flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;
   padding:8px 10px;background:linear-gradient(180deg,#1f170d,#140f09);
@@ -110,7 +108,6 @@ button:disabled{opacity:.45;cursor:default;}
   font-size:18px;color:var(--textPrimary);flex:none;
 }
 
-/* B. Статус */
 #statusBar{
   flex:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;
   padding:4px 5px;background:#100c08;border-bottom:1px solid var(--border);
@@ -129,10 +126,8 @@ button:disabled{opacity:.45;cursor:default;}
 #statLoot{color:var(--goldMuted);}
 #statMiner{color:var(--gold);font-size:10px;}
 
-/* Скролл */
 #view{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overflow-x:hidden;position:relative;}
 
-/* D+C. Сцена */
 #scene{
   position:relative;height:280px;overflow:hidden;
   background:radial-gradient(ellipse at 50% 60%, #2a2014 0%, #140f09 70%);
@@ -151,12 +146,12 @@ button:disabled{opacity:.45;cursor:default;}
   background-image:linear-gradient(180deg,rgba(5,12,14,.34),rgba(5,12,14,.62)),url("art/mine3.webp");}
 #scene.t4{--c1:#272033;--c2:#151021;--gemc:#b97ae8;
   background-image:linear-gradient(180deg,rgba(4,6,5,.36),rgba(4,6,5,.66)),url("art/mine4.webp");}
-/* Плоские заливки старой сцены гасим — остаются только световые пятна и пыль */
+
 #decor rect,#decor path,#decor polygon{display:none;}
 #decor ellipse:not([fill^="url"]){display:none;}
 #decor{opacity:.9;}
 #decor{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
-/* Фоновая живопись экранов: тихая подложка, чтобы текст оставался читаемым */
+
 #uiScreen::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background-size:cover;background-position:center;opacity:0;transition:opacity .25s;}
 #uiScreen[data-scr="tavern"]::before{background-image:url("art/scr_tavern.webp");opacity:.17;}
@@ -266,11 +261,11 @@ button:disabled{opacity:.45;cursor:default;}
     @keyframes chopBody{0%{transform:translate(0,0) rotate(0deg)}22%{transform:translate(-4px,-2px) rotate(-5deg)}58%{transform:translate(6px,3px) rotate(8deg)}78%{transform:translate(2px,1px) rotate(3deg)}100%{transform:translate(0,0) rotate(0deg)}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .ml{position:absolute;left:0;top:0;width:95px;height:110px;image-rendering:pixelated;}
-/* хват за самый край основания рукояти; острие ~14ч к жиле */
+
 #pickHand{position:absolute;left:54px;top:-7px;width:54px;image-rendering:pixelated;
   transform-origin:5% 92%;transform:rotate(0deg);z-index:4;}
 #aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
-/* Питомец-дракон: 6 настроений + скины по редкости */
+
 #petBox{
   position:absolute;left:calc(4% + 0.75cm);bottom:36px;z-index:5;display:none;
   transform-origin:70% 90%;width:64px;height:56px;
@@ -383,7 +378,7 @@ button:disabled{opacity:.45;cursor:default;}
   0%,100%{transform:rotate(-3deg) translateY(0)}
   50%{transform:rotate(4deg) translateY(1px)}
 }
-/* хвост в позе «живот» — медленная дуга */
+
 #petBox.mood-belly .petFurStroke{
   transform-box:view-box;transform-origin:18px 42px;
   animation:petBellyTail 3.4s ease-in-out infinite;
@@ -411,8 +406,8 @@ button:disabled{opacity:.45;cursor:default;}
 #rock.boss #rockImg{transform:scale(1.13);transform-origin:bottom center;}
 #rock.hitfx{animation:shake .12s;}
 @keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(5px)}100%{transform:translateX(0)}}
-#bubble{display:none!important;} /* заменено на #feedPanel */
-#feedPanel{display:none!important;} /* п.3 ревью: лента дублирует действия и крадёт высоту */
+#bubble{display:none!important;} 
+#feedPanel{display:none!important;} 
 #feedLines{display:flex;flex-direction:column;gap:2px;height:100%;}
 .feedLine{
   height:24px;box-sizing:border-box;flex:none;
@@ -464,7 +459,6 @@ button:disabled{opacity:.45;cursor:default;}
 .pulse{animation:pulseBtn 1.1s ease-in-out infinite;}
 @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #f2d48888}50%{box-shadow:0 0 0 6px #f2d48800}}
 
-/* E. Статы — кликабельная полоска апгрейдов (нижняя сетка скрыта) */
 #statStrip{
   display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
   padding:5px 8px 6px;background:#100c08;border-bottom:1px solid var(--border);
@@ -492,7 +486,6 @@ button:disabled{opacity:.45;cursor:default;}
 #statStrip .u.can button{background:linear-gradient(180deg,#2f6b39,#25522d);border-color:#3a8a45;color:#fff;}
 #statStrip .pw{display:none;}
 
-/* F. Сумки / авто — третья ячейка = автогруппа (АВТО + порог) */
 #actionBar{
   display:grid;grid-template-columns:1.2fr 1.15fr .85fr;gap:8px;align-items:center;
   padding:10px 10px 6px;
@@ -539,7 +532,6 @@ button:disabled{opacity:.45;cursor:default;}
 #autoTier.on{border-color:var(--goldMuted);color:var(--gold);}
 #auto.off,#autoTier.off{opacity:.55;}
 
-/* G. Экипировка — под сумками */
 #gearSection{padding:6px 10px 10px;}
 #gearGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .slot{
@@ -559,15 +551,14 @@ button:disabled{opacity:.45;cursor:default;}
 .r0{color:#b9c0cc}.r1{color:#5fd068}.r2{color:#5aa7e8}.r3{color:#b97ae8}.r4{color:#e87a7a}
 .r5{color:#e8b93c}.r6{color:#7ae8dc}.r7{color:#ff9d5c}
 
-#upgrades{display:none!important;} /* дубль полоски — качаем в #statStrip */
-/* Кнопки: единая схема .btn + роль (.btn-soft|hard|danger|nav|side|back|boost|tab) + модификаторы (.btn-wide|tiny) */
+#upgrades{display:none!important;} 
+
 .btn{font-family:inherit;border:0;cursor:pointer;color:inherit;}
 .btn-soft,button.buy{background:linear-gradient(180deg,#2f6b39,#25522d);color:#fff;border-radius:var(--r-sm);padding:9px 6px;font-weight:700;}
 .btn-hard,button.gold{background:linear-gradient(180deg,#8a6d1d,#6b5416);color:#fff;border-radius:var(--r-sm);padding:9px 6px;}
 .btn-danger,button.red{background:linear-gradient(180deg,#7a2f2f,#5e2222);color:#fff;border-radius:var(--r-sm);padding:9px 6px;}
 .btn:disabled,.btn[disabled]{opacity:.45;cursor:default;}
 
-/* H. Нижняя навигация — всегда видна; выше uiScreen, модалки в #app с отступом снизу */
 #bottomNav{
   flex:none;display:flex;background:#100c08;border-top:2px solid var(--border);
   padding:4px 4px calc(4px + env(safe-area-inset-bottom));
@@ -580,7 +571,7 @@ button:disabled{opacity:.45;cursor:default;}
 }
 .btn-nav .ni{font-size:20px;line-height:1;}
 .btn-nav .nl{font-family:var(--font-display);font-size:13px;letter-spacing:.5px;}
-/* Активный пункт нижнего меню — пока игрок в этом экране */
+
 .btn-nav.on{
   color:var(--gold);
   background:linear-gradient(180deg,#2c2418,#18130e);
@@ -593,13 +584,11 @@ button:disabled{opacity:.45;cursor:default;}
 .btn-nav .up{position:absolute;top:2px;right:calc(50% - 18px);color:var(--income);font-size:12px;display:none;}
 .btn-nav .up.on{display:block;}
 
-/* UI shells — над контентом, но над футером не залезаем */
 #uiScreen{
   position:absolute;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg);
   display:none;flex-direction:column;overflow:hidden;pointer-events:none;
 }
 #app.uiOpen #uiScreen{
-  /* место под bottomNav — футер не перекрывает контент таба */
   bottom:var(--bottom-nav-h);
 }
 #uiScreen.open{display:flex !important;pointer-events:auto;}
@@ -612,7 +601,6 @@ button:disabled{opacity:.45;cursor:default;}
 .btn-tab,.uiTab{flex:none;padding:7px 10px;font-size:12px;font-family:var(--font-display);background:var(--bgPanel);border:1px solid var(--border);color:var(--textMuted);border-radius:6px;}
 .btn-tab.on,.uiTab.on{color:var(--gold);border-color:var(--gold);}
 .uiBody{flex:1;overflow-y:auto;padding:10px 12px 16px;-webkit-overflow-scrolling:touch;}
-.uiHero,.uiCard,.uiOpp,.uiMineCard,.uiBanner,.uiSlot,.uiRow{/* light stubs */}
 .uiHero{text-align:center;padding:14px 8px;background:var(--bgPanel);border:2px solid var(--border);border-radius:var(--r-sm);margin-bottom:10px;}
 .uiHeroArt{font-size:42px;}
 .uiSub{font-size:12px;color:var(--textMuted);line-height:1.5;}
@@ -709,7 +697,6 @@ button:disabled{opacity:.45;cursor:default;}
 .dot{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--danger);display:none;}
 .dot.on{display:block;}
 
-/* --- Лист персонажа --- */
 #charModal{z-index:280;align-items:stretch;padding:0;background:#000c;}
 #charModal .foSheetBox{
   width:100%;max-width:480px;height:100%;max-height:100%;margin:0 auto;
@@ -792,7 +779,6 @@ button:disabled{opacity:.45;cursor:default;}
 .foPerkOwned .row .nm{color:#8fce6a;font-weight:400;font-family:var(--font-display);font-size:14px;}
 .foPerkOwned .empty{color:#8a7a60;padding:10px 4px;font-size:12px;}
 
-/* --- Выбор перка --- */
 #perkModal{z-index:290;align-items:center;padding:10px;background:#000c;}
 #perkModal .foPerkBox{
   width:100%;max-width:440px;max-height:92%;margin:0 auto;padding:0;overflow:hidden;
@@ -828,19 +814,18 @@ button:disabled{opacity:.45;cursor:default;}
   width:12px;height:12px;border-radius:50%;background:#8a2020;box-shadow:inset 0 1px 0 #c04040,0 0 0 2px #3a1010;}
 .foPerkFoot .btn-hard::before{background:#c03030;box-shadow:inset 0 1px 0 #f06060,0 0 0 2px #3a1010,0 0 8px #c0303088;}
 
-/* Модалки внутри #app — absolute, лист над футером */
 #app > .modal{
   position:absolute;top:0;left:0;right:0;bottom:var(--bottom-nav-h);
   background:#000b;z-index:210;display:none;align-items:flex-end;justify-content:center;
 }
-/* Модалки вне #app — fixed, над всем включая навбар */
+
 body > .modal{
   position:fixed;inset:0;background:#000b;z-index:300;display:none;align-items:flex-end;justify-content:center;
 }
 .modal .box{background:var(--bgPanel);width:100%;max-width:430px;max-height:min(80%,100%);overflow-y:auto;border-radius:18px 18px 0 0;padding:16px;border:1px solid var(--border);}
 .modal h3{margin:0 0 4px;color:var(--gold);font-family:var(--font-display);font-size:22px;}
 .modal .sub{font-size:12px;color:var(--textMuted);margin-bottom:10px;}
-/* Лист как UIS: шапка с «‹» вместо «Закрыть» в подвале */
+
 #chestModal{align-items:stretch;}
 #chestModal .sheetBox{
   display:flex;flex-direction:column;padding:0;max-width:100%;max-height:100%;height:100%;
@@ -853,7 +838,7 @@ body > .modal{
 .col-item{display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--border);font-size:13px;}
 .oreimg{width:26px;height:26px;image-rendering:pixelated;vertical-align:middle;margin-right:6px;}
 .oreimg.big{width:44px;height:44px;}
-/* Внутри #app + absolute: иначе fixed цепляется к viewport и падает ниже рамки игры */
+
 #toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
   border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:auto;cursor:pointer;
   font-family:var(--font-body);touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
@@ -899,7 +884,7 @@ body > .modal{
 .ftueArr.sideL{position:absolute;left:0;top:50%;transform:translate(-100%,-50%);margin:0;padding-right:2px;}
 .btnrow{display:flex;gap:8px;}
 .btnrow button{flex:1;}
-.chDrop,.chUp,.setHead,.setFrags,.specWrap,.curbar{/* kept class hooks */}
+.chDrop,.chUp,.setHead,.setFrags,.specWrap,.curbar{}
 .chUp{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .chUpHead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;}
 .chUpTitle{font-family:var(--font-display);font-size:24px;color:var(--gold);letter-spacing:1px;line-height:1;}
@@ -949,7 +934,6 @@ body > .modal{
 .mote{display:none;}
 .rockname{display:none;}
 
-/* COMBAT FROM LEGACY */
   .scene.t0{--c1:#2c2721;--c2:#171310;--gemc:#e8b93c;--rockc:#4d453b;}
 
   .scene.t1{--c1:#222b39;--c2:#131824;--gemc:#5aa7e8;--rockc:#3e4a5c;}
@@ -1117,7 +1101,6 @@ body > .modal{
 
   #speedBtn{font-size:8px;padding:8px 14px;}
 
-
   #toast{padding:16px 22px;}
 
   #toast .big{margin-bottom:6px;}
@@ -1134,8 +1117,6 @@ body > .modal{
 
   #overlay .big{margin-bottom:4px;}
 
-
-/* UIS FULL — над контентом, футер (#bottomNav) всегда виден */
 #uiScreen{
     position:absolute;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg);
     display:none;flex-direction:column;overflow:hidden;pointer-events:none;
@@ -1290,31 +1271,23 @@ body > .modal{
 </style>
 
 <style id="artTheme">
-/* ============================================================
-   ORE DEEP — художественный слой поверх базовой темы.
-   Всё, что ниже, только про картинку: ни одной игровой константы.
-   ============================================================ */
 
-/* Образец породы в Гильдии: исходник теперь 720px, размер держим в CSS */
 .specWrap{text-align:center;margin-bottom:10px;}
 .specImg{display:block;width:100%;max-width:360px;height:auto;margin:0 auto;
   border:1px solid var(--border,#3a2c1b);border-radius:4px;
   box-shadow:0 6px 18px rgba(0,0,0,.55);}
 .specCap{display:block;margin-top:6px;font-size:8px;letter-spacing:1px;color:var(--textMuted,#a89a7c);}
 
-/* Иконки предметов в сетке снаряжения */
 .slotArt{width:48px !important;height:48px !important;image-rendering:pixelated;object-fit:contain;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.75)) brightness(1.12) saturate(1.06);}
 .gearCell .slotArt,.slot .slotArt{margin:0 auto 2px !important;}
 
-/* Фасад таверны — рисованный кадр вместо svg-полок */
 .uiTavArt{display:none;}
 .uiTavExt{position:relative;min-height:168px;border:2px solid var(--gold,#f2d488);border-radius:6px;
   background:linear-gradient(180deg,rgba(10,7,4,.10),rgba(10,7,4,.62)),
              url("art/scr_tavern.webp") center/cover no-repeat;
   box-shadow:inset 0 0 40px rgba(0,0,0,.6);overflow:hidden;}
 
-/* Карточки штолен — каждая со своим кадром */
 .uiMineCard{background-size:cover !important;background-position:center !important;}
 .uiMineCard.t0{background-image:linear-gradient(90deg,rgba(14,10,6,.95) 46%,rgba(14,10,6,.70)),url("art/mine0.webp") !important;}
 .uiMineCard.t1{background-image:linear-gradient(90deg,rgba(8,11,16,.95) 46%,rgba(8,11,16,.70)),url("art/mine1.webp") !important;}
@@ -1324,17 +1297,14 @@ body > .modal{
 .uiMineHero{background-image:linear-gradient(180deg,rgba(10,8,5,.86),rgba(10,8,5,.93)),
   url("art/scr_minemap.webp") !important;background-size:cover !important;background-position:center 18% !important;}
 
-/* Ключевой кадр интро */
 #introArt{image-rendering:auto;}
 
-/* Эмблемы коллекций и гача-борода — арт вместо эмодзи */
 .uiColArt{width:56px;height:56px;display:block;margin:0 auto 4px;image-rendering:pixelated;
   object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.7));}
 .uiColEm{display:block;line-height:0;}
 .uiGachaArt{width:112px;height:112px;image-rendering:pixelated;object-fit:contain;
   animation:bob 2s ease-in-out infinite;filter:drop-shadow(0 4px 10px rgba(0,0,0,.75));}
 
-/* Фоны второстепенных экранов — тише, чтобы не спорить с контентом */
 #uiScreen[data-scr="beards"]::before{opacity:.06 !important;}
 #uiScreen[data-scr="artifacts"]::before,
 #uiScreen[data-scr="pets"]::before,
@@ -1342,14 +1312,13 @@ body > .modal{
   content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:url("art/scr_minemap.webp") center/cover no-repeat;opacity:.10;}
 
-/* Иконки нижней навигации — пиксель-арт */
 .navArt{width:26px;height:26px;display:block;margin:0 auto;image-rendering:pixelated;object-fit:contain;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)) saturate(1.05);opacity:.86;transition:opacity .15s,transform .15s;}
 .btn-nav.on .navArt,.btn-nav[aria-current="true"] .navArt{opacity:1;transform:translateY(-1px) scale(1.06);}
 .btn-nav .ni{line-height:0;}
 </style>
 <script data-diag-early="1">
-/* Ранний перехват: должен стоять ДО главного скрипта, иначе ошибка парсинга теряется. */
+
 window.__OREDIAG=window.__OREDIAG||[];
 window.addEventListener("error",function(ev){
   var t=ev.target, E=window.__OREDIAG;
@@ -1365,7 +1334,7 @@ window.addEventListener("unhandledrejection",function(ev){
 </head>
 <body>
 <div id="app">
-  <!-- A. Шапка -->
+  
   <header id="hud">
     <div class="hudLeft">
       <button type="button" id="avatar" title="профиль">🧔</button>
@@ -1383,7 +1352,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <button type="button" id="menu" title="меню">☰</button>
   </header>
 
-  <!-- B. Статус -->
+  
   <div id="statusBar">
     <button type="button" class="cell" id="statMinerCell" title="Бороды · звание">
       <div class="k">РАНГ</div><div class="v" id="statMiner">—</div>
@@ -1399,7 +1368,7 @@ window.addEventListener("unhandledrejection",function(ev){
   </section>
 
   <div id="view">
-    <!-- D. Сцена + C. боковое меню -->
+    
     <div id="scene" class="scene t0">
       <svg id="decor" viewBox="0 0 430 240" preserveAspectRatio="none">
         <defs>
@@ -1504,7 +1473,7 @@ window.addEventListener("unhandledrejection",function(ev){
             <ellipse cx="22" cy="11" rx="2.4" ry="3.2" fill="#e8c4a8"/>
           </svg>
         </div>
-        <!-- 1. Смотрит в глаза -->
+        
         <div class="petMood gaze">
           <svg viewBox="0 0 64 56" aria-hidden="true" shape-rendering="crispEdges">
           <ellipse cx="32" cy="53" rx="16.64" ry="2.2" fill="rgba(0,0,0,.28)"/>
@@ -1759,7 +1728,7 @@ window.addEventListener("unhandledrejection",function(ev){
           </g>
           </svg>
         </div>
-        <!-- 2. Мурлычет (гладят — глаза закрыты, подбородок вверх) -->
+        
         <div class="petMood purr">
           <svg viewBox="0 0 64 56" aria-hidden="true" shape-rendering="crispEdges">
           <ellipse cx="32" cy="53" rx="16.64" ry="2.2" fill="rgba(0,0,0,.28)"/>
@@ -2033,7 +2002,7 @@ window.addEventListener("unhandledrejection",function(ev){
           </g>
           </svg>
         </div>
-        <!-- 3. Ходит за тобой — профиль по меркам: 1 корпус, 2 шея, 4 грудь, 5 брюхо, 7 пояс -->
+        
         <div class="petMood follow">
           <svg viewBox="0 0 72 56" aria-hidden="true" shape-rendering="crispEdges">
           <ellipse cx="36" cy="53" rx="18.72" ry="2.2" fill="rgba(0,0,0,.28)"/>
@@ -2233,7 +2202,7 @@ window.addEventListener("unhandledrejection",function(ev){
           </g>
           </svg>
         </div>
-        <!-- 4. Подёргивает хвост — тот же профиль, хвост вертикально (1→вверх) -->
+        
         <div class="petMood twitch">
           <svg viewBox="0 0 72 56" aria-hidden="true" shape-rendering="crispEdges">
           <ellipse cx="36" cy="53" rx="18.72" ry="2.2" fill="rgba(0,0,0,.28)"/>
@@ -2421,7 +2390,7 @@ window.addEventListener("unhandledrejection",function(ev){
           </g>
           </svg>
         </div>
-        <!-- 5. Спит -->
+        
         <div class="petMood sleep">
           <svg viewBox="0 0 64 56" aria-hidden="true" shape-rendering="crispEdges">
           <ellipse cx="32" cy="53" rx="16.64" ry="2.2" fill="rgba(0,0,0,.28)"/>
@@ -2563,7 +2532,7 @@ window.addEventListener("unhandledrejection",function(ev){
           </g>
           </svg>
         </div>
-        <!-- 6. Показывает живот — стикер: на спине, лапки к груди, глазки-V, хвост дугой -->
+        
         <div class="petMood belly">
           <svg viewBox="0 0 64 56" aria-hidden="true" shape-rendering="crispEdges">
           <ellipse cx="32" cy="53" rx="16.64" ry="2.2" fill="rgba(0,0,0,.28)"/>
@@ -2731,10 +2700,10 @@ window.addEventListener("unhandledrejection",function(ev){
       <div class="rockname">жила: <b id="rockName">Валун</b></div>
     </div>
 
-    <!-- E. Характеристики = кликабельные апгрейды (нижняя сетка скрыта) -->
+    
     <div id="statStrip"></div>
 
-    <!-- F. Сумки / авто: третья ячейка — АВТО + порог продажи -->
+    
     <div id="actionBar">
       <button type="button" id="lootChest" title="Тап — открыть сумку · надеть/продать">📦<span id="bagBadge2"></span></button>
       <button type="button" id="powerUp" title="Тап — шансы дропа и апгрейд сумки">
@@ -2744,11 +2713,11 @@ window.addEventListener("unhandledrejection",function(ev){
       </button>
       <div id="autoGroup">
         <button type="button" id="auto" title="Авто-разбор сумок · вкл/выкл">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
-        <button type="button" id="autoTier" title="Порог: ниже — продать, с порога — оставить">ПОРОГ<br><span id="autoTierLbl">Rare+</span></button>
+        <button type="button" id="autoTier" title="Порог: ниже — продать, с порога — оставить">ПОРОГ<br><span id="autoTierLbl">Редкий+</span></button>
       </div>
     </div>
 
-    <!-- G. Экипировка -->
+    
     <div id="gearSection">
       <div id="gearGrid"></div>
     </div>
@@ -2756,7 +2725,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <div id="upgrades"></div>
   </div>
 
-  <!-- H. Нижняя навигация -->
+  
   <nav id="bottomNav">
     <button type="button" class="btn btn-nav" id="navShop"><span class="ni"><img class="navArt" src="art/nav_market.png" alt=""></span><span class="nl">РЫНОК</span><i class="dot" id="dotShop"></i></button>
     <button type="button" class="btn btn-nav" id="navMines"><span class="ni"><img class="navArt" src="art/nav_mines.png" alt=""></span><span class="nl">ШТОЛЬНИ</span></button>
@@ -2765,7 +2734,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <button type="button" class="btn btn-nav" id="navPvp"><span class="ni"><img class="navArt" src="art/nav_pvp.png" alt=""></span><span class="nl">ПВП</span></button>
   </nav>
 
-  <!-- Полноэкранные табы: над view, снизу место под #bottomNav -->
+  
   <div id="uiScreen" style="display:none">
     <div class="uiHead">
       <button class="btn btn-back" onclick="UIS.back()">‹</button>
@@ -2776,7 +2745,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <div class="uiBody" id="uiBody"></div>
   </div>
 
-  <!-- Скрытый HUD/мост: только данные и вкладки (кнопки-дубли убраны) -->
+  
   <div id="legacy" aria-hidden="true">
     <span id="minerRank"></span>
     <span id="hudAvatar"></span>
@@ -2833,7 +2802,6 @@ window.addEventListener("unhandledrejection",function(ev){
       <div class="metarow"><span>Музыка</span><button id="setMusic">🔊 вкл</button></div>
       <div class="metarow"><span>Всплывающие окна</span><button id="setToasts" type="button" onclick="toggleToasts()">💬 вкл</button></div>
       <div class="metarow"><span>Устав Горы</span><button onclick="showIntro()">📜 читать</button></div>
-      <div class="metarow"><span>Админка</span><button type="button" onclick="location.href='admin.html'">⛏ открыть</button></div>
       <div class="metarow"><span>Честность гачи</span><button onclick="openFairness()">🔐 открыть</button></div>
       <div class="metarow"><span>Стена Горы</span><button onclick="openWall()">🏔 рейтинг</button></div>
       <div class="sub" style="margin-top:12px">Версия ORE DEEP · копай глубже. ещё.</div>
@@ -2875,14 +2843,14 @@ window.addEventListener("unhandledrejection",function(ev){
     </div>
   </div>
 
-  <!-- Лист персонажа -->
+  
   <div class="modal" id="charModal">
     <div class="box foSheetBox">
       <div id="charSheet"></div>
     </div>
   </div>
 
-  <!-- Выбор перка -->
+  
   <div class="modal" id="perkModal">
     <div class="box foPerkBox">
       <div class="foPerkTitle">ВЫБЕРИ ПЕРК</div>
@@ -2899,7 +2867,7 @@ window.addEventListener("unhandledrejection",function(ev){
 
   <div id="toast"></div>
 
-</div><!-- /app -->
+</div>
 
 <div id="offOverlay" class="modal">
   <div class="box" style="text-align:center">
@@ -2965,42 +2933,30 @@ window.addEventListener("unhandledrejection",function(ev){
   </div>
 </div>
 
-
 <script>
 "use strict";
-/* =========================================================
-   ORE DEEP — прототип v0.3: ядро оригинала (сумка + дроп
-   шмоток по таблице §6.3, 8 слотов, гача геологов с pity
-   §7.2) + слой редких камней от кирки (§6bis).
-   Коэффициенты CALIB — плейтест, в GDD помечены «≈».
-   ========================================================= */
 
-/* ============================================================
-   BALANCE — точные значения из реверса Idle Boxer v1.18
-   (docs/REVERSE_ECONOMY.md). Единый источник истины.
-   ============================================================ */
 const BALANCE = {
   idle:{ base:100000, growth:2.5, damp:0.65, capSec:7200, minSec:60 },
   combat:{ maxHitsPerFrame:250, baseAPS:1.0, maxAPS:4.5, comboInner:0.1, maxCombo:4,
            bossEvery:20, critMul:2.2, hitChance:1.0 },
   venueStride:50, startProtein:200, shardRollCost:10, autoQueueMax:15,
   bagAnchors:[1,2,3,4,5,10,15,20,25,30,35,40,45,50],
-  bagWeights:[                              // §6.3 таблица дропа: 14 якорей × 8 редкостей
+  bagWeights:[
     [100,0,0,0,0,0,0,0],[99,1,0,0,0,0,0,0],[97,3,0,0,0,0,0,0],[95,4.9,0.1,0,0,0,0,0],
     [90,9.8,0.2,0,0,0,0,0],[70,28.9,1,0.1,0,0,0,0],[50,46.4,3,0.5,0.1,0,0,0],
     [30,63.4,5,1,0.5,0.1,0,0],[10,75.4,10,3,1,0.5,0.1,0],[0,70.4,20,5,3,1,0.5,0.1],
     [0,50.5,30,10,5,3,1,0.5],[0,26,35,20,10,5,3,1],[0,2,30,30,20,10,5,3],[0,0,15,30,20,20,10,5]],
-  avatars:[                                 // §7.4 образы: цена(💎), слоты навыков, слоты питомцев
+  avatars:[
     {rar:"COMMON",gems:50,skill:1,pet:1},{rar:"RARE",gems:250,skill:2,pet:2},
     {rar:"EPIC",gems:600,skill:2,pet:2},{rar:"LEGENDARY",gems:1800,skill:3,pet:3}],
   gymPerks:["WORKOUT_SPEED","IDLE_CASH","HP_GEAR_BOOST","ATK_GEAR_BOOST","DEF_GEAR_BOOST","COMBO_STAT"],
   gymTiers:["Slate","Bronze","Silver","Gold","Amethyst","Amber"],
-  chestCosts:{ rare:100, epic:300, legendary:700 },   // §10.3 сундуки навыков (💎) · donor-tuned: 2× дороже
+  chestCosts:{ rare:100, epic:300, legendary:700 },
   petPower:[1,3,9,27],
   workoutPaths:["energy","atk","tough","mining","crit","stone","luck"],
   workoutStepPct:[15,12,10,8,6,10,5],
-  /* Дейлики §8: чеклист по core-loop + таверна/бороды (жечь эль, застолья, артель).
-     7×10 = 70 жетонов с заданий; реклама +30 (1/день) → до 100; потолок трека 150. */
+
   dailyQuests:[
     {id:"break",ic:"⛏",n:"Разнеси 30 жил",need:30,tok:10,
       lore:"Гора кормит тех, кто стучит без устали."},
@@ -3021,89 +2977,56 @@ const BALANCE = {
   noAdsPrice:"49.99",
   shardYield:[0,0,5,15,40,100,250,600],
   fuseCost:(t)=>Math.round(15*Math.pow(3,t)),
-  /* Престиж «Глубинный Зов» (док «Основные механики» §Престиж).
-     Сбрасывает забой, сохраняет мету, даёт вечный множитель силы.
-     Побочный, но важный эффект: обнуляет глубину, а значит и экспоненты,
-     которые иначе упираются в потолок double около этапа 45000. */
-  /* minStage ОБЯЗАН равняться div: первый уровень начисляется на этапе div,
-     и если порог входа выше — игрок видит «+1 ур.», а кнопка заблокирована. */
-  /* Ограниченный прогон: числа держатся читаемыми (пик HP ~66M, доход ~290B на
-     конце прогона длиной run.len). Глубже свода Гора не пускает — только
-     Глубинный Зов. Прогресс живёт в ЦЕЛОМ уровне престижа, а не в экспоненте. */
+
   run:{ len:1000, wallMsg:"Свод Прогона" },
   prestige:{ minStage:300, div:300, powPerLevel:2.5, echoFrac:0.05 },
-  /* Сумки (док §Экипировка и сумки): 1 сумка = 1 предмет, падают за победы.
-     Auto Roll тратит сумку раз в autoSec: ниже порога — скупщику, с порога и
-     выше — в очередь на решение игрока. */
-  /* autoSec — ритм разбора, а НЕ пропускная способность. Раньше Auto Roll брал
-     ровно 1 сумку за autoSec, и если жила ломалась быстрее (переусиленный дворф,
-     ×100), очередь росла бесконечно: приход 5.1 сумки за кадр против разбора 0.80.
-     Теперь за тик разбирается вся очередь, но не больше maxPerTick за раз —
-     чтобы не ронять кадр. */
+
   bags:{ perVein:1, perBoss:3, autoSec:3, cap:9999, maxPerTick:400,
-    /* Апгрейд сумки: софт + таймер; пропуск за 💎. Оба растут с ур. сумки
-       (lv1: 3м/20💎 → lv49: ~36м/164💎). base + perLv*(bag-1).
-       DONOR: полный сумка 1→50 = ~17ч таймера ИЛИ ~4508 💎 (≈$10 IAP). */
+
     upgradeSecBase:180, upgradeSecPerLv:45,
     skipGemsBase:20, skipGemsPerLv:3,
-    /* Авто: не с старта. Открывается, когда все слоты заняты ИЛИ на Rare+ набралось N шт. */
+
     autoUnlockSlots:8, autoUnlockRares:3 },
-  /* Постепенное открытие механик по stageIdx.
-     Старт: сумка + статы. Дальше — дать наиграться, не передержать. */
+
   unlocks:{
-    auto:8,        /* АВТО сумок + бонус-сундук + офлайн + 2× добыча */
+    auto:8,
     pets:18,
     beards:28,
-    daily:40,      /* квесты + акции/ивенты */
-    mines:50,      /* штольни (≈ первая смена чертога) */
+    daily:40,
+    mines:50,
     skills:65,
-    artifacts:90,  /* достижения (Стена) + артефакты */
+    artifacts:90,
     pvp:120,
-    social:160     /* друзья + таверна — под конец */
+    social:160
   },
-  /* КРАСАВА: 7 черт + очки навыков за «уровень шахтёра».
-     Не ломает треадмилл: % от черт капнут, тренировка слабее карточных уровней. */
+
   special:{
     start:5, pool:5, attrMax:10, attrPct:1.2, attrPctCap:12,
     veinsPerLv:35, maxLv:40, ptsBase:5, ptsPerInt:1,
-    /* Теги — дешёвая тренировка. Слотов = все навыки (не «3 активных»). */
+
     tagSlots:9, tagCost:1, untagCost:2, trainMult:0.5, trainCap:15
   },
-  /* Перки: выбор каждые N ур. шахтёра. Кап % в perkBonusPct — стена треадмилла;
-     лимит владения = весь пул, перевыбор свободный (dropPerk). */
+
   perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:12 },
-  /* Черты: без потолка «только 2»; можно снять и взять другую. */
+
   traits:{ maxOwned:99 },
-  /* Яйца и расчёски — отдельные ресурсы гачи (док §Питомцы, §Девушки → адаптация)
-     DONOR-TUNE: рейты гачи ×0.5 — полный сбор питомцев/бород = ~2 недели активной игры
-     ИЛИ ускорение через покупные яйца/расчёски (награды за дейлики/PvP). */
+
   gacha:{ eggDropPct:2, combDropPct:2, eggBossPct:6, combBossPct:6,
     eggDailyReward:2, combDailyReward:1 },
-  /* Гильдия Рудознатцев — человеческая разметка (модель Zooniverse/Foldit).
-     Ценен не процессор игрока (игра ест ~1.3% ядра), а его глаз и суждение.
-     goldRate — доля контрольных заданий с известным ответом: по ним считаем
-     надёжность игрока; ею взвешиваем его голос. Ниже minRel голос не считается. */
+
   science:{ goldRate:0.3, consensusWeight:2.0, minRel:0.35, rewardShards:3, rewardProtein:5 },
-  /* Merge (док §Питомцы, §Девушки).
-     Питомцы: 3 одинаковых → 1 СЛУЧАЙНЫЙ следующей редкости (не «тот же выше»).
-     Старейшины: целевой поглощает материалы равной/меньшей редкости и растёт
-     в уровне; восхождение доступно легендарному с ур. ascendLv за кристаллы. */
+
   merge:{ petCost:3, geoLvPct:12, ascendLv:8, ascendGems:1200, ascendPct:100 },
-  /* Бороды (старейшины): слияние +12%/ур (было 20) — дольше фарм дублей;
-     восхождение с ур.8 за 1200💎 — основной гем-сток меты бород. */
-  /* DoT питомцев (PDF §Питомцы): семейство даёт периодику по породе + дебаф.
-     dpsFrac — доля ATK/сек; defCut/spdCut — снижение защиты/темпа ответа породы. */
+
   petDot:{ dpsFrac:[0.06,0.14,0.30,0.60,1.10], defCut:[0.05,0.10,0.18,0.30,0.45], spdCut:[0.04,0.08,0.14,0.24,0.38] },
-  petCraft:{ needLegendaries:3, gems:1000 },   // PDF: после 3 Legendary, крафт за конкретных питомцев + гемы → Exotic (donor: 1000💎)
-  /* Скиллы как карточки (док §Скиллы): копии копятся, апгрейд с ур.L на L+1
-     требует L копий и пиво (протеин). Сундуки: чем реже — тем больше карт и
-     тем выше гарантированная редкость. */
+  petCraft:{ needLegendaries:3, gems:1000 },
+
   skillChests:[
     { id:"wood",  n:"Дощатый ларь",  cards:1, minR:0, keyCost:1, gemCost:0   },
     { id:"iron",  n:"Окованный ларь",cards:3, minR:1, keyCost:0, gemCost:150 },
     { id:"mith",  n:"Мифриловый ларь",cards:5, minR:2, keyCost:0, gemCost:600 }
   ],
-  skillCardProtein:[0,20,45,80,130,200,300,440,620,850],   // пиво за апгрейд на уровень L
+  skillCardProtein:[0,20,45,80,130,200,300,440,620,850],
   dungeonSets:[
     {id:"berserk", n:"Ярость Забоя",  frags:["Клык","Оскал","Рёв","Гнев"],       bonus:"+50% ATK, +20% CRIT"},
     {id:"greed",   n:"Жадность Недр",  frags:["Слиток","Весы","Клеймо","Мешок"],   bonus:"×2 жадности (золото за жилу)"},
@@ -3116,29 +3039,25 @@ const BALANCE = {
   skillUpMul:0.7, skillRollW:[0.56,0.27,0.12,0.05],
   geo:{ power:[1,3,9,27], levels:15,
     thresholds:[100,175,275,400,550,750,1000,1300,1650,2100,2650,3350,4250,5350,7000],
-    /* DONOR-TUNE: pity растянут — Legendary ощутимо ближе к 150–350 роллам;
-       F2P копит расчёски месяцами, донор докупает 🪮 на рынке. */
+
     pityX:[0,50,100,180,400],
     pityW:[[85,15,0,0],[72,26,2,0],[55,32,11,2],[42,34,16,8],[18,24,38,20]] },
   wheel:{ cost:[30,50,70,100,140,190,250,320,400,490,590,700,820], centerMul:1500 },
-  /* Тренировки: пиво → глоток → очки → путь с таймером.
-     protein — кружка (пассив +5/ч); wkPts — очки, которыми платят за путь.
-     DONOR-TUNE: таймер 4 мин × 350 уровней = ~23ч чистого ожидания на все пути,
-     плюс сильно возросший протеиновый сток. Скип за 25💎/уровень. */
+
   workouts:{
     paths:7, step:50, weeklyCapMin:10080,
     proteinPerHour:5, proteinCapH:8,
     drinkCost:5, drinkPts:5, drinkCdSec:1.2,
-    /* Кружка: уровень множит глотки за тап (1→2→5→10→20). Ап за 💎 — donor sink. */
+
     mug:[{mul:1},{mul:2,gems:40},{mul:5,gems:120},{mul:10,gems:350},{mul:20,gems:900}],
     costBase:30, costPerLv:15, timerSec:240, skipGems:25,
     maxLv:50
   },
-  pvpDayLimit:10, pvpCandidates:5,   // 5 ИИ-ботов · дневной лимит гонок
+  pvpDayLimit:10, pvpCandidates:5,
   pvp:{ raceSec:180, thresholds:[100,150,200,250,300,350,400,450,500,1000],
         rewards:[0,200,500,1000,2000,3500,5000,7500,10000,12500],
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },
-  /* Постоянные ИИ-агенты арены: mul — сила к Power игрока, grit 0..1 — стабильность темпа */
+
   pvpBots:[
     {id:"slag",  ic:"🪓", n:"Шлак Безбородый", tag:"новичок",  mul:0.72, grit:0.15, fluff:"копает быстро, устаёт рано"},
     {id:"borin", ic:"📐", n:"Борин-Счётчик",   tag:"расчёт",   mul:0.95, grit:0.55, fluff:"ровный темп, без сюрпризов"},
@@ -3146,8 +3065,7 @@ const BALANCE = {
     {id:"mira",  ic:"✦", n:"Мира Рунная",     tag:"технарь",  mul:1.22, grit:0.70, fluff:"редко промахивается по жиле"},
     {id:"durin", ic:"⛰", n:"Дурин Глубинный", tag:"патриарх", mul:1.48, grit:0.85, fluff:"жила помнит его имя"}
   ],
-  /* Ежедневные free+ad в каждом разделе рынка (привычка обходить вкладки).
-     Ключ taken: "<id>_free" | "<id>_ad". Вкладка free — обзор всех. */
+
   shopDaily:{
     offers:{ ic:"🎁", title:"Подарок офферов", sub:"золото и сумка",
       free:{ goldMul:8, bags:1 }, ad:{ goldMul:20, bags:2, gems:5 } },
@@ -3162,16 +3080,15 @@ const BALANCE = {
     b:{ ic:"🍺", title:"Пиво + сумка", sub:"тренировка и лут",
       free:{ protein:40, bags:1 }, ad:{ protein:40, bags:1 } }
   },
-  shopFreeN:6,   // кол-во daily-офферов (offers/art/barrels/gems/a/b); каждый = free + ad
-  /* Бесплатный бонус (🧰): выдача по нарастающей.
-     Таймер до ступени = fib[step] × timerUnitSec; награда × fib[step]. */
+  shopFreeN:6,
+
   bonus:{
     fib:[1,1,2,3,5,8,13],
-    timerUnitSec:3600,   // 1ч · F → 0,1ч,1ч,2ч,3ч,5ч,8ч
-    goldVeinMul:3,       // золото = veinReward × goldVeinMul × fib
-    bags:1               // сумки = bags × fib (ещё ×2 за рекламу)
+    timerUnitSec:3600,
+    goldVeinMul:3,
+    bags:1
   },
-  /* Рост: плоский CPA (rewarded cap), D1 payback (starter), LTV≫CAC, органика ref/wl */
+
   growth:{
     cacTargetCents:150, ltvTargetCents:600, paybackDay:3,
     ads:{ dailyCap:12, revCents:2 },
@@ -3188,14 +3105,12 @@ const BALANCE = {
     prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"кристаллы", res:"gems", ic:"💎" },
     crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", res:"gems", ic:"💎", flat:10 },
     critterDen:{ maxLvl:10, total:8000, first:100, currency:"золото", res:"gold", ic:"🪙", mult:50 } },
-  keyMax:2, keyRefillSec:Math.round(6*3600),   // ивенты (акции): 2/2, рефилл 6ч
-  /* Особый камень штольни: выдача по нарастающей (Фибоначчи).
-     Таймер до следующей ступени = fib[step] × timerUnitSec;
-     множитель награды = fib[step]. За сутки — fib.length ступеней на чертог. */
+  keyMax:2, keyRefillSec:Math.round(6*3600),
+
   mineRaid:{
     hpMul:5,
-    timerUnitSec:1800,                 // 30м · F → 30м,30м,1ч,1.5ч,2.5ч,4ч,6.5ч
-    fib:[1,1,2,3,5,8,13],              // таймеры и множители наград
+    timerUnitSec:1800,
+    fib:[1,1,2,3,5,8,13],
     raids:[
       {id:0, ic:"🎒", n:"Сумки",     res:"bags",     base:3,  g:1.12, label:"🎒"},
       {id:1, ic:"💎", n:"Самоцветы", res:"gems",     base:20, g:1.10, label:"💎"},
@@ -3204,8 +3119,7 @@ const BALANCE = {
       {id:4, ic:"🍺", n:"Пиво",      res:"protein",  base:50, g:1.10, label:"🍺"}
     ]
   },
-  /* Штольни 2–5 (Спринт 3): дополнительные ресурсы за обычную жилу/босса.
-     Числа живут в BALANCE; логика — в breakVein(). */
+
   minesExtra:[
     null,
     { res:"shards",    ic:"💠", name:"Осколки",     label:"💠", pct:18, vein:3, boss:10 },
@@ -3215,7 +3129,7 @@ const BALANCE = {
   ],
   shop:{ gemPacks:[250,900,3500],
     comeback:[[250,10000],[900,50000],[1500,100000],[2500,175000],[4000,300000],[10000,1000000]],
-    /* паки расчёсок за 💎 — донорский шорткат к бородам (существующий рынок) */
+
     combPacks:[[5,60],[20,200],[80,700]] },
 };
 function solveGeometricRatio(n, total, first){
@@ -3235,9 +3149,6 @@ function eventReward(spec, level){
   return Math.round(spec.first*Math.pow(r, level-1));
 }
 
-/* ---------- Platform: мост к нативным интеграциям (Capacitor) ----------
-   Web-стабы. В приложении подменяются плагинами:
-   AdMob (rewarded), Firebase Analytics, Play Billing / RevenueCat. */
 const Platform={
   logEvent:(name,params)=>{ try{ console.log("[analytics]",name,params||{}); }catch(e){} },
   trackRevenue(cents,source,meta){ this.logEvent("revenue",{cents,source,...meta}); },
@@ -3245,8 +3156,7 @@ const Platform={
   unitEcon(){ return (typeof growthUnitEcon==="function")?growthUnitEcon():{}; },
   showRewarded:(cb)=>{ cb(true); },
   buy:(productId)=>Promise.resolve({ok:false,stub:true}),
-  /* Лидерборд «Стена Горы». Web-стаб на localStorage; в проде метод подменяется
-     на серверный вызов (submit -> POST, fetch -> GET рейтинга). */
+
   LB_KEY:"oredeep_lb",
   _seedLB(){
     const seed=[
@@ -3262,12 +3172,10 @@ const Platform={
     try{ localStorage.setItem(Platform.LB_KEY,JSON.stringify(seed)); }catch(e){}
     return seed;
   },
-  /* Источник заданий разметки. Демо-пул локальный; в релизе метод подменяется
-     вызовом реального API гражданской науки (с их лицензией и согласием игрока). */
+
   scienceTasks(){
     return [
-      // Контрольные: ответ известен и ВИДЕН на картинке. Игроку они ничем не
-      // помечены — иначе мошенник отвечал бы внимательно только на них.
+
       {id:"g1", q:"Сколько отдельных кристаллов на изломе?", hint:"Считай светлые остроконечные включения.",
         opts:["0","1","2","3 и более"], gold:2},
       {id:"g2", q:"Порода светится собственным светом?", hint:"Ищи ореол вокруг камня, а не блик сверху.",
@@ -3276,7 +3184,7 @@ const Platform={
         opts:["ровный","ступенчатый"], gold:1},
       {id:"g4", q:"Видны ли прожилки другого цвета?", hint:"Тонкие нити, идущие через камень.",
         opts:["да","нет"], gold:0},
-      // Открытые: ответа не знает никто, его и определяет толпа.
+
       {id:"o1", q:"К какому типу отнести этот образец?", hint:"Слои намекают на осадочную, стекловидность — на магматическую.",
         opts:["осадочная","магматическая","метаморфическая","не определить"]},
       {id:"o2", q:"Есть ли следы воды на срезе?", hint:"Округлые каверны и потёки — следы воды.",
@@ -3305,9 +3213,9 @@ const Platform={
       if(raw) return JSON.parse(raw); }catch(e){}
     return Platform._seedLB();
   },
-  submitScore(entry){   // entry: {name, depth, prestige}
+  submitScore(entry){
     let lb=Platform.getLeaderboard();
-    lb=lb.filter(e=>e.name!==entry.name);       // один рекорд на игрока (лучший)
+    lb=lb.filter(e=>e.name!==entry.name);
     lb.push(entry);
     lb.sort((a,b)=> b.prestige-a.prestige || b.depth-a.depth);
     lb=lb.slice(0,50);
@@ -3316,13 +3224,12 @@ const Platform={
   }
 };
 
-/* ---------- кривая породы (GDD §2.2, §4) ---------- */
 const ANCHOR_IDX  = [1, 2000, 20000, 50000];
 const ANCHOR_HP   = [225, 200000, 2000000, 10000000];
 const ANCHOR_ABR  = [45, 20000, 200000, 1000000];
 const ANCHOR_HARD = [11, 5000, 50000, 250000];
 const ANCHOR_RESP = [1.0, 1.2, 2.0, 2.0];
-const EASE_K = 1.35;                       // CALIB
+const EASE_K = 1.35;
 const lerp = (a,b,u)=>a+(b-a)*u;
 const growthLerp = (a,b,t)=>lerp(a,b,Math.pow(t,EASE_K));
 function anchored(arr, idx){
@@ -3333,22 +3240,8 @@ function anchored(arr, idx){
   const t=(idx-ANCHOR_IDX[i])/(ANCHOR_IDX[i+1]-ANCHOR_IDX[i]);
   return growthLerp(arr[i],arr[i+1],t);
 }
-/* === Бесконечная сложность (треадмилл) ===
-   Якоря задают форму кривой до 50k, но упираются в потолок 1e7 — после него игра
-   кончалась. Поверх якорей — безграничная эскалация за каждый блок (50 этапов).
 
-   Равновесие выводится ИЗ САМИХ КОНСТАНТ, а не подбирается на глаз:
-     доход за блок      G   = idle.growth · idle.damp^0.4  ≈ 2.104
-     цена ATK за уровень g   = 1.35
-     уровней за блок    LPB = ln(G)/ln(g)                  ≈ 2.479
-     ATK за блок             = ATK_COMPOUND^LPB
-   Ставим HP за блок ровно равным росту ATK за блок → сек/жилу выходит на константу
-   на любой глубине: игра бесконечно сложная, статы качать нужно всегда.
-
-   Шмот растёт линейно от глубины (1+idx/60) — этот рост нейтрализуем множителем
-   gearComp, иначе игрок медленно уползал бы в ваншот.
-   resp (темп ответа породы) НЕ эскалируем — иначе энергия сгорала бы мгновенно. */
-const DEPTH={ escStart:200, rampBlocks:20, hpMul:44 };   // CALIB donor-tuned: ~12 сек/жилу поздно (было ~6), полный прогон ~2.5ч (было ~1.5ч) — форма треадмилла сохранена
+const DEPTH={ escStart:200, rampBlocks:20, hpMul:44 };
 function atkLevelsPerBlock(){
   const G=BALANCE.idle.growth*Math.pow(BALANCE.idle.damp,0.4);
   const g=UPGRADES.find(u=>u.id==="atk").g;
@@ -3356,30 +3249,28 @@ function atkLevelsPerBlock(){
 }
 function escPerBlock(){ return Math.pow(ATK_COMPOUND, atkLevelsPerBlock()); }
 function depthEsc(idx){
-  idx=Math.min(idx, BALANCE.run.len);   // за сводом прогона сложность не растёт
+  idx=Math.min(idx, BALANCE.run.len);
   if(idx<=DEPTH.escStart) return 1;
   const blocks=(idx-DEPTH.escStart)/BALANCE.venueStride;
-  const gearComp=(1+idx/60)/(1+DEPTH.escStart/60);           // гасим линейный рост шмота
+  const gearComp=(1+idx/60)/(1+DEPTH.escStart/60);
   const ramp=1+(DEPTH.hpMul-1)*Math.min(1,blocks/DEPTH.rampBlocks);
   return Math.pow(escPerBlock(),blocks)*gearComp*ramp;
 }
 function rockStatsAt(idx, isBoss){
   const m = isBoss?1.5:1, e = depthEsc(idx);
-  // до escStart работает якорная кривая (фиделити к боксёру), после — её форма
-  // замораживается и сложность целиком ведёт эскалация (иначе треадмилл кривится)
+
   const a = Math.min(idx, DEPTH.escStart);
   return { hp:anchored(ANCHOR_HP,a)*m*e, abr:anchored(ANCHOR_ABR,a)*e,
            hard:anchored(ANCHOR_HARD,a)*e, resp:anchored(ANCHOR_RESP,idx) };
 }
-const DMG_HARD_K=0.5, DRAIN_K=0.08, CRIT_MULT=BALANCE.combat.critMul;   // критмножитель из BALANCE
+const DMG_HARD_K=0.5, DRAIN_K=0.08, CRIT_MULT=BALANCE.combat.critMul;
 
-/* ---------- редкости (GDD §6.1) ---------- */
-const RAR_NAMES=["Common","Rare","Epic","Legendary","Exotic","Mythic","Ascended","Cosmic"];
-const RAR_POW  =BALANCE.gearRarityMul;                 // сила деталей (BALANCE)
-const RAR_MULT =[1,3,9,27,80,220,600,1500];          // ценность камней ×3/ступень
+const RAR_NAMES=["Обычный","Редкий","Эпический","Легендарный","Экзотический","Мифический","Вознесённый","Космический"];
+const RAR_SHORT=["Обыч","Редк","Эпик","Леген","Экзот","Миф","Возн","Косм"];
+const RAR_POW  =BALANCE.gearRarityMul;
+const RAR_MULT =[1,3,9,27,80,220,600,1500];
 
-/* ---------- сумка: таблица редкостей §6.3, 14 якорей, 1:1 ---------- */
-const BAG_LVLS=BALANCE.bagAnchors;   // единый источник — из BALANCE
+const BAG_LVLS=BALANCE.bagAnchors;
 const BAG_W=BALANCE.bagWeights;
 function bagWeights(lvl){
   lvl=Math.max(1,Math.min(50,lvl));
@@ -3390,11 +3281,7 @@ function bagWeights(lvl){
   const s=w.reduce((a,b)=>a+b,0);
   return w.map(v=>v/s*100);
 }
-/* ---------- Provably-fair: синхронный SHA-256 + честный рандом ----------
-   Схема как у provably-fair казино: серверный сид (коммит-хэш известен заранее)
-   + клиентский сид (задаёт игрок) + nonce (растёт на каждый ролл) → SHA-256 →
-   первые 8 hex превращаются в число [0,1). Игрок может пересчитать любой ролл.
-   Это НЕ майнинг: ни один хэш никуда не «сдаётся», считается только исход гачи. */
+
 const SHA256=(function(){
   const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
     0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
@@ -3436,23 +3323,22 @@ function ensureScience(d){ if(!d) return d;
   if(!d.science) d.science={ on:false, done:0, goldOk:0, goldTotal:0 };
   return d; }
 function ensureIntro(d){ if(!d) return d;
-  if(d.introSeen==null) d.introSeen=true;   // старым игрокам интро не показываем
+  if(d.introSeen==null) d.introSeen=true;
   return d; }
 function ensureFair(d){ if(!d) return d;
   if(!d.fair){ const server=randSeed();
     d.fair={ server, serverHash:SHA256(server), client:randSeed(), nonce:0, on:false }; }
   return d; }
-/* Исход одного честного ролла [0,1). */
+
 function fairFloat(){
   const f=S.fair;
   const hex=SHA256(f.server+":"+f.client+":"+f.nonce);
   f.nonce++;
   return parseInt(hex.slice(0,8),16)/0x100000000;
 }
-/* Единая точка рандома гачи. Выключен режим честности → обычный Math.random
-   (значит функциональные тесты, подменяющие Math.random, работают как прежде). */
+
 function grandom(){ return (S.fair && S.fair.on) ? fairFloat() : Math.random(); }
-/* Раскрыть текущий серверный сид (для проверки) и выдать новый коммит. */
+
 function rotateFairSeed(){
   const revealed=S.fair.server, revealedHash=S.fair.serverHash;
   const server=randSeed();
@@ -3468,7 +3354,6 @@ function rollRarity(w){
   return 0;
 }
 
-/* ---------- 8 слотов снаряжения (GDD §6.2) ---------- */
 const SLOTS=[
   {id:"helm",  n:"Каска",    ic:"⛑️", st:{energy:30,tough:2}},
   {id:"glove", n:"Перчатки", ic:"🧤", st:{crit:1.6}},
@@ -3480,19 +3365,15 @@ const SLOTS=[
   {id:"robe",  n:"Роба",     ic:"🦺", st:{tough:2.5}},
   {id:"pet",   n:"Питомец",  ic:"🐕", st:{luck:1.5,mining:3}}
 ];
-const STAT_CAPS={crit:60,luck:100,mining:80,stamina:90,spd:BALANCE.combat.maxAPS};    // CALIB: вероятностные капы (luck — шанс, макс 100%)
-/* === Крепь шахты (Mine Timbering) — юнит-экономика обвала ===
-   max 100 → 0% обвала. Падает ~0.08/с активной добычи → полный бар ≈ 21 мин.
-   Риск только ниже safe=50, квадратично растёт к нулю; даже у 0 ~8%/мин — очень редко.
-   Укрепить = восстановить до 100 за ≈25 с дохода (лёгкий налог ~3.5% добычи). */
+const STAT_CAPS={crit:60,luck:100,mining:80,stamina:90,spd:BALANCE.combat.maxAPS};
+
 const MINE_DURAB={max:100, decayPerSec:0.08, safe:50, checkSec:6, baseP:0.008,
   reinfSecOfIncome:25, warnAt:50, critAt:20, penaltyGoldPct:0.08};
 function reinforceCost(){ return Math.max(50, Math.round(idlePerSec()*MINE_DURAB.reinfSecOfIncome)); }
-/* Защита (бывшие Крепёж / Броня) замедляет оседание крепи: пусто→×1, глубокий апгрейд→пол ×0.4.
-   Диминишинг, чтобы механика обслуживания не обнулялась. */
+
 const DURAB_SUPPORT_K=2000;
 function durabDecayMult(){ const s=Math.max(0,stat("tough")); return Math.max(0.4, 1 - s/(s+DURAB_SUPPORT_K)); }
-function collapseRiskPerMin(){                       // для показа игроку
+function collapseRiskPerMin(){
   const d=S.durab==null?MINE_DURAB.max:S.durab;
   if(d>=MINE_DURAB.safe) return 0;
   const f=(MINE_DURAB.safe-d)/MINE_DURAB.safe;
@@ -3500,10 +3381,10 @@ function collapseRiskPerMin(){                       // для показа иг
   const checksMin=60/MINE_DURAB.checkSec;
   return 1-Math.pow(1-pCheck,checksMin);
 }
-/* стат детали = base_слота × RAR_POW × (1+stageScale) × roll[0.85..1.15] — §6.3 */
+
 function itemStat(item, statId){
   const base=SLOTS.find(s=>s.id===item.s).st[statId]||0;
-  return base*RAR_POW[item.r]*(1+item.i/60)*item.m;    // CALIB stageScale=idx/60
+  return base*RAR_POW[item.r]*(1+item.i/60)*item.m;
 }
 function makeItem(slotId){
   const it={ s:slotId, r:rollRarity(bagWeights(S.bag)), m:0.85+Math.random()*0.3, i:S.stageIdx };
@@ -3512,14 +3393,12 @@ function makeItem(slotId){
 }
 function sellPrice(item){ return Math.round(veinReward()*(0.5+item.r*1.5)); }
 
-/* иконки камней и кирок — собственный генератор tools/gen_pixel_art.py (CC0) */
 const ART="art/";
 const ORE_ICONS=[0,1,2,3,4,5,6,7].map(i=>ART+"ore"+i+".png");
 const PICK_ICONS=[0,1,2,3,4,5,6,7].map(i=>ART+"pick"+i+".png");
 
-
 const ORE_SPRITES=[0,1,2,3,4,5].map(p=>[0,1,2,3].map(v=>ART+"ore_p"+p+"_s"+v+".png"));
-/* 8 обликов дворфа по тиру снаряжения: силуэт растёт вместе с игроком */
+
 const MINER_BASES=[0,1,2,3,4,5,6,7].map(i=>ART+"dwarf"+i+".png");
 const SLOT_ART={helm:"art/eq_helm.png",glove:"art/eq_glove.png",lamp:"art/eq_lamp.png",pick:"art/eq_pick.png",
   pants:"art/eq_pants.png",boots:"art/eq_boots.png",pack:"art/eq_pack.png",robe:"art/eq_robe.png"};
@@ -3528,13 +3407,12 @@ const BEARD_NAMES=["Окладистая","Косы","Раздвоенная","�
 const GEO_NAMES_POOL=["Грур Однорукий","Балин Каменщик","Тролль-в-законе","Дурин Забойщик",
   "Гимли Задира","Фарин Молот","Нали Рудокоп","Оин Ворчун","Бифур Кувалда","Дори Скупой",
   "Наин Глубокий","Фрар Пивной","Торин Хвастун","Кили Быстрый","Бомбур Тяжёлый"];
-/* ===== МУДРОСТЬ БОРОДЫ: престиж-ранг ===== */
-/* стили по длине (короткая→длинная) для авто-роста */
-const BEARD_LEN_ORDER=[3,2,0,1,4];   // Козлиная<Раздвоенная<Окладистая<Косы<Патриаршая
+
+const BEARD_LEN_ORDER=[3,2,0,1,4];
 const BEARD_RANKS=[
   "Пушок","Щетина","Борода Новобранца","Окладистая Гордость",
   "Косматый Ветеран","Седеющий Мастер","Серебряная Борода","ПАТРИАРХ ГОРЫ"];
-/* DONOR-TUNE: XP-кривая жестче (база 140, g=1.85) — до «Патриарха» месяцы копа, а не дни. */
+
 function beardLevel(){ const xp=S.beardXP||0; return Math.min(BEARD_RANKS.length-1, Math.floor(Math.log((xp/140)+1)/Math.log(1.85))); }
 function beardWisdom(){
   const lv=beardLevel();
@@ -3548,7 +3426,7 @@ function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
     showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" удачи",true);
     sayQuip("Борода стала гуще и седее. Клан кланяется.",4);
     Platform.logEvent("beard_rank",{lv:w.lv});
-    /* ранг бороды ≈ level-up: +1 очко КРАСАВА */
+
     ensureSpecial();
     if((S.specialPool||0)<99){ S.specialPool=(S.specialPool||0)+1;
       showToast("🧬","Черта гнома","","+1 очко КРАСАВА","распредели в Навыках",true); }
@@ -3556,7 +3434,6 @@ function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
 const MUG_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAlklEQVR4nGNkQAIiYjL/GbCAN6+eMMLYjMiKH9w8hk09g4K6FVwTE1YVeAALzHRvTQ6G7AAnBm0FEcIakIGdxnMU/qEbknAnv3n1hBFDAzq4+uANg7cmBwMDAwPDVgaZ/0T5AdmZGDbAnIAAb1B4JIcSURquPkDYQtDT2goiDF3bnzAwMEBinGgnkR3TKGmJkOkMDAwMAC1BK8eiEIVdAAAAAElFTkSuQmCC";
 const EQ=(()=>{const o={};for(const k of ["helm","robe","boots","glove","pack"])o[k]=[0,1,2,3,4,5,6,7].map(()=>"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");return o;})();
 
-/* именные кирки по редкостям (2 имени на тир) */
 const PICK_NAMES=[
   ["Деревянная","Каменная"],
   ["Медная","Бронзовая"],
@@ -3568,16 +3445,14 @@ const PICK_NAMES=[
   ["Божественная","Звёздная"]
 ];
 
-/* именные тиры сундука по уровню */
 const BAG_NAMES=[[1,"Дырявый мешок"],[5,"Заплатанный мешок"],[10,"Сумка старателя"],
   [15,"Дворфский сундучок"],[20,"Окованный сундук"],[25,"Сундук тана"],[30,"Дворфский сейф"],
   [35,"Малая сокровищница"],[40,"Королевская казна"],[45,"Вместилище Горы"],[50,"СУНДУК СУНДУКОВ"]];
 function bagName(l){ let n=BAG_NAMES[0][1]; for(const p of BAG_NAMES) if(l>=p[0]) n=p[1]; return n; }
 function nextBagName(l){ for(const p of BAG_NAMES) if(p[0]>l) return p; return null; }
-const DROP_CHANCE=35;                                   // CALIB, босс: 100%
-const bagCost=()=> Math.round(veinReward()*(4+S.bag));  // растёт с прогрессом и уровнем
+const DROP_CHANCE=35;
+const bagCost=()=> Math.round(veinReward()*(4+S.bag));
 
-/* ---------- гача геологов с pity (GDD §7.2, якоря 1:1) ---------- */
 function geoWeights(rolls){
   const X=BALANCE.geo.pityX, W=BALANCE.geo.pityW;
   const x=Math.max(0,Math.min(X[X.length-1],rolls));
@@ -3586,24 +3461,24 @@ function geoWeights(rolls){
   const t=(x-X[i])/(X[i+1]-X[i]);
   return W[i].map((v,j)=>lerp(v,W[i+1][j],t));
 }
-/* сила ×3/ступень (§7.2): бонус к случайному стату */
+
 const GEO_TYPES=[
   {stat:"atk",   names:["Дед Дубощит","Тан Крушибор","Мастер Кувалд","Бабка Гром"],      pct:[12,36,108,324]},
   {stat:"energy",names:["Знахарка Хильда","Пивовар Бодри","Тётка Отвара","Лекарь Мхов"], pct:[15,45,135,405]},
   {stat:"stone", names:["Счетовод Глоди","Скупщик Нори","Барыга Втори","Казначей Молчун"],pct:[10,30,90,270]}
 ];
-const GEO_RAR=["Common","Rare","Epic","Legendary"];
-const geoCost=()=> 1;          /* 1 расческа за ролл (док §Девушки) */
+const GEO_RAR=["Обычный","Редкий","Эпический","Легендарный"];
+const geoCost=()=> 1;
 function bagUpgrading(){ return !!(S.bagActive && Date.now()<S.bagActive.end); }
 function bagUpgradeLeft(){ return S.bagActive? Math.max(0,Math.ceil((S.bagActive.end-Date.now())/1000)) : 0; }
-/** Длительность таймера апгрейда сумки (сек) для уровня lv (по умолч. S.bag). */
+
 function bagUpgradeSec(lv){
   const b=BALANCE.bags, L=lv==null?S.bag:lv;
   const base=b.upgradeSecBase!=null?b.upgradeSecBase:(b.upgradeSec||45);
   const per=b.upgradeSecPerLv||0;
   return Math.max(1, Math.round(base+per*Math.max(0,(L|0)-1)));
 }
-/** Цена пропуска таймера в 💎 для уровня lv (по умолч. S.bag). */
+
 function bagSkipGems(lv){
   const b=BALANCE.bags, L=lv==null?S.bag:lv;
   const base=b.skipGemsBase!=null?b.skipGemsBase:(b.skipGems||5);
@@ -3679,7 +3554,6 @@ function rollVeinExtras(isBoss){
   }
 }
 
-/* ---------- шахты, пулы камней (§6bis) ---------- */
 const MINES=[
   {n:"Штольня «Борода новичка»", rock:"🪨", stones:["Уголёк-сирота","Медь «на пуговицы»","Кварц «почти алмаз»","Дворфье золото (настоящее)","Топаз из бороды прадеда","Сапфир-сноб","Алмаз Тана","Слеза Горы"]},
   {n:"Чертоги Эхо-Дум",          rock:"⛰️", stones:["Гравий эхо-качества","Железо для топоров","Аметист-интроверт","Изумруд завистливый","Рубин «глаз дракона (нет)»","Мифрил (тссс!)","Чёрный алмаз","Осколок Первой Песни"]},
@@ -3687,7 +3561,7 @@ const MINES=[
   {n:"Хрустальные Чертоги",      rock:"🧊", stones:["Кальцит-самозванец","Флюорит светящийся","Хрусталь пиршественный","Изумруд-гигант","Танзанит редкий гость","Лунный камень (не с Луны)","Звёздный алмаз","Кристалл Глубин"]},
   {n:"Бездна «Не буди Его»",     rock:"🗿", stones:["Сланец «зачем ты здесь»","Никель тревожный","Серебро столовое","Самородок «МАМА, Я НАШЁЛ»","Иридий шёпотный","Мифрил истинный","Адамантий Бездны","ЕГО чешуйка"]}
 ];
-/* имена жил и боссов — свои у каждого чертога */
+
 const ROCK_POOLS=[
   ["Булыжник-терпила","Пласт-упрямец","Валун Обыкновенный","Камень-с-характером"],
   ["Эхо-глыба","Гулкий пласт","Жила-жадина","Резонирующий валун"],
@@ -3702,14 +3576,12 @@ const BOSS_POOLS=[
   ["Хрустальный Сноб","Граф Друза","Зеркальный Верзила"],
   ["ОНО (младшее)","Шёпот-в-Стене","ЕГО мизинец"]
 ];
-const STAGES_PER_MINE=BALANCE.venueStride;   // 50 стадий на чертог (boxer 1:1)
+const STAGES_PER_MINE=BALANCE.venueStride;
 const RANKS=["БЕЗБОРОДЫЙ","ПОЧТИ ГНОМ","РУДОКОП","ЗАБОЙЩИК","ТАН ЗАБОЯ","БОРОДА-ЛЕГЕНДА",
   "ГРОЗА ГЛУБИН","МАГНАТ НЕДР","ПОДГОРНЫЙ КОРОЛЬ","ЛЕГЕНДА ГОРЫ"];
 
-/* ---------- игрок (GDD §3, базы 1:1) ---------- */
 const BASE={atk:10, spd:BALANCE.combat.baseAPS, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0, regen:0, stamina:0};
-/* Единые имена статов в UI/лоре. Ключи BALANCE/stat() не трогаем.
-   Сила (КРАСАВА) — отдельная черта, влияет на атаку; не путать с самим статусом atk. */
+
 const STAT_LBL={
   atk:"Атака", energy:"Энергия", spd:"Темп", tough:"Защита",
   crit:"Крит", luck:"Удача", mining:"Чутьё", stone:"Жадность",
@@ -3729,27 +3601,26 @@ const UPGRADES=[
 const upCost=u=>Math.round(u.base*Math.pow(u.g,S.lvls[u.id]));
 const statCapped=id=>STAT_CAPS[id]!==undefined && stat(id)>=STAT_CAPS[id];
 
-/* свёртка статов §2.7: base + upgrades + gear, затем ×geologist */
 function gearSum(statId){
   let s=0;
   for(const k in S.gear){ if(S.gear[k]) s+=itemStat(S.gear[k],statId); }
   if((S.sets||{}).mythic) s*=1.4;
   return s;
 }
-const ATK_COMPOUND=1.12;   // CALIB: +12% ко ВСЕЙ атаке за уровень (плоский +3 тонул в лейте)
+const ATK_COMPOUND=1.12;
 function stat(id){
   const u=UPGRADES.find(x=>x.id===id);
   let v=BASE[id]+(u?u.step*S.lvls[id]:0)+gearSum(id);
-  if(id==="atk") v+=(S.echo||0);                              // эхо прежних кирок (престиж)
-  if(id==="atk") v*=Math.pow(ATK_COMPOUND,S.lvls.atk||0);   // компаунд вместо плоского шага
-  if(id==="atk"||id==="energy"||id==="tough") v*=prestigeMult();   // вечный множитель престижа
+  if(id==="atk") v+=(S.echo||0);
+  if(id==="atk") v*=Math.pow(ATK_COMPOUND,S.lvls.atk||0);
+  if(id==="atk"||id==="energy"||id==="tough") v*=prestigeMult();
   if(S.geo && GEO_TYPES[S.geo.t].stat===id) v*=(1+geoPct(S.geo)/100);
-  if(id==="stone") v+=2*uniqueStones();                 // коллекция: пассив за уникальные
-  for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }   // навыки (§6)
-  v+=stickerBonus(id);                                  // стикеры (PDF)
-  if(id==="luck") v+=beardWisdom().luckAdd;                              // Мудрость Бороды
-  { const sp=specialBonusPct(id); if(sp) v*=(1+sp/100); }               // черты КРАСАВА
-  { const pk=perkBonusPct(id); if(pk) v*=(1+pk/100); }                   // перки
+  if(id==="stone") v+=2*uniqueStones();
+  for(const sd of SKILL_DEFS){ if(sd.stat===id) v+=skillBonus(sd.id); }
+  v+=stickerBonus(id);
+  if(id==="luck") v+=beardWisdom().luckAdd;
+  { const sp=specialBonusPct(id); if(sp) v*=(1+sp/100); }
+  { const pk=perkBonusPct(id); if(pk) v*=(1+pk/100); }
   const sets=S.sets||{};
   if(id==="atk"&&sets.berserk) v*=1.5;
   if(id==="crit"&&sets.berserk) v+=20;
@@ -3757,30 +3628,25 @@ function stat(id){
   if(id==="energy"&&sets.guardian) v*=1.8;
   if(id==="luck"&&sets.lucky) v+=25;
   const petPct=petBonus(id), wkPct=workoutBonus(id);
-  if(petPct||wkPct) v*=(1+(petPct+wkPct)/100);          // питомец (§8) + тренировки (§10)
-  for(let k=0;k<SET_BONUS.length;k++){                  // сет-бонусы чертогов
+  if(petPct||wkPct) v*=(1+(petPct+wkPct)/100);
+  for(let k=0;k<SET_BONUS.length;k++){
     if(SET_BONUS[k].stat===id && setDone(k))
       v = SET_BONUS[k].flat ? v+SET_BONUS[k].flat : v*(1+SET_BONUS[k].pct/100);
   }
-  { const gp=gymPerkPct(); if(gp) v*=(1+gp/100); }        // перк зала: % ко всем статам (PDF)
+  { const gp=gymPerkPct(); if(gp) v*=(1+gp/100); }
   if(id==="spd") v=Math.max(BALANCE.combat.baseAPS,Math.min(STAT_CAPS.spd,v));
   if(STAT_CAPS[id] && id!=="spd") v=Math.min(STAT_CAPS[id],v);
   return v;
 }
 
-/* ---------- Престиж «Глубинный Зов» ---------- */
-/* Уровни начисляются по глубине с квадратным корнем: сотый метр стоит дешевле
-   тысячного. Множитель — вечный, эхо — «постоянно сохранённая сила от прошлой
-   экипировки» (док). Равновесие треадмилла не трогаем: escPerBlock зависит
-   только от ATK_COMPOUND, поэтому престиж даёт фору, а не ломает кривую. */
 function prestigeLevelsFor(stageIdx){ return Math.floor(Math.sqrt(stageIdx/BALANCE.prestige.div)); }
 function prestigeGain(){
-  // дошёл до свода — гарантированный шаг вперёд (+1), плюс добор по формуле для раннего входа
+
   const byDepth=Math.max(0, prestigeLevelsFor(S.stageIdx)-(S.prestigeLv||0));
   return S.runDone ? Math.max(1, byDepth) : byDepth;
 }
 function canPrestige(){
-  if(S.runDone) return true;                         // свод пройден — Зов доступен всегда
+  if(S.runDone) return true;
   return S.stageIdx>=BALANCE.prestige.minStage && prestigeGain()>0;
 }
 function prestigeMult(){ return Math.pow(BALANCE.prestige.powPerLevel, S.prestigeLv||0); }
@@ -3797,11 +3663,11 @@ function doPrestige(){
   S.prestigeLv=(S.prestigeLv||0)+gain;
   S.prestigeRuns=(S.prestigeRuns||0)+1;
   S.echo=(S.echo||0)+addEcho;
-  // сбрасывается: забой и всё, что куплено за софт-валюту
+
   S.gold=0; S.gear={}; S.stageIdx=1; S.stage=1; S.mine=0; S.bag=1;
   S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
   S.loadoutTier=0; S.cartFill=0; S.durab=MINE_DURAB.max; S.runDone=false; S._wallShown=false; resetTimers();
-  // сохраняется: навыки, старейшины, питомцы, коллекция, сеты, борода, валюты меты
+
   dead=false; if($("overlay")) $("overlay").style.display="none";
   Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
   showToast("⛰️","ГЛУБИННЫЙ ЗОВ!","","Престиж "+S.prestigeLv,"+"+gain+" ур. · атака ×"+fmt(prestigeMult()),true);
@@ -3811,19 +3677,16 @@ function doPrestige(){
   return true;
 }
 
-/* ---------- экономика: привязана к кривой породы ---------- */
-/* idle-доход: точная формула боксёра (§1) 100000·2.5^A·0.65^B. */
 function idleGoldPerDay(){
-  const idx=Math.min(S.stageIdx, BALANCE.run.len);   // доход тоже упирается в свод
+  const idx=Math.min(S.stageIdx, BALANCE.run.len);
   const block=Math.floor(idx/BALANCE.venueStride);
   const within=(idx%BALANCE.venueStride)/BALANCE.venueStride;
   const A=block+within, B=block*0.4;
   return BALANCE.idle.base*Math.pow(BALANCE.idle.growth,A)*Math.pow(BALANCE.idle.damp,B);
 }
 const idlePerSec=()=>Math.max(1, idleGoldPerDay()/86400*(stat("stone")/100)*(1+beardWisdom().goldPct/100)*(typeof growthCoopMult==="function"?growthCoopMult():1));
-function veinReward(){ return Math.max(5, idlePerSec()*8); }   // idlePerSec уже с бонусом бороды
+function veinReward(){ return Math.max(5, idlePerSec()*8); }
 
-/* ---------- слой находок камней (§6bis) ---------- */
 function pickBonusFind(){ return S.gear.pick ? S.gear.pick.r*4 : 0; }
 function findChance(){
   let c=8 + pickBonusFind() + stat("luck")-BASE.luck;
@@ -3831,10 +3694,10 @@ function findChance(){
   return Math.min(50, c);
 }
 function stoneWeights(){
-  const shift=S.gear.pick ? S.gear.pick.r*3 : 0;        // тир кирки сдвигает таблицу
+  const shift=S.gear.pick ? S.gear.pick.r*3 : 0;
   return bagWeights(Math.min(50,S.bag+shift));
 }
-const FIND_TARGET=0.15;                                  // вклад находок ~15% (GDD: 10–20%)
+const FIND_TARGET=0.15;
 function stoneValue(ri){
   const w=stoneWeights();
   const avg=w.reduce((a,wi,i)=>a+wi*RAR_MULT[i],0)/100;
@@ -3855,7 +3718,7 @@ function onFind(forceR){
   let extra;
   if(had>0){ S.gold+=val; const sh=BALANCE.shardYield[ri]||0;
     if(sh) S.shards=(S.shards||0)+sh;
-    if(FAST()){ dupN++; dupGold+=val; dupShards+=sh; return; }   // на разгоне — одной строкой
+    if(FAST()){ dupN++; dupGold+=val; dupShards+=sh; return; }
     extra = sh ? ("дубликат → +"+fmt(val)+" 🪙 · +"+sh+" 💠")
                : ("дубликат → скупщику +"+fmt(val)+" 🪙"); }
   else if(setDone(mineKey)){
@@ -3869,20 +3732,16 @@ function onFind(forceR){
   showToast(`<img src="${ORE_ICONS[ri]}" class="oreimg big">`,RAR_NAMES[ri],"r"+ri,name,extra);
 }
 
-/* ---------- коллекции: пассивные бонусы (§11) ----------
-   каждый уникальный камень: +2 п.п. STONE (навсегда)
-   полный сет чертога: именной бонус чертога */
 const SET_BONUS=[
-  {stat:"atk",   pct:100, label:"×2 ATK — «Гнев Горы»"},
+  {stat:"atk",   pct:100, label:"×2 Атака — «Гнев Горы»"},
   {stat:"energy",pct:100, label:"×2 Энергия — «Дыхание Глубин»"},
   {stat:"stone", pct:150, label:"×2.5 жадности — «Жар Горна»"},
   {stat:"luck",  flat:15, label:"+15% удачи — «Свет Хрусталя»"},
-  {stat:"atk",   pct:200, label:"×3 ATK — «ЕГО благословение»"}
+  {stat:"atk",   pct:200, label:"×3 Атака — «ЕГО благословение»"}
 ];
 function uniqueStones(){ let n=0; for(const k in S.col) n+=Object.keys(S.col[k]).length; return n; }
 function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 
-/* ---------- состояние ---------- */
 let S=null;
 function freshState(){
   return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
@@ -3893,7 +3752,6 @@ function freshState(){
     gear:{}, geo:null, geoRolls:0, col:{}, rockHP:0, energy:0 };
 }
 
-/* ---------- вехи глубины (Mr.Mine-паттерн: контент к числу) ---------- */
 const DEPTH_MARKS=[
   [30,"Первые самоцветы","Тут уже блестит. Хороший знак."],
   [90,"Гулкие пласты","Эхо отвечает не сразу. Глубоко."],
@@ -3924,7 +3782,6 @@ function checkDepthMark(prevIdx){
   }
 }
 
-/* ---------- реплики дворфа Борина ---------- */
 const IDLE_QUIPS=[
   "Так глубоко даже налоговая не доберётся.",
   "Борода в пыли — день удался.",
@@ -3946,7 +3803,7 @@ const KO_SCREENS=[
   ["ТЫ НЕ ПРОКОПАЕШЬ!","🍺 Жила стоит стеной. Выпей — и снова в забой 🍺"],
   ["БОРОДА ЗАПЫЛИЛАСЬ","🍺 Энергия кончилась раньше породы 🍺"]
 ];
-/* ---------- лента событий (добыча / покупки / прокачка / реплики) ---------- */
+
 const FEED_CAP=3;
 var feedBuf=[];
 let quipHide=0, quipNext=6;
@@ -3977,7 +3834,7 @@ function pushFeed(who, text, kind){
 function feedWhoFromToast(rar, name, extra){
   const blob=[rar,name,extra].filter(Boolean).join(" ");
   if(/прокач|апгрейд|ПРОПУСК|сумк|КРАСАВА|перк|трен\.|Ур\./i.test(blob)) return {who:"Прокачка", kind:"up"};
-  if(/купл|магазин|пак|реклам|No-Ads|стартер|вейглист|самоцвет/i.test(blob)) return {who:"Куплено", kind:"buy"};
+  if(/купл|магазин|пак|реклам|No-Ads|без рекламы|стартер|вейглист|самоцвет/i.test(blob)) return {who:"Куплено", kind:"buy"};
   if(/надето|продано|сундук|находк|дубликат|коллекц|питомец|COMMON|RARE|EPIC|LEGENDARY|EXOTIC|MYTHIC|ASCENDED|COSMIC/i.test(blob))
     return {who:"Добыча", kind:"loot"};
   if(/Борин|реплик|забой|бород/i.test(blob)) return {who:"Борин", kind:"quip"};
@@ -3994,24 +3851,22 @@ function sayQuip(t,dur){
   const b=$("bubble"); if(b) b.classList.remove("show");
 }
 
-/* ---------- боевой тик (§5) ---------- */
 let rock, hitTimer=0, respTimer=0, dead=false, pendingDrop=null, durabTimer=0, lastDurabWarn=100, regenAcc=0;
-/* Таймеры цикла — глобальные. Если их не сбрасывать при загрузке/престиже,
-   накопленный hitTimer прокручивает тысячи ударов в первом же кадре. */
+
 function resetTimers(){
   hitTimer=0; respTimer=0; durabTimer=0; autoRollAcc=0; logAcc=0;
   autoSoldN=0; autoSoldGold=0; dupN=0; dupGold=0; dupShards=0; sellN=0; sellGold=0; equipN=0;
   lastDurabWarn=MINE_DURAB.max;
 }
 function newRock(){
-  const isBoss=(S.stageIdx % BALANCE.combat.bossEvery)===0;   // босс каждый 20-й бой
+  const isBoss=(S.stageIdx % BALANCE.combat.bossEvery)===0;
   rock=rockStatsAt(S.stageIdx,isBoss);
   rock.isBoss=isBoss;
   rock.isRaid=false;
   { const d=petDot();
     if(d){ if(d.kind==="shock")  rock.hard*=(1-d.defCut);
            if(d.kind==="splash") rock.resp*=(1-d.spdCut); } }
-  /* Активный особый камень штольни — крепче и с тематической наградой */
+
   if(S.mineRaid && (S.mineRaid.mineId|0)===(S.mine%MINES.length)){
     const mul=(BALANCE.mineRaid&&BALANCE.mineRaid.hpMul)||5;
     rock.isRaid=true; rock.isBoss=true;
@@ -4036,36 +3891,36 @@ function newRock(){
   $("scene").className="scene t"+(S.mine%MINES.length);
   prepBuried();
 }
-/* заранее решить, что спрятано в жиле, и показать торчащий кусок */
+
 function prepBuried(){
   rock.buried={item:null, stoneR:-1};
-  // ролл детали (та же вероятность, но решается сейчас)
+
   const dropRoll=(rock.isBoss||S.stageIdx<=3)?100:DROP_CHANCE;
   if(Math.random()*100<dropRoll){
     const slot=SLOTS[Math.floor(Math.random()*SLOTS.length)];
     rock.buried.item=makeItem(slot.id);
   }
-  // ролл камня
-  if(S.stageIdx===2 && uniqueStones()===0) rock.buried.stoneR=0;         // онбординг
+
+  if(S.stageIdx===2 && uniqueStones()===0) rock.buried.stoneR=0;
   else if(Math.random()*100<findChance()) rock.buried.stoneR=rollRarity(stoneWeights());
-  // выбрать самый ценный кусок для показа (камень приоритетнее)
+
   const pk=$("peek");
   if(rock.buried.stoneR>=0){ pk.src=ORE_ICONS[rock.buried.stoneR]; pk.dataset.on="1"; }
   else if(rock.buried.item){
     const it=rock.buried.item;
-    pk.src=(it.s==="pick")?PICK_ICONS[it.r]:ORE_ICONS[it.r];   // деталь показываем нодой цвета редкости
+    pk.src=(it.s==="pick")?PICK_ICONS[it.r]:ORE_ICONS[it.r];
     pk.dataset.on="1";
   } else { pk.dataset.on=""; }
   pk.classList.remove("pop");
   updatePeek();
 }
-/* по мере снятия HP дроп всё больше вылезает из породы */
+
 function updatePeek(){
   const pk=$("peek");
   if(!rock||!rock.buried||pk.dataset.on!=="1"){ pk.style.display="none"; return; }
   pk.style.display="block";
-  const broken=1-Math.max(0,S.rockHP)/rock.hp;                 // 0 → 1
-  const hidden=Math.round((1-broken)*70);                      // сколько % сверху ещё в породе
+  const broken=1-Math.max(0,S.rockHP)/rock.hp;
+  const hidden=Math.round((1-broken)*70);
   pk.style.clipPath="inset("+hidden+"% 0 0 0)";
   pk.style.transform="translateY("+Math.round(hidden*0.12)+"px)";
 }
@@ -4081,7 +3936,7 @@ function oneStrike(){
 function minerHit(){
   fxSwing();
   let broke=oneStrike();
-  // Комбо: базовый шанс серии, каждый доп.удар продлевается шансом Stamina (кап maxCombo)
+
   if(!broke){
     let extra=0;
     while(extra<BALANCE.combat.maxCombo && Math.random()*100<stat("stamina")){
@@ -4095,30 +3950,29 @@ function minerHit(){
 function rockRespond(){
   if(Math.random()*100<stat("luck")) return;
   const drain=Math.max(1, rock.abr*DRAIN_K-stat("tough"));
-  S.energy=Math.max(0,S.energy-drain);   // не показываем игроку отрицательную энергию
+  S.energy=Math.max(0,S.energy-drain);
   if(S.energy<=0) exhausted();
 }
-function cartCapacity(){ return 8; }   // жил на полную вагонетку
+function cartCapacity(){ return 8; }
 function renderCart(){
   const g=$("cartOre"); if(!g) return;
   const cap=cartCapacity(), n=Math.min(cap, Math.round(S.cartFill||0));
   const pal=["#8a6a3a","#a5824a","#6e5230","#9a7440"];
-  // укладываем кусками слоями снизу вверх; при заполнении растёт ГОРКА над бортом
-  // борт кузова ~ y 12..15; дно ~ 22
-  const rows=[      // (dx от центра 20, ширина слоя) снизу вверх
-    [[9,4],[15,4],[21,4],[27,4]],   // слой 1 (на дне, вровень с бортом)
-    [[11,4],[17,4],[23,4]],         // слой 2
-    [[14,4],[20,4]],                // слой 3 — начинает торчать
-    [[17,4]]                        // вершина горки
+
+  const rows=[
+    [[9,4],[15,4],[21,4],[27,4]],
+    [[11,4],[17,4],[23,4]],
+    [[14,4],[20,4]],
+    [[17,4]]
   ];
-  const yRow=[18,14,10,7];          // выше = меньше y (торчит над бортом y~12)
+  const yRow=[18,14,10,7];
   let html=""; let placed=0;
   for(let r=0;r<rows.length && placed<n;r++){
     for(const [x,w] of rows[r]){
       if(placed>=n) break;
       const c=pal[(placed)%pal.length];
       html+=`<rect x="${x}" y="${yRow[r]}" width="${w}" height="5" rx="1.5" fill="${c}"/>`;
-      // блик сверху куска
+
       html+=`<rect x="${x}" y="${yRow[r]}" width="${w}" height="1.5" rx="1" fill="#ffffff30"/>`;
       placed++;
     }
@@ -4136,9 +3990,9 @@ function departCart(){
   const c=$("cart"); if(!c){ S.cartFill=0; cartBusy=false; return; }
   S.cartRuns=(S.cartRuns||0)+1;
   Platform.logEvent("cart_depart",{runs:S.cartRuns});
-  if(AC&&musicOn){ const t=AC.currentTime; thump(t,0.18); anvil(t+0.1,300,0.05,0.6); }  // грохот отъезда
+  if(AC&&musicOn){ const t=AC.currentTime; thump(t,0.18); anvil(t+0.1,300,0.05,0.6); }
   c.classList.remove("arrive"); void c.offsetWidth; c.classList.add("depart");
-  setTimeout(()=>{                       // уехала → появляется пустая
+  setTimeout(()=>{
     S.cartFill=0; renderCart();
     c.classList.remove("depart"); void c.offsetWidth; c.classList.add("arrive");
     setTimeout(()=>{ c.classList.remove("arrive"); cartBusy=false; }, 820);
@@ -4172,14 +4026,14 @@ function breakVein(){
   const raidSnap=wasRaid?Object.assign({},S.mineRaid):null;
   sfxBreak();
   addCartOre();
-  S.gold+=veinReward()*(rock.isBoss?1.5:1)*activeLootMult();              // ролл 1 — всегда
+  S.gold+=veinReward()*(rock.isBoss?1.5:1)*activeLootMult();
   if(wasRaid&&raidSnap){
     grantMineRaidReward(raidSnap);
     S.mineRaid=null;
   } else {
-    grantBags(rock.isBoss?BALANCE.bags.perBoss:BALANCE.bags.perVein);   // сумка за победу (док)
+    grantBags(rock.isBoss?BALANCE.bags.perBoss:BALANCE.bags.perVein);
   }
-  // дополнительные ресурсы по штольням (Спринт 3) — только обычные жилы
+
   if(!wasRaid){
     const mk=S.mine%MINES.length, ex=(BALANCE.minesExtra||[])[mk];
     if(ex && Math.random()*100<ex.pct){
@@ -4196,13 +4050,13 @@ function breakVein(){
       }
     }
   }
-  // выскакивает торчащий кусок: достаём полностью
+
   const pk=$("peek");
   if(rock.buried && pk.dataset.on==="1"){ pk.classList.add("pop"); setTimeout(()=>pk.classList.remove("pop"),560); }
-  if(rock.buried && rock.buried.stoneR>=0) onFind(rock.buried.stoneR);   // ролл 2 — камень (решён заранее)
-  if(rock.buried && rock.buried.item) dropGearItem(rock.buried.item);    // ролл 3 — деталь (решена заранее)
+  if(rock.buried && rock.buried.stoneR>=0) onFind(rock.buried.stoneR);
+  if(rock.buried && rock.buried.item) dropGearItem(rock.buried.item);
   if(S.stageIdx>=BALANCE.run.len){
-    // достигнут свод прогона — глубже нельзя, нужен Глубинный Зов
+
     S.runDone=true;
     if(!S._wallShown){ S._wallShown=true;
       showToast("⛰️",BALANCE.run.wallMsg+"!","","Дальше — только Глубинный Зов","этап "+BALANCE.run.len+" · жми ⛰️",true);
@@ -4229,17 +4083,17 @@ function exhausted(){
 }
 function closeOverlay(){
   $("overlay").style.display="none"; dead=false;
-  if((S.speed||1)>3){ S.speed=1; sayQuip("Сбавили до ×1 — переведём дух.",3); }   // после усталости на разгоне
+  if((S.speed||1)>3){ S.speed=1; sayQuip("Сбавили до ×1 — переведём дух.",3); }
   S.durab=MINE_DURAB.max; durabTimer=0; lastDurabWarn=MINE_DURAB.max; newRock(); save();
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
 }
-/* эль на экране усталости: показываем пьяную реплику прямо в тексте оверлея */
+
 function overlayAle(){
   sipAle();
   const pool=Math.random()<0.55?EX_QUIPS:ALE_QUIPS;
   $("ovText").textContent="🍺 "+pool[Math.floor(Math.random()*pool.length)];
 }
-/* быстрые апгрейды статов — работают поверх экрана усталости */
+
 function buyStat(id){
   const u=UPGRADES.find(x=>x.id===id); if(!u) return;
   if(statCapped(id)) return;
@@ -4259,17 +4113,12 @@ function openUpgradesModal(){
   metaOpen("Апгрейды забоя","Золото "+fmt(S.gold)+" 🪙 · качай статы, чтобы одолеть породу.",rows);
 }
 
-/* ---------- дроп деталей ---------- */
-/* скалярная «сила» детали: все статы слота масштабируются одним
-   множителем, поэтому сравнение корректно по одному числу */
 function itemPower(it){ return RAR_POW[it.r]*(1+it.i/60)*it.m; }
 function dropGear(){ dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id)); }
-/* ---------- Сумки: 1 сумка = 1 предмет (док §Экипировка и сумки) ---------- */
+
 let autoRollAcc=0;
 function grantBags(n){ S.bags=Math.min(BALANCE.bags.cap,(S.bags||0)+n); }
 
-/* ---------- Постепенное открытие механик (BALANCE.unlocks) ----------
-   На главной закрытое не показываем. Условие — stageIdx. */
 const FEAT_ORDER=["auto","pets","beards","daily","mines","skills","artifacts","pvp","social"];
 const FEAT_INFO={
   auto:{ic:"⚙️",n:"Авто и бонусы",hint:"АВТО сумок, бонус-сундук, офлайн и 2× добыча"},
@@ -4317,7 +4166,7 @@ function requireFeat(id){
 function ensureFeat(d){
   if(!d) return d;
   if(!d.featToast||typeof d.featToast!=="object") d.featToast={};
-  /* Ветераны уже прошли порог — не спамить тостами при загрузке. */
+
   const stage=d.stageIdx||1;
   const U=BALANCE.unlocks||{};
   for(const id of FEAT_ORDER){
@@ -4375,10 +4224,10 @@ function notifyFeatUnlocks(){
   }
   if(changed){ applyFeatureChrome(); save(); }
 }
-/* Открыть сумку вручную: обычный поток дропа (авто-надеть/авто-продать). */
+
 function canOpenBag(){ return (S.bags||0)>=1 && !S.autoRoll; }
 function openBag(){
-  if(S.autoRoll){ showToast("🎒","Auto включён","","Выключи Auto, чтобы открывать вручную"); return false; }
+  if(S.autoRoll){ showToast("🎒","Авто включён","","Выключи Авто, чтобы открывать вручную"); return false; }
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
   S.bags--; dailyProgress("bag",1);
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1; { const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }; }
@@ -4386,16 +4235,14 @@ function openBag(){
   Platform.logEvent("bag_open",{}); save(); render();
   return true;
 }
-/* Auto Roll: ниже порога — сразу скупщику, с порога и выше — обычный поток.
-   Авто-продажи копятся и выводятся ОДНОЙ строкой: иначе на ×100 лог захлёбывался
-   (3183 сообщения за 600 кадров). */
-let autoSoldN=0, autoSoldGold=0;   // сумки
-let dupN=0, dupGold=0, dupShards=0;  // дубликаты камней -> скупщику
-let sellN=0, sellGold=0;             // слабый дроп -> скупщику
-let equipN=0;                        // авто-надевания
-let mineExtraAgg=null;               // доп.ресурсы штолен (на разгоне — одной строкой)
+
+let autoSoldN=0, autoSoldGold=0;
+let dupN=0, dupGold=0, dupShards=0;
+let sellN=0, sellGold=0;
+let equipN=0;
+let mineExtraAgg=null;
 let logAcc=0;
-const FAST=()=>((S&&S.speed)||1)>3;  // на разгоне сворачиваем, на ×1..×3 пишем как раньше
+const FAST=()=>((S&&S.speed)||1)>3;
 function flushMineExtras(){
   if(!mineExtraAgg) return;
   const parts=[];
@@ -4409,7 +4256,7 @@ function flushMineExtras(){
   mineExtraAgg=null;
 }
 function flushSales(){
-  /* агрегаты только в лог/ленту — без всплывающих окон поверх экипа */
+
   if(dupN){ showToast("💎","Дубликаты","",dupN+"× камней",
     "+"+fmt(dupGold)+" 🪙"+(dupShards?(" · +"+fmt(dupShards)+" 💠"):"")); dupN=0;dupGold=0;dupShards=0; }
   sellN=0; sellGold=0; equipN=0;
@@ -4424,15 +4271,15 @@ function autoOpenBag(quiet){
     const p=sellPrice(it); S.gold+=p;
     autoSoldN++; autoSoldGold+=p;
   } else {
-    dropGearItem(it, true);      // без тоста — игрок и так видит слоты/золото
+    dropGearItem(it, true);
   }
   return true;
 }
 function flushAutoSold(){
-  /* без всплывашки: золото уже в HUD, порог виден на кнопке АВТО */
+
   autoSoldN=0; autoSoldGold=0;
 }
-/** Авто открыто: все слоты заняты ИЛИ набралось N Rare+ в экипе. */
+
 function autoRollUnlocked(){
   const b=BALANCE.bags||{};
   const needSlots=b.autoUnlockSlots!=null?b.autoUnlockSlots:SLOTS.length;
@@ -4449,7 +4296,7 @@ function autoRollUnlocked(){
 function autoLockHint(){
   const b=BALANCE.bags||{};
   const n=b.autoUnlockRares!=null?b.autoUnlockRares:3;
-  return "Заполни все слоты или надень "+n+" Rare+";
+  return "Заполни все слоты или надень "+n+" вещей редкости Редкий и выше";
 }
 function toggleAutoRoll(){
   if(!featUnlocked("auto")){ featLockToast("auto"); return; }
@@ -4482,7 +4329,7 @@ function setAutoTier(r){
   save(); render();
   const m=$("metaModal"); if(m) m.style.display="none";
 }
-/** Окно выбора: что оставить (порог и выше), что сразу скупщику. */
+
 function openAutoTierModal(){
   if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
@@ -4504,8 +4351,7 @@ function openAutoTierModal(){
 function dropGearItem(it, quiet){
   const slot=SLOTS.find(s=>s.id===it.s);
   const old=S.gear[slot.id];
-  /* однозначно лучше: слот пуст, или сила выше И редкость не ниже
-     (редкость кирки влияет на шанс находки — молча понижать нельзя) */
+
   const strictlyBetter = !old || (itemPower(it)>itemPower(old) && it.r>=old.r);
   if(it.s==="pick"&&it.n){ S.pickLog=S.pickLog||{}; S.pickLog[it.n]=true; }
   if(strictlyBetter){
@@ -4522,7 +4368,6 @@ function dropGearItem(it, quiet){
   }
 }
 
-/* ---------- гача геолога (расчёски) ---------- */
 function hireGeo(){
   if(!requireFeat("beards")) return;
   if((S.combs||0)<1){ showToast("🪮","Нет расчёсок","","Падают с жил, дейликов и боссов"); return false; }
@@ -4532,11 +4377,11 @@ function hireGeo(){
   const t=Math.floor(Math.random()*GEO_TYPES.length);
   const name=GEO_TYPES[t].names[Math.floor(Math.random()*GEO_TYPES[t].names.length)];
   if(!S.geo || (r>S.geo.r) || (r===S.geo.r && GEO_TYPES[t].pct[r]>GEO_TYPES[S.geo.t].pct[S.geo.r])){
-    if(S.geo) boxAdd(S.geoBox,S.geo.t,S.geo.r,1);   // прежний уходит в артель материалом
+    if(S.geo) boxAdd(S.geoBox,S.geo.t,S.geo.r,1);
     S.geo={t,r,n:name,lv:1,asc:0};
     showToast("👷",GEO_RAR[r],"r"+r,name,"нанят! +"+GEO_TYPES[t].pct[r]+"% "+GEO_TYPES[t].stat.toUpperCase());
   } else {
-    boxAdd(S.geoBox,t,r,1);                          // дубликат — материал для слияния
+    boxAdd(S.geoBox,t,r,1);
     showToast("👷",GEO_RAR[r],"r"+r,name,"в артель · материал для слияния");
   }
   dailyProgress("geo",1);
@@ -4544,11 +4389,10 @@ function hireGeo(){
   return true;
 }
 
-/* ---------- сумка (апгрейд с таймером — док §Экипировка) ---------- */
 function tryBagUpgrade(){
   if(bagUpgrading()){
     const gems=bagSkipGems();
-    /* 1-й тап во время таймера — показать цену; 2-й — списать 💎 и завершить */
+
     if(!bagSkipArmed){
       bagSkipArmed=true;
       render();
@@ -4563,8 +4407,7 @@ function tryBagUpgrade(){
   return true;
 }
 if($("energyBox")) $("energyBox").onclick=()=>reinforceMine();
-/* Сумка УР: сначала лист шансов «сейчас/после»; апгрейд — кнопкой внутри.
-   Во время таймера тап на баре = цена пропуска / пропуск. */
+
 function onPowerUpClick(){
   if(bagUpgrading()){ tryBagUpgrade(); return; }
   openChest(true);
@@ -4572,13 +4415,12 @@ function onPowerUpClick(){
 if($("powerUp")) $("powerUp").onclick=()=>onPowerUpClick();
 if($("auto")) $("auto").onclick=()=>toggleAutoRoll();
 if($("autoTier")) $("autoTier").onclick=()=>openAutoTierModal();
-/* сундук: тап = вытянуть → Equip/Sell. Без сумок — ничего (апгрейд на кнопке СУМКА). */
+
 (function wireLootChest(){
   const lc=$("lootChest"); if(!lc) return;
   lc.onclick=function(){ openChest(false); };
 })();
 
-/* ---------- цикл ---------- */
 let last=performance.now(), idleAcc=0;
 function loop(now){
   const rawDt=Math.min(0.1,(now-last)/1000); last=now;
@@ -4587,39 +4429,38 @@ function loop(now){
   if(!paused){
     hitTimer+=dt; respTimer+=dt;
     const hitInt=1/stat("spd"), respInt=1/rock.resp;
-    // предохранитель: даже при аномально большом dt не прокручиваем кадр бесконечно
+
     let hits=0;
     while(hitTimer>=hitInt && S.rockHP>0 && hits++<BALANCE.combat.maxHitsPerFrame){ hitTimer-=hitInt; minerHit(); }
     if(hits>=BALANCE.combat.maxHitsPerFrame) hitTimer=0;
     while(respTimer>=respInt&&!dead&&S.rockHP>0){ respTimer-=respInt; rockRespond(); }
-    // крепь падает во время активной добычи
+
     if(S.durab==null) S.durab=MINE_DURAB.max;
     S.durab=Math.max(0,S.durab-MINE_DURAB.decayPerSec*durabDecayMult()*dt);
-    // предупреждения при пересечении порогов
+
     if(S.durab<=MINE_DURAB.critAt && lastDurabWarn>MINE_DURAB.critAt){
       showToast("⚠️","КРЕПЬ ТРЕЩИТ!","","Своды вот-вот рухнут","тап по ⚡ — укрепить",true); lastDurabWarn=S.durab; }
     else if(S.durab<=MINE_DURAB.warnAt && lastDurabWarn>MINE_DURAB.warnAt){
       showToast("🪵","Крепь ослабла","","Тап по полоске энергии — укрепить"); lastDurabWarn=S.durab; }
     else if(S.durab>lastDurabWarn) lastDurabWarn=S.durab;
-    // редкий шанс обвала ниже порога безопасности
+
     if(S.bagActive && Date.now()>=S.bagActive.end) finishBagUpgrade();
     if(S.autoRoll && autoRollUnlocked() && (S.bags||0)>0){
       autoRollAcc+=dt;
       if(autoRollAcc>=BALANCE.bags.autoSec){
         autoRollAcc=0;
-        // разбираем всю накопленную очередь, но не больше maxPerTick за кадр
+
         let n=Math.min(S.bags||0, BALANCE.bags.maxPerTick);
         while(n-- > 0 && (S.bags||0)>0) autoOpenBag(true);
-        // НЕ флашим здесь: flushSales раз в реальную секунду сам выведет свёрнутое,
-        // иначе на ×100 (тик каждые ~1.25 кадра) лог захлёбывался
+
       }
     } else if(!S.autoRoll) autoRollAcc=0;
-    logAcc+=rawDt;                       // реальные секунды, не игровые:
-    if(logAcc>=1){ logAcc=0; flushSales(); }   // иначе на ×100 флаш шёл каждый кадр
-    regenAcc+=dt;                        // Regen: восстановление энергии (PDF)
+    logAcc+=rawDt;
+    if(logAcc>=1){ logAcc=0; flushSales(); }
+    regenAcc+=dt;
     if(regenAcc>=1){ const s=Math.floor(regenAcc); regenAcc-=s;
       const rg=stat("regen"); if(rg>0) S.energy=Math.min(stat("energy"), S.energy+rg*s); }
-    if(S.rockHP>0){ const d=petDot();   // DoT питомца грызёт породу (PDF)
+    if(S.rockHP>0){ const d=petDot();
       if(d&&d.dps>0){ S.rockHP-=d.dps*dt; if(S.rockHP<=0) breakVein(); } }
     durabTimer+=dt;
     while(durabTimer>=MINE_DURAB.checkSec){
@@ -4633,7 +4474,7 @@ function loop(now){
   idleAcc+=dt;
   if(idleAcc>=1){ const w=Math.floor(idleAcc); refillKeys(); S.gold+=idlePerSec()*w;
     { const W=BALANCE.workouts, cap=W.proteinCapH*W.proteinPerHour, cur=S.protein||0;
-      if(cur<cap) S.protein=Math.min(cap, cur+W.proteinPerHour/3600*w); }  // +5/ч только до капа пассива
+      if(cur<cap) S.protein=Math.min(cap, cur+W.proteinPerHour/3600*w); }
     idleAcc%=1; }
   if(aleAnim>0) aleAnim-=rawDt;
   else if(!dead){ aleNext-=rawDt; if(aleNext<=0){ sipAle(); aleNext=35+Math.random()*30; } }
@@ -4643,7 +4484,6 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-/* тап по дракону — погладить/урчит; long-press — коллекция питомцев */
 (function wirePetMoodTap(){
   const box=document.getElementById("petBox");
   if(!box||!box.addEventListener) return;
@@ -4669,9 +4509,8 @@ function loop(now){
   });
 })();
 
-/* ---------- UI ---------- */
 function $(id){ return document.getElementById(id); }
-/** Пишет в DOM только если текст реально изменился — иначе DevTools/layout дёргаются каждый кадр. */
+
 function setTxt(elOrId, v){
   const e=typeof elOrId==="string"?$(elOrId):elOrId;
   if(!e) return;
@@ -4724,7 +4563,7 @@ function ensureBonus(d){ if(!d) return d;
   if(!d.bonusProg||typeof d.bonusProg!=="object") d.bonusProg={day:"",step:0,readyAt:0};
   if(d.bonusProg.step==null) d.bonusProg.step=0;
   if(d.bonusProg.readyAt==null) d.bonusProg.readyAt=0;
-  /* миграция со старого плоского CD */
+
   if(d.bonusReadyAt!=null && typeof d.bonusReadyAt==="number" && !d.bonusProg.day){
     d.bonusProg.readyAt=d.bonusReadyAt;
   }
@@ -4736,7 +4575,7 @@ function bonusReset(){
   if(S.bonusProg.day!==t){
     S.bonusProg={day:t, step:0, readyAt:0};
   }
-  /* зеркало для UI/аудитов, читающих bonusReadyAt */
+
   const s=bonusSlotRaw();
   S.bonusReadyAt=s.done?Date.now()+864e5:(s.ready?0:Date.now()+s.leftMs);
 }
@@ -4799,7 +4638,7 @@ function claimBonusChest(){
   if(!requireFeat("auto")) return;
   const slot=bonusSlot();
   if(slot.done){
-    showToast("🧰","Бонусы на сегодня","","Фибоначчи кончился · завтра снова ×1");
+    showToast("🧰","Бонусы на сегодня","","Все ступени за сегодня · завтра снова с ×1");
     return;
   }
   if(!slot.ready){
@@ -4808,12 +4647,12 @@ function claimBonusChest(){
   }
   openBonusClaim();
 }
-/** Окно награды бонуса: превью состава + ×2 за рекламу (как офлайн). */
+
 function openBonusClaim(){
   const slot=bonusSlot();
   const g=bonusRewardGold(slot.step), bags=bonusRewardBags(slot.step);
   metaOpen("🧰 Бонус · ступень "+(slot.step+1)+"/"+slot.max+" · ×"+slot.fib,
-    "Фибоначчи: чем дольше ждёшь следующую ступень — тем больше награда.",
+    "Чем дольше ждёшь следующую ступень — тем больше награда.",
     '<div class="sub" style="margin-bottom:4px">Базовая награда (×'+slot.fib+')</div>'
     +'<div class="metarow"><span>Золото</span><span><b>+'+fmt(g)+' 🪙</b></span></div>'
     +'<div class="metarow"><span>Сумка</span><span><b>+'+bags+' 🎒</b></span></div>'
@@ -4892,7 +4731,7 @@ function shadeHex(h,t){ const n=parseInt(h.slice(1),16);
   const r=Math.min(255,f(n>>16)),g=Math.min(255,f((n>>8)&255)),b=Math.min(255,f(n&255));
   return "#"+((r<<16|g<<8|b)>>>0).toString(16).padStart(6,"0"); }
 function setFill(id,c){ const el=document.getElementById(id); if(el&&el.setAttribute) el.setAttribute("fill",c); }
-/* 6 состояний кошки с инфографики «Твоя кошка любит тебя, когда...» */
+
 const PET_MOODS=[
   {id:"gaze",  title:"Смотрит тебе в глаза"},
   {id:"purr",  title:"Мурлычет, когда ты рядом"},
@@ -4901,29 +4740,29 @@ const PET_MOODS=[
   {id:"sleep", title:"Спит на тебе"},
   {id:"belly", title:"Показывает живот"}
 ];
-/* Скины по редкости (пулы) — имена с мемов про котов-рудокопов */
+
 const PET_SKIN_POOL=[
-  [ // Common
+  [
     {id:"snow", n:"Снеговый", pat:"none", fur:"#f5f6f8", dark:"#c8ced6", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#e08a3c"},
     {id:"beige",n:"Бежевый", pat:"none", fur:"#e8d2b0", dark:"#c4a078", sock:"#f5ebe0", eye:"#5a8a6a", nose:"#8a5040", patch:"#c4a078"},
     {id:"miner",n:"Шахтёр", pat:"none", fur:"#2c3038", dark:"#1a1c22", sock:"#4a4e58", eye:"#f0c84a", nose:"#1a1010", patch:"#e08a3c"}
   ],
-  [ // Rare
+  [
     {id:"rust", n:"Ржавый", pat:"tabby", fur:"#e08a3c", dark:"#b05620", sock:"#f0c090", eye:"#3a8a4a", nose:"#5a3020", patch:"#b05620"},
     {id:"sea",  n:"Морской котек", pat:"none", fur:"#7a8494", dark:"#5a6474", sock:"#eef0f3", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
     {id:"dust", n:"Пыльный", pat:"tabby", fur:"#6a6870", dark:"#3a3840", sock:"#c8c6c0", eye:"#f0c84a", nose:"#2a2218", patch:"#3a3840"}
   ],
-  [ // Epic
+  [
     {id:"calico",n:"Снегово-ржавый шахтёр", pat:"calico", fur:"#f0f2f4", dark:"#2a2e34", sock:"#ffffff", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
     {id:"fluffy",n:"Снегово-шерстный", pat:"fluffy", fur:"#f8f9fb", dark:"#d0d4dc", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#d0d4dc"},
     {id:"tuxedo",n:"Снегово-пыльный", pat:"tuxedo", fur:"#4a5060", dark:"#2a3038", sock:"#f4f6f8", eye:"#f0c84a", nose:"#3a2c1c", patch:"#f4f6f8"}
   ],
-  [ // Legendary
+  [
     {id:"egypt",n:"Египтян", pat:"sphynx", fur:"#d4b090", dark:"#b89070", sock:"#e8c8b0", eye:"#6bb8e8", nose:"#c07070", patch:"#b89070"},
     {id:"tortie",n:"Пыльно-ржавый", pat:"calico", fur:"#3a3838", dark:"#1a1818", sock:"#e08a3c", eye:"#f0c84a", nose:"#2a1810", patch:"#e08a3c"},
     {id:"sand", n:"Мемная ржавая", pat:"none", fur:"#c9a070", dark:"#9a7040", sock:"#e8d0b0", eye:"#5a8a4a", nose:"#6a4030", patch:"#9a7040"}
   ],
-  [ // Exotic
+  [
     {id:"leo", n:"Ржавомер", pat:"rosette", fur:"#d4a060", dark:"#6a4020", sock:"#e8c898", eye:"#c8a020", nose:"#3a2c1c", patch:"#6a4020"},
     {id:"polka",n:"Возмущённый в горошек", pat:"polka", fur:"#8a9098", dark:"#2a2e34", sock:"#d0d4da", eye:"#e05040", nose:"#3a2c1c", patch:"#2a2e34"},
     {id:"bandaid",n:"С пластырем", pat:"bandaid", fur:"#6a9aaa", dark:"#3a6a7a", sock:"#c8e0e8", eye:"#f0c84a", nose:"#3a2c1c", patch:"#f0a0b0"}
@@ -4963,11 +4802,11 @@ function applyPetMood(id){
   if(ix>=0) petMoodI=ix;
   syncPetBoxClass();
 }
-/** Чисто вайб: погладить кота → мурлычет. Наград нет. */
+
 function petCat(){
   if(!activeCatPet()) return false;
   applyPetMood("purr");
-  petMoodT=-4; // дольше держим мурлыканье перед автосменой
+  petMoodT=-4;
   const box=$("petBox");
   if(box){
     box.classList.remove("petting");
@@ -5003,8 +4842,7 @@ function cyclePetMood(force){
   petMoodI=(petMoodI+1)%PET_MOODS.length;
   syncPetBoxClass();
 }
-/* Тир облика = средняя редкость надетого. На 95px силуэт читается лучше,
-   чем попиксельная сборка слоёв, поэтому одежда вшита в спрайт тира. */
+
 function dwarfTier(){
   const g=(S&&S.gear&&typeof S.gear==="object")?S.gear:{};
   const ks=["helm","glove","pick","lamp","pants","boots","pack","robe"];
@@ -5065,7 +4903,7 @@ function checkLoadout(){
     Platform.logEvent("lootbox_drop",{tier:minR}); sfxGear();
   }
 }
-/** Сумка может улучшить слот: есть сумки и (пусто | редкость ниже потолка тира сумки). */
+
 function slotCanBagUp(item){
   return !!((S.bags||0)>0 && (!item || item.r < Math.min(7, 1+Math.floor((S.bag||1)/7))));
 }
@@ -5083,7 +4921,7 @@ function renderGear(){
     if(item){
       const firstStat=Object.keys(sl.st)[0];
       const v=itemStat(item,firstStat);
-      sv=`<div><span class="r${item.r}">${RAR_NAMES[item.r].slice(0,4)}</span></div><div class="svv">+${v>=100?fmt(v):v.toFixed(1)}</div>`;
+      sv=`<div><span class="r${item.r}">${(RAR_SHORT[item.r]||RAR_NAMES[item.r])}</span></div><div class="svv">+${v>=100?fmt(v):v.toFixed(1)}</div>`;
     }
     const icon=(sl.id==="pick"&&item)?`<img src="${PICK_ICONS[item.r]}" class="oreimg" style="width:30px;height:30px;margin:0">`:(SLOT_ART[sl.id]?`<img src="${SLOT_ART[sl.id]}" class="oreimg slotArt" style="width:30px;height:30px;margin:0">`:sl.ic);
     d.innerHTML=`<span class="up">↑</span><div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
@@ -5094,7 +4932,7 @@ function renderGear(){
       d.title=canUp?"Кирки · ↑ сумка может дать лучше":"Кирки";
       d.onclick=openPickGallery;
     } else {
-      // Всегда карточка слота. Сумки — с 📦 или кнопки в карточке (↑ = подсказка).
+
       d.title=canUp?"Тап — инфо · ↑ можно улучшить сумкой":"Инфо о слоте";
       d.onclick=function(){ openGearSlot(sl.id); };
     }
@@ -5165,7 +5003,7 @@ function render(){
     const can=!capped && (S.gold||0)>=c;
     if(lv) setTxt(lv,"Ур. "+(S.lvls[u.id]|0));
     setTxt(val,u.fmt(stat(u.id)));
-    setTxt(cost,capped?"MAX":(fmt(c)+" 🪙"));
+    setTxt(cost,capped?"МАКС":(fmt(c)+" 🪙"));
     if(d.classList){ d.classList.toggle("can", !!can); d.classList.toggle("maxed", !!capped); }
     if(btn){
       const wantDisabled=!can;
@@ -5206,7 +5044,7 @@ function render(){
   setTxt("bagTier",bagName(S.bag));
   const nb=nextBagName(S.bag);
   setTxt("bagNext",nb?("до «"+nb[1]+"»: "+(nb[0]-S.bag)+" ур."):"предел жадности достигнут");
-  // FTUE-подсказки: пульс только когда якорь доступен; toggle — не дёргаем класс каждый кадр
+
   { const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
     UPGRADES.forEach(u=>{
       const row=$("u_"+u.id);
@@ -5224,7 +5062,7 @@ function render(){
   { const ob=$("lootChest");
     if(ob&&ob.classList) ob.classList.toggle("pulse", !!(S.ftue && !S.ftue.c && (S.bags||0)>0)); }
   if($("bagCount")) setTxt("bagCount",fmt(S.bags||0));
-  /* bag area on main screen */
+
   if($("bagBadge2")){ const n=S.bags||0; setTxt("bagBadge2",n>99?"99+":n); $("bagBadge2").style.display=n>0?"flex":"none"; }
   if($("bagAreaLvl")){
     if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","ПРОПУСК 💎"+bagSkipGems());
@@ -5334,7 +5172,7 @@ function hideFtueTip(tip){
   tip.style.display="none"; tip._ftueStep=null; tip._ftueMsg=null;
   tip._ftueLeft=null; tip._ftueTop=null; tip._ftueArr=null;
 }
-/** Подсказки только на главном экране забоя — не поверх UIS, интро и модалок. */
+
 function ftueOverlayOpen(){
   const intro=$("introOv"); if(intro&&intro.classList&&intro.classList.contains("on")) return true;
   const ui=$("uiScreen"); if(ui&&ui.style.display==="flex") return true;
@@ -5343,7 +5181,7 @@ function ftueOverlayOpen(){
   }
   return false;
 }
-/** Якорь реально виден: не скрыт CSS-ом и пересекается с #app / viewport. */
+
 function ftueAnchorVisible(el){
   if(!el||!el.getBoundingClientRect) return false;
   if(el.isConnected===false) return false;
@@ -5366,7 +5204,7 @@ function ftueAnchorVisible(el){
   }
   return true;
 }
-/** Область для FTUE-подсказки: внутри #app, над нижней навигацией. */
+
 function ftueAppBounds(pad){
   pad=pad||8;
   const vw=window.innerWidth||430, vh=window.innerHeight||900;
@@ -5394,7 +5232,7 @@ function updateFtueHint(){
   let el=null, msg="", step=null;
   const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
   if(!S.ftue.u && S.gold>=upCost(cheapest)){
-    el=$("u_"+cheapest.id); step="u"; msg="<b>ПОДСКАЗКА</b>Прокачай ATK — жила ломается быстрее";
+    el=$("u_"+cheapest.id); step="u"; msg="<b>ПОДСКАЗКА</b>Прокачай Атаку — жила ломается быстрее";
   } else if(!S.ftue.c && (S.bags||0)>0){
     el=$("lootChest"); step="c"; msg="<b>СУНДУК</b>Открой сундук — надень или продай";
   } else if(!S.ftue.b && !bagUpgrading() && S.bag<50 && S.gold>=bagCost()){
@@ -5422,7 +5260,7 @@ function updateFtueHint(){
   const maxW=Math.max(120, bounds.right-bounds.left);
   const twRough=Math.min(tip.offsetWidth||210, maxW);
   const thRough=(tip.offsetHeight||56)+18;
-  /* Друзья: якорь слева в sideMenu — тултип справа со стрелкой ◀ на кнопку. */
+
   let sideRight=step==="g" && (r.right+gap+Math.min(twRough,200)<=bounds.right);
   let below=true;
   if(!sideRight){
@@ -5486,7 +5324,6 @@ if($("ftueTip")){
   tip.onclick=hide;
 }
 
-/* эффекты */
 function fxSwing(){
   const m=$("miner"); if(m&&m.classList){ m.classList.remove("swing"); void m.offsetWidth; m.classList.add("swing"); }
   const r=$("rock"); if(r&&r.classList){ r.classList.remove("hitfx"); void r.offsetWidth; r.classList.add("hitfx"); }
@@ -5510,15 +5347,15 @@ function fxDamage(dmg,crit){
 let toastT=null;
 let lastLogMsg="";
 var LOG_PER_PAGE=100, LOG_MAX_PAGES=10, LOG_CAP=LOG_PER_PAGE*LOG_MAX_PAGES;
-var logBuf=[];        // самые старые в начале, свежие в конце
-var logPage=0;        // 0 = страница со свежими; чем больше, тем старее
+var logBuf=[];
+var logPage=0;
 function logTotalPages(){ return Math.max(1, Math.ceil(logBuf.length/LOG_PER_PAGE)); }
 function renderLog(){
   const g=$("log"); if(!g||!g.appendChild) return;
   const pages=logTotalPages();
   if(logPage>pages-1) logPage=pages-1;
   if(logPage<0) logPage=0;
-  // страница 0 = хвост буфера (свежие); page N = глубже в прошлое
+
   const endIdx=logBuf.length-logPage*LOG_PER_PAGE;
   const startIdx=Math.max(0,endIdx-LOG_PER_PAGE);
   const slice=logBuf.slice(startIdx,endIdx);
@@ -5535,7 +5372,7 @@ function renderLog(){
   if(nb&&"disabled"in nb) nb.disabled=(logPage<=0);
   if(pb&&"disabled"in pb) pb.disabled=(logPage>=pages-1);
   if(fb&&"disabled"in fb) fb.disabled=(logPage<=0);
-  // автоскролл вниз только на свежей странице
+
   if(logPage===0 && typeof g.scrollHeight==="number") g.scrollTop=g.scrollHeight;
 }
 let toastHideT=0;
@@ -5549,7 +5386,7 @@ function hideToast(e){
 }
 function toastIconHtml(icon){
   const s=String(icon||"");
-  /* Ore-дроп передаёт <img class="oreimg"> — его нельзя esc() */
+
   if(/^<img\b/i.test(s) && s.indexOf("<",1)<0) return s;
   return esc(s);
 }
@@ -5561,7 +5398,7 @@ function showToast(icon,rar,rcls,name,extra,important){
   if(logPage!==0) logPage++;
   if(logPage>logTotalPages()-1) logPage=0;
   renderLog();
-  /* статичная лента — всегда, даже если тосты выключены */
+
   try{
     const fw=feedWhoFromToast(rar,name,extra);
     const body=[head,extra].filter(x=>x&&(""+x).trim()).join(" · ");
@@ -5577,7 +5414,7 @@ function showToast(icon,rar,rcls,name,extra,important){
   toastHideT=setTimeout(function(){ if(t) t.style.display="none"; }, important?2800:1800);
 }
 if($("toast")){
-  /* pointerdown: не даём ghost-click уйти в кнопку под тостом после hide */
+
   $("toast").addEventListener("pointerdown", function(e){
     if(e.preventDefault) e.preventDefault();
     if(e.stopPropagation) e.stopPropagation();
@@ -5595,7 +5432,6 @@ function toastMine(){
   }
 }
 
-/* ---------- Особый камень штольни (Фибоначчи: таймер + награда) ---------- */
 function mineRaidFib(){ return (BALANCE.mineRaid&&BALANCE.mineRaid.fib)||[1,1,2,3,5,8,13]; }
 function mineRaidFibAt(i){
   const f=mineRaidFib();
@@ -5608,7 +5444,7 @@ function ensureMineRaid(d){
   if(d.mineRaid!=null && typeof d.mineRaid!=="object") d.mineRaid=null;
   if(!d.mineRaidProg||typeof d.mineRaidProg!=="object") d.mineRaidProg={day:"",mines:{}};
   if(!d.mineRaidProg.mines||typeof d.mineRaidProg.mines!=="object") d.mineRaidProg.mines={};
-  /* миграция со старых дневных ключей → ступень 0, готово сейчас */
+
   if(d.mineRaidDay&&typeof d.mineRaidDay==="object"){
     if(!d.mineRaidProg.day) d.mineRaidProg.day=d.mineRaidDay.day||"";
     delete d.mineRaidDay;
@@ -5648,7 +5484,7 @@ function mineRaidSlot(id){
   return {step, readyAt, leftMs, ready, done, fib:done?0:mineRaidFibAt(step), max:fib.length};
 }
 function mineRaidKeysLeft(id){
-  /* совместимость UI/тестов: «доступно сейчас» = 1 или 0 */
+
   const s=mineRaidSlot(id);
   return s.ready?1:0;
 }
@@ -5678,7 +5514,7 @@ function grantMineRaidReward(snap){
   else S[res]=(S[res]||0)+amt;
   const fib=snap.fib||1;
   showToast(ic,"Особый камень!","", n+" · ×"+fib, "+"+amt+" "+(snap.label||ic), true);
-  sayQuip("Чертог отдал своё. Следующая ступень — по таймеру Фибоначчи.",4);
+  sayQuip("Чертог отдал своё. Следующая ступень — по таймеру Горы.",4);
   Platform.logEvent("mine_raid",{mineId:snap.mineId,res,amt,fib,step:snap.step});
 }
 function startMineRaid(mineId){
@@ -5692,7 +5528,7 @@ function startMineRaid(mineId){
   }
   const slot=mineRaidSlot(mineId);
   if(slot.done){
-    showToast("🔑","Ступени на сегодня","","Фибоначчи кончился · завтра снова с ×1");
+    showToast("🔑","Ступени на сегодня","","Все ступени за сегодня · завтра снова с ×1");
     return false;
   }
   if(!slot.ready){
@@ -5728,8 +5564,6 @@ function startMineRaid(mineId){
   return true;
 }
 
-/* Спринт 3: выбор штольни внутри текущего круга (5 чертогов).
-   Можно вернуться в уже пройденные (id <= текущего mineKey). */
 function switchMine(id){
   if(!(id>=0 && id<MINES.length)) return false;
   const curAbs=S.mine||0, cur=curAbs%MINES.length, cycle=Math.floor(curAbs/MINES.length);
@@ -5790,7 +5624,6 @@ function resetProgress(){
   }
 }
 
-/* ---------- save/load ---------- */
 const SAVE_KEY="oredeep_v3";
 const SAVE_BAK="oredeep_v3_bak";
 let _saveFailAt=0;
@@ -5810,7 +5643,7 @@ function save(){
     return false;
   }
 }
-/** Сброс на диск при уходе со страницы — чтобы не потерять жилу/золото между автосейвами. */
+
 function flushSave(){ try{ save(); }catch(e){} }
 function readSaveObject(){
   const keys=[SAVE_KEY, SAVE_BAK];
@@ -5844,7 +5677,7 @@ function ensureCards(d){ if(!d) return d;
     if(!Array.isArray(d.traits)) d.traits=[]; }
   if(!d.stickers||typeof d.stickers!=='object') d.stickers={};
   if(typeof d.gymXP!=='number'||!isFinite(d.gymXP)||d.gymXP<0) d.gymXP=0;
-  if(d.chestKeys==null) d.chestKeys=1;   // ключи от ларей — свой ресурс, не ключи ивентов
+  if(d.chestKeys==null) d.chestKeys=1;
   return d; }
 function ensureMerge(d){ if(!d) return d;
   if(!d.petBox) d.petBox={};
@@ -5870,7 +5703,7 @@ function ensureGrowth(d){ if(!d) return d;
   if(!Array.isArray(d.growth.milestones)) d.growth.milestones=[];
   if(d.growth.adViewsLifetime==null) d.growth.adViewsLifetime=0;
   if(d.growth.revenueCents==null) d.growth.revenueCents=0;
-  if(d.growth.organic==null) d.growth.organic=true; // реферал/вейтлист = органика без CPI
+  if(d.growth.organic==null) d.growth.organic=true;
   try{
     if(d.growth.code){
       const cap=BALANCE.growth.referral.inviterCap;
@@ -5885,17 +5718,14 @@ function ensurePrestige(d){ if(!d) return d;
   if(d.prestigeRuns==null) d.prestigeRuns=0;
   if(d.echo==null) d.echo=0;
   return d; }
-/* Санитайзер сейва. Битый или подделанный сейв не должен ни ронять игру,
-   ни молча её портить: `gold:"много"` превращал арифметику в конкатенацию строк
-   ("много10"), а fmt() рисовал ∞. `lvls:null` ронял stat().
-   Правило: тип поля обязан совпадать с типом в freshState(), иначе берём дефолт. */
+
 const NON_NEGATIVE=["gold","gems","shards","protein","trophies","keys","chestKeys",
                     "bags","echo","beardXP","prestigeLv","prestigeRuns","bestDepth","eggs","combs"];
 function sanitizeState(d){
   const f=freshState();
   for(const k in f){
     const fv=f[k], dv=d[k];
-    if(fv===null) continue;                    // pet/geo/best/fair/science — их чинят ensure*
+    if(fv===null) continue;
     if(dv===undefined){ d[k]=fv; continue; }
     if(typeof fv==="number"){
       if(typeof dv!=="number" || !isFinite(dv)) d[k]=fv;
@@ -5909,7 +5739,7 @@ function sanitizeState(d){
       if(!dv || typeof dv!=="object" || Array.isArray(dv)) d[k]=fv;
     }
   }
-  // уровни апгрейдов: каждый стат обязан быть конечным неотрицательным числом
+
   if(!d.lvls || typeof d.lvls!=="object") d.lvls=f.lvls;
   for(const u of UPGRADES){
     const v=d.lvls[u.id];
@@ -5921,8 +5751,6 @@ function sanitizeState(d){
   return d;
 }
 
-/* Доинициализация полей. ВАЖНО: применяется и к свежему состоянию тоже —
-   иначе у нового игрока fair/science остаются null и экраны падают. */
 function ensureWorkouts(d){ if(!d) return d;
   if(d.wkPts==null||!isFinite(d.wkPts)||d.wkPts<0) d.wkPts=0;
   if(!d.workouts||typeof d.workouts!=="object") d.workouts={};
@@ -5942,7 +5770,7 @@ function ensureGacha(d){ if(!d) return d;
   if(d.eggs==null) d.eggs=0;
   if(d.combs==null) d.combs=0;
   if(d.bagActive && typeof d.bagActive.end!=="number") d.bagActive=null;
-  if(d.bagActive && d.ftue && !d.ftue.b) d.ftue.b=1;   // апгрейд уже идёт — не пульсировать СИЛУ
+  if(d.bagActive && d.ftue && !d.ftue.b) d.ftue.b=1;
   if(d.ftue){
     if(d.ftue.c==null) d.ftue.c=d.ftue.b?1:0;
     const U=BALANCE.unlocks||{};
@@ -5952,18 +5780,18 @@ function ensureGacha(d){ if(!d) return d;
   }
   return d; }
 function migrate(d){ ensureAll(d); ensureIntro(d); ensureGacha(d);
-  if(!d.v||d.v<2){                       // v1→v2: новые поля Фазы 1
+  if(!d.v||d.v<2){
     if(!d.ftue) d.ftue={u:1,b:1,c:1,t:1,m:1,g:1};
     else { d.ftue.u=d.ftue.u||1; d.ftue.b=d.ftue.b||1; d.ftue.c=1; d.ftue.t=1; d.ftue.g=1; d.ftue.m=(d.mine||0)>0?1:0; }
     if(!d.streak) d.streak={n:0,last:""};
     if(d.look===undefined) d.look=Math.floor(Math.random()*6);
     d.v=2;
   }
-  if(!d.v||d.v<3){                       // v2→v3: яйца, расчёски, таймер сумки
+  if(!d.v||d.v<3){
     ensureGacha(d);
     d.v=3;
   }
-  if(!d.v||d.v<4){                       // v3→v4: рост, рефералы, юнит-экономика
+  if(!d.v||d.v<4){
     ensureGrowth(d);
     d.v=4;
   }
@@ -5993,7 +5821,7 @@ function load(){
       return;
     }
   }catch(e){}
-  S=ensureAll(freshState());        // новый игрок тоже должен получить fair/science
+  S=ensureAll(freshState());
   resetTimers();
 }
 function wipeSave(){
@@ -6008,7 +5836,6 @@ function bindSaveLifecycle(){
   }catch(e){}
 }
 
-/* ---------- музыка подгорных чертогов (WebAudio, без файлов) ---------- */
 let AC=null, MG=null, DL=null, musicOn=(localStorage.getItem("oredeep_music")!=="off");
 let toastsOn=(localStorage.getItem("oredeep_toasts")!=="off");
 function toastToggleLabel(){ return toastsOn?"💬 вкл":"🚫 выкл"; }
@@ -6029,17 +5856,17 @@ function toggleToasts(){
 let nextBeat=0, beatN=0, musicTimer=null, chordIdx=0, arpStep=0;
 const BPM=60, SPB=60/BPM;
 const SCALE=[146.83,174.61,196,220,261.63,293.66];
-/* круг медитации: Dm — C — B♭ — Gm */
+
 const CHORDS=[[146.83,174.61,220],[130.81,164.81,196],[116.54,146.83,174.61],[98,116.54,146.83]];
 
 function audioStart(){
   if(AC||!musicOn) return;
   try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
   MG=AC.createGain(); MG.gain.value=0.2; MG.connect(AC.destination);
-  DL=AC.createDelay(1.5); DL.delayTime.value=0.75;     // транс-эхо (dotted)
+  DL=AC.createDelay(1.5); DL.delayTime.value=0.75;
   const fb=AC.createGain(); fb.gain.value=0.45;
   DL.connect(fb); fb.connect(DL); DL.connect(MG);
-  const drone=(f,type,g)=>{                            // гул Горы, мягкий
+  const drone=(f,type,g)=>{
     const o=AC.createOscillator(),gn=AC.createGain(),fl=AC.createBiquadFilter();
     o.type=type; o.frequency.value=f;
     fl.type="lowpass"; fl.frequency.value=160;
@@ -6054,7 +5881,7 @@ function audioStart(){
   nextBeat=AC.currentTime+0.1; beatN=0;
   musicTimer=setInterval(musicSchedule,120);
 }
-function thump(t,vel){                                 // пульс-сердцебиение
+function thump(t,vel){
   const o=AC.createOscillator(),g=AC.createGain();
   o.type="sine";
   o.frequency.setValueAtTime(75,t);
@@ -6063,7 +5890,7 @@ function thump(t,vel){                                 // пульс-сердц�
   g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
   o.connect(g); g.connect(MG); o.start(t); o.stop(t+0.55);
 }
-function anvil(t,f,vel,dur){                           // звон/мерцание
+function anvil(t,f,vel,dur){
   [1,2.76,5.4].forEach((m,i)=>{
     const o=AC.createOscillator(),g=AC.createGain();
     o.type="sine"; o.frequency.value=f*m;
@@ -6072,7 +5899,7 @@ function anvil(t,f,vel,dur){                           // звон/мерцан�
     o.connect(g); g.connect(MG); o.start(t); o.stop(t+dur+0.05);
   });
 }
-function horn(t,f,dur,vel){                            // хор (для джинглов)
+function horn(t,f,dur,vel){
   [-4,0,4].forEach(det=>{
     const o=AC.createOscillator(),g=AC.createGain();
     o.type="triangle"; o.frequency.value=f; o.detune.value=det;
@@ -6082,7 +5909,7 @@ function horn(t,f,dur,vel){                            // хор (для джи�
     o.connect(g); g.connect(MG); o.start(t); o.stop(t+dur+0.05);
   });
 }
-function pad(t,freqs,dur){                             // дышащий аккорд-пад
+function pad(t,freqs,dur){
   freqs.forEach(f=>{
     [0,6].forEach(det=>{
       const o=AC.createOscillator(),g=AC.createGain(),fl=AC.createBiquadFilter();
@@ -6099,7 +5926,7 @@ function pad(t,freqs,dur){                             // дышащий акк�
     });
   });
 }
-function arpNote(t,f){                                 // гипнотический перебор → эхо
+function arpNote(t,f){
   const o=AC.createOscillator(),g=AC.createGain();
   o.type="sine"; o.frequency.value=f;
   g.gain.setValueAtTime(0.05,t);
@@ -6181,7 +6008,6 @@ document.addEventListener("pointerdown",()=>{
   if(musicOn){ audioStart(); if(AC&&AC.state==="suspended") AC.resume(); }
 });
 
-/* ---------- шеринг-карточка (canvas → Web Share API) ---------- */
 async function buildShareCard(){
   const c=document.createElement("canvas");
   if(!c.getContext) return null;
@@ -6196,7 +6022,7 @@ async function buildShareCard(){
   x.fillText("ORE DEEP",280,64);
   x.fillStyle="#8a93a3"; x.font=F(11);
   x.fillText("копай глубже. ещё.",280,92);
-  // дворф в текущем обвесе
+
   const layers=["mlPack","mlBase","mlRobe","mlBoots","mlGlove","mlBeard","mlHelm"];
   for(const id of layers){
     const el=$(id);
@@ -6205,7 +6031,7 @@ async function buildShareCard(){
     }
   }
   try{ x.drawImage($("pickHand"),330,90,22*7,22*7); }catch(e){}
-  // лучшая находка
+
   const best=S.best||{r:0,name:"Уголёк-сирота"};
   const oreImg=new Image();
   await new Promise(res=>{ oreImg.onload=res; oreImg.onerror=res; oreImg.src=ORE_ICONS[best.r]; });
@@ -6241,8 +6067,7 @@ async function shareCard(){
   },"image/png");
 }
 
-/* ---------- дейли-стрик ---------- */
-const STREAK_MARKS={3:2,7:3,14:5,30:10};   // множитель награды в вехи
+const STREAK_MARKS={3:2,7:3,14:5,30:10};
 function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
 function yesterdayStr(){ const d=new Date(Date.now()-864e5); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
 function checkStreak(){
@@ -6262,16 +6087,15 @@ function checkStreak(){
   save();
 }
 
-/* ---------- офлайн-доход (кап 8ч, экран возврата) ---------- */
-const OFFLINE_CAP_H=BALANCE.idle.capSec/3600;   // 2ч (boxer 1:1)
+const OFFLINE_CAP_H=BALANCE.idle.capSec/3600;
 let offlinePending=0, offlineBagsPending=0;
 function checkOffline(){
   if(!featUnlocked("auto")) return;
   if(!S.lastSeen) return;
   const sec=Math.min(OFFLINE_CAP_H*3600, (Date.now()-S.lastSeen)/1000);
-  if(sec<120) return;                                   // <2 минут не считаем
+  if(sec<120) return;
   offlinePending=Math.floor(idlePerSec()*sec);
-  offlineBagsPending=Math.min(BALANCE.bags.cap, Math.floor(sec/6));   // ~1 сумка на жилу (6с)
+  offlineBagsPending=Math.min(BALANCE.bags.cap, Math.floor(sec/6));
   if(offlinePending<1 && offlineBagsPending<1) return;
   const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60);
   $("offTime").textContent="Тебя не было "+(h?h+" ч ":"")+m+" мин"+(sec>=OFFLINE_CAP_H*3600?" (кап "+OFFLINE_CAP_H+" ч)":"");
@@ -6287,16 +6111,9 @@ function claimOffline(mult){
   else grant();
 }
 
-/* ============================================================
-   МЕТА-СИСТЕМЫ (перенос из боксёра, всё из BALANCE)
-   ============================================================ */
 function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub").innerHTML=sub;
   $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
 
-/* ---------- К.Р.А.С.А.В.А. гнома ----------
-   К Р А С А В А → семь черт. Внутри сейва id: s/p/e/c/i/a/l.
-   Уровень шахтёра за жилы даёт очки навыков (база + бонус от Разума).
-   Теги дешевле тренировать. Карточные навыки из ларей остаются. */
 const SPECIAL_DEFS=[
   {id:"e", n:"Крепость", letter:"К", stats:["energy","tough"], tip:"Влияет на энергию и защиту"},
   {id:"i", n:"Разум",    letter:"Р", stats:[],                tip:"Больше очков навыков за уровень"},
@@ -6373,7 +6190,6 @@ function specialBonusPct(statId){
   return Math.min(B.attrPctCap||12, pct);
 }
 
-/* ---------- Перки шахтёра ---------- */
 const PERK_DEFS=[
   {id:"aware",    n:"Чутьё породы",     ico:"🔭", stats:["mining"],
     desc:"Ты видишь слабые места в жиле. Чутьё пласта растёт — меньше слепых ударов."},
@@ -6514,7 +6330,7 @@ function confirmPerkPick(){
   if(!p||!canPickPerk()||hasPerk(id)){ showToast("📜","Нельзя","","Выбери другой перк"); return false; }
   S.perkPicks=(S.perkPicks||0)-1;
   S.perks.push(id);
-  if(p.id==="comprehend"){ /* reserved */ }
+  if(p.id==="comprehend"){  }
   Platform.logEvent("perk_pick",{id, left:S.perkPicks});
   showToast(p.ico||"📜","ПЕРК!", "", p.n, (p.stats||[]).map(s=>s.toUpperCase()).join(" · "), true);
   sayQuip("Новая привычка вросла в кости. Гора кивает.",3);
@@ -6531,7 +6347,7 @@ function cancelPerkPick(){
   if(_skillsShellTab!=null) openSkills(_skillsShellTab==="train"||_skillsShellTab==="cards"?_skillsShellTab:"perks");
   else if(charSheetOpen()){ window._charTab="perks"; renderCharSheet(); }
 }
-/** Снять перк → вернуть очко выбора (перекачка бесплатна). */
+
 function dropPerk(id){
   ensureSpecial();
   if(!hasPerk(id)) return false;
@@ -6566,7 +6382,7 @@ function pickTrait(id){
   window._charTab="perks"; refreshSpecialUi();
   return true;
 }
-/** Снять черту; бонус gifted к КРАСАВА откатывается. */
+
 function unpickTrait(id){
   ensureSpecial();
   if(!hasTrait(id)) return false;
@@ -6633,7 +6449,7 @@ function spendSpecial(id){
   save(); refreshSpecialUi("special");
   return true;
 }
-/** Вернуть очко КРАСАВА в пул (не ниже стартового). */
+
 function refundSpecial(id){
   ensureSpecial();
   const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
@@ -6670,9 +6486,7 @@ function canTrainSkill(id){
   const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
   const cap=BALANCE.special.trainCap||15;
   if(((S.trained||{})[id]||0)>=cap) return false;
-  /* Кап боевого стата НЕ блокирует тренировку: слой S.trained и % на листе
-     всё равно растут; stat() сам режет бой. Иначе «Точный удар» у капа крита
-     выглядел мёртвым — особенно с дешёвым тегом (+1). */
+
   return (S.skillPts||0)>=trainCost(id);
 }
 function trainSkill(id){
@@ -6726,7 +6540,7 @@ const FO_SPECIAL_INFO={
   p:{ico:"👁", txt:"Анализ пласта. Влияет на чутьё и крит — видишь, где камень врёт, раньше остальных."}
 };
 const FO_SKILL_ICO={crit_up:"🎯",atk_up:"⛏",luck_up:"💎",stone_up:"🪙",energy_up:"💨",mining_up:"🧭",tough_up:"🪵",regen_up:"❤",stam_up:"🫁"};
-/* Подсказки к навыкам — тон Борина / Устав Горы, не сухая формула. */
+
 const FO_SKILL_INFO={
   crit_up:"Точный удар. Бьёшь не «куда попало», а в трещину. Растёт крит.",
   atk_up:"Атака забоя. Кирка тяжелеет — жила понимает намёки с первого раза. Растёт атака.",
@@ -6756,7 +6570,7 @@ function closeSkillsShell(){
 }
 function openCharSheet(focus){
   ensureSpecial(); checkMinerLevelUp(false);
-  /* С фокусом (тесты/глубокие ссылки) — модалка; иначе единая оболочка «Навыки добычи». */
+
   if(!(focus&&focus.kind)){
     openSkills((focus&&focus.tab==="perks")?"perks":"sheet");
     return;
@@ -6790,7 +6604,7 @@ function buildCharSheetHtml(inShell){
   const w=(typeof beardWisdom==="function")?beardWisdom():{title:"Борода"};
   const age=1+(S.minerLv|0)+(S.prestigeLv|0);
   const eMax=Math.max(1,stat("energy")|0), eCur=Math.max(0,Math.min(eMax,(S.energy!=null?S.energy:eMax)|0));
-  /* В оболочке ларя верхние Карты/Лист/Перки/Тренировка заменяют СТАТЫ/ПЕРКИ */
+
   const tabs=inShell?"":`<div class="foTabs">
     <button type="button" class="${tab==="stats"?"on":""}" onclick="setCharTab('stats')">Статы</button>
     <button type="button" class="${tab==="perks"?"on":""}" onclick="setCharTab('perks')">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
@@ -6961,7 +6775,7 @@ const SKILL_DEFS=[
   {id:"regen_up", n:"Второе сердце",  stat:"regen", per:3,   r:2},
   {id:"stam_up",  n:"Дыхалка",        stat:"stamina",per:6,  r:3}
 ];
-const SKILL_RAR=["Common","Rare","Epic","Legendary"];
+const SKILL_RAR=["Обычный","Редкий","Эпический","Легендарный"];
 function skillBonus(id){
   const d=SKILL_DEFS.find(s=>s.id===id); if(!d) return 0;
   const cardLv=(S.skills&&S.skills[id])||0;
@@ -6969,7 +6783,7 @@ function skillBonus(id){
   const tm=(BALANCE.special&&BALANCE.special.trainMult)!=null?BALANCE.special.trainMult:0.5;
   return d.per*cardLv + d.per*trainLv*tm;
 }
-/** Текущая вкладка оболочки «Навыки» (карточки/лист/перки/тренировка). null = не в ней. */
+
 let _skillsShellTab=null;
 function skillsTabBar(tab){
   return `<div class="btnrow skillsTabs" style="margin-bottom:10px;flex-wrap:wrap">
@@ -7032,10 +6846,10 @@ function openSkills(tab){
   metaOpen("Навыки добычи", sub, tabBar+body);
   if(tab==="train") workoutsBindRefresh();
 }
-/* ---------- Скиллы как карточки (док §Скиллы) ---------- */
+
 function cardsOf(id){ return (S.skillCards||{})[id]||0; }
 function skillLv(id){ return (S.skills||{})[id]||0; }
-/* Новая карта открывает скилл Lv1. Дальше апгрейд L→L+1 требует L копий. */
+
 function cardsNeeded(id){ const lv=skillLv(id); return lv===0?1:lv; }
 function proteinNeeded(id){
   const lv=skillLv(id), t=BALANCE.skillCardProtein;
@@ -7062,7 +6876,7 @@ function upSkill(id){
   save(); render(); openSkills(_skillsShellTab||"cards");
   return true;
 }
-/* Сундуки: гарантируют минимальную редкость карты, остальное — случайно. */
+
 function grantSkillCard(minR){
   const pool=SKILL_DEFS.filter(s=>s.r>=minR);
   const sd=(pool.length?pool:SKILL_DEFS)[Math.floor(Math.random()*(pool.length||SKILL_DEFS.length))];
@@ -7078,7 +6892,7 @@ function openSkillChest(chestId){
   if(ch.gemCost) S.gems-=ch.gemCost;
   const got=[];
   for(let i=0;i<ch.cards;i++){
-    const minR = i===0?ch.minR:0;      // первая карта — гарантия редкости
+    const minR = i===0?ch.minR:0;
     got.push(grantSkillCard(minR).n);
   }
   showToast("🎴","Ларь открыт","",ch.n,got.join(" · "),true);
@@ -7090,7 +6904,7 @@ function openSkillChest(chestId){
 function openWheel(){
   const spin=S.wheelSpins||0;
   const cost=BALANCE.wheel.cost[Math.min(spin,BALANCE.wheel.cost.length-1)];
-  metaOpen("Колесо старателя","Крутка "+(spin+1)+" · цена растёт 30→820💎 (§9)",
+  metaOpen("Колесо старателя","Крутка "+(spin+1)+" · цена растёт с каждой попыткой",
     `<div style="text-align:center;padding:10px 0">
       <div style="font-size:9px;margin-bottom:10px;line-height:1.8">Награды: золото · кристаллы · редкий камень</div>
       <button class="btn btn-hard" onclick="spinWheel(${cost})" ${(S.gems||0)<cost?"disabled":""}>Крутить за ${cost}💎</button>
@@ -7140,7 +6954,7 @@ function openPvpBoard(){
     "По кубкам арены. Ты: "+BALANCE.pvp.names[li]+" · 🏆 "+fmt(S.trophies||0)
       +(myRank>=0?(" · место #"+(myRank+1)):"")
       +" · победа сейчас +"+fmt(pvpWinGold(li))+" 🪙",
-    rows+'<div class="sub" style="margin-top:10px">Демо-таблица (локальная). Стена Горы — про глубину, не про кубки.</div>'
+    rows+'<div class="sub" style="margin-top:10px">Стена Горы — кто копнул глубже всех.</div>'
       +'<button class="btn btn-wide" style="margin-top:8px" onclick="openWall()">🏔 Стена Горы</button>');
   Platform.logEvent("pvp_board",{rank:myRank+1,trophies:S.trophies|0});
 }
@@ -7153,14 +6967,14 @@ function pvpBotRec(id){
   return S.pvpBotRec[id];
 }
 function pvpDayForm(botId){
-  /* детерминированная «форма дня» 0.90..1.10 — один день → одна сила у бота */
+
   const s=String(todayStr())+"|"+botId;
   let h=2166136261>>>0;
   for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); }
   return 0.90+((h>>>0)%1001)/10000;
 }
 function pvpBotPower(bot, me){
-  const form=pvpDayForm(bot.id)*(0.985+Math.random()*0.03); // лёгкий шум при ре-ролле формы
+  const form=pvpDayForm(bot.id)*(0.985+Math.random()*0.03);
   return Math.max(1, Math.round((me||1)*(bot.mul||1)*form));
 }
 function pvpRollSlate(){
@@ -7175,14 +6989,14 @@ function pvpRollSlate(){
     BALANCE.pvpCandidates=pvpSlate.length;
 }
 function pvpMineOrePerSec(power){
-  /* Добыча жилы в гонке: Power → руда/с (CALIB в BALANCE.pvp через raceSec) */
+
   return Math.max(0.5, (power||1)/12);
 }
 function pvpRaceSim(meP, oppP, grit){
   const sec=BALANCE.pvp.raceSec||180;
   const meOre=pvpMineOrePerSec(meP)*sec;
   const g=Math.max(0,Math.min(1,grit==null?0.4:grit));
-  const spread=0.16*(1-g*0.65);           // grit↑ → бот менее случайный
+  const spread=0.16*(1-g*0.65);
   const oppOre=pvpMineOrePerSec(oppP)*sec*(1-spread+Math.random()*spread*2);
   return {meOre, oppOre, sec, win:meOre>=oppOre};
 }
@@ -7202,7 +7016,7 @@ function openPvp(){
   metaOpen("⚔ PvP · гонка с ИИ",
     "Лига "+BALANCE.pvp.names[li]+" · сила арены "+fmt(me)+" · "+(BALANCE.pvp.raceSec||180)+"с · осталось: "+left+"/"+BALANCE.pvpDayLimit,
     `<div class="metarow"><span>Кубки: ${fmt(S.trophies||0)} · побед: ${S.pvpWins||0}</span></div>
-     <div class="sub" style="margin:6px 0">5 ИИ-агентов копают ту же жилу ${(BALANCE.pvp.raceSec||180)}с. Кто добыл больше — победил. Выбери соперника:</div>
+     <div class="sub" style="margin:6px 0">Пять соперников копают ту же жилу ${(BALANCE.pvp.raceSec||180)}с. Кто добыл больше — победил. Выбери противника:</div>
      ${cards}
      ${left>0?'<div style="text-align:center;padding:8px 0"><button onclick="pvpRerollSlate()">Обновить форму дня</button></div>':''}`);
 }
@@ -7236,7 +7050,7 @@ const EVENT_LIST=[
   ["prospectorFair","Prospector Fair","показательная добыча"],
   ["crystalCave","Crystal Cave","кристаллы-сейфы"],["critterDen","Critter Den","зачистка логова"]
 ];
-/* рефилл ключей по реальному времени (2/2, ~3ч48м/ключ) */
+
 function refillKeys(){
   if((S.keys||0)>=BALANCE.keyMax){ S.keyAt=Date.now(); return; }
   if(!S.keyAt) S.keyAt=Date.now();
@@ -7267,7 +7081,7 @@ function openEvents(){
       <button class="btn btn-soft" onclick="playEvent('${id}')" ${(S.keys||0)<1?"disabled":""}>Забег 🔑</button></div>`;
   }).join("");
   metaOpen("Ивенты (5 режимов)",
-    "🔑 "+(S.keys||0)+"/"+BALANCE.keyMax+" · "+keyTimerStr()+" · ключ тратится только на победе (§12)",
+    "🔑 "+(S.keys||0)+"/"+BALANCE.keyMax+" · "+keyTimerStr()+" · ключ тратится только на победе",
     rows);
 }
 function playEvent(id){
@@ -7276,9 +7090,9 @@ function playEvent(id){
   const s=BALANCE.events[id], lvl=eventLevel();
   const win=Math.random()<0.7;
   if(win){
-    S.keys-=1; if(!S.keyAt||S.keys===BALANCE.keyMax-1) S.keyAt=Date.now();   // запустить таймер рефилла
+    S.keys-=1; if(!S.keyAt||S.keys===BALANCE.keyMax-1) S.keyAt=Date.now();
     const rew=eventReward(s,lvl)*(s.mult||1);
-    S[s.res]=(S[s.res]||0)+rew;                                              // реальный ресурс
+    S[s.res]=(S[s.res]||0)+rew;
     showToast("★","Забег пройден!","",s.ic+" +"+fmt(rew)+" "+s.currency,"уровень "+lvl+" · осталось 🔑"+S.keys,true);
     Platform.logEvent("event_win",{id,lvl});
   } else {
@@ -7288,18 +7102,16 @@ function playEvent(id){
   save(); render(); openEvents();
 }
 
-/* --- Питомцы: гача с pity (§8), пассив к добыче --- */
 const PET_TYPES=[
-  {stat:"luck",  n:"Канарейка",     pct:[8,24,72,216,648], dot:"bleed"},   // кровотечение: чистый DoT
-  {stat:"mining",n:"Рудный пёс",    pct:[10,30,90,270,810],dot:"shock"},   // шок: DoT + режет защиту
-  {stat:"stone", n:"Мул-тяжеловоз", pct:[12,36,108,324,972],dot:"splash"}  // всплеск: DoT + тормозит ответ
+  {stat:"luck",  n:"Канарейка",     pct:[8,24,72,216,648], dot:"bleed"},
+  {stat:"mining",n:"Рудный пёс",    pct:[10,30,90,270,810],dot:"shock"},
+  {stat:"stone", n:"Мул-тяжеловоз", pct:[12,36,108,324,972],dot:"splash"}
 ];
 const DOT_NAMES={bleed:"Кровотечение",shock:"Шок",splash:"Всплеск"};
-/* Зал (PDF §Тренажёрный зал): копится Gym XP, растёт уровень, открываются перки.
-   Соц-часть (клан, чат, войны) — сетевая, оставлена под будущий бэкенд. */
+
 const GYM_XP={ perGift:5, perWorkout:20, perPvpWin:8, perDaily:15 };
-const GYM_LEVELS=[0,50,150,350,700,1200,2000,3200,5000,8000,12000];   // порог XP на уровень
-const GYM_PERKS=[   // открываются по уровню зала, дают % ко всем статам и тренировкам
+const GYM_LEVELS=[0,50,150,350,700,1200,2000,3200,5000,8000,12000];
+const GYM_PERKS=[
   {lv:1,pct:5, n:"Разминка"}, {lv:3,pct:10,n:"Второе дыхание"},
   {lv:5,pct:18,n:"Закалка"},  {lv:7,pct:28,n:"Мастерство"},
   {lv:9,pct:42,n:"Подгорный дух"}, {lv:10,pct:60,n:"Наследие Горы"}
@@ -7309,8 +7121,7 @@ function gymPerkPct(){ let p=0; const lv=gymLevel(); for(const pk of GYM_PERKS) 
 function addGymXP(n){ if(!(n>0)) return; const before=gymLevel();
   S.gymXP=(S.gymXP||0)+n; const after=gymLevel();
   if(after>before){ showToast("🏋","ЗАЛ ВЫРОС!","","Уровень "+after,"+"+gymPerkPct()+"% ко всем статам",true); try{ jingleSet(); }catch(e){} } }
-/* Стикеры (PDF): отдельная коллекция, влияет на статы; паки за кристаллы;
-   дубликаты дарятся в зале (даёт Gym XP — соц-слой стабом). */
+
 const STICKERS=[
   {id:"s_atk1",n:"Кирка-огонь",   ic:"⛏️",stat:"atk",   val:15,r:0,col:"mountain"},
   {id:"s_atk2",n:"Золотой молот", ic:"🔨",stat:"atk",   val:40,r:2,col:"forge"},
@@ -7331,13 +7142,13 @@ function stickerColProgress(colId){
   let have=0; for(const s of list) if((owned[s.id]||0)>0) have++;
   return {have, total:list.length};
 }
-const STICKER_PACK_GEMS=250, STICKER_PACK_N=5;   // PDF: пак 5 случайных за алмазы
+const STICKER_PACK_GEMS=250, STICKER_PACK_N=5;
 function stickerBonus(id){ let v=0; const owned=S.stickers||{};
   for(const s of STICKERS) if(s.stat===id && (owned[s.id]||0)>0) v+=s.val; return v; }
 function stickerDupes(){ let n=0; const o=S.stickers||{};
   for(const k in o) if(o[k]>1) n+=o[k]-1; return n; }
-const PET_RAR=["Common","Rare","Epic","Legendary","Exotic"];
-const PET_MERGE_MAX=3;   // merge доводит только до Legendary; Exotic — лишь крафт (PDF)
+const PET_RAR=["Обычный","Редкий","Эпический","Легендарный","Экзотический"];
+const PET_MERGE_MAX=3;
 function petDot(){
   if(!S.pet) return null;
   const t=PET_TYPES[S.pet.t], r=S.pet.r||0, D=BALANCE.petDot;
@@ -7345,7 +7156,7 @@ function petDot(){
     dps:stat("atk")*D.dpsFrac[r], defCut:D.defCut[r], spdCut:D.spdCut[r] };
 }
 function petBonus(id){ if(!S.pet||PET_TYPES[S.pet.t].stat!==id) return 0;
-  return PET_TYPES[S.pet.t].pct[S.pet.r]; }   // множитель %, применяется в stat()
+  return PET_TYPES[S.pet.t].pct[S.pet.r]; }
 function openGeoGuild(){
   if(!S.geo){ metaOpen("Артель старейшин","Сначала найми хоть кого-то.",'<div class="sub">Пусто.</div>'); return; }
   const g=GEO_TYPES[S.geo.t], mats=geoMaterials();
@@ -7395,16 +7206,14 @@ function openPets(){
     ? `<div class="metarow"><span>⚗ Крафт Exotic<br><span class="sub">по Legendary каждого семейства + ${BALANCE.petCraft.gems} 💎</span></span>
         <button class="btn btn-hard" onclick="craftPetExotic()" ${petCraftReady()?"":"disabled"} ${petCraftReady()?"":'style="opacity:.45"'}>Крафт</button></div>`
     : `<div class="sub" style="margin-top:8px">Крафт Exotic откроется после ${BALANCE.petCraft.needLegendaries} легендарных питомцев (есть ${S.petLegSeen||0}).</div>`;
-  metaOpen("Питомцы","Гача с жалостью Горы (§8), роллов: "+(S.petRolls||0)+". 3 одинаковых → 1 случайный следующей редкости; Exotic — только крафт.",
+  metaOpen("Питомцы","Жалость Горы · роллов: "+(S.petRolls||0)+". 3 одинаковых → 1 случайный следующей редкости; Экзотический — только крафт.",
     cur+rows+craftBtn+`<div style="text-align:center;padding:10px 0"><button class="btn btn-hard" onclick="rollPet()" ${(S.eggs||0)<1?"disabled":""}>Крутить · 🥚1 (ост. ${S.eggs||0})</button></div>`);
 }
-/* ---------- Merge питомцев и старейшин (док §Питомцы, §Девушки) ---------- */
+
 const boxKey=(t,r)=>t+"_"+r;
 function boxAdd(box,t,r,n){ const k=boxKey(t,r); box[k]=(box[k]||0)+(n||1); }
 function boxCountAt(box,t,r){ return box[boxKey(t,r)]||0; }
 
-/* Питомцы: 3 одинаковых (тип+редкость) → 1 случайный питомец следующей редкости.
-   На максимальной редкости merge заблокирован. */
 function canMergePet(t,r){
   return r < PET_MERGE_MAX && boxCountAt(S.petBox,t,r) >= BALANCE.merge.petCost;
 }
@@ -7416,14 +7225,14 @@ function mergePet(t,r){
   }
   S.petBox[boxKey(t,r)]-=BALANCE.merge.petCost;
   if(S.petBox[boxKey(t,r)]<=0) delete S.petBox[boxKey(t,r)];
-  const nt=Math.floor(Math.random()*PET_TYPES.length), nr=r+1;   // СЛУЧАЙНЫЙ тип, не тот же
+  const nt=Math.floor(Math.random()*PET_TYPES.length), nr=r+1;
   boxAdd(S.petBox,nt,nr,1);
   equipBestPet();
   showToast("🐕","Слияние!","r"+nr,PET_TYPES[nt].n+" ("+PET_RAR[nr]+")","3× "+PET_TYPES[t].n+" ушли в Гору",true);
   Platform.logEvent("pet_merge",{from:r,to:nr}); sfxGear(); save(); render();
   return true;
 }
-/* Экипирован всегда сильнейший питомец из коллекции. */
+
 function equipBestPet(){
   let best=null;
   for(const k in S.petBox){ if(S.petBox[k]<=0) continue;
@@ -7434,15 +7243,13 @@ function equipBestPet(){
   return best;
 }
 
-/* Старейшины: целевой поглощает материалы равной или меньшей редкости → +уровень.
-   Процент растёт от уровня и восхождения. */
 function geoPct(g){
   if(!g) return 0;
   const base=GEO_TYPES[g.t].pct[g.r];
   const lv=(g.lv||1)-1, asc=g.asc||0;
   return base*(1+lv*BALANCE.merge.geoLvPct/100)*(1+asc*BALANCE.merge.ascendPct/100);
 }
-function geoMaterials(){   // сколько дубликатов можно скормить (редкость ≤ текущей)
+function geoMaterials(){
   if(!S.geo) return 0;
   let n=0;
   for(const k in S.geoBox){ const r=Number(k.split("_")[1]); if(r<=S.geo.r) n+=S.geoBox[k]; }
@@ -7482,16 +7289,14 @@ function ascendGeo(){
   return true;
 }
 
-/* Крафт Exotic (PDF): открывается после 3 легендарных питомцев, рецепт —
-   по 1 Legendary каждого семейства + кристаллы, единственный путь к Exotic. */
 function petCraftUnlocked(){ return (S.petLegSeen||0)>=BALANCE.petCraft.needLegendaries; }
 function petCraftReady(){
   if(!petCraftUnlocked()) return false;
   if((S.gems||0)<BALANCE.petCraft.gems) return false;
-  for(let t=0;t<PET_TYPES.length;t++) if(boxCountAt(S.petBox,t,3)<1) return false;   // по Legendary каждого
+  for(let t=0;t<PET_TYPES.length;t++) if(boxCountAt(S.petBox,t,3)<1) return false;
   return true;
 }
-/* Пак стикеров: 5 случайных за кристаллы. */
+
 function buyStickerPack(){
   if((S.gems||0)<STICKER_PACK_GEMS){ showToast("🃏","Мало кристаллов","","Пак стикеров: "+STICKER_PACK_GEMS+" 💎"); return false; }
   S.gems-=STICKER_PACK_GEMS; S.stickers=S.stickers||{};
@@ -7502,7 +7307,7 @@ function buyStickerPack(){
   Platform.logEvent("sticker_pack",{}); sfxGear(); save(); render(); openStickers();
   return true;
 }
-/* Подарить все дубликаты в зал: соц-слой стабом → даёт Gym XP. */
+
 function giftStickers(){
   const d=stickerDupes();
   if(d<1){ showToast("🃏","Нет дубликатов","","Дарить нечего"); return false; }
@@ -7530,10 +7335,8 @@ function openProfile(){
   $("profModal").style.display="flex"; Platform.logEvent("profile_view",{});
 }
 
-
-/* ---------- Окно сумки: открыть (надеть/продать) + апгрейд (шансы/таймер/пропуск) ---------- */
 const CHEST_STAT_LBL=STAT_LBL;
-let chestPending=null;   // предмет, ждущий решения игрока (надеть/продать)
+let chestPending=null;
 function chestStatVal(v){ return v>=100?Math.round(v):(v>=10?v.toFixed(1):v.toFixed(2)); }
 function chestChanceRows(lvl){
   const w=bagWeights(lvl);
@@ -7548,7 +7351,7 @@ function chestChanceRows(lvl){
   }
   return h;
 }
-/** Сравнение со слотом: зелёные/красные пилюли дельты (как у боксёра). */
+
 function chestPendingParts(it){
   const sl=SLOTS.find(s=>s.id===it.s);
   const old=S.gear[it.s];
@@ -7615,15 +7418,15 @@ function renderChestCard(){
     pend=chestPendingCardHtml(chestPending);
   }
   const openBtn=S.autoRoll
-    ? '<button class="btn btn-soft" disabled>Auto разбирает</button>'
+    ? '<button class="btn btn-soft" disabled>Авто разбирает</button>'
     : ((S.bags||0)>0
     ? '<button class="btn btn-soft" onclick="chestOpenOne()">Открыть сундук · 🎒'+(S.bags||0)+'</button>'
     : '<button class="btn btn-soft" disabled>Нет сумок · 🎒0</button>');
   const autoUnlocked=autoRollUnlocked();
   const autoRow=autoUnlocked
-    ? ('<button type="button" class="btn '+(S.autoRoll?"btn-hard":"btn-soft")+'" onclick="toggleAutoRoll();renderChestCard()" style="margin-left:6px">'+(S.autoRoll?"Auto ✓":"Auto")+'</button>'
+    ? ('<button type="button" class="btn '+(S.autoRoll?"btn-hard":"btn-soft")+'" onclick="toggleAutoRoll();renderChestCard()" style="margin-left:6px">'+(S.autoRoll?"Авто ✓":"Авто")+'</button>'
       +'<button type="button" class="btn btn-soft" onclick="openAutoTierModal()" style="margin-left:6px">порог: <span class="r'+(S.autoRollTier||0)+'">'+RAR_NAMES[S.autoRollTier||0]+'</span>+</button>')
-    : ('<button type="button" class="btn btn-soft" disabled style="margin-left:6px;opacity:.55" title="'+autoLockHint()+'">Auto 🔒</button>');
+    : ('<button type="button" class="btn btn-soft" disabled style="margin-left:6px;opacity:.55" title="'+autoLockHint()+'">Авто 🔒</button>');
   let upBlock='';
   if(atCap){
     upBlock='<div class="chUp"><div class="sub" style="text-align:center">Предел жадности достигнут — сундук прокачан до конца.</div></div>';
@@ -7651,7 +7454,7 @@ function renderChestCard(){
   const act=$("chestHeadAct"); if(act) act.innerHTML='<span class="uiPill">ур.'+lvl+'</span>';
 }
 function quickOpenBag(){
-  if(S.autoRoll){ showToast("🎒","Auto включён","","Выключи Auto, чтобы открывать вручную"); return false; }
+  if(S.autoRoll){ showToast("🎒","Авто включён","","Выключи Авто, чтобы открывать вручную"); return false; }
   if(chestPending){ showToast("🎒","Сначала реши","","Надень или продай находку"); showDropDecide(); return false; }
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
   S.bags--; dailyProgress("bag",1);
@@ -7669,7 +7472,7 @@ function openChest(forceModal){
     quickOpenBag();
     return;
   }
-  /* Без сумок тап по 📦 не открывает апгрейд — шансы/апгрейд на кнопке СУМКА */
+
   if(!forceModal) return;
   renderChestCard(); $("chestModal").style.display="flex";
   try{ if(typeof UIS!=="undefined"&&UIS.setChrome) UIS.setChrome(true); }catch(e){}
@@ -7711,7 +7514,7 @@ function chestUpgrade(){
 }
 function chestSkip(){
   if(!bagUpgrading()){ showToast("⏩","Нечего пропускать","","Сначала запусти апгрейд"); return; }
-  /* в окне сундука кнопка «Пропуск» — сразу за 💎 (без второго тапа) */
+
   bagSkipArmed=true;
   skipBagUpgrade();
   renderChestCard();
@@ -7767,8 +7570,8 @@ function rollPet(){
   S.eggs--;
   const r=rollRarity(geoWeights(S.petRolls||0)); S.petRolls=(S.petRolls||0)+1;
   const t=Math.floor(Math.random()*PET_TYPES.length);
-  boxAdd(S.petBox,t,r,1);                 // дубликаты копятся — материал для слияния
-  if(r===3) S.petLegSeen=(S.petLegSeen||0)+1;   // учёт легендарных для разблокировки крафта
+  boxAdd(S.petBox,t,r,1);
+  if(r===3) S.petLegSeen=(S.petLegSeen||0)+1;
   const wasBetter=!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r]);
   equipBestPet();
   showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,
@@ -7777,7 +7580,6 @@ function rollPet(){
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
 }
 
-/* --- Тренировки: пить пиво → очки → путь с таймером (§10) --- */
 const WK_PATH_NAME=STAT_LBL;
 let _wkRefreshT=0, _drinkCdUntil=0;
 function workoutCost(path){
@@ -7951,7 +7753,6 @@ function skipWorkout(){
 function workoutBonus(id){ const lv=(S.workouts&&S.workouts[id])||0; if(!lv) return 0;
   const i=BALANCE.workoutPaths.indexOf(id); return i<0?0:BALANCE.workoutStepPct[i]*lv; }
 
-/* --- Дейлики: жетоны + трек (§8) --- */
 function dailyReset(){ const t=todayStr(); if(!S.daily) S.daily={day:t,prog:{},tok:0,claimed:[],adTok:false};
   if(S.daily.day!==t){ S.daily={day:t,prog:{},tok:0,claimed:[],adTok:false}; }
   if(S.daily.adTok==null) S.daily.adTok=false; }
@@ -8045,12 +7846,11 @@ function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.cl
     showToast("🪮","Награда","","+"+(G.combDailyReward||2)+" расчески · +"+fmt(veinReward()*50)+" 🪙"); }
   Platform.logEvent("daily_claim",{i}); save(); render(); openDaily(); }
 
-/* --- Магазин: паки, comeback, no-ads (§13) --- */
 function openShop(){
   const gems=BALANCE.shop.gemPacks.map((g,i)=>`<div class="metarow"><span>💎 ${g} кристаллов</span><button class="btn btn-hard" onclick="buyGems(${i})">$${[19.99,59.99,199.99][i]}</button></div>`).join("");
   const cb=BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>`<div class="metarow"><span>Пак: 💎${g} + 🪙${fmt(gold)}</span><button class="btn btn-hard" onclick="buyPack(${i})">$${[6.99,16.99,24.99][i]}</button></div>`).join("");
   const na=S.noAds?"<div class='metarow'><span>✓ Реклама отключена</span></div>":`<div class="metarow"><span>Отключить рекламу</span><button class="btn btn-hard" onclick="buyNoAds()">$${BALANCE.noAdsPrice}</button></div>`;
-  metaOpen("Магазин","IAP-стабы (Platform.buy → Play Billing в проде). §13",gems+"<div style='height:8px'></div>"+cb+na);
+  metaOpen("Магазин","Самоцветы, паки и спокойствие без рекламы",gems+"<div style='height:8px'></div>"+cb+na);
 }
 function shopFreeReset(){
   ensureBags(S);
@@ -8139,7 +7939,7 @@ function claimShopFree(offerId, viaAd){
   }
   grant();
 }
-/** Карточка daily free+ad для вкладки рынка (HTML). */
+
 function shopDailyCardHtml(id){
   const def=shopDailyDef(id); if(!def) return "";
   const freeDone=shopDailyTaken(id,false), adDone=shopDailyTaken(id,true);
@@ -8157,7 +7957,7 @@ function shopDailyCardHtml(id){
 }
 function buyGems(i){ Platform.buy("gems_"+i); growthTrackPurchase([1999,5999,19999][i],"gems_"+i); S.gems+=BALANCE.shop.gemPacks[i]; showToast("💎","Покупка","",BALANCE.shop.gemPacks[i]+" кристаллов","спасибо!"); save(); render(); openShop(); }
 function buyPack(i){ Platform.buy("pack_"+i); growthTrackPurchase([699,1699,2499][i],"pack_"+i); const [g,gold]=BALANCE.shop.comeback[i]; S.gems+=g; S.gold+=gold; showToast("🎁","Пак куплен","","+"+g+"💎 +"+fmt(gold)+"🪙","спасибо!"); save(); render(); openShop(); }
-function buyNoAds(){ Platform.buy("noads"); growthTrackPurchase(Math.round(parseFloat(BALANCE.noAdsPrice)*100),"noads"); S.noAds=true; showToast("🚫","No-Ads","","реклама отключена","спасибо!"); save(); render(); openShop(); }
+function buyNoAds(){ Platform.buy("noads"); growthTrackPurchase(Math.round(parseFloat(BALANCE.noAdsPrice)*100),"noads"); S.noAds=true; showToast("🚫","Без рекламы","","реклама отключена","спасибо!"); save(); render(); openShop(); }
 function buyStarterPack(){
   ensureGrowth(S);
   if(S.growth.starterBought){ showToast("🎁","Уже куплен","","стартовый пак — разовый"); return; }
@@ -8170,11 +7970,9 @@ function buyStarterPack(){
   if(typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
 }
 
-
-/* ---------- распитие эля (косметика + чуть энергии) ---------- */
 let aleNext=25+Math.random()*20, aleAnim=0;
 const ALE_QUIPS=["За Гору! *глоток*","Пиво честно заслужено.","Ах, пивовар не подвёл!","Пыль в горле — не беда.","Один глоток за деда."];
-/* хмельные подколы про бывших — таверный юмор, PG-13 (стор-безопасно) */
+
 const EX_QUIPS=[
   "Бывшая говорила, борода колется. Теперь борода длиннее наших отношений.",
   "За ту, что ушла к эльфу. Надеюсь, у него уши мёрзнут!",
@@ -8243,7 +8041,7 @@ function beerLoreQuip(){
   if(pool===BORIN_GOSSIP_QUIPS) return "Борин шепчет: "+line;
   return "Борин тянет басню: "+line;
 }
-/* Лента у стойки: детерминированная ротация (меняетя раз в ~45с). */
+
 function borinBarTalk(){
   const packs=[
     {tag:"Борин шутит.", pool:BORIN_JOKE_QUIPS},
@@ -8262,7 +8060,7 @@ function sipAle(){
   const mug=$("aleMug"); mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
   clearTimeout(sipAle._t); sipAle._t=setTimeout(()=>mug.classList.remove("sip"),2450);
   aleAnim=2.4;
-  S.energy=Math.min(stat("energy"), S.energy+stat("energy")*0.12);   // +12% энергии
+  S.energy=Math.min(stat("energy"), S.energy+stat("energy")*0.12);
   sayQuip(beerLoreQuip(), 4);
   jingleFind();
   Platform.logEvent("ale_sip",{});
@@ -8278,10 +8076,6 @@ function openBeard(){
   Platform.logEvent("beard_view",{lv:w.lv});
 }
 
-/* ============================================================
-   ЛУТБОКСЫ и СЕТЫ ПОДЗЕМЕЛЬЯ (билды)
-   ============================================================ */
-/* Графика Сетов Подземелья: цвет, эмблема и глиф на каждый из 4 фрагментов. */
 const SET_ART={
   berserk: {c:"#e05555", em:"⚔", fi:["🦷","😬","📣","🔥"]},
   greed:   {c:"#e8b93c", em:"💰", fi:["🪙","⚖️","🏷️","🎒"]},
@@ -8327,9 +8121,7 @@ function openSetCard(id){
   Platform.logEvent("set_view",{id});
 }
 function boxCount(t){ return (S.boxes||[]).filter(x=>x===t).length; }
-/* Апгрейд лутбокса за камни коллекции: 1 бокс тира T + дубликаты камней редкости T → 1 бокс T+1.
-   Тратятся ТОЛЬКО дубликаты — по одному камню каждой редкости всегда остаётся в коллекции
-   (иначе сломался бы пассив +2% STONE за камень и сет чертога 8/8). */
+
 function stoneFuseCost(t){ return 4+t; }
 function dupStones(r){ let n=0; for(const k in S.col){ const c=(S.col[k]||{})[r]||0; if(c>1) n+=c-1; } return n; }
 function spendStones(r,n){
@@ -8338,7 +8130,7 @@ function spendStones(r,n){
     if(take>0){ S.col[k][r]=c-take; n-=take; } }
   return n<=0;
 }
-/* Крафт лутбокса с нуля за дубликаты камней его редкости (тиры 1..7). */
+
 function craftBoxCost(r){ return 25+25*r; }
 function craftBoxFromStones(r){
   if(r<1||r>7){ showToast("⚒","Нельзя","","Común не превращается в бокс"); return; }
@@ -8377,7 +8169,7 @@ function grantFragment(){
   return {set:s.n, frag:s.frags[idx], complete};
 }
 function openBox(tier){
-  const rolls=1+(Math.random()<(tier-1)*0.15?1:0);   // чуть выше шанс двойного фрагмента → сеты собираются быстрее
+  const rolls=1+(Math.random()<(tier-1)*0.15?1:0);
   let last; for(let k=0;k<rolls;k++) last=grantFragment();
   return last;
 }
@@ -8404,10 +8196,9 @@ function fuseBoxes(tier){
   showToast("⚗","Сплав!","","3× тир "+tier+" → 1× тир "+(tier+1),"−"+cost+" 💠");
   Platform.logEvent("lootbox_fuse",{tier}); save(); render(); openLoot();
 }
-/* ---------- Вкладки, бейджи «есть что забрать», аура сетов ---------- */
+
 var TABS=["Mine","Hero","Meta"];
-/** Подсветка нижнего навбара: активный экран UIS / лист навыков.
- *  На главном забое ни одна кнопка не «on»; повторный тап активного — закрыть в забой. */
+
 function syncBottomNav(){
   const ui=$("uiScreen");
   const uiOpen=!!(typeof UIS!=="undefined" && UIS && UIS.id && ui
@@ -8438,7 +8229,7 @@ function switchTab(name){
     if(panel&&panel.classList) panel.classList.toggle("on", t===name);
     if(btn&&btn.classList) btn.classList.toggle("on", t===name);
   }
-  { // Mine-сцена и лог — только в забое
+  {
     const onMine = name==="Mine";
     const sc=$("scene"); if(sc&&sc.style) sc.style.display = onMine ? "" : "none";
     const pw=$("pwStrip"); if(pw&&pw.style) pw.style.display = onMine ? "" : "none";
@@ -8447,14 +8238,14 @@ function switchTab(name){
     const lw=$("logWrap"); if(lw&&lw.style) lw.style.display = onMine ? "" : "none";
   }
   if(S&&S.ftue&&name==="Meta"&&!S.ftue.t){ S.ftue.t=1; save(); }
-  /* #bottomNav .on — только syncBottomNav (не legacy Mine/Hero/Meta). */
+
   try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
   const v=$("view"); if(v) v.scrollTop=0;
   if(S){ S.tab=name; save(); }
   togglePaperdoll(name==="Hero");
   Platform.logEvent("tab",{t:name});
 }
-/* Что сейчас требует внимания игрока — по одному признаку на вкладку. */
+
 function badges(){
   const skillReady = SKILL_DEFS.some(d=>canUpSkill(d.id)) || (S.chestKeys||0)>0 || (S.skillPts||0)>0 || (S.perkPicks||0)>0;
   const petReady   = Object.keys(S.petBox||{}).some(k=>{ const [t,r]=k.split("_").map(Number); return canMergePet(t,r); });
@@ -8484,9 +8275,7 @@ function renderBadges(){
   { const up=$("skillsUp"); if(up&&up.classList) up.classList.toggle("on", !!(S.skillPts>0 || (S.perkPicks||0)>0 || SKILL_DEFS.some(d=>canUpSkill(d.id)))); }
   try{ updateGrowthDot(); }catch(e){}
 }
-/* Аура и эмблемы активных Сетов Подземелья прямо на дворфе. */
-/* ---------- Paperdoll: слоты на теле дворфа (Ultima Online) ---------- */
-/* Колонки слева и справа от силуэта: маркер никогда не перекрывает дворфа. */
+
 const PD_POS={
   helm: [-20, 8], robe: [-20, 30], pack: [-20, 52], boots:[-20, 74], pants:[-20, 96],
   pick: [120, 8], glove:[120, 30], lamp: [120, 52], pet:  [120, 74]
@@ -8521,23 +8310,17 @@ function openGearSlot(id){
     head+statLines+bagCta);
   Platform.logEvent("paperdoll_slot",{id});
 }
-/* ---------- Гильдия Рудознатцев: человеческая разметка ----------
-   Почему не «майнинг в фоне»: наш кадр стоит ~214 мкс, игра ест ~1.3% ядра —
-   свободных вычислений нет, а специально греть телефон запрещают сторы.
-   Зато глаз человека решает то, чего не умеет алгоритм. Схема как у
-   Zooniverse/Stall Catchers: контрольные задания оценивают надёжность игрока,
-   ею взвешивается голос, консенсус закрывает задание. */
+
 const SPECIMENS=(()=>{const o={};for(const k of ["g1","g2","g3","g4","o1","o2","o3","o4"])o[k]="art/spec_"+k+".webp";return o;})();
 let sciTask=null, sciLastId=null;
-/* Надёжность по контрольным заданиям, сглаживание Лапласа: новичок не считается
-   ни гением, ни вредителем. */
+
 function sciReliability(){
   const s=S.science||{};
   return (( s.goldOk||0)+1)/(((s.goldTotal)||0)+2);
 }
 function sciWeight(){
   const r=sciReliability();
-  return r<BALANCE.science.minRel ? 0 : r;   // ненадёжный голос не влияет на консенсус
+  return r<BALANCE.science.minRel ? 0 : r;
 }
 function sciNextTask(){
   const all=Platform.scienceTasks();
@@ -8546,7 +8329,7 @@ function sciNextTask(){
   const wantGold = gold.length && (!open.length || Math.random()<BALANCE.science.goldRate);
   let pool = wantGold ? gold : open;
   if(!pool.length){ sciTask=null; return null; }
-  // не показываем тот же образец два раза подряд
+
   if(pool.length>1 && sciLastId!=null){
     const alt=pool.filter(t=>t.id!==sciLastId);
     if(alt.length) pool=alt;
@@ -8577,11 +8360,11 @@ function sciAnswer(idx){
   S.shards=(S.shards||0)+sh; S.protein=(S.protein||0)+pr;
   showToast("🔬","Рудознатец","",msg,"+"+sh+" 💠 · +"+pr+" 🍺");
   Platform.logEvent("science_answer",{gold:t.gold!=null});
-  sciTask=null; sciNextTask();          // следующий образец, а не тот же
+  sciTask=null; sciNextTask();
   save(); render(); openGuild();
   return true;
 }
-/* Честный пропуск: не знаешь — не угадывай. Ни награды, ни удара по надёжности. */
+
 function sciSkip(){
   if(!sciTask) return false;
   Platform.logEvent("science_skip",{});
@@ -8611,8 +8394,7 @@ function openGuild(){
          <b style="color:var(--gold)">Ничего не считается в фоне.</b> Твой телефон
          не греется и не майнит. Работает только твой глаз, и только когда ты сам открыл этот экран.
          <br><br>
-         <span style="color:#8a93a3">Пул образцов сейчас демонстрационный. В релизе сюда
-         подключается настоящий проект гражданской науки — с их лицензией и твоим согласием.</span>
+         <span style="color:#8a93a3">Образцы выдаёт архив Горы. Новые партии появляются, когда Рудознатцы приносят свежие сколы.</span>
        </div>
        <div style="text-align:center;padding:14px 0">
          <button class="btn btn-hard" onclick="sciConsent()" style="max-width:280px">Согласен, вступаю</button>
@@ -8632,8 +8414,7 @@ function openGuild(){
   const img=SPECIMENS[t.id];
   const opts=t.opts.map((o,i)=>
     `<button class="btn btn-soft" onclick="sciAnswer(${i})" style="margin:3px 0">${o}</button>`).join("");
-  /* НИКАКОЙ пометки «контрольный»: иначе мошенник отвечает внимательно только
-     на контрольные и размечает мусором всё остальное. */
+
   metaOpen("🔬 Гильдия Рудознатцев",
     "Посмотри на образец и ответь, что видишь. Ответы многих дворфов сводятся в один — так рождается научный факт.",
     `<div class="specWrap">
@@ -8655,17 +8436,16 @@ function openGuild(){
   Platform.logEvent("guild_view",{});
 }
 
-/* ---------- Интро «Устав Горы» ---------- */
 const CODEX=[
   ["Про крепь","Крепь, гражданин шахтёр, вкачивать надо. Не потому что красиво, а потому что свод — он падает молча, без объявления. Первым в шахте гибнет не самый слабый. Первым гибнет тот, кто сказал «да ладно, ещё пять минут покопаю»."],
   ["Про бороду","В подгорном царстве борода — это не растительность. Это трудовая книжка. У кого борода до пояса — тот Старший Забойщик. У кого до колен — тот Патриарх Горы и с ним здороваются первым. А у кого бороды нет вовсе, того зовут «Пушок» и не пускают на планёрку."],
-  ["Про эль","Дворф пьёт эль не ради веселья. Дворф пьёт эль для восстановления двенадцати процентов энергии. Всё, что происходит после третьей кружки — про бывшую, про эльфа и про то, что «у него уши мёрзнут» — в проектную документацию не входит и обсуждению не подлежит."],
-  ["Про Auto&nbsp;Roll","Раньше дворф каждую железку разглядывал, взвешивал, думал. Теперь стоит галочка «автопродажа ниже эпического». Тридцать лет ремесла, династия, дед завещал — и всё это сведено к одному ползунку. Прогресс, гражданин. Молча копай."],
+  ["Про эль","Дворф пьёт эль не ради веселья. Дворф пьёт эль, чтобы снова встать к забою. Всё, что происходит после третьей кружки — про бывшую, про эльфа и про то, что «у него уши мёрзнут» — в Устав не входит и обсуждению не подлежит."],
+  ["Про Авто","Раньше дворф каждую железку разглядывал, взвешивал, думал. Теперь стоит галочка «автопродажа ниже порога». Тридцать лет ремесла, династия, дед завещал — и всё это сведено к одному ползунку. Прогресс, гражданин. Молча копай."],
   ["Про престиж","Механика «Глубинный Зов» устроена просто. Ты спускался семь тысяч этажей, оброс мифриловым снаряжением, знал каждый камень по имени. Нажимаешь кнопку — и ты снова на первом этаже, в дырявом мешке, с киркой «Каменная». Зато с множителем. Гора не отбирает нажитое. Гора конвертирует его в опыт."],
   ["Про вагонетку","Вагонетка наполняется с горкой, потом уезжает и приезжает пустая. Куда уезжает — не спрашивай. Кто её там разгружает — тоже не спрашивай. В шахте есть вопросы, которые задают только один раз."],
   ["Про лутбоксы","Чтобы улучшить ларь, нужны дубликаты камней. Не сами камни — дубликаты. Первый экземпляр каждого камня трогать нельзя, он в коллекции, он приносит два процента к добыче. Вот так, гражданин, и живём: одна рука копает, вторая следит, чтоб первая не сожрала музейный фонд."],
-  ["Про старейшин","Наём старейшины — это гача. Крутишь, выпадает Знахарка Хильда. Крутишь ещё — выпадает Пивовар Бодри, но слабее. Слабого не выгоняют, слабого отправляют в артель — материалом. Целевой старейшина поглощает материал и растёт в уровне. Формулировка «поглощает» в документации закреплена. Что там на самом деле — вопрос закрытый."],
-  ["Про офлайн-доход","Ты спишь. Ты на работе. Ты живёшь свою жизнь. А дворф копает. Дворф копает ровно два часа, потом останавливается и ждёт тебя, глядя в темноту. Не потому что устал. Потому что <code>IDLE_CAP_SECONDS = 7200</code>. Так завещал байткод."],
+  ["Про старейшин","Наём старейшины — дело удачи. Крутишь, выпадает Знахарка Хильда. Крутишь ещё — выпадает Пивовар Бодри, но слабее. Слабого не выгоняют: слабого берут в артель материалом. Целевой старейшина принимает материал и растёт. Что там на самом деле — вопрос закрытый."],
+  ["Про офлайн-доход","Ты спишь. Ты на работе. Ты живёшь свою жизнь. А дворф копает. Дворф копает ровно два часа, потом останавливается и ждёт тебя, глядя в темноту. Не потому что устал — так велит Устав Горы: два часа без тебя, дальше — только вместе."],
   ["Про смысл","Порода становится крепче ровно настолько, насколько крепчаешь ты. Быстрее не пройдёшь, медленнее не отстанешь — шесть секунд на жилу, и так до конца времён. Это, гражданин, называется «бесконечная сложность». В шахте это называется просто: работа."]
 ];
 function showIntro(){
@@ -8680,7 +8460,7 @@ function showIntro(){
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   Platform.logEvent("intro_open",{});
 }
-/* Автопоказ отключён: Устав только вручную из настроек. */
+
 function maybeAutoIntro(){
   if(S && S.introSeen===false){ S.introSeen=true; save(); }
 }
@@ -8771,7 +8551,7 @@ function openWall(){
          style="flex:1;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px;font-size:9px">
        <button class="btn btn-soft" onclick="setPlayerName()">Имя</button></div>
      ${rows}
-     <div class="sub" style="margin-top:10px">Список демонстрационный (локальный). В релизе — общий рейтинг с сервера.</div>`);
+     <div class="sub" style="margin-top:10px">Стена помнит тех, кто оставил имя в этой шахте.</div>`);
   Platform.logEvent("wall_view",{});
 }
 function setPlayerName(){ const el=$("lbName"); if(!el) return;
@@ -8786,23 +8566,23 @@ function openFairness(){
   const f=S.fair;
   const lastNonce=Math.max(0,f.nonce-1);
   metaOpen("🔐 Честность гачи",
-    "Каждый ролл гачи считается хэшем SHA-256 от сервера+клиента+счётчика. Проверяемо, ничего не майнится.",
+    "Каждый ролл считается по формуле Горы: сервер + твой сид + счётчик. Проверяемо — ничего не майнится.",
     `<div class="metarow"><span>Режим честности</span>
        <button class="btn ${f.on?"btn-hard":"btn-soft"}" onclick="toggleFair()">${f.on?"ВКЛ ✓":"выкл"}</button></div>
-     <div class="metarow"><span>Коммит сервера (SHA-256)</span></div>
+     <div class="metarow"><span>Печать Горы (хэш)</span></div>
      <div class="sub" style="word-break:break-all;color:#7ae8dc">${f.serverHash}</div>
-     <div class="metarow" style="margin-top:8px"><span>Твой клиентский сид</span></div>
+     <div class="metarow" style="margin-top:8px"><span>Твой личный сид</span></div>
      <div class="btnrow"><input id="fairClient" value="${f.client}"
         style="flex:1;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px;font-size:9px">
        <button class="btn btn-soft" onclick="setFairClient()">Задать</button></div>
-     <div class="metarow" style="margin-top:8px"><span>Роллов сделано (nonce)</span><span><b>${f.nonce}</b></span></div>
+     <div class="metarow" style="margin-top:8px"><span>Роллов сделано</span><span><b>${f.nonce}</b></span></div>
      <div class="sub" style="margin-top:10px">Проверить прошлый ролл: пересчитай
        <br><code style="color:#e8b93c">SHA256("сид_сервера:${f.client}:${lastNonce}")</code>
        <br>первые 8 hex ÷ 2³² = число ролла в [0,1).</div>
      <div style="text-align:center;padding:12px 0">
        <button class="btn btn-hard" onclick="revealFair()" style="max-width:280px">Раскрыть сид и сменить (проверка)</button>
      </div>
-     <div class="sub">Раскрытие показывает старый серверный сид — сверь его хэш с коммитом выше — и выдаёт новый.</div>`);
+     <div class="sub">Раскрытие показывает старый серверный сид — сверь его хэш с печатью выше — и выдаёт новый.</div>`);
   Platform.logEvent("fair_view",{on:f.on});
 }
 function toggleFair(){ S.fair.on=!S.fair.on;
@@ -8885,8 +8665,6 @@ function openLoot(){
   Platform.logEvent("loot_view",{});
 }
 
-/* ---------- старт ---------- */
-/* ---------- рост: рефералы, вейтлист, юнит-экономика ---------- */
 function growthInviteCode(){ ensureGrowth(S); return S.growth.code; }
 function growthInviteLink(){
   const code=growthInviteCode();
@@ -9029,7 +8807,7 @@ function growthInviteMilestonesReady(){
   }
   return false;
 }
-/** Красная точка на «Друзья»: незабранный вейтлист / вехи; ранний намёк — пока не заходили в раздел. */
+
 function growthDotShouldShow(){
   if(!S) return false;
   ensureGrowth(S);
@@ -9093,14 +8871,14 @@ const SPEEDS=[1,2,3,10,100];
   const applySpeed=()=>{
     Platform.logEvent("speed_toggle",{speed:next});
     S.speed=next;
-    flushSales();                                                  // хвост батча не теряем
+    flushSales();
     const q={1:"Спокойный темп. Медитируем.",2:"Двойной темп! Борода развевается!",
       3:"ТРОЙНОЙ! Держите шлем!",10:"×10! Кирка плавится!",100:"×100! ГОРА ДРОЖИТ!!!"};
     sayQuip(q[S.speed]||("×"+S.speed+"!"),3);
     save();
   };
   if(next<=1){ applySpeed(); return; }
-  // rewarded может отсутствовать/падать в web/file:// — тогда просто переключаем
+
   try{
     if(Platform && typeof Platform.showRewarded==="function"){
       Platform.showRewarded(ok=>{ if(ok) applySpeed(); }, "speed");
@@ -9111,10 +8889,9 @@ const SPEEDS=[1,2,3,10,100];
   };
 }
 requestAnimationFrame(loop);
-setInterval(save, 3000);   // автосейв каждые 3с; при уходе со страницы — flushSave
+setInterval(save, 3000);
 bindSaveLifecycle();
 
-/* ---------- Admin bridge: события + агрегаты + клики + команды ---------- */
 (function(){
   const EV_KEY="oredeep_admin_events";
   const EV_MAX=300;
@@ -9198,7 +8975,6 @@ bindSaveLifecycle();
     pushEvent(name,params);
   };
 
-  /* Клики по кнопкам/табам — для «что жмут чаще» */
   let _clickGate=0;
   document.addEventListener("click", function(e){
     const now=Date.now();
@@ -9280,9 +9056,7 @@ bindSaveLifecycle();
 </script>
 <script src="tools/ui_screens.js?v=15"></script>
 <script data-diag="1">
-/* Сторож запуска. Живёт в отдельном теге, поэтому переживает даже
-   синтаксическую ошибку главного скрипта. Если через 3 секунды игра
-   не собрана — показывает, что именно сломалось, вместо мёртвого экрана. */
+
 (function(){
   if(typeof window==="undefined"||typeof document==="undefined") return;
   var E=window.__OREDIAG=window.__OREDIAG||[];
@@ -9708,7 +9482,6 @@ bindSaveLifecycle();
     handleCaptureRequest(event);
   });
 })();
-
 
 </script></body>
 </html>

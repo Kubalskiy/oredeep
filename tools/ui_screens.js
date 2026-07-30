@@ -1,6 +1,4 @@
-/* ============================================================
-   UI SHELLS — Boxer-style mobile screens (visual only)
-   ============================================================ */
+
 "use strict";
 
 const UI_MINES=[
@@ -23,7 +21,6 @@ const UI_TAV_RANKS=[
   {n:"Серебряный Кубок",xp:540},{n:"Золотой Кубок",xp:320},{n:"Платиновый Кубок",xp:110}
 ];
 
-/* Фейковый PvP-рейтинг по кубкам (отдельно от Стены Горы по глубине) */
 const UI_PVP_BOARD=[
   {n:"Дурин Глубинный", ic:"⛰", t:1180},
   {n:"Мира Рунная",     ic:"✦", t:860},
@@ -38,7 +35,7 @@ const UIS={
   id:null, tab:null,
   $(id){ return document.getElementById(id); },
   setChrome(hidden){
-    /* Футер (#bottomNav) всегда виден — гасим только верхнюю шапку. */
+    
     const app=this.$("app"), nav=this.$("bottomNav");
     if(app&&app.classList) app.classList.toggle("uiOpen", !!hidden);
     if(nav){
@@ -51,7 +48,7 @@ const UIS={
     const el=this.$("uiScreen"); if(!el) return;
     el.style.display="flex";
     el.style.pointerEvents="auto";
-    el.dataset.scr=this.id||"";   // фоновая живопись экрана подбирается по id
+    el.dataset.scr=this.id||"";   
     if(el.classList) el.classList.add("open");
     this.setChrome(true);
     try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
@@ -72,7 +69,7 @@ const UIS={
     try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
     try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
   },
-  /** Назад: из panel/push → предыдущий экран (напр. Союзники); иначе закрыть. */
+  
   back(){
     const prev=(this._stack||[]).pop();
     if(!prev){ this.close(); return; }
@@ -87,12 +84,12 @@ const UIS={
     this.tab=t;
     if(this.id) this.render(this.id);
   },
-  /** Сброс стека — для нижнего навбара и «корневых» входов. */
+  
   open(id, tab){
     this._stack=[];
     this._go(id, tab);
   },
-  /** Вложенный переход: назад вернёт на текущий экран (Союзники → Бороды и т.п.). */
+  
   push(id, tab){
     if(this.id && this.id!=="panel"){
       (this._stack=this._stack||[]).push({kind:"screen", id:this.id, tab:this.tab});
@@ -112,7 +109,7 @@ const UIS={
         tab="main";
       }
     }
-    /* Уход с листа навыков — снять маркер, иначе подсветка Навыков залипнет */
+    
     if(id!=="panel"){
       try{ if(typeof _skillsShellTab!=="undefined") _skillsShellTab=null; }catch(e){}
     }
@@ -175,7 +172,7 @@ const UIS={
         +'<div class="uiSec">Вехи</div>'+msHtml
         +'<div class="uiSec">Вейтлист (ранний доступ)</div>'
         +(wl.joined
-          ?(wl.claimed?this.row("Статус","✓ бонус получен"):this.card("📋","Ранний доступ","органика без CPI",
+          ?(wl.claimed?this.row("Статус","✓ бонус получен"):this.card("📋","Ранний доступ","бонус за раннюю запись",
             '<button class="btn btn-hard btn-wide" onclick="claimWaitlistBonus()">Забрать бонус</button>'))
           :this.card("📋","Вейтлист","бонус за органический спрос",
             '<button class="btn btn-hard btn-wide" onclick="growthJoinWaitlist(false);UIS.render(\'profile\')">Вступить</button>'))
@@ -207,8 +204,6 @@ const UIS={
   },
 
   renderSettings(){
-    const ue=(typeof growthUnitEcon==="function")?growthUnitEcon():{};
-    const fmtUsd=c=>"$"+(c/100).toFixed(2);
     this.$("uiTitle").textContent="Настройки";
     this.$("uiHeadAct").innerHTML="";
     this.$("uiTabs").innerHTML="";
@@ -216,18 +211,10 @@ const UIS={
       this.row("Музыка",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 вкл":"🔇 выкл")+'</button>')
       +this.row("Всплывающие окна",'<button id="uiSetToasts" onclick="toggleToasts();UIS.render(\'settings\')">'+(typeof toastToggleLabel==="function"?toastToggleLabel():(toastsOn?"💬 вкл":"🚫 выкл"))+'</button>')
       +this.row("Устав Горы",'<button onclick="showIntro()">📜 читать</button>')
-      +this.row("Админка",'<button type="button" onclick="location.href=\'admin.html\'">⛏ открыть</button>')
       +this.row("Честность гачи",'<button onclick="openFairness()">🔐 открыть</button>')
-      +'<div class="uiSec">Юнит-экономика (демо)</div>'
-      +this.row("День с инсталла","D"+(ue.days||1))
-      +this.row("Выручка",fmtUsd(ue.totalCents||0)+" · IAP "+fmtUsd(ue.revenueIap||0))
-      +this.row("CAC цель",fmtUsd(ue.cac||0)+" · LTV цель "+fmtUsd(ue.ltv||0))
-      +this.row("LTV/CAC","×"+((ue.ltvRatio||0).toFixed(1)))
-      +this.row("Окупаемость",(ue.paybackOk?"✓ до D"+BALANCE.growth.paybackDay:"ещё нет"))
-      +this.row("K-фактор",((ue.k||0).toFixed(2))+" · "+(ue.organic?"органика":"платный"))
-      +this.row("Реклама сегодня",(S.growth&&S.growth.ads?S.growth.ads.count:0)+"/"+BALANCE.growth.ads.dailyCap)
-      +this.row("Прогресс",'<span class="uiSub">автосейв · резервная копия</span>')
-      +this.row("Версия",'<span class="uiSub">ORE DEEP · UI shells</span>')
+      +this.row("Стена Горы",'<button onclick="openWall()">🏔 рейтинг</button>')
+      +this.row("Прогресс",'<span class="uiSub">сохраняется автоматически</span>')
+      +this.row("Версия",'<span class="uiSub">ORE DEEP</span>')
       +'<button class="btn btn-danger" style="margin-top:14px;width:100%" onclick="UIS.close();resetProgress()">↺ Всё сначала</button>';
   },
 
@@ -456,7 +443,7 @@ const UIS={
     const how=
       '<div class="uiMineHow">'
       +'<b>Как это работает</b>'
-      +'<div class="uiSub">Особый камень выдаётся <b>по нарастающей</b>: и пауза, и награда — <b>Фибоначчи</b> ('+fibArr.join(", ")+'). Единица таймера — '+(unitSec>=3600?(unitSec/3600)+"ч":(unitSec/60)+"м")+' · F. У каждого чертога свой ряд ступеней на день.</div>'
+      +'<div class="uiSub">Особый камень выдаётся <b>по нарастающей</b>: чем дальше ступень — тем дольше пауза и тем больше награда ('+fibArr.join(", ")+'). Единица таймера — '+(unitSec>=3600?(unitSec/3600)+"ч":(unitSec/60)+"м")+' на шаг ряда. У каждого чертога свой ряд ступеней на день.</div>'
       +'<div class="uiMineFib">'+fibLine+'</div>'
       +'</div>';
 
@@ -475,7 +462,7 @@ const UIS={
         +'<button type="button" class="btn btn-cta" onclick="startMineRaid('+cur+')">Разбить особый камень</button></div>';
     } else if(slot.done){
       raidCta='<div class="uiMineRaid empty">'
-        +'<div class="uiSub">Все '+slot.max+' ступеней Фибоначчи за сегодня пройдены. Завтра снова с ×1.</div></div>';
+        +'<div class="uiSub">Все '+slot.max+' ступеней за сегодня пройдены. Завтра снова с ×1.</div></div>';
     } else {
       raidCta='<div class="uiMineRaid empty">'
         +'<div class="uiMineRaidTop"><span>⏱</span><div><b>До ступени '+(slot.step+1)+' · ×'+slot.fib+'</b>'
@@ -529,7 +516,7 @@ const UIS={
       } else if(unlocked && !sl.done && !sl.ready){
         raidBtn='<div class="uiSub">далее ×'+sl.fib+' через '+fmtClock(sl.leftMs)+'</div>';
       } else if(unlocked && sl.done){
-        raidBtn='<div class="uiSub">ряд Фибоначчи на сегодня закрыт</div>';
+        raidBtn='<div class="uiSub">ступени на сегодня закрыты</div>';
       }
       return '<div class="uiMineCard '+m.theme+(hereNow?" sel":"")+(unlocked?"":" locked")+'">'
         +'<button type="button" class="btn btn-mine uiMineEnter" onclick="'+enterClick+'">'
@@ -557,7 +544,7 @@ const UIS={
     const foot=
       '<div class="uiSec">Ступени по чертогам</div>'
       +setStrip
-      +'<div class="uiSub" style="margin-top:8px">Камней коллекции '+totalCol+'/40. Обычная добыча отдельно; особый камень — Фибоначчи-лестница.</div>';
+      +'<div class="uiSub" style="margin-top:8px">Камней коллекции '+totalCol+'/40. Обычная добыча отдельно; особый камень — лестница ступеней.</div>';
 
     this.$("uiBody").innerHTML=how+overview+raidCta
       +'<div class="uiSec">Пять чертогов</div>'
@@ -580,7 +567,7 @@ const UIS={
     const leagueSub=atMax
       ? ("макс · победа +" + fmt(winGold) + " 🪙")
       : ("победа +" + fmt(winGold) + " 🪙 · в " + BALANCE.pvp.names[nextLi] + " уже +" + fmt(nextGold) + " 🪙");
-    this.$("uiTitle").textContent="PvP · ИИ-агенты";
+    this.$("uiTitle").textContent="PvP · Арена";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🏆 '+fmt(S.trophies||0)+'</span>';
     this.$("uiTabs").innerHTML="";
     const opps=pvpSlate.map((o,i)=>{
@@ -593,7 +580,7 @@ const UIS={
     }).join("");
     this.$("uiBody").innerHTML=
       '<div class="uiHero compact"><div class="uiHeroArt">🤖</div><b>'+esc(playerName())+'</b>'
-      +'<div class="uiSub">5 ИИ-агентов · гонка добычи '+raceSec+'с</div></div>'
+      +'<div class="uiSub">Пять соперников · гонка добычи '+raceSec+'с</div></div>'
       +this.card("🏆","Лига: "+BALANCE.pvp.names[li], leagueSub,
         this.bar(pct,"var(--blue)")
         +'<div class="uiSub" style="margin-top:4px">'+(atMax
@@ -601,7 +588,7 @@ const UIS={
           : ("до "+BALANCE.pvp.names[nextLi]+": "+fmt(Math.max(0,nextReq-(S.trophies||0)))+" 🏆"))+'</div>'
         +'<div class="uiSub" style="margin-top:4px">попыток '+left+"/"+BALANCE.pvpDayLimit
           +" · твоя добыча ~"+fmt(pvpMineOrePerSec(me))+"/с</div>")
-      +'<div class="uiSec">Выбери ИИ-соперника</div>'
+      +'<div class="uiSec">Выбери соперника</div>'
       +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>')
       +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Обновить форму дня</button>':'')
       +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openPvpBoard()">⚔ Рейтинг PvP</button>'
@@ -622,8 +609,7 @@ const UIS={
     const talk=(typeof borinBarTalk==="function")
       ? borinBarTalk()
       : {tag:"Борин у стойки.", text:"Пиво не для красоты. Пей — копи очки — качай застолье."};
-    /* Пиксель-арт «стена Бреттос»: подсвеченные цветные бутылки на полках,
-       фонарь, бочки и Борин за стойкой. Сетка 240×80, рисуем rect'ами. */
+    
     const TAV_COLS=["#f0a028","#4a8ce0","#f4cc42","#58c04c","#e0503c","#9a62d8","#46c8c8","#f07830"];
     let tavBtls="";
     [[10,94],[140,224]].forEach((u,ui)=>{
@@ -825,7 +811,7 @@ const UIS={
         +'</div>'
         +'<div class="uiEmpty" style="padding:16px 8px">Список собутыльников онлайн — в сетевой версии.</div>';
     } else {
-      /* Кубки: игрок вставлен в таблицу по Gym XP */
+      
       const mine={n:playerName(), xp:xp, me:true};
       const board=UI_TAV_RANKS.map(t=>({n:t.n, xp:t.xp, me:false})).concat([mine])
         .sort((a,b)=>b.xp-a.xp);
@@ -879,8 +865,7 @@ const UIS={
   },
 
   renderShop(){
-    /* AGENTS 5.13: Офферы · Артефакты · Бочки · Самоцветы · Бесплатные
-       В каждом разделе — своё free + rewarded (привычка обходить вкладки). */
+    
     const tab=this.tab||"offers";
     this.$("uiTitle").textContent="Рынок";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">💎 '+fmt(S.gems||0)+'</span>';
@@ -897,12 +882,12 @@ const UIS={
       +(S.growth&&S.growth.starterBought
         ? this.card("✓","Стартовый пак","куплен · D1 payback","")
         : this.card("⚡","Стартовый пак","💎"+sp.gems+" + 🪙"+fmt(sp.gold)+" + 🎒"+sp.bags+" · 2× "+sp.loot2xMin+" мин",
-          '<div class="uiSub" style="margin-bottom:6px">разовый · окупается раньше следующего CPI</div>'
+          '<div class="uiSub" style="margin-bottom:6px">разовый стартовый набор</div>'
           +'<button class="btn btn-hard btn-wide" onclick="buyStarterPack()">$'+sp.price+'</button>'))
       +BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>this.card("🎁","Пак "+(i+1)+" · скидка","💎"+g+" + 🪙"+fmt(gold),
         '<button class="btn btn-hard btn-wide" onclick="buyPack('+i+')">$'+[6.99,16.99,24.99][i]+'</button>')).join("")
         +(S.noAds
-          ? this.card("✓","Реклама отключена","No-Ads активен","")
+          ? this.card("✓","Реклама отключена","спокойно копай","")
           : this.card("🚫","Отключить рекламу","навсегда",
             '<button class="btn btn-hard btn-wide" onclick="buyNoAds()">$'+BALANCE.noAdsPrice+'</button>'));
     } else if(tab==="art"){
@@ -956,7 +941,7 @@ const UIS={
     if(fn) fn.call(this);
   },
 
-  /* Sprint 2: legacy metaModal content → uiScreen panel */
+  
   openPanel(title, sub, html, silent){
     if(!silent && this.id && this.id!=="panel"){
       (this._stack=this._stack||[]).push({kind:"screen", id:this.id, tab:this.tab});
@@ -1005,7 +990,7 @@ function uiWire(){
   function navGo(id, openFn){
     return function(){
       try{ if(typeof closeCharSheet==="function") closeCharSheet(); }catch(e){}
-      /* Повторный тап по активному пункту → назад в забой */
+      
       if(UIS.id===id){
         UIS.close();
         try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
@@ -1030,7 +1015,7 @@ function uiWire(){
   });
   if($("navSkills")) $("navSkills").onclick=function(){
     if(typeof requireFeat==="function"&&!requireFeat("skills")) return;
-    /* Повторный тап по Навыкам → забой */
+    
     const skillsOpen=(UIS.id==="panel" && typeof _skillsShellTab!=="undefined" && _skillsShellTab!=null)
       || (typeof charSheetOpen==="function" && charSheetOpen());
     if(skillsOpen){
@@ -1095,7 +1080,6 @@ openBeard=function(tab){ UIS.open("beards", tab||(UIS.id==="beards"?UIS.tab:null
 openProfile=function(){ UIS.open("profile"); Platform.logEvent("profile_view",{}); };
 openGeoGuild=function(){ UIS.open("beards", S.geo && S.geo.r===GEO_RAR.length-1 ? "ascend" : "merge"); };
 
-/** Наставник из Союзников — своя карточка, не вкладка Застолья/Устав. */
 function openBorinMentor(){
   const w=typeof beardWisdom==="function"?beardWisdom():{title:"—",goldPct:0,luckAdd:0};
   UIS.openPanel("Борин · наставник",
@@ -1106,7 +1090,7 @@ function openBorinMentor(){
     +'<button class="btn btn-hard btn-wide" onclick="UIS.push(\'beards\',\'rank\')">Мудрость Бороды</button>'
     +'</div>');
 }
-/** Клан из Союзников — заглушка, не вкладка Друзья. */
+
 function openClanSoon(){
   UIS.openPanel("Клан",
     "Артель дворфов: общий забой, чат и войны кланов.",

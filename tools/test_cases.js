@@ -479,8 +479,8 @@ localStorage.removeItem("oredeep_v3"); load(); S.gold=1e12;
 S.lvls.crit=100; S.gear={}; S.geo=null;   // CRIT: 5+100 => кап 60
 T("CRIT на капе 60", stat("crit")===60);
 render();
-T("кнопка CRIT заблокирована и показывает MAX",
-  __ids.u_crit._q["button"].disabled && __ids.u_crit._q[".c"].textContent==="MAX");
+T("кнопка CRIT заблокирована и показывает МАКС",
+  __ids.u_crit._q["button"].disabled && __ids.u_crit._q[".c"].textContent==="МАКС");
 { const g0=S.gold, l0=S.lvls.crit;
   __ids.u_crit._q["button"].onclick();
   T("клик на капе: золото не списано, уровень не растёт", S.gold===g0 && S.lvls.crit===l0); }
@@ -1179,7 +1179,7 @@ S.petBox={}; boxAdd(S.petBox,0,3,9);
 T("merge Legendary заблокирован — Exotic только крафтом", mergePet(0,3)===false && canMergePet(0,3)===false);
 S.petBox={}; boxAdd(S.petBox,0,3,1); boxAdd(S.petBox,1,3,1); boxAdd(S.petBox,2,3,1); S.gems=0;
 T("без гемов крафт не срабатывает", craftPetExotic()===false);
-T("Exotic-тир добавлен питомцам", PET_RAR[4]==="Exotic" && PET_TYPES.every(p=>p.pct.length>=5));
+T("Exotic-тир добавлен питомцам", PET_RAR[4]==="Экзотический" && PET_TYPES.every(p=>p.pct.length>=5));
 T("ролл Legendary увеличивает счётчик для крафта", (function(){
   localStorage.removeItem("oredeep_v3"); load(); S.eggs=50; const s0=S.petLegSeen||0;
   const _r=Math.random; Math.random=()=>0.999; rollPet(); Math.random=_r;   // форсим высокую редкость
@@ -1443,7 +1443,7 @@ T("shopDaily покрывает 4 раздела + a/b",
   UIS.close();
 }
 
-console.log("\n[50] Штольни: Фибоначчи-таймер + особый камень");
+console.log("\n[50] Штольни: лестница ступеней + особый камень");
 localStorage.removeItem("oredeep_v3"); load();
 T("mineRaid: fib + 5 рейдов",
   Array.isArray(BALANCE.mineRaid.fib) && BALANCE.mineRaid.fib[0]===1
@@ -1490,11 +1490,11 @@ T("день стартует со ступени 0 · готово",
   T("нельзя рейднуть закрытый чертог 2 при mine=1", !startMineRaid(2));
   UIS.open("mines");
   const html=($("uiBody")&&$("uiBody").innerHTML)||"";
-  T("экран штолен объясняет Фибоначчи", /Фибоначчи|особый камень|startMineRaid/.test(html));
+  T("экран штолен объясняет особый камень", /нарастающей|особый камень|startMineRaid|ступен/.test(html));
   UIS.close();
 }
 
-console.log("\n[51] Бесплатный бонус 🧰: Фибоначчи");
+console.log("\n[51] Бесплатный бонус 🧰: лестница ступеней");
 localStorage.removeItem("oredeep_v3"); load();
 T("BALANCE.bonus fib", Array.isArray(BALANCE.bonus.fib) && BALANCE.bonus.fib[2]===2
   && BALANCE.bonus.timerUnitSec>0 && BALANCE.bonus.goldVeinMul>=1);
