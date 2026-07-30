@@ -261,13 +261,14 @@ button:disabled{opacity:.45;cursor:default;}
   transform-origin:70% 85%;animation:bob 2.6s ease-in-out infinite;}
 #miner.swing #pickHand{animation:chopArm .32s cubic-bezier(.3,.05,.4,1);}
     #miner.swing .ml{transform-origin:54% 94%;animation:chopBody .32s cubic-bezier(.3,.05,.4,1);}
-@keyframes chop{0%{transform:rotate(-66deg)}55%{transform:rotate(38deg)}100%{transform:rotate(-66deg)}}
-    @keyframes chopArm{0%{transform:translate(0,0) rotate(-66deg)}22%{transform:translate(-5px,-3px) rotate(-88deg)}58%{transform:translate(7px,4px) rotate(40deg)}78%{transform:translate(3px,2px) rotate(-14deg)}100%{transform:translate(0,0) rotate(-66deg)}}
+@keyframes chop{0%{transform:rotate(0deg)}55%{transform:rotate(28deg)}100%{transform:rotate(0deg)}}
+    @keyframes chopArm{0%{transform:translate(0,0) rotate(0deg)}22%{transform:translate(-5px,-5px) rotate(-28deg)}58%{transform:translate(8px,4px) rotate(28deg)}78%{transform:translate(3px,2px) rotate(8deg)}100%{transform:translate(0,0) rotate(0deg)}}
     @keyframes chopBody{0%{transform:translate(0,0) rotate(0deg)}22%{transform:translate(-4px,-2px) rotate(-5deg)}58%{transform:translate(6px,3px) rotate(8deg)}78%{transform:translate(2px,1px) rotate(3deg)}100%{transform:translate(0,0) rotate(0deg)}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .ml{position:absolute;left:0;top:0;width:95px;height:110px;image-rendering:pixelated;}
-#pickHand{position:absolute;left:16px;top:8px;width:62px;image-rendering:pixelated;
-  transform-origin:46% 86%;transform:rotate(-66deg);z-index:4;}
+/* хват за самый край основания рукояти; острие ~14ч к жиле */
+#pickHand{position:absolute;left:54px;top:-7px;width:54px;image-rendering:pixelated;
+  transform-origin:5% 92%;transform:rotate(0deg);z-index:4;}
 #aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
 /* Питомец-дракон: 6 настроений + скины по редкости */
 #petBox{
@@ -491,30 +492,10 @@ button:disabled{opacity:.45;cursor:default;}
 #statStrip .u.can button{background:linear-gradient(180deg,#2f6b39,#25522d);border-color:#3a8a45;color:#fff;}
 #statStrip .pw{display:none;}
 
-/* F. Экипировка */
-#gearSection{padding:10px 10px 0;}
-#gearGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.slot{
-  position:relative;min-height:78px;border-radius:var(--r-sm);padding:8px 4px;
-  background:linear-gradient(180deg,var(--bgPanelAlt),var(--bgPanel));
-  border:2px solid var(--borderLight);text-align:center;cursor:pointer;
-}
-.slot.petSlot{border-color:var(--petAccent);}
-.slot .ic{font-size:24px;filter:drop-shadow(0 2px 2px #0008);}
-.slot .sn{font-family:var(--font-display);font-size:13px;color:var(--textMuted);margin-top:4px;}
-.slot .sv{font-family:var(--font-display);font-size:14px;color:var(--gold);margin-top:2px;}
-.slot.empty .ic{opacity:.25;}
-.slot .up{position:absolute;top:3px;right:4px;color:var(--income);font-size:12px;display:none;}
-.slot.canUp .up{display:block;}
-.br0{border-color:#4a5261}.br1{border-color:#5fd068}.br2{border-color:#5aa7e8}.br3{border-color:#b97ae8}
-.br4{border-color:#e87a7a}.br5{border-color:#e8b93c}.br6{border-color:#7ae8dc}.br7{border-color:#ff9d5c}
-.r0{color:#b9c0cc}.r1{color:#5fd068}.r2{color:#5aa7e8}.r3{color:#b97ae8}.r4{color:#e87a7a}
-.r5{color:#e8b93c}.r6{color:#7ae8dc}.r7{color:#ff9d5c}
-
-/* G. Действия */
+/* F. Сумки / авто — над инвентарём */
 #actionBar{
   display:grid;grid-template-columns:1.2fr 1.15fr .7fr;gap:8px;align-items:center;
-  padding:12px 10px 14px;
+  padding:10px 10px 6px;
 }
 #lootChest{
   position:relative;min-height:72px;border-radius:var(--r-md);
@@ -549,6 +530,26 @@ button:disabled{opacity:.45;cursor:default;}
   font-size:16px;color:var(--textMuted);line-height:1.15;
 }
 #auto.on{border-color:var(--income);color:var(--income);}
+
+/* G. Экипировка — под сумками */
+#gearSection{padding:6px 10px 10px;}
+#gearGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.slot{
+  position:relative;min-height:78px;border-radius:var(--r-sm);padding:8px 4px;
+  background:linear-gradient(180deg,var(--bgPanelAlt),var(--bgPanel));
+  border:2px solid var(--borderLight);text-align:center;cursor:pointer;
+}
+.slot.petSlot{border-color:var(--petAccent);}
+.slot .ic{font-size:24px;filter:drop-shadow(0 2px 2px #0008);}
+.slot .sn{font-family:var(--font-display);font-size:13px;color:var(--textMuted);margin-top:4px;}
+.slot .sv{font-family:var(--font-display);font-size:14px;color:var(--gold);margin-top:2px;}
+.slot.empty .ic{opacity:.25;}
+.slot .up{position:absolute;top:3px;right:4px;color:var(--income);font-size:12px;display:none;}
+.slot.canUp .up{display:block;}
+.br0{border-color:#4a5261}.br1{border-color:#5fd068}.br2{border-color:#5aa7e8}.br3{border-color:#b97ae8}
+.br4{border-color:#e87a7a}.br5{border-color:#e8b93c}.br6{border-color:#7ae8dc}.br7{border-color:#ff9d5c}
+.r0{color:#b9c0cc}.r1{color:#5fd068}.r2{color:#5aa7e8}.r3{color:#b97ae8}.r4{color:#e87a7a}
+.r5{color:#e8b93c}.r6{color:#7ae8dc}.r7{color:#ff9d5c}
 
 #upgrades{display:none!important;} /* дубль полоски — качаем в #statStrip */
 /* Кнопки: единая схема .btn + роль (.btn-soft|hard|danger|nav|side|back|boost|tab) + модификаторы (.btn-wide|tiny) */
@@ -933,8 +934,8 @@ body > .modal{
   .miner.swing #pickHand{animation:chopArm .32s cubic-bezier(.3,.05,.4,1);}
     .miner.swing .ml{transform-origin:54% 94%;animation:chopBody .32s cubic-bezier(.3,.05,.4,1);}
 
-  @keyframes chop{0%{transform:rotate(-66deg)}55%{transform:rotate(38deg)}100%{transform:rotate(-66deg)}}
-    @keyframes chopArm{0%{transform:translate(0,0) rotate(-66deg)}22%{transform:translate(-5px,-3px) rotate(-88deg)}58%{transform:translate(7px,4px) rotate(40deg)}78%{transform:translate(3px,2px) rotate(-14deg)}100%{transform:translate(0,0) rotate(-66deg)}}
+  @keyframes chop{0%{transform:rotate(0deg)}55%{transform:rotate(28deg)}100%{transform:rotate(0deg)}}
+    @keyframes chopArm{0%{transform:translate(0,0) rotate(0deg)}22%{transform:translate(-5px,-5px) rotate(-28deg)}58%{transform:translate(8px,4px) rotate(28deg)}78%{transform:translate(3px,2px) rotate(8deg)}100%{transform:translate(0,0) rotate(0deg)}}
     @keyframes chopBody{0%{transform:translate(0,0) rotate(0deg)}22%{transform:translate(-4px,-2px) rotate(-5deg)}58%{transform:translate(6px,3px) rotate(8deg)}78%{transform:translate(2px,1px) rotate(3deg)}100%{transform:translate(0,0) rotate(0deg)}}
 
   #rockImg{width:100%;height:100%;image-rendering:pixelated;display:block;}
@@ -949,8 +950,8 @@ body > .modal{
 
   .rock.hitfx{animation:shake .12s;}
 
-  #pickHand{position:absolute;left:16px;top:8px;width:62px;image-rendering:pixelated;
-    transform-origin:46% 86%;transform:rotate(-66deg);z-index:4;}
+  #pickHand{position:absolute;left:54px;top:-7px;width:54px;image-rendering:pixelated;
+    transform-origin:5% 92%;transform:rotate(0deg);z-index:4;}
 
   #aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
 
@@ -2700,12 +2701,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <!-- E. Характеристики = кликабельные апгрейды (нижняя сетка скрыта) -->
     <div id="statStrip"></div>
 
-    <!-- F. Экипировка -->
-    <div id="gearSection">
-      <div id="gearGrid"></div>
-    </div>
-
-    <!-- G. Действия -->
+    <!-- F. Сумки / авто -->
     <div id="actionBar">
       <button type="button" id="lootChest" title="Тап — открыть сумку · надеть/продать">📦<span id="bagBadge2"></span></button>
       <button type="button" id="powerUp" title="Тап — шансы дропа и апгрейд сумки">
@@ -2714,6 +2710,11 @@ window.addEventListener("unhandledrejection",function(ev){
         <i id="bagUpDot" aria-hidden="true">↑</i>
       </button>
       <button type="button" id="auto" title="Тап — вкл/выкл · удержи — порог редкости">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
+    </div>
+
+    <!-- G. Экипировка -->
+    <div id="gearSection">
+      <div id="gearGrid"></div>
     </div>
 
     <div id="upgrades"></div>
