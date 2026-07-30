@@ -4,6 +4,8 @@ let pass=0, fail=0;
 const T=(name,cond,info)=>{ if(cond){pass++;console.log("  PASS "+name);} else {fail++;console.log("  FAIL "+name+(info?" — "+info:""));} };
 const frame=(ms)=>{ __vclock+=ms; const cb=__rafCb; __rafCb=null; if(cb) cb(__vclock); };
 const clickDrop=()=>{ if(pendingDrop){ (Math.random()<0.6?__ids.dropEquip:__ids.dropSell).onclick(); } };
+/* Остальные тесты гоняют механики без онбординг-гейтов; пороги — в блоке unlocks. */
+var __TEST_UNLOCK_ALL=true;
 
 console.log("\n[1] Таблицы и формулы против GDD");
 T("сумка lvl1 = 100% Common", JSON.stringify(bagWeights(1))===JSON.stringify([100,0,0,0,0,0,0,0]));
@@ -197,20 +199,20 @@ T("жила 2: камень скриптован", uniqueStones()>=1);
 // миграция старого сейва
 localStorage.setItem("oredeep_v3", JSON.stringify({gold:5,stageIdx:7,bag:3}));
 load();
-T("миграция v1→v2: ftue выключен для старых, стрик и гача-ресурсы",
-  S.v===4 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3 && (S.eggs||0)>=1 && (S.combs||0)>=1);
+T("миграция v1→v2: ftue выключен для старых, стрик и поля",
+  S.v===4 && S.ftue.u===1 && S.streak && S.gold===5 && S.bag===3 && S.featToast);
 localStorage.removeItem("oredeep_v3"); load();
 
 console.log("\n[21] Бороды-стрижки и распитие эля");
 localStorage.removeItem("oredeep_v3"); load();
 T("5 стилей бород загружены", typeof BEARD_STYLES!=="undefined" && BEARD_STYLES.length===5);
-openBeard();
-T("кнопка бороды открывает ранг", __ids.uiScreen.style.display==="flex" && __ids.uiTitle.textContent.includes("Бороды") && __ids.uiBody.innerHTML.includes("LUCK"));
-// эль восстанавливает энергию
+S.stageIdx=featNeedStage("beards"); openBeard();
+T("кнопка бороды открывает ранг", __ids.uiScreen.style.display==="flex" && __ids.uiTitle.textContent.includes("Бороды") && /удач/i.test(__ids.uiBody.innerHTML));
+// пиво восстанавливает энергию
 S.stageIdx=1; newRock(); S.energy=1; const before=S.energy;
 sipAle();
 T("глоток эля восстанавливает энергию", S.energy>before);
-T("эль не превышает максимум", S.energy<=stat("energy"));
+T("пиво не превышает максимум", S.energy<=stat("energy"));
 { UIS.open("tavern","mates");
   const html=($("uiBody")&&$("uiBody").innerHTML)||"";
   T("союзники: Борин → наставник", /openBorinMentor\(/.test(html));
@@ -708,14 +710,15 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="К.Р.А.С.А.В
   T("Ум даёт больше очков за уровень", S.skillPts>=BALANCE.special.ptsBase+3); }
 { const p0=S.specialPool, v0=specialAttr("s");
   spendSpecial("s");
-  T("вкачка КРАСАВА окончательная", specialAttr("s")===v0+1 && S.specialPool===p0-1);
-  T("откат КРАСАВА запрещён", refundSpecial("s")===false && specialAttr("s")===v0+1 && S.specialPool===p0-1);
-  T("сброс КРАСАВА запрещён", resetSpecial()===false && specialAttr("s")===v0+1); }
+  T("вкачка КРАСАВА списывает очко", specialAttr("s")===v0+1 && S.specialPool===p0-1);
+  T("откат КРАСАВА возвращает очко", refundSpecial("s")===true && specialAttr("s")===v0 && S.specialPool===p0);
+  spendSpecial("s");
+  T("сброс КРАСАВА возвращает вложения", resetSpecial()===true && specialAttr("s")===(BALANCE.special.start||5) && S.specialPool>=p0); }
 { S.specialPool=0; S.special={s:8,p:5,e:10,c:6,i:5,a:7,l:5};
   openCharSheet({kind:"special",id:"a"});
   const html=($("charSheet")&&$("charSheet").innerHTML)||"";
-  T("лист: только +, без − и сброса", /spendSpecial\('a'\)/.test(html)
-    && !/refundSpecial\(/.test(html) && !/resetSpecial\(/.test(html));
+  T("лист: + и − и сброс КРАСАВА", /spendSpecial\('a'\)/.test(html)
+    && /refundSpecial\('a'\)/.test(html) && /resetSpecial\(/.test(html));
 }
 { openCharSheet({kind:"special",id:"s"});
   T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("К.Р.А.С.А.В.А")>=0);
@@ -750,8 +753,12 @@ T("черт КРАСАВА больше двух", TRAIT_DEFS.length>=10);
   T("Силач качает ATK и режет темп", hasTrait("bruiser") && stat("atk")>t0 && stat("spd")<s0);
   pickTrait("small");
   T("вторая черта берётся", hasTrait("small") && (S.traits||[]).length===2);
-  T("третью черту взять нельзя", pickTrait("finesse")===false && pickTrait("greed")===false
-    && (S.traits||[]).length===2);
+  pickTrait("finesse");
+  T("третья черта берётся (без лимита 2)", hasTrait("finesse") && (S.traits||[]).length===3);
+  T("черту можно снять", unpickTrait("bruiser")===true && !hasTrait("bruiser") && (S.traits||[]).length===2);
+  closeCharSheet(); }
+{ S.perkPicks=1; S.perks=["hth"];
+  T("перк снимается с возвратом выбора", dropPerk("hth")===true && !hasPerk("hth") && S.perkPicks===2);
   closeCharSheet(); }
 
 console.log("\n[30] Ключи ларей отделены от ключей ивентов");
@@ -1108,7 +1115,7 @@ S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; S.bags=5; S.bag=50;
 openBag();
 T("открытие сумки двигает дейлик", (S.daily.prog.bag||0)===1);
 T("дейлик «открой сумки» существует", BALANCE.dailyQuests.some(q=>q.id==="bag"));
-T("дейлик на эль у Борина", BALANCE.dailyQuests.some(q=>q.id==="drink"&&q.need===5));
+T("дейлик на пиво у Борина", BALANCE.dailyQuests.some(q=>q.id==="drink"&&q.need===5));
 T("дейлик на застолье", BALANCE.dailyQuests.some(q=>q.id==="feast"));
 T("дейлик на геолога", BALANCE.dailyQuests.some(q=>q.id==="geo"));
 { S.daily={day:todayStr(),prog:{},tok:0,claimed:[],adTok:false}; S.protein=1000; _drinkCdUntil=0;
@@ -1210,19 +1217,37 @@ T("switchTab прокручивает view наверх", __ids.view.scrollTop==
 T("switchTab подсвечивает вкладку Меты", __ids.tabMeta.classList.contains("on"));
 switchTab("Mine"); render();
 T("полоса боевых статов существует", !!__ids.statStrip || !!__ids.pwStrip);
-T("полоса боевых статов заполнена АТК", (()=>{
+T("полоса боевых статов заполнена атакой", (()=>{
   const v=(__ids.pAtk&&__ids.pAtk.textContent)||"";
   const u=(__ids.u_atk&&__ids.u_atk.querySelector&&__ids.u_atk.querySelector(".v"));
   const t=v||(u&&u.textContent)||"";
   return t!=="" && t!=="—";
 })());
+{ UIS.close(); syncBottomNav();
+  T("на забое нижнее меню без .on",
+    !__ids.navShop.classList.contains("on") && !__ids.navSkills.classList.contains("on"));
+  __ids.navShop.onclick();
+  T("Рынок открыт и подсвечен", UIS.id==="shop" && __ids.navShop.classList.contains("on")
+    && !__ids.navMines.classList.contains("on"));
+  __ids.navShop.onclick();
+  T("повторный тап Рынка → забой", !UIS.id && !__ids.navShop.classList.contains("on"));
+  openSkills("sheet"); syncBottomNav();
+  T("Навыки подсвечены", UIS.id==="panel" && __ids.navSkills.classList.contains("on"));
+  __ids.navSkills.onclick();
+  T("повторный тап Навыков → забой", !UIS.id && !__ids.navSkills.classList.contains("on"));
+  UIS.open("shop","offers");
+  __ids.navMines.onclick();
+  T("смена пункта: Штольни on, Рынок off", UIS.id==="mines"
+    && __ids.navMines.classList.contains("on") && !__ids.navShop.classList.contains("on"));
+  UIS.close();
+}
 
 console.log("\n[48] Окно сундука: открыть/надеть/продать/апгрейд");
 localStorage.removeItem("oredeep_v3"); load();
 openChest(true);
 T("окно сундука открывается", __ids.chestModal.style.display==="flex");
-T("карточка сундука отрендерена", __ids.chestCard.innerHTML.indexOf("Сундук находок")>=0);
-T("сундук: название в шапке", (__ids.chestTitle.textContent||"").indexOf(bagName(S.bag))>=0);
+T("карточка сумки отрендерена", __ids.chestCard.innerHTML.indexOf("Сумка находок")>=0);
+T("сумка: название в шапке", (__ids.chestTitle.textContent||"").indexOf(bagName(S.bag))>=0);
 T("сундук: контент без кнопки Закрыть", !/Закрыть/.test(__ids.chestCard.innerHTML||""));
 T("сундук: шапка и closeChest есть", !!__ids.chestTitle && typeof closeChest==="function");
 T("таблица шансов присутствует", __ids.chestCard.innerHTML.indexOf("Шансы дропа")>=0);
@@ -1268,11 +1293,24 @@ closeChest();
   T("лента пишет прокачку", /Прокачка/.test((__ids.feedLines&&__ids.feedLines.innerHTML)||"")); }
 
 console.log("\n[48] Sprint 1: яйца, расчёски, таймер сумки, FTUE");
+__TEST_UNLOCK_ALL=false;
 localStorage.removeItem("oredeep_v3"); load();
-T("новый игрок стартует с яйцом и расческой", (S.eggs||0)>=1 && (S.combs||0)>=1);
-S.eggs=0; S.combs=0; rollPet();
+T("новый игрок стартует без яиц/расчёсок (откроются с механиками)", (S.eggs||0)===0 && (S.combs||0)===0);
+T("на старте авто/таверна/пвп закрыты по фиче",
+  featUnlocked("auto")===false && featUnlocked("social")===false && featUnlocked("pvp")===false);
+render();
+T("хром: АВТО на месте с 🔒, друзья/таверна скрыты",
+  ($("auto")&&!$("auto").classList.contains("featOff") && /🔒/.test(($("autoLbl2")&&$("autoLbl2").textContent)||""))
+  && ($("autoTier")&&!$("autoTier").classList.contains("featOff") && /🔒/.test(($("autoTierLbl")&&$("autoTierLbl").textContent)||""))
+  && ($("friendsBtn")&&$("friendsBtn").classList.contains("featOff"))
+  && ($("navTavBtn")&&$("navTavBtn").classList.contains("featOff")));
+S.stageIdx=featNeedStage("auto")-1; render();
+T("авто ещё закрыт за этап до порога", featUnlocked("auto")===false);
+S.stageIdx=featNeedStage("auto"); notifyFeatUnlocks(); render();
+T("авто открывается на пороге", featUnlocked("auto")===true && !$("auto").classList.contains("featOff"));
+S.stageIdx=featNeedStage("pets"); S.eggs=0; S.combs=0; rollPet();
 T("без яиц ролл питомца не проходит", (S.eggs||0)===0);
-S.combs=0; hireGeo();
+S.stageIdx=featNeedStage("beards"); S.combs=0; hireGeo();
 T("без расчёсок гача старейшины не проходит", (S.combs||0)===0);
 S.gold=bagCost()*5; S.bag=1; startBagUpgrade();
 T("апгрейд сумки запускает таймер", !!S.bagActive && S.bag===1);
@@ -1289,7 +1327,8 @@ T("FTUE-подсказка в DOM", !!document.getElementById("ftueTip"));
   ["chestModal","metaModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay"].forEach(id=>{
     const m=$(id); if(m&&m.style) m.style.display="none"; });
   const intro=$("introOv"); if(intro&&intro.classList) intro.classList.remove("on");
-  S.ftue={u:1,b:1,c:1,t:1,m:1,g:0}; S.stageIdx=10; S.introSeen=true;
+  S.ftue={u:1,b:1,c:1,t:1,m:1,g:0}; S.stageIdx=featNeedStage("social"); S.introSeen=true;
+  S.featToast=S.featToast||{}; S.featToast.social=1;
   const app=$("app"), fb=$("friendsBtn");
   app.getBoundingClientRect=()=>({left:700,top:0,right:1180,bottom:900,width:480,height:900,x:700,y:0});
   fb.getBoundingClientRect=()=>({left:708,top:200,right:760,bottom:248,width:52,height:48,x:708,y:200});
@@ -1312,6 +1351,7 @@ T("FTUE-подсказка в DOM", !!document.getElementById("ftueTip"));
   render();
   T("клик по подсказке скрывает её", tip.style.display==="none" && S.ftue.g===1);
 }
+__TEST_UNLOCK_ALL=true;
 
 console.log("\n[44] Рост: рефералы, вейтлист, юнит-экономика");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1376,6 +1416,112 @@ dead=false; S.durab=40; S.gold=Math.max(S.gold||0, reinforceCost()*3);
 { ensureGrowth(S); S.growth.referredBy="AAAAAA";
   const g0=S.gems; growthApplyReferral("BBBBBB", true);
   T("повторный ?ref молча игнорируется", S.growth.referredBy==="AAAAAA" && S.gems===g0); }
+
+console.log("\n[49] Рынок: free+ad в каждом разделе");
+localStorage.removeItem("oredeep_v3"); load();
+T("shopDaily покрывает 4 раздела + a/b",
+  !!BALANCE.shopDaily.offers && !!BALANCE.shopDaily.art
+  && !!BALANCE.shopDaily.barrels && !!BALANCE.shopDaily.gems
+  && !!BALANCE.shopDaily.a && !!BALANCE.shopDaily.b);
+{ shopFreeReset(); S.shopFree.taken={};
+  const g0=S.gems||0, gold0=S.gold||0, st0=Object.keys(S.stickers||{}).length;
+  claimShopFree("offers", false);
+  T("офферы free: золото/сумка", S.gold>gold0 && (S.bags||0)>=1);
+  claimShopFree("art", false);
+  T("артефакты free: стикер", Object.values(S.stickers||{}).reduce((a,b)=>a+b,0)>=1);
+  claimShopFree("gems", true);
+  T("самоцветы ad: +20💎", (S.gems||0)>=g0+20);
+  T("повтор offers free no-op", (function(){ const g=S.gold; claimShopFree("offers",false); return S.gold===g; })());
+  T("есть незабранные daily", shopDailyAnyLeft()===true);
+  ["offers","art","barrels","gems","a","b"].forEach(id=>{
+    claimShopFree(id,false); claimShopFree(id,true);
+  });
+  T("после всех claim daily пусто", shopDailyAnyLeft()===false);
+  UIS.open("shop","offers");
+  T("вкладка Офферы рисует daily-карточку", /shopDaily|Бесплатно|claimShopFree\('offers'/.test(($("uiBody")&&$("uiBody").innerHTML)||"")
+    || /claimShopFree\('offers'/.test(($("uiBody")&&$("uiBody").innerHTML)||""));
+  UIS.close();
+}
+
+console.log("\n[50] Штольни: Фибоначчи-таймер + особый камень");
+localStorage.removeItem("oredeep_v3"); load();
+T("mineRaid: fib + 5 рейдов",
+  Array.isArray(BALANCE.mineRaid.fib) && BALANCE.mineRaid.fib[0]===1
+  && BALANCE.mineRaid.fib[2]===2 && BALANCE.mineRaid.raids.length===5
+  && BALANCE.mineRaid.timerUnitSec>0);
+mineRaidReset();
+T("день стартует со ступени 0 · готово",
+  [0,1,2,3,4].every(i=>{ const s=mineRaidSlot(i); return s.step===0 && s.ready && s.fib===1; }));
+{ S.mine=0; S.stage=1; S.stageIdx=10; S.bags=0; S.gems=0;
+  const amt0=mineRaidRewardAmt(mineRaidDef(0), 0);
+  const ok=startMineRaid(0);
+  T("startMineRaid ставит рейд и двигает ступень", ok && !!S.mineRaid && mineRaidSlot(0).step===1);
+  T("рейд: сумки · ×1", S.mineRaid && S.mineRaid.res==="bags" && (S.mineRaid.fib|0)===1);
+  T("после старта — кулдаун до ×1 следующей", !mineRaidSlot(0).ready && mineRaidSlot(0).fib===1
+    && mineRaidSlot(0).leftMs>0);
+  newRock();
+  T("особый камень крепче обычного", !!(rock&&rock.isRaid) && rock.hp>rockStatsAt(S.stageIdx,true).hp);
+  const bags0=S.bags||0, amt=S.mineRaid.amt|0, idx0=S.stageIdx;
+  T("награда ступени 0 = base×fib", amt===amt0);
+  breakVein();
+  T("награда сумок без продвижения этапа", (S.bags||0)>=bags0+amt && !S.mineRaid && S.stageIdx===idx0);
+  /* форс готовности 2-й ступени */
+  S.mineRaidProg.mines[0].readyAt=0;
+  T("ступень 1 снова готова", mineRaidSlot(0).ready && mineRaidSlot(0).step===1);
+  startMineRaid(0);
+  T("вторая ступень тоже ×1 (fib)", S.mineRaid && (S.mineRaid.fib|0)===1 && mineRaidSlot(0).step===2);
+  S.mineRaid=null;
+  S.mineRaidProg.mines[0].readyAt=0;
+  const amt2=mineRaidRewardAmt(mineRaidDef(0), 2);
+  startMineRaid(0);
+  T("третья ступень ×2", S.mineRaid && (S.mineRaid.fib|0)===2 && (S.mineRaid.amt|0)===amt2);
+  S.mineRaid=null;
+  /* прогон до конца ряда */
+  for(let k=0;k<20;k++){
+    const s=mineRaidSlot(0); if(s.done) break;
+    S.mineRaidProg.mines[0].readyAt=0; S.mineRaid=null; startMineRaid(0); S.mineRaid=null;
+  }
+  T("после всех fib — done", mineRaidSlot(0).done && !startMineRaid(0));
+  S.mineRaid=null;
+  S.mineRaidProg.mines[4]={step:0,readyAt:0}; S.mine=4;
+  T("открытый mine 4: рейд на пиво", startMineRaid(4) && S.mineRaid.res==="protein");
+  S.mineRaid=null;
+  S.mineRaidProg.mines[2]={step:0,readyAt:0}; S.mine=1;
+  T("нельзя рейднуть закрытый чертог 2 при mine=1", !startMineRaid(2));
+  UIS.open("mines");
+  const html=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("экран штолен объясняет Фибоначчи", /Фибоначчи|особый камень|startMineRaid/.test(html));
+  UIS.close();
+}
+
+console.log("\n[51] Бесплатный бонус 🧰: Фибоначчи");
+localStorage.removeItem("oredeep_v3"); load();
+T("BALANCE.bonus fib", Array.isArray(BALANCE.bonus.fib) && BALANCE.bonus.fib[2]===2
+  && BALANCE.bonus.timerUnitSec>0 && BALANCE.bonus.goldVeinMul>=1);
+{ ensureBonus(S); bonusReset();
+  S.bonusProg={day:todayStr(),step:0,readyAt:0};
+  const s0=bonusSlot();
+  T("старт дня: ступень 0 готова ×1", s0.ready && s0.step===0 && s0.fib===1);
+  const g0=bonusRewardGold(0), b0=bonusRewardBags(0);
+  T("награда ступени 0 = base×1", g0===Math.max(1,Math.round(veinReward()*BALANCE.bonus.goldVeinMul)) && b0===1);
+  grantBonusChest(1);
+  const s1=bonusSlot();
+  T("после клейма — кулдаун ступени 1", !s1.ready && s1.step===1 && s1.fib===1 && s1.leftMs>0);
+  S.bonusProg.readyAt=0;
+  const g1=bonusRewardGold(1);
+  grantBonusChest(1);
+  T("ступень 1 тоже ×1", bonusSlot().step===2);
+  S.bonusProg.readyAt=0;
+  const g2exp=bonusRewardGold(2);
+  const goldBefore=S.gold;
+  grantBonusChest(1);
+  T("ступень 2 даёт ×2 золота", (S.gold-goldBefore)===g2exp && g2exp===g0*2);
+  for(let k=0;k<20;k++){
+    const s=bonusSlot(); if(s.done) break;
+    S.bonusProg.readyAt=0; grantBonusChest(1);
+  }
+  T("ряд fib закрыт на день", bonusSlot().done && !grantBonusChest(1));
+}
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

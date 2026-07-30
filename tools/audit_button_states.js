@@ -28,6 +28,9 @@
   }
   wireInlineFromHtml();
 
+  /* Аудит кнопок — все фичи открыты (как в test_cases). */
+  globalThis.__TEST_UNLOCK_ALL = true;
+
   const hasClick = (el) => !!(el && typeof el.onclick === "function");
   const fire = (el) => {
     if (!el) return "no-el";
@@ -46,7 +49,7 @@
     "avatar", "menu", "gemsBtn",
     "quests", "offers", "achievements", "artifacts", "friendsBtn",
     "boost2x", "bonusChest", "energyBox",
-    "lootChest", "powerUp", "auto",
+    "lootChest", "powerUp", "auto", "autoTier",
     "navShop", "navMines", "navSkills", "navTavBtn", "navPvp"
   ];
   for (const id of wired) {
@@ -88,10 +91,19 @@
     fire(a); render();
     T("Auto клик переключает S.autoRoll", S.autoRoll === true);
     T("Auto получает .on", a.classList.contains("on") === true && on0 === false);
-    T("Auto лейбл порог", /Rare|Epic|Legend|Exotic|Myth|Ascend|Cosmic|\+/i.test($("autoLbl2").textContent || ""));
+    T("Auto лейбл ВКЛ", ($("autoLbl2").textContent || "").includes("ВКЛ"));
     fire(a); render();
     T("Auto повторно снимает .on", !a.classList.contains("on") && S.autoRoll === false);
     T("Auto лейбл ВЫКЛ", ($("autoLbl2").textContent || "").includes("ВЫКЛ"));
+  }
+  { const t = $("autoTier");
+    T("#autoTier кликабельна", hasClick(t));
+    SLOTS.forEach(sl => { S.gear[sl.id] = { s:sl.id, r:1, m:1, i:1 }; });
+    render();
+    fire(t);
+    T("порог открывает окно редкостей", UIS.id === "panel"
+      && /Порог|автопродаж/i.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+    T("порог лейбл показывает редкость", /Rare|Epic|Legend|Exotic|Myth|Ascend|Cosmic|\+/i.test(($("autoTierLbl")&&$("autoTierLbl").textContent)||""));
   }
   { S.loot2xUntil = 0; render();
     const b = $("boost2x");
@@ -105,7 +117,8 @@
   }
 
   console.log("\n[BTN-STATE] Disabled / no-op");
-  { ensureBonus(S); S.bonusReadyAt = Date.now() + 3600e3;
+  { ensureBonus(S); bonusReset();
+    S.bonusProg.readyAt = Date.now() + 3600e3; S.bonusReadyAt = S.bonusProg.readyAt;
     const g0 = S.gold, b0 = S.bags || 0;
     fire($("bonusChest"));
     T("бонус на CD не даёт золото/сумки", S.gold === g0 && (S.bags || 0) === b0);
@@ -129,7 +142,8 @@
 
   console.log("\n[BTN-STATE] Инкременты счётчиков");
   localStorage.removeItem("oredeep_v3"); load(); dead = false; render(); wireInlineFromHtml();
-  { ensureBonus(S); S.bonusReadyAt = 0;
+  { ensureBonus(S); bonusReset();
+    S.bonusProg = {day: todayStr(), step:0, readyAt:0}; S.bonusReadyAt = 0;
     const g0 = S.gold, b0 = S.bags || 0;
     fire($("bonusChest"));
     T("бонус открывает окно награды", UIS.id === "panel"
@@ -141,11 +155,18 @@
     fire($("bonusChest"));
     T("двойной клик бонуса не дублирует", S.gold === g1 && S.bags === b1);
   }
+  { ensureBonus(S); bonusReset();
+    S.bonusProg = {day: todayStr(), step:1, readyAt:0}; S.bonusReadyAt = 0;
+    const g0 = S.gold, b0 = S.bags || 0;
+    grantBonusChest(2);
+    T("бонус ×2 +золото", S.gold > g0);
+    T("бонус ×2 +2 сумки", (S.bags || 0) === b0 + 2);
+  }
   { S.bags = 3; const b0 = S.bags;
     openBag();
     T("Открыть −1 сумка", S.bags === b0 - 1);
   }
-  { S.eggs = 2; const e0 = S.eggs, r0 = S.petRolls || 0;
+  { S.eggs = 2; S.stageIdx = featNeedStage("pets"); const e0 = S.eggs, r0 = S.petRolls || 0;
     rollPet();
     T("яйцо −1 и petRolls +1", S.eggs === e0 - 1 && (S.petRolls || 0) === r0 + 1);
   }
@@ -196,6 +217,15 @@
     const e1 = S.eggs, c1 = S.combs;
     claimShopFree("a", false);
     T("повтор бесплатного оффера no-op", S.eggs === e1 && S.combs === c1);
+  }
+  { shopFreeReset(); S.shopFree.taken = {};
+    const g0 = S.gems || 0, k0 = S.chestKeys || 0;
+    claimShopFree("gems", false);
+    T("раздел Самоцветы: free +гемы", (S.gems || 0) === g0 + 5);
+    claimShopFree("barrels", false);
+    T("раздел Бочки: free +ключ ларя", (S.chestKeys || 0) === k0 + 1);
+    claimShopFree("gems", true);
+    T("раздел Самоцветы: ad +гемы", (S.gems || 0) >= g0 + 5 + 20);
   }
   { // growth milestone counter
     ensureGrowth(S); S.growth.invites = 3; S.growth.milestones = [];

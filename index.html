@@ -492,11 +492,13 @@ button:disabled{opacity:.45;cursor:default;}
 #statStrip .u.can button{background:linear-gradient(180deg,#2f6b39,#25522d);border-color:#3a8a45;color:#fff;}
 #statStrip .pw{display:none;}
 
-/* F. Сумки / авто — над инвентарём */
+/* F. Сумки / авто — третья ячейка = автогруппа (АВТО + порог) */
 #actionBar{
-  display:grid;grid-template-columns:1.2fr 1.15fr .7fr;gap:8px;align-items:center;
+  display:grid;grid-template-columns:1.2fr 1.15fr .85fr;gap:8px;align-items:center;
   padding:10px 10px 6px;
 }
+.featOff{display:none!important;}
+#sideMenu.featEmpty{display:none!important;}
 #lootChest{
   position:relative;min-height:72px;border-radius:var(--r-md);
   background:linear-gradient(180deg,#4a3826,#2e2114);border:2px solid var(--borderLight);
@@ -524,12 +526,18 @@ button:disabled{opacity:.45;cursor:default;}
 #powerUp.skipOffer #bagUpDot{background:var(--gem);font-size:10px;}
 #powerUp.busyBag{border-color:var(--goldMuted);}
 #powerUp.busyBag b{color:#ffe09a;}
-#auto{
+#autoGroup{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;min-height:72px;
+}
+#auto,#autoTier{
   min-height:72px;border-radius:var(--r-md);background:var(--bgPanelAlt);
   border:2px solid var(--borderLight);font-family:var(--font-display);
-  font-size:16px;color:var(--textMuted);line-height:1.15;
+  font-size:12px;color:var(--textMuted);line-height:1.1;padding:6px 2px;
 }
 #auto.on{border-color:var(--income);color:var(--income);}
+#autoTier span,#auto span{display:block;font-size:11px;margin-top:3px;word-break:break-word;}
+#autoTier.on{border-color:var(--goldMuted);color:var(--gold);}
+#auto.off,#autoTier.off{opacity:.55;}
 
 /* G. Экипировка — под сумками */
 #gearSection{padding:6px 10px 10px;}
@@ -572,7 +580,13 @@ button:disabled{opacity:.45;cursor:default;}
 }
 .btn-nav .ni{font-size:20px;line-height:1;}
 .btn-nav .nl{font-family:var(--font-display);font-size:13px;letter-spacing:.5px;}
-.btn-nav.on{color:var(--gold);background:var(--bgPanel);}
+/* Активный пункт нижнего меню — пока игрок в этом экране */
+.btn-nav.on{
+  color:var(--gold);
+  background:linear-gradient(180deg,#2c2418,#18130e);
+  box-shadow:inset 0 0 0 1.5px rgba(212,168,75,.85);
+}
+.btn-nav.on .nl{color:var(--gold);}
 .btn-nav .dot{position:absolute;top:4px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;
   background:var(--danger);display:none;}
 .btn-nav .dot.on{display:block;}
@@ -625,10 +639,15 @@ button:disabled{opacity:.45;cursor:default;}
 .uiTag{font-size:10px;padding:2px 6px;border:1px solid var(--border);color:var(--textMuted);border-radius:8px;}
 .uiTag.on{color:var(--income);border-color:var(--income);}
 .uiMineList{display:flex;flex-direction:column;gap:6px;}
-.uiMineCard,button.btn-mine.uiMineCard{
+.uiMineCard{
+  display:flex;flex-direction:column;gap:4px;width:100%;padding:8px 8px 6px;
+  background:var(--bgPanelAlt);border:2px solid var(--border);
+  color:var(--textPrimary);border-radius:var(--r-sm);
+}
+.uiMineCard .uiMineEnter,button.btn-mine.uiMineCard{
   display:grid;grid-template-columns:40px 1fr;gap:8px 10px;align-items:center;
-  width:100%;padding:10px;background:var(--bgPanelAlt);border:2px solid var(--border);
-  text-align:left;color:var(--textPrimary);border-radius:var(--r-sm);cursor:pointer;
+  width:100%;padding:4px 2px;background:transparent;border:0;
+  text-align:left;color:var(--textPrimary);cursor:pointer;
 }
 .uiMineCard.sel{border-color:var(--gold);box-shadow:inset 0 0 0 1px rgba(242,212,136,.25);}
 .uiMineCard.locked{opacity:.55;}
@@ -661,6 +680,20 @@ button:disabled{opacity:.45;cursor:default;}
 .uiMineChip.on{border-color:var(--gold);}
 .uiMineChip.done{border-color:var(--income);}
 .uiMineChip b{font-family:var(--font-display);color:var(--textPrimary);}
+.uiMineHow{background:var(--bgPanelAlt);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:8px;}
+.uiMineHow b{display:block;color:var(--gold);font-size:13px;margin-bottom:4px;font-family:var(--font-display);}
+.uiMineFib{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px;font-family:var(--font-display);font-size:12px;color:var(--textMuted);}
+.uiMineFib span{padding:2px 6px;border:1px solid var(--border);border-radius:4px;}
+.uiMineFib span.on{color:var(--gold);border-color:var(--gold);background:rgba(232,185,60,.12);}
+.uiMineFib span.done{opacity:.45;text-decoration:line-through;}
+.uiMineRaid{background:var(--bgPanelAlt);border:2px solid var(--gold);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px;}
+.uiMineRaid.on{border-color:var(--income);}
+.uiMineRaid.empty{border-style:dashed;opacity:.85;}
+.uiMineRaidTop{display:flex;align-items:center;gap:10px;}
+.uiMineRaidTop>span{font-size:26px;line-height:1;}
+.uiMineRaidBtn{width:100%;margin-top:4px;font-size:12px;}
+.uiMineEnter{width:100%;display:flex;align-items:center;gap:10px;text-align:left;}
+#rock.raid{outline:2px solid var(--gold);outline-offset:2px;filter:drop-shadow(0 0 8px rgba(232,185,60,.45));}
 .uiTag.go{color:var(--gold);border-color:var(--goldMuted);}
 
 .uiTavExt{position:relative;height:100px;background:linear-gradient(180deg,#2a1f14,#12151d);border:2px solid #5d4326;border-radius:var(--r-sm);margin-bottom:10px;}
@@ -2701,7 +2734,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <!-- E. Характеристики = кликабельные апгрейды (нижняя сетка скрыта) -->
     <div id="statStrip"></div>
 
-    <!-- F. Сумки / авто -->
+    <!-- F. Сумки / авто: третья ячейка — АВТО + порог продажи -->
     <div id="actionBar">
       <button type="button" id="lootChest" title="Тап — открыть сумку · надеть/продать">📦<span id="bagBadge2"></span></button>
       <button type="button" id="powerUp" title="Тап — шансы дропа и апгрейд сумки">
@@ -2709,7 +2742,10 @@ window.addEventListener("unhandledrejection",function(ev){
         <span id="bagAreaTimer">—</span>
         <i id="bagUpDot" aria-hidden="true">↑</i>
       </button>
-      <button type="button" id="auto" title="Тап — вкл/выкл · удержи — порог редкости">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
+      <div id="autoGroup">
+        <button type="button" id="auto" title="Авто-разбор сумок · вкл/выкл">АВТО<br><span id="autoLbl2">ВЫКЛ</span></button>
+        <button type="button" id="autoTier" title="Порог: ниже — продать, с порога — оставить">ПОРОГ<br><span id="autoTierLbl">Rare+</span></button>
+      </div>
     </div>
 
     <!-- G. Экипировка -->
@@ -2722,7 +2758,7 @@ window.addEventListener("unhandledrejection",function(ev){
 
   <!-- H. Нижняя навигация -->
   <nav id="bottomNav">
-    <button type="button" class="btn btn-nav" id="navShop"><span class="ni"><img class="navArt" src="art/nav_market.png" alt=""></span><span class="nl">РЫНОК</span></button>
+    <button type="button" class="btn btn-nav" id="navShop"><span class="ni"><img class="navArt" src="art/nav_market.png" alt=""></span><span class="nl">РЫНОК</span><i class="dot" id="dotShop"></i></button>
     <button type="button" class="btn btn-nav" id="navMines"><span class="ni"><img class="navArt" src="art/nav_mines.png" alt=""></span><span class="nl">ШТОЛЬНИ</span></button>
     <button type="button" class="btn btn-nav" id="navSkills"><span class="ni"><img class="navArt" src="art/nav_skills.png" alt=""></span><span class="nl">НАВЫКИ</span><span class="up" id="skillsUp">↑</span><i class="dot" id="dotSkills"></i></button>
     <button type="button" class="btn btn-nav" id="navTavBtn"><span class="ni"><img class="navArt" src="art/nav_tavern.png" alt=""></span><span class="nl">ТАВЕРНА</span></button>
@@ -2823,7 +2859,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <div class="box sheetBox">
       <div class="uiHead">
         <button type="button" class="btn btn-back" onclick="closeChest()" title="Назад">‹</button>
-        <div class="uiTitle" id="chestTitle">Сундук</div>
+        <div class="uiTitle" id="chestTitle">Сумка</div>
         <div class="uiHeadAct" id="chestHeadAct"></div>
       </div>
       <div class="sheetBody" id="chestCard"></div>
@@ -2881,9 +2917,9 @@ window.addEventListener("unhandledrejection",function(ev){
 <div id="overlay">
   <div class="big">😮‍💨</div>
   <h2 id="ovTitle">ПЕРЕКУР В ЧЕРТОГАХ</h2>
-  <p id="ovText">🍺 Эль честно заслужен 🍺</p>
+  <p id="ovText">🍺 Пиво честно заслужено 🍺</p>
   <div id="ovActions">
-    <button type="button" class="btn ovAle" onclick="overlayAle()">🍺 Выпить эль</button>
+    <button type="button" class="btn ovAle" onclick="overlayAle()">🍺 Выпить пиво</button>
     <button type="button" class="btn ovShop" onclick="openShop()">🛒 Магазин</button>
   </div>
   <button type="button" id="ovRetry" onclick="closeOverlay()">⛏ Ещё разок, за Гору!</button>
@@ -2972,8 +3008,8 @@ const BALANCE = {
       lore:"Самоцвет в жиле — знак, что Гора слышит."},
     {id:"bag",ic:"🎒",n:"Вскрой 15 сумок",need:15,tok:10,
       lore:"Скупщик Нори уже греет кривые весы."},
-    {id:"drink",ic:"🍺",n:"Глотни эля у Борина ×5",need:5,tok:10,
-      lore:"Жжёт горло, копит силу. Здоровье тоже."},
+    {id:"drink",ic:"🍺",n:"Глотни пива у Борина ×5",need:5,tok:10,
+      lore:"Жжёт горло, копит очки застолья. Энергия тоже."},
     {id:"feast",ic:"💪",n:"Закончи 1 застолье",need:1,tok:10,
       lore:"Уважение зала растёт за столом, не за речами."},
     {id:"pvp",ic:"⚔",n:"Победи 2 на арене",need:2,tok:10,
@@ -3012,15 +3048,32 @@ const BALANCE = {
     skipGemsBase:20, skipGemsPerLv:3,
     /* Авто: не с старта. Открывается, когда все слоты заняты ИЛИ на Rare+ набралось N шт. */
     autoUnlockSlots:8, autoUnlockRares:3 },
+  /* Постепенное открытие механик по stageIdx.
+     Старт: сумка + статы. Дальше — дать наиграться, не передержать. */
+  unlocks:{
+    auto:8,        /* АВТО сумок + бонус-сундук + офлайн + 2× добыча */
+    pets:18,
+    beards:28,
+    daily:40,      /* квесты + акции/ивенты */
+    mines:50,      /* штольни (≈ первая смена чертога) */
+    skills:65,
+    artifacts:90,  /* достижения (Стена) + артефакты */
+    pvp:120,
+    social:160     /* друзья + таверна — под конец */
+  },
   /* КРАСАВА: 7 черт + очки навыков за «уровень шахтёра».
      Не ломает треадмилл: % от черт капнут, тренировка слабее карточных уровней. */
   special:{
     start:5, pool:5, attrMax:10, attrPct:1.2, attrPctCap:12,
     veinsPerLv:35, maxLv:40, ptsBase:5, ptsPerInt:1,
-    tagSlots:3, tagCost:1, untagCost:2, trainMult:0.5, trainCap:15
+    /* Теги — дешёвая тренировка. Слотов = все навыки (не «3 активных»). */
+    tagSlots:9, tagCost:1, untagCost:2, trainMult:0.5, trainCap:15
   },
-  /* Перки: выбор каждые N уровней шахтёра. % маленькие + кап — треадмилл цел. */
-  perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:10 },
+  /* Перки: выбор каждые N ур. шахтёра. Кап % в perkBonusPct — стена треадмилла;
+     лимит владения = весь пул, перевыбор свободный (dropPerk). */
+  perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:12 },
+  /* Черты: без потолка «только 2»; можно снять и взять другую. */
+  traits:{ maxOwned:99 },
   /* Яйца и расчёски — отдельные ресурсы гачи (док §Питомцы, §Девушки → адаптация)
      DONOR-TUNE: рейты гачи ×0.5 — полный сбор питомцев/бород = ~2 недели активной игры
      ИЛИ ускорение через покупные яйца/расчёски (награды за дейлики/PvP). */
@@ -3053,9 +3106,9 @@ const BALANCE = {
   skillCardProtein:[0,20,45,80,130,200,300,440,620,850],   // пиво за апгрейд на уровень L
   dungeonSets:[
     {id:"berserk", n:"Ярость Забоя",  frags:["Клык","Оскал","Рёв","Гнев"],       bonus:"+50% ATK, +20% CRIT"},
-    {id:"greed",   n:"Жадность Недр",  frags:["Слиток","Весы","Клеймо","Мешок"],   bonus:"×2 STONE (золото за жилу)"},
+    {id:"greed",   n:"Жадность Недр",  frags:["Слиток","Весы","Клеймо","Мешок"],   bonus:"×2 жадности (золото за жилу)"},
     {id:"guardian",n:"Оплот Горы",     frags:["Щит","Броня","Корень","Печать"],    bonus:"+80% Энергии"},
-    {id:"lucky",   n:"Фарт Старателя", frags:["Клевер","Подкова","Монета","Комета"],bonus:"+25% LUCK, ×1.5 находка"},
+    {id:"lucky",   n:"Фарт Старателя", frags:["Клевер","Подкова","Монета","Комета"],bonus:"+25% удачи, ×1.5 находка"},
     {id:"mythic",  n:"Наковальня Предков",frags:["Молот","Мех","Уголь","Искра"],   bonus:"+40% силы снаряжения"}
   ],
   gearRarityMul:[1,2.2,4.8,10,22,48,110,250],
@@ -3093,7 +3146,31 @@ const BALANCE = {
     {id:"mira",  ic:"✦", n:"Мира Рунная",     tag:"технарь",  mul:1.22, grit:0.70, fluff:"редко промахивается по жиле"},
     {id:"durin", ic:"⛰", n:"Дурин Глубинный", tag:"патриарх", mul:1.48, grit:0.85, fluff:"жила помнит его имя"}
   ],
-  shopFreeN:2,   // бесплатных предложений/день; каждое = free + ad
+  /* Ежедневные free+ad в каждом разделе рынка (привычка обходить вкладки).
+     Ключ taken: "<id>_free" | "<id>_ad". Вкладка free — обзор всех. */
+  shopDaily:{
+    offers:{ ic:"🎁", title:"Подарок офферов", sub:"золото и сумка",
+      free:{ goldMul:8, bags:1 }, ad:{ goldMul:20, bags:2, gems:5 } },
+    art:{ ic:"💎", title:"Осколок коллекции", sub:"случайные артефакты",
+      free:{ stickers:1 }, ad:{ stickers:2, gems:15 } },
+    barrels:{ ic:"🛢", title:"Щедрость ларя", sub:"ключ и пиво",
+      free:{ chestKeys:1 }, ad:{ chestKeys:1, protein:40 } },
+    gems:{ ic:"✨", title:"Крохи самоцветов", sub:"без покупки",
+      free:{ gems:5 }, ad:{ gems:20 } },
+    a:{ ic:"🥚", title:"Яйцо + расчёска", sub:"гача-ресурсы",
+      free:{ eggs:1, combs:1 }, ad:{ eggs:1, combs:1 } },
+    b:{ ic:"🍺", title:"Пиво + сумка", sub:"тренировка и лут",
+      free:{ protein:40, bags:1 }, ad:{ protein:40, bags:1 } }
+  },
+  shopFreeN:6,   // кол-во daily-офферов (offers/art/barrels/gems/a/b); каждый = free + ad
+  /* Бесплатный бонус (🧰): выдача по нарастающей.
+     Таймер до ступени = fib[step] × timerUnitSec; награда × fib[step]. */
+  bonus:{
+    fib:[1,1,2,3,5,8,13],
+    timerUnitSec:3600,   // 1ч · F → 0,1ч,1ч,2ч,3ч,5ч,8ч
+    goldVeinMul:3,       // золото = veinReward × goldVeinMul × fib
+    bags:1               // сумки = bags × fib (ещё ×2 за рекламу)
+  },
   /* Рост: плоский CPA (rewarded cap), D1 payback (starter), LTV≫CAC, органика ref/wl */
   growth:{
     cacTargetCents:150, ltvTargetCents:600, paybackDay:3,
@@ -3111,8 +3188,23 @@ const BALANCE = {
     prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"кристаллы", res:"gems", ic:"💎" },
     crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", res:"gems", ic:"💎", flat:10 },
     critterDen:{ maxLvl:10, total:8000, first:100, currency:"золото", res:"gold", ic:"🪙", mult:50 } },
-  keyMax:2, keyRefillSec:Math.round(6*3600),   // 2/2, рефилл 6ч (donor-tuned — ключи дороже) 
-  /* Штольни 2–5 (Спринт 3): дополнительные ресурсы за жилу/босса.
+  keyMax:2, keyRefillSec:Math.round(6*3600),   // ивенты (акции): 2/2, рефилл 6ч
+  /* Особый камень штольни: выдача по нарастающей (Фибоначчи).
+     Таймер до следующей ступени = fib[step] × timerUnitSec;
+     множитель награды = fib[step]. За сутки — fib.length ступеней на чертог. */
+  mineRaid:{
+    hpMul:5,
+    timerUnitSec:1800,                 // 30м · F → 30м,30м,1ч,1.5ч,2.5ч,4ч,6.5ч
+    fib:[1,1,2,3,5,8,13],              // таймеры и множители наград
+    raids:[
+      {id:0, ic:"🎒", n:"Сумки",     res:"bags",     base:3,  g:1.12, label:"🎒"},
+      {id:1, ic:"💎", n:"Самоцветы", res:"gems",     base:20, g:1.10, label:"💎"},
+      {id:2, ic:"🥚", n:"Яйца",      res:"eggs",     base:1,  g:1.08, label:"🥚"},
+      {id:3, ic:"🪮", n:"Расчёски",  res:"combs",    base:1,  g:1.08, label:"🪮"},
+      {id:4, ic:"🍺", n:"Пиво",      res:"protein",  base:50, g:1.10, label:"🍺"}
+    ]
+  },
+  /* Штольни 2–5 (Спринт 3): дополнительные ресурсы за обычную жилу/босса.
      Числа живут в BALANCE; логика — в breakVein(). */
   minesExtra:[
     null,
@@ -3396,7 +3488,7 @@ const STAT_CAPS={crit:60,luck:100,mining:80,stamina:90,spd:BALANCE.combat.maxAPS
 const MINE_DURAB={max:100, decayPerSec:0.08, safe:50, checkSec:6, baseP:0.008,
   reinfSecOfIncome:25, warnAt:50, critAt:20, penaltyGoldPct:0.08};
 function reinforceCost(){ return Math.max(50, Math.round(idlePerSec()*MINE_DURAB.reinfSecOfIncome)); }
-/* Крепёж (бывшая Броня) замедляет оседание крепи: пусто→×1, глубокий апгрейд→пол ×0.4.
+/* Защита (бывшие Крепёж / Броня) замедляет оседание крепи: пусто→×1, глубокий апгрейд→пол ×0.4.
    Диминишинг, чтобы механика обслуживания не обнулялась. */
 const DURAB_SUPPORT_K=2000;
 function durabDecayMult(){ const s=Math.max(0,stat("tough")); return Math.max(0.4, 1 - s/(s+DURAB_SUPPORT_K)); }
@@ -3453,7 +3545,7 @@ function beardWisdom(){
 function beardNextXP(lv){ return Math.round(140*(Math.pow(1.85,lv+1)-1)); }
 function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
   if(beardLevel()>before){ const w=beardWisdom();
-    showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" LUCK",true);
+    showToast("🧔","БОРОДА ОТРОСЛА!","",w.title,"+"+(w.goldPct)+"% доход · +"+w.luckAdd.toFixed(1)+" удачи",true);
     sayQuip("Борода стала гуще и седее. Клан кланяется.",4);
     Platform.logEvent("beard_rank",{lv:w.lv});
     /* ранг бороды ≈ level-up: +1 очко КРАСАВА */
@@ -3527,7 +3619,7 @@ function finishBagUpgrade(){
   S.bag++;
   Platform.logEvent("bag_upgrade",{level:S.bag});
   if(bagName(S.bag)!==oldName){
-    showToast("🧰","Новый сундук!","",bagName(S.bag),"редкости дропа сдвинулись вверх");
+    showToast("🧰","Новый тир сумки!","",bagName(S.bag),"редкости дропа сдвинулись вверх");
     sayQuip("Ого, «"+bagName(S.bag)+"»! Дед бы одобрил.",4);
   }
   save(); render();
@@ -3575,12 +3667,12 @@ function skipBagUpgrade(){
 }
 function rollVeinExtras(isBoss){
   const G=BALANCE.gacha||{};
-  if(Math.random()*100<(isBoss?G.combBossPct:G.combDropPct||0)){
+  if(featUnlocked("beards") && Math.random()*100<(isBoss?G.combBossPct:G.combDropPct||0)){
     S.combs=(S.combs||0)+1;
     if(!FAST()) showToast("🪮","Расчёска!","","+1 · для гачи старейшин");
     Platform.logEvent("comb_drop",{boss:!!isBoss});
   }
-  if(Math.random()*100<(isBoss?G.eggBossPct:G.eggDropPct||0)){
+  if(featUnlocked("pets") && Math.random()*100<(isBoss?G.eggBossPct:G.eggDropPct||0)){
     S.eggs=(S.eggs||0)+1;
     if(!FAST()) showToast("🥚","Яйцо!","","+1 · для гачи питомцев");
     Platform.logEvent("egg_drop",{boss:!!isBoss});
@@ -3616,15 +3708,23 @@ const RANKS=["БЕЗБОРОДЫЙ","ПОЧТИ ГНОМ","РУДОКОП","ЗА
 
 /* ---------- игрок (GDD §3, базы 1:1) ---------- */
 const BASE={atk:10, spd:BALANCE.combat.baseAPS, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0, regen:0, stamina:0};
+/* Единые имена статов в UI/лоре. Ключи BALANCE/stat() не трогаем.
+   Сила (КРАСАВА) — отдельная черта, влияет на атаку; не путать с самим статусом atk. */
+const STAT_LBL={
+  atk:"Атака", energy:"Энергия", spd:"Темп", tough:"Защита",
+  crit:"Крит", luck:"Удача", mining:"Чутьё", stone:"Жадность",
+  regen:"Реген", stamina:"Дыхалка"
+};
+function statLbl(id){ return STAT_LBL[id]||id; }
 const UPGRADES=[
-  {id:"atk",   k:"ATK",     step:3,  base:25, g:1.35, fmt:v=>fmt(v)},
-  {id:"energy",k:"Энергия", step:20, base:20, g:1.32, fmt:v=>fmt(v)},
-  {id:"spd",   k:"SPD",     step:0.12,base:40, g:1.35, fmt:v=>v.toFixed(2)},
-  {id:"tough", k:"Крепёж",  step:2,  base:35, g:1.45, fmt:v=>fmt(v)},
-  {id:"crit",  k:"CRIT",    step:1,  base:50, g:1.6,  fmt:v=>Math.round(v)+"%"},
-  {id:"luck",  k:"LUCK",    step:1,  base:50, g:1.55, fmt:v=>Math.round(v)+"%"},
-  {id:"mining",k:"MINING",  step:2,  base:45, g:1.5,  fmt:v=>Math.round(v)},
-  {id:"stone", k:"STONE",   step:10, base:30, g:1.4,  fmt:v=>(v>=1000?fmt(v):Math.round(v))+"%"}
+  {id:"atk",   k:"Атака",    step:3,  base:25, g:1.35, fmt:v=>fmt(v)},
+  {id:"energy",k:"Энергия",  step:20, base:20, g:1.32, fmt:v=>fmt(v)},
+  {id:"spd",   k:"Темп",     step:0.12,base:40, g:1.35, fmt:v=>v.toFixed(2)},
+  {id:"tough", k:"Защита",   step:2,  base:35, g:1.45, fmt:v=>fmt(v)},
+  {id:"crit",  k:"Крит",     step:1,  base:50, g:1.6,  fmt:v=>Math.round(v)+"%"},
+  {id:"luck",  k:"Удача",    step:1,  base:50, g:1.55, fmt:v=>Math.round(v)+"%"},
+  {id:"mining",k:"Чутьё",    step:2,  base:45, g:1.5,  fmt:v=>Math.round(v)},
+  {id:"stone", k:"Жадность", step:10, base:30, g:1.4,  fmt:v=>(v>=1000?fmt(v):Math.round(v))+"%"}
 ];
 const upCost=u=>Math.round(u.base*Math.pow(u.g,S.lvls[u.id]));
 const statCapped=id=>STAT_CAPS[id]!==undefined && stat(id)>=STAT_CAPS[id];
@@ -3704,7 +3804,7 @@ function doPrestige(){
   // сохраняется: навыки, старейшины, питомцы, коллекция, сеты, борода, валюты меты
   dead=false; if($("overlay")) $("overlay").style.display="none";
   Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
-  showToast("⛰️","ГЛУБИННЫЙ ЗОВ!","","Престиж "+S.prestigeLv,"+"+gain+" ур. · сила ×"+fmt(prestigeMult()),true);
+  showToast("⛰️","ГЛУБИННЫЙ ЗОВ!","","Престиж "+S.prestigeLv,"+"+gain+" ур. · атака ×"+fmt(prestigeMult()),true);
   sayQuip("Гора зовёт заново. Борода помнит всё.",5);
   try{ jingleSet(); }catch(e){}
   newRock(); save(); render();
@@ -3764,7 +3864,7 @@ function onFind(forceR){
     sayQuip("ПОЛНЫЙ СЕТ! Чуете? Гора запела!",5);
     jingleSet();
   }
-  else { extra="в коллекцию! +2% STONE навсегда"; jingleFind(); }
+  else { extra="в коллекцию! +2% жадности навсегда"; jingleFind(); }
   sayQuip(FIND_QUIPS[Math.floor(Math.random()*FIND_QUIPS.length)]);
   showToast(`<img src="${ORE_ICONS[ri]}" class="oreimg big">`,RAR_NAMES[ri],"r"+ri,name,extra);
 }
@@ -3775,8 +3875,8 @@ function onFind(forceR){
 const SET_BONUS=[
   {stat:"atk",   pct:100, label:"×2 ATK — «Гнев Горы»"},
   {stat:"energy",pct:100, label:"×2 Энергия — «Дыхание Глубин»"},
-  {stat:"stone", pct:150, label:"×2.5 STONE — «Жар Горна»"},
-  {stat:"luck",  flat:15, label:"+15% LUCK — «Свет Хрусталя»"},
+  {stat:"stone", pct:150, label:"×2.5 жадности — «Жар Горна»"},
+  {stat:"luck",  flat:15, label:"+15% удачи — «Свет Хрусталя»"},
   {stat:"atk",   pct:200, label:"×3 ATK — «ЕГО благословение»"}
 ];
 function uniqueStones(){ let n=0; for(const k in S.col) n+=Object.keys(S.col[k]).length; return n; }
@@ -3785,7 +3885,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 /* ---------- состояние ---------- */
 let S=null;
 function freshState(){
-  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:1, combs:1, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
     growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
       waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
       ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
@@ -3842,7 +3942,7 @@ const IDLE_QUIPS=[
 const FIND_QUIPS=["Блестит! Клянусь бородой!","В сундук. Быстро. Молча.","Дед бы прослезился.","Это не камень. Это пенсия."];
 const BOSS_QUIPS=["Тише… ОНО слышит кирку.","Большой камень — большая слава.","За бороду деда!"];
 const KO_SCREENS=[
-  ["ПЕРЕКУР В ЧЕРТОГАХ","🍺 Эль честно заслужен 🍺"],
+  ["ПЕРЕКУР В ЧЕРТОГАХ","🍺 Пиво честно заслужено 🍺"],
   ["ТЫ НЕ ПРОКОПАЕШЬ!","🍺 Жила стоит стеной. Выпей — и снова в забой 🍺"],
   ["БОРОДА ЗАПЫЛИЛАСЬ","🍺 Энергия кончилась раньше породы 🍺"]
 ];
@@ -3907,19 +4007,32 @@ function newRock(){
   const isBoss=(S.stageIdx % BALANCE.combat.bossEvery)===0;   // босс каждый 20-й бой
   rock=rockStatsAt(S.stageIdx,isBoss);
   rock.isBoss=isBoss;
+  rock.isRaid=false;
   { const d=petDot();
     if(d){ if(d.kind==="shock")  rock.hard*=(1-d.defCut);
            if(d.kind==="splash") rock.resp*=(1-d.spdCut); } }
+  /* Активный особый камень штольни — крепче и с тематической наградой */
+  if(S.mineRaid && (S.mineRaid.mineId|0)===(S.mine%MINES.length)){
+    const mul=(BALANCE.mineRaid&&BALANCE.mineRaid.hpMul)||5;
+    rock.isRaid=true; rock.isBoss=true;
+    rock.hp=Math.max(rock.hp+1, Math.round(rock.hp*mul));
+  }
   S.rockHP=rock.hp;
   S.energy=stat("energy");
   const mk=S.mine%MINES.length, cycle=Math.floor(S.mine/MINES.length);
-  { const _p=ORE_SPRITES[isBoss?5:mk]||ORE_SPRITES[0]; const _si=Number(S.stageIdx)||0; $("rockImg").src=_p[((_si*7+mk)%4+4)%4]||_p[0]; }
-  $("rockName").textContent=isBoss
-    ? BOSS_POOLS[mk][cycle%BOSS_POOLS[mk].length]+" (босс)"
-    : ROCK_POOLS[mk][S.stageIdx%ROCK_POOLS[mk].length];
-  if(isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
-  $("rockName").classList.toggle("bosslabel",isBoss);
-  $("rock").classList.toggle("boss",isBoss);
+  { const _p=ORE_SPRITES[rock.isBoss?5:mk]||ORE_SPRITES[0]; const _si=Number(S.stageIdx)||0; $("rockImg").src=_p[((_si*7+mk)%4+4)%4]||_p[0]; }
+  if(rock.isRaid && S.mineRaid){
+    $("rockName").textContent="ОСОБЫЙ КАМЕНЬ · "+(S.mineRaid.n||"награда")+" "+(S.mineRaid.ic||"");
+  } else {
+    $("rockName").textContent=rock.isBoss
+      ? BOSS_POOLS[mk][cycle%BOSS_POOLS[mk].length]+" (босс)"
+      : ROCK_POOLS[mk][S.stageIdx%ROCK_POOLS[mk].length];
+  }
+  if(rock.isRaid) sayQuip("Особый камень! Разбей — чертог отдаст своё.",4);
+  else if(rock.isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
+  $("rockName").classList.toggle("bosslabel",!!rock.isBoss);
+  $("rock").classList.toggle("boss",!!rock.isBoss);
+  $("rock").classList.toggle("raid",!!rock.isRaid);
   $("scene").className="scene t"+(S.mine%MINES.length);
   prepBuried();
 }
@@ -4055,12 +4168,20 @@ function caveIn(){
 }
 function breakVein(){
   const prevIdx=S.stageIdx;
+  const wasRaid=!!(rock&&rock.isRaid&&S.mineRaid);
+  const raidSnap=wasRaid?Object.assign({},S.mineRaid):null;
   sfxBreak();
   addCartOre();
   S.gold+=veinReward()*(rock.isBoss?1.5:1)*activeLootMult();              // ролл 1 — всегда
-  grantBags(rock.isBoss?BALANCE.bags.perBoss:BALANCE.bags.perVein);   // сумка за победу (док)
-  // дополнительные ресурсы по штольням (Спринт 3)
-  { const mk=S.mine%MINES.length, ex=(BALANCE.minesExtra||[])[mk];
+  if(wasRaid&&raidSnap){
+    grantMineRaidReward(raidSnap);
+    S.mineRaid=null;
+  } else {
+    grantBags(rock.isBoss?BALANCE.bags.perBoss:BALANCE.bags.perVein);   // сумка за победу (док)
+  }
+  // дополнительные ресурсы по штольням (Спринт 3) — только обычные жилы
+  if(!wasRaid){
+    const mk=S.mine%MINES.length, ex=(BALANCE.minesExtra||[])[mk];
     if(ex && Math.random()*100<ex.pct){
       const amt = rock.isBoss ? ex.boss : ex.vein;
       if(amt>0){
@@ -4086,15 +4207,16 @@ function breakVein(){
     if(!S._wallShown){ S._wallShown=true;
       showToast("⛰️",BALANCE.run.wallMsg+"!","","Дальше — только Глубинный Зов","этап "+BALANCE.run.len+" · жми ⛰️",true);
       sayQuip("Свод. Дальше Гора не пускает. Пора звать заново.",6); }
-  } else { S.stageIdx++; S.stage++; }
+  } else if(!wasRaid){ S.stageIdx++; S.stage++; }
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
   S.veinsBroken=(S.veinsBroken||0)+1;
   try{ checkMinerLevelUp(true); }catch(e){}
-  rollVeinExtras(rock.isBoss);
+  if(!wasRaid) rollVeinExtras(rock.isBoss);
   checkDepthMark(prevIdx); submitMyScore();
-  if(rock.isBoss) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
-  if(S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
+  if(rock.isBoss&&!wasRaid) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
+  if(!wasRaid && S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
+  try{ notifyFeatUnlocks(); }catch(e){}
   newRock(); save();
 }
 function exhausted(){
@@ -4145,6 +4267,114 @@ function dropGear(){ dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.
 /* ---------- Сумки: 1 сумка = 1 предмет (док §Экипировка и сумки) ---------- */
 let autoRollAcc=0;
 function grantBags(n){ S.bags=Math.min(BALANCE.bags.cap,(S.bags||0)+n); }
+
+/* ---------- Постепенное открытие механик (BALANCE.unlocks) ----------
+   На главной закрытое не показываем. Условие — stageIdx. */
+const FEAT_ORDER=["auto","pets","beards","daily","mines","skills","artifacts","pvp","social"];
+const FEAT_INFO={
+  auto:{ic:"⚙️",n:"Авто и бонусы",hint:"АВТО сумок, бонус-сундук, офлайн и 2× добыча"},
+  pets:{ic:"🐾",n:"Питомцы",hint:"Яйца с жил · крути гачу в слоте питомца"},
+  beards:{ic:"🧔",n:"Бороды",hint:"Расчёски с жил · ранг и гача старейшин"},
+  daily:{ic:"📕",n:"Задания",hint:"Ежедневные квесты и акции слева на сцене"},
+  mines:{ic:"⛏",n:"Штольни",hint:"Смена чертогов в нижней панели"},
+  skills:{ic:"📜",n:"Навыки",hint:"Ларь карт, КРАСАВА и тренировки"},
+  artifacts:{ic:"💎",n:"Трофеи",hint:"Достижения и артефакты слева на сцене"},
+  pvp:{ic:"⚔",n:"Арена",hint:"PvP в нижней панели"},
+  social:{ic:"🍺",n:"Таверна и друзья",hint:"Таверна внизу · друзья слева"}
+};
+const FEAT_CHROME={
+  auto:["bonusChest","boost2x"],
+  daily:["quests","offers"],
+  mines:["navMines"],
+  skills:["navSkills"],
+  artifacts:["achievements","artifacts"],
+  pvp:["navPvp"],
+  social:["friendsBtn","navTavBtn"]
+};
+const FEAT_SCREEN={pets:"pets",beards:"beards",mines:"mines",pvp:"pvp",tavern:"social",artifacts:"artifacts"};
+function featNeedStage(id){
+  const U=BALANCE.unlocks||{};
+  return U[id]!=null?U[id]:1;
+}
+function featUnlocked(id){
+  if(typeof __TEST_UNLOCK_ALL!=="undefined" && __TEST_UNLOCK_ALL) return true;
+  if(!S) return false;
+  const need=featNeedStage(id);
+  return (S.stageIdx||1)>=need;
+}
+function featLockToast(id){
+  const meta=FEAT_INFO[id]||{ic:"🔒",n:"Механика"};
+  const need=featNeedStage(id);
+  const left=Math.max(0,need-(S.stageIdx||1));
+  showToast("🔒",meta.n+" ещё закрыто","",
+    "Откроется на этапе "+need+(left?" · ещё ~"+left:""));
+}
+function requireFeat(id){
+  if(featUnlocked(id)) return true;
+  featLockToast(id);
+  return false;
+}
+function ensureFeat(d){
+  if(!d) return d;
+  if(!d.featToast||typeof d.featToast!=="object") d.featToast={};
+  /* Ветераны уже прошли порог — не спамить тостами при загрузке. */
+  const stage=d.stageIdx||1;
+  const U=BALANCE.unlocks||{};
+  for(const id of FEAT_ORDER){
+    const need=U[id]!=null?U[id]:1;
+    if(stage>=need && d.featToast[id]==null) d.featToast[id]=1;
+  }
+  return d;
+}
+function applyFeatureChrome(){
+  if(!S) return;
+  for(const id of Object.keys(FEAT_CHROME)){
+    const on=featUnlocked(id);
+    for(const elId of FEAT_CHROME[id]){
+      const el=$(elId); if(!el||!el.classList) continue;
+      el.classList.toggle("featOff", !on);
+    }
+  }
+  const sm=$("sideMenu");
+  if(sm&&sm.classList){
+    const kids=sm.querySelectorAll?sm.querySelectorAll(".btn-side"):[];
+    let any=false;
+    for(let i=0;i<kids.length;i++){
+      if(!kids[i].classList||!kids[i].classList.contains("featOff")){ any=true; break; }
+    }
+    sm.classList.toggle("featEmpty", !any);
+  }
+  const rank=$("statMinerCell");
+  if(rank){
+    const on=featUnlocked("beards");
+    rank.style.cursor=on?"pointer":"default";
+    rank.title=on?"Бороды · звание":"Ранг (бороды откроются позже)";
+    rank.classList&&rank.classList.toggle("featMuted", !on);
+  }
+  const smine=$("statMine");
+  if(smine){
+    const on=featUnlocked("mines");
+    const cell=smine.closest?smine.closest(".cell"):null;
+    const target=cell||smine;
+    target.style.cursor=on?"pointer":"default";
+    target.title=on?"Штольни":"Штольня (карта откроется позже)";
+  }
+}
+function notifyFeatUnlocks(){
+  if(!S) return;
+  if(!S.featToast||typeof S.featToast!=="object") S.featToast={};
+  let changed=false;
+  for(const id of FEAT_ORDER){
+    if(!featUnlocked(id)||S.featToast[id]) continue;
+    S.featToast[id]=1; changed=true;
+    if(id==="pets"&&(S.eggs||0)<1) S.eggs=1;
+    if(id==="beards"&&(S.combs||0)<1) S.combs=1;
+    const m=FEAT_INFO[id]||{ic:"✨",n:id,hint:""};
+    showToast(m.ic, m.n+" открыто!","", m.hint, "этап "+(S.stageIdx||1), true);
+    try{ Platform.logEvent("feat_unlock",{id,stage:S.stageIdx}); }catch(e){}
+  }
+  if(changed){ applyFeatureChrome(); save(); }
+}
 /* Открыть сумку вручную: обычный поток дропа (авто-надеть/авто-продать). */
 function canOpenBag(){ return (S.bags||0)>=1 && !S.autoRoll; }
 function openBag(){
@@ -4222,6 +4452,7 @@ function autoLockHint(){
   return "Заполни все слоты или надень "+n+" Rare+";
 }
 function toggleAutoRoll(){
+  if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
     if(S.autoRoll){ S.autoRoll=false; autoRollAcc=0; save(); render(); }
     showToast("🔒","Авто закрыто","",autoLockHint(),"открой сумки и одень лучшее");
@@ -4232,6 +4463,7 @@ function toggleAutoRoll(){
   save(); render();
 }
 function cycleAutoTier(){
+  if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
     showToast("🔒","Авто закрыто","",autoLockHint());
     return;
@@ -4240,6 +4472,7 @@ function cycleAutoTier(){
   save(); render();
 }
 function setAutoTier(r){
+  if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
     showToast("🔒","Авто закрыто","",autoLockHint());
     return;
@@ -4251,6 +4484,7 @@ function setAutoTier(r){
 }
 /** Окно выбора: что оставить (порог и выше), что сразу скупщику. */
 function openAutoTierModal(){
+  if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
     showToast("🔒","Авто закрыто","",autoLockHint(),"открой сумки и одень лучшее");
     return;
@@ -4262,13 +4496,10 @@ function openAutoTierModal(){
       +'<button type="button" class="btn '+(on?"btn-hard":"btn-soft")+'" onclick="setAutoTier('+r+')">'
       +(on?"✓ порог":"оставить")+'</button></div>';
   }).join("");
-  metaOpen("Авто-разбор сумок",
-    "Ниже порога — сразу скупщику. С порога — как вручную (надеть/продать). Сейчас: "
-    +RAR_NAMES[cur]+"+ · авто "+(S.autoRoll?"ВКЛ":"ВЫКЛ")+".",
-    rows
-    +'<div class="btnrow" style="margin-top:10px">'
-    +'<button type="button" class="btn '+(S.autoRoll?"btn-hard":"btn-soft")+'" onclick="toggleAutoRoll();openAutoTierModal()">'
-    +(S.autoRoll?"Выключить авто":"Включить авто")+'</button></div>');
+  metaOpen("Порог автопродажи",
+    "Ниже порога — сразу скупщику. С порога и выше — оставить на решение. Сейчас: "
+    +RAR_NAMES[cur]+"+.",
+    rows);
 }
 function dropGearItem(it, quiet){
   const slot=SLOTS.find(s=>s.id===it.s);
@@ -4293,6 +4524,7 @@ function dropGearItem(it, quiet){
 
 /* ---------- гача геолога (расчёски) ---------- */
 function hireGeo(){
+  if(!requireFeat("beards")) return;
   if((S.combs||0)<1){ showToast("🪮","Нет расчёсок","","Падают с жил, дейликов и боссов"); return false; }
   S.combs--;
   const r=rollRarity(geoWeights(S.geoRolls));
@@ -4338,24 +4570,8 @@ function onPowerUpClick(){
   openChest(true);
 }
 if($("powerUp")) $("powerUp").onclick=()=>onPowerUpClick();
-/* АВТО: короткий тап = вкл/выкл, long-press = окно порога редкости */
-(function wireAutoBtn(){
-  const ab=$("auto"); if(!ab||!ab.addEventListener) return;
-  let longFired=false, lpT=0;
-  ab.addEventListener("pointerdown", function(){
-    longFired=false;
-    clearTimeout(lpT);
-    lpT=setTimeout(function(){ longFired=true; openAutoTierModal(); }, 480);
-  });
-  function clearLp(){ clearTimeout(lpT); }
-  ab.addEventListener("pointerup", clearLp);
-  ab.addEventListener("pointercancel", clearLp);
-  ab.addEventListener("pointerleave", clearLp);
-  ab.onclick=function(e){
-    if(longFired){ longFired=false; if(e&&e.preventDefault) e.preventDefault(); return; }
-    toggleAutoRoll();
-  };
-})();
+if($("auto")) $("auto").onclick=()=>toggleAutoRoll();
+if($("autoTier")) $("autoTier").onclick=()=>openAutoTierModal();
 /* сундук: тап = вытянуть → Equip/Sell. Без сумок — ничего (апгрейд на кнопке СУМКА). */
 (function wireLootChest(){
   const lc=$("lootChest"); if(!lc) return;
@@ -4490,7 +4706,6 @@ function fmt(n){
   if(tier>=SUFFIX.length) return n.toExponential(2).replace("e+","e");
   return (n/Math.pow(10,tier*3)).toFixed(2)+SUFFIX[tier];
 }
-const BONUS_CD_MS=4*3600*1000;
 const LOOT2X_MS=30*60*1000;
 function fmtClock(ms){
   ms=Math.max(0,Math.floor(ms/1000));
@@ -4498,13 +4713,61 @@ function fmtClock(ms){
   if(h>0) return h+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
   return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
 }
+function bonusFib(){ return (BALANCE.bonus&&BALANCE.bonus.fib)||[1,1,2,3,5,8,13]; }
+function bonusFibAt(i){
+  const f=bonusFib();
+  if(i<0) return f[0]||1;
+  if(i>=f.length) return f[f.length-1]||1;
+  return Math.max(1, f[i]|0);
+}
 function ensureBonus(d){ if(!d) return d;
-  if(d.bonusReadyAt==null || typeof d.bonusReadyAt!=="number") d.bonusReadyAt=Date.now();
-  return d; }
+  if(!d.bonusProg||typeof d.bonusProg!=="object") d.bonusProg={day:"",step:0,readyAt:0};
+  if(d.bonusProg.step==null) d.bonusProg.step=0;
+  if(d.bonusProg.readyAt==null) d.bonusProg.readyAt=0;
+  /* миграция со старого плоского CD */
+  if(d.bonusReadyAt!=null && typeof d.bonusReadyAt==="number" && !d.bonusProg.day){
+    d.bonusProg.readyAt=d.bonusReadyAt;
+  }
+  return d;
+}
+function bonusReset(){
+  ensureBonus(S);
+  const t=todayStr();
+  if(S.bonusProg.day!==t){
+    S.bonusProg={day:t, step:0, readyAt:0};
+  }
+  /* зеркало для UI/аудитов, читающих bonusReadyAt */
+  const s=bonusSlotRaw();
+  S.bonusReadyAt=s.done?Date.now()+864e5:(s.ready?0:Date.now()+s.leftMs);
+}
+function bonusSlotRaw(){
+  ensureBonus(S);
+  const fib=bonusFib();
+  const step=Math.max(0, S.bonusProg.step|0);
+  const done=step>=fib.length;
+  const readyAt=done?Number.POSITIVE_INFINITY:(+S.bonusProg.readyAt||0);
+  const leftMs=done?0:Math.max(0, readyAt-Date.now());
+  const ready=!done && leftMs<=0;
+  return {step, readyAt, leftMs, ready, done, fib:done?0:bonusFibAt(step), max:fib.length};
+}
+function bonusSlot(){ bonusReset(); return bonusSlotRaw(); }
+function bonusAdvance(){
+  bonusReset();
+  const fib=bonusFib();
+  const next=(S.bonusProg.step|0)+1;
+  const unit=((BALANCE.bonus&&BALANCE.bonus.timerUnitSec)||3600)*1000;
+  if(next>=fib.length){
+    S.bonusProg={day:S.bonusProg.day, step:next, readyAt:Number.POSITIVE_INFINITY};
+  } else {
+    S.bonusProg={day:S.bonusProg.day, step:next, readyAt:Date.now()+bonusFibAt(next)*unit};
+  }
+  S.bonusReadyAt=S.bonusProg.readyAt;
+}
 function activeLootMult(){
   return (S.loot2xUntil&&S.loot2xUntil>Date.now()) ? 2 : 1;
 }
 function toggleLoot2x(){
+  if(!requireFeat("auto")) return;
   const now=Date.now();
   if(S.loot2xUntil&&S.loot2xUntil>now){
     showToast("🎬","×2 добыча","","Активно ещё "+fmtClock(S.loot2xUntil-now));
@@ -4523,40 +4786,63 @@ function toggleLoot2x(){
   }catch(e){}
   apply();
 }
-function bonusRewardGold(){ return Math.max(1, Math.round(veinReward()*3)); }
+function bonusRewardGold(step){
+  const mul=(BALANCE.bonus&&BALANCE.bonus.goldVeinMul)||3;
+  const fib=bonusFibAt(step==null?bonusSlot().step:step);
+  return Math.max(1, Math.round(veinReward()*mul*fib));
+}
+function bonusRewardBags(step){
+  const base=(BALANCE.bonus&&BALANCE.bonus.bags)|0 || 1;
+  return Math.max(1, Math.round(base*bonusFibAt(step==null?bonusSlot().step:step)));
+}
 function claimBonusChest(){
-  ensureBonus(S);
-  const now=Date.now();
-  if(now<S.bonusReadyAt){
-    showToast("🧰","Бонус","","Ещё "+fmtClock(S.bonusReadyAt-now));
+  if(!requireFeat("auto")) return;
+  const slot=bonusSlot();
+  if(slot.done){
+    showToast("🧰","Бонусы на сегодня","","Фибоначчи кончился · завтра снова ×1");
+    return;
+  }
+  if(!slot.ready){
+    showToast("🧰","Бонус · ступень "+(slot.step+1),"","×"+slot.fib+" через "+fmtClock(slot.leftMs));
     return;
   }
   openBonusClaim();
 }
-/** Окно награды бонуса: состав + слот ×2 за рекламу. */
+/** Окно награды бонуса: превью состава + ×2 за рекламу (как офлайн). */
 function openBonusClaim(){
-  const g=bonusRewardGold();
-  metaOpen("🧰 Бонус готов",
-    "Награда за ожидание. Забери сейчас или удвой за рекламу.",
-    '<div class="metarow"><span>Золото</span><span><b>+'+fmt(g)+' 🪙</b></span></div>'
-    +'<div class="metarow"><span>Сумка</span><span><b>+1 🎒</b></span></div>'
-    +'<div class="btnrow" style="margin-top:12px">'
-    +'<button type="button" class="btn btn-soft" onclick="grantBonusChest(1)">Забрать</button>'
-    +'<button type="button" class="btn btn-hard" onclick="grantBonusChest(2)">×2 за рекламу</button>'
+  const slot=bonusSlot();
+  const g=bonusRewardGold(slot.step), bags=bonusRewardBags(slot.step);
+  metaOpen("🧰 Бонус · ступень "+(slot.step+1)+"/"+slot.max+" · ×"+slot.fib,
+    "Фибоначчи: чем дольше ждёшь следующую ступень — тем больше награда.",
+    '<div class="sub" style="margin-bottom:4px">Базовая награда (×'+slot.fib+')</div>'
+    +'<div class="metarow"><span>Золото</span><span><b>+'+fmt(g)+' 🪙</b></span></div>'
+    +'<div class="metarow"><span>Сумка</span><span><b>+'+bags+' 🎒</b></span></div>'
+    +'<div class="sub" style="margin:12px 0 4px">С рекламой ×2</div>'
+    +'<div class="metarow"><span>Золото</span><span><b>+'+fmt(g*2)+' 🪙</b></span></div>'
+    +'<div class="metarow"><span>Сумка</span><span><b>+'+(bags*2)+' 🎒</b></span></div>'
+    +'<div class="btnrow" style="margin-top:14px">'
+    +'<button type="button" class="btn btn-soft" onclick="grantBonusChest(1)">Забрать<br><small>+'+fmt(g)+' · +'+bags+'🎒</small></button>'
+    +'<button type="button" class="btn btn-hard" onclick="grantBonusChest(2)">×2 за рекламу<br><small>+'+fmt(g*2)+' · +'+(bags*2)+'🎒</small></button>'
     +'</div>');
 }
 function grantBonusChest(mult){
-  ensureBonus(S);
-  const now=Date.now();
-  if(now<S.bonusReadyAt) return false;
+  const slot=bonusSlot();
+  if(slot.done||!slot.ready) return false;
   const m=mult===2?2:1;
+  const step=slot.step, fib=slot.fib;
   const finish=function(){
-    const g=bonusRewardGold()*m;
-    S.gold+=g; grantBags(1);
-    S.bonusReadyAt=now+BONUS_CD_MS;
+    const g=bonusRewardGold(step)*m;
+    const bags=bonusRewardBags(step)*m;
+    S.gold+=g; grantBags(bags);
+    bonusAdvance();
     const mm=$("metaModal"); if(mm) mm.style.display="none";
     try{ if(typeof UIS!=="undefined"&&UIS.id&&UIS.close) UIS.close(); }catch(e){}
-    Platform.logEvent("bonus_chest",{mult:m});
+    Platform.logEvent("bonus_chest",{mult:m,step,fib});
+    const next=bonusSlot();
+    const nextHint=next.done
+      ? "на сегодня всё"
+      : ("далее ×"+next.fib+" через "+fmtClock(next.leftMs));
+    showToast("🧰", m>1?"Бонус ×2 · ×"+fib:"Бонус · ×"+fib,"","+"+fmt(g)+" 🪙 · +"+bags+" 🎒", nextHint);
     save(); render();
   };
   if(m===2){
@@ -4582,26 +4868,16 @@ function buyUpgrade(id){
   if(u.id==="energy") S.energy=Math.min(S.energy+u.step,stat("energy"));
   if(S.ftue&&!S.ftue.u){ S.ftue.u=1; const el=$("u_"+u.id); if(el&&el.classList) el.classList.remove("pulse"); }
   Platform.logEvent("upgrade",{id:u.id,lv:S.lvls[u.id]});
-  pushFeed("Прокачка", (STRIP_LABEL[u.id]||u.k)+" → ур."+(S.lvls[u.id]|0)+" · −"+fmt(c)+" 🪙", "up");
+  pushFeed("Прокачка", (statLbl(u.id)||u.k)+" → ур."+(S.lvls[u.id]|0)+" · −"+fmt(c)+" 🪙", "up");
   save(); render();
   return true;
 }
-const STRIP_LABEL={
-  atk:"Урон",
-  energy:"Энергия",
-  spd:"Темп",
-  tough:"Крепёж",
-  crit:"Крит",
-  luck:"Удача",
-  mining:"Чутьё",
-  stone:"Жадность"
-};
 function buildUpgrades(){
   const box=$("statStrip")||$("upgrades"); if(!box) return;
   box.innerHTML="";
   UPGRADES.forEach(u=>{
     const d=document.createElement("div"); d.className="u"; d.id="u_"+u.id;
-    d.innerHTML=`<div class="k">${STRIP_LABEL[u.id]||u.k}</div><div class="lv">Ур. 0</div><div class="v"></div><div class="c"></div><button type="button" class="btn btn-soft" aria-hidden="true">+</button>`;
+    d.innerHTML=`<div class="k">${statLbl(u.id)||u.k}</div><div class="lv">Ур. 0</div><div class="v"></div><div class="c"></div><button type="button" class="btn btn-soft" aria-hidden="true">+</button>`;
     const val=d.querySelector(".v"); if(u.id==="atk"&&val) val.id="pAtk";
     const doBuy=e=>{ if(e&&e.stopPropagation) e.stopPropagation(); buyUpgrade(u.id); };
     d.onclick=doBuy;
@@ -4789,14 +5065,19 @@ function checkLoadout(){
     Platform.logEvent("lootbox_drop",{tier:minR}); sfxGear();
   }
 }
+/** Сумка может улучшить слот: есть сумки и (пусто | редкость ниже потолка тира сумки). */
+function slotCanBagUp(item){
+  return !!((S.bags||0)>0 && (!item || item.r < Math.min(7, 1+Math.floor((S.bag||1)/7))));
+}
 function renderGear(){
   const g=$("gearGrid"); if(!g) return;
   g.innerHTML="";
   const REF_ORDER=["helm","glove","pick","lamp","pants","boots","pack","robe","pet"];
   REF_ORDER.map(id=>SLOTS.find(s=>s.id===id)).filter(Boolean).forEach(sl=>{
+    if(sl.id==="pet" && !featUnlocked("pets")) return;
     const item=S.gear[sl.id];
     const d=document.createElement("div");
-    const canUp=!!((S.bags||0)>0 && (!item || item.r < Math.min(7, 1+Math.floor((S.bag||1)/7))));
+    const canUp=slotCanBagUp(item);
     d.className="slot "+(item?("br"+item.r):"empty")+(canUp?" canUp":"")+(sl.id==="pet"?" petSlot":"");
     let sv="—";
     if(item){
@@ -4809,11 +5090,14 @@ function renderGear(){
     if(sl.id==="pet"){
       d.title="Питомцы";
       d.onclick=function(){ if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha"); else if(typeof openPets==="function") openPets(); };
-    } else if(sl.id==="pick") d.onclick=openPickGallery;
-    else if(canUp){
-      d.title="Есть сумки — открыть";
-      d.onclick=function(){ openChest(false); };
-    } else d.onclick=function(){ openGearSlot(sl.id); };
+    } else if(sl.id==="pick"){
+      d.title=canUp?"Кирки · ↑ сумка может дать лучше":"Кирки";
+      d.onclick=openPickGallery;
+    } else {
+      // Всегда карточка слота. Сумки — с 📦 или кнопки в карточке (↑ = подсказка).
+      d.title=canUp?"Тап — инфо · ↑ можно улучшить сумкой":"Инфо о слоте";
+      d.onclick=function(){ openGearSlot(sl.id); };
+    }
     g.appendChild(d);
   });
   updateMiner();
@@ -4895,10 +5179,15 @@ function render(){
     if(en) setTxt(en,txt); if(en2) setTxt(en2,txt); }
   { ensureBonus(S);
     const bb=$("refBonusBtn"), bc=$("bonusChest"), bt=$("refBonusTimer");
-    const ready=Date.now()>=S.bonusReadyAt;
+    const slot=typeof bonusSlot==="function"?bonusSlot():{ready:Date.now()>=(S.bonusReadyAt||0),leftMs:Math.max(0,(S.bonusReadyAt||0)-Date.now()),done:false,fib:1};
+    const ready=!!slot.ready;
     if(bb&&bb.classList) bb.classList.toggle("ready",ready);
     if(bc&&bc.classList) bc.classList.toggle("ready",ready);
-    if(bt) setTxt(bt,ready?"ТАП":fmtClock(S.bonusReadyAt-Date.now())); }
+    if(bt){
+      if(slot.done) setTxt(bt,"завтра");
+      else if(ready) setTxt(bt,"×"+slot.fib+" ТАП");
+      else setTxt(bt,"×"+slot.fib+" "+fmtClock(slot.leftMs));
+    } }
   { const lb=$("loot2xBtn"), b2=$("boost2x"), ll=$("loot2xLbl");
     const on=S.loot2xUntil&&S.loot2xUntil>Date.now();
     if(lb&&lb.classList) lb.classList.toggle("on",!!on);
@@ -4968,17 +5257,39 @@ function render(){
     }
   }
   { const ab=$("auto")||$("autoBtn2"); if(ab&&ab.classList){
-      const unlocked=autoRollUnlocked();
+      const featOn=featUnlocked("auto");
+      const unlocked=featOn && autoRollUnlocked();
       ab.classList.toggle("on",!!(S.autoRoll && unlocked));
       ab.classList.toggle("off",!unlocked);
+      ab.classList.remove("featOff");
       setOp(ab, unlocked?"1":"0.55");
       const l=$("autoLbl2");
-      if(l) setTxt(l, !unlocked ? "🔒" : (S.autoRoll ? (RAR_NAMES[S.autoRollTier||0]+"+") : "ВЫКЛ"));
-      ab.title=!unlocked
-        ? autoLockHint()
-        : ("Тап — вкл/выкл · удержи — порог · сейчас "
-          +(S.autoRoll?(RAR_NAMES[S.autoRollTier||0]+"+"):"выкл"));
-    } }
+      if(l) setTxt(l, !featOn ? "🔒" : (!autoRollUnlocked() ? "🔒" : (S.autoRoll ? "ВКЛ" : "ВЫКЛ")));
+      ab.title=!featOn
+        ? ("Откроется на этапе "+featNeedStage("auto"))
+        : (!autoRollUnlocked()
+          ? autoLockHint()
+          : ("Авто-разбор сумок · сейчас "+(S.autoRoll?"ВКЛ":"ВЫКЛ")));
+    }
+    const at=$("autoTier"); if(at&&at.classList){
+      const featOn=featUnlocked("auto");
+      const unlocked=featOn && autoRollUnlocked();
+      const tier=S.autoRollTier|0;
+      const tierTxt=(RAR_NAMES[tier]||"?")+"+";
+      at.classList.toggle("on",!!(unlocked && (S.autoRollTier!=null)));
+      at.classList.toggle("off",!unlocked);
+      at.classList.remove("featOff");
+      setOp(at, unlocked?"1":"0.55");
+      const tl=$("autoTierLbl");
+      if(tl) setTxt(tl, !featOn ? "🔒" : (!autoRollUnlocked() ? "🔒" : tierTxt));
+      at.title=!featOn
+        ? ("Откроется на этапе "+featNeedStage("auto"))
+        : (!autoRollUnlocked()
+          ? autoLockHint()
+          : ("Порог: ниже — скупщику, с "+tierTxt+" — оставить"));
+    }
+    const ag=$("autoGroup"); if(ag&&ag.classList) ag.classList.remove("featOff");
+  }
   { const lc=$("lootChest");
     if(lc){ const dim=(S.bags||0)<1;
       setOp(lc,(dim||!!S.autoRoll)?"0.55":"1");
@@ -5008,13 +5319,14 @@ function render(){
     const g=GEO_TYPES[S.geo.t];
     const asc=(S.geo.asc||0)?(" ✦"+S.geo.asc):"";
     setHtml("geoName",`<span class="r${S.geo.r}">${S.geo.n||g.names[0]}${asc}</span>`);
-    setHtml("geoDesc",GEO_RAR[S.geo.r]+" ур."+(S.geo.lv||1)+" · +"+Math.round(geoPct(S.geo))+"% "+({atk:"ATK",energy:"Энергии",stone:"STONE"}[g.stat])
+    setHtml("geoDesc",GEO_RAR[S.geo.r]+" ур."+(S.geo.lv||1)+" · +"+Math.round(geoPct(S.geo))+"% "+statLbl(g.stat)
       +'<br><span style="color:var(--dim);font-size:7px">артель: '+geoMaterials()+' на слияние</span>');
   }
   { const gr=$("geoRolls"); if(gr) setTxt(gr,S.geoRolls); }
   const mineKey=S.mine%MINES.length;
   { const got=Object.keys(S.col[mineKey]||{}).length;
   setTxt("colCount",got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":""))); }
+  applyFeatureChrome();
   updateFtueHint();
 }
 function hideFtueTip(tip){
@@ -5087,9 +5399,9 @@ function updateFtueHint(){
     el=$("lootChest"); step="c"; msg="<b>СУНДУК</b>Открой сундук — надень или продай";
   } else if(!S.ftue.b && !bagUpgrading() && S.bag<50 && S.gold>=bagCost()){
     el=$("powerUp"); step="b"; msg="<b>СИЛА</b>Улучши сундук — шанс редкого выше";
-  } else if(!S.ftue.t && S.ftue.b && S.stageIdx>=5){
-    el=$("navTavBtn"); step="t"; msg="<b>ТАВЕРНА</b>Бороды, питомцы, застолья";
-  } else if(!S.ftue.g && S.ftue.t && S.stageIdx>=8){
+  } else if(!S.ftue.t && S.ftue.b && featUnlocked("social")){
+    el=$("navTavBtn"); step="t"; msg="<b>ТАВЕРНА</b>Застолья, пиво и артель";
+  } else if(!S.ftue.g && S.ftue.t && featUnlocked("social")){
     step="g"; msg="<b>ДРУЗЬЯ</b>Тап «Друзья» → пригласи, кооп-буст без рекламы";
     el=$("friendsBtn");
   }
@@ -5283,12 +5595,149 @@ function toastMine(){
   }
 }
 
+/* ---------- Особый камень штольни (Фибоначчи: таймер + награда) ---------- */
+function mineRaidFib(){ return (BALANCE.mineRaid&&BALANCE.mineRaid.fib)||[1,1,2,3,5,8,13]; }
+function mineRaidFibAt(i){
+  const f=mineRaidFib();
+  if(i<0) return f[0]||1;
+  if(i>=f.length) return f[f.length-1]||1;
+  return Math.max(1, f[i]|0);
+}
+function ensureMineRaid(d){
+  if(!d) return d;
+  if(d.mineRaid!=null && typeof d.mineRaid!=="object") d.mineRaid=null;
+  if(!d.mineRaidProg||typeof d.mineRaidProg!=="object") d.mineRaidProg={day:"",mines:{}};
+  if(!d.mineRaidProg.mines||typeof d.mineRaidProg.mines!=="object") d.mineRaidProg.mines={};
+  /* миграция со старых дневных ключей → ступень 0, готово сейчас */
+  if(d.mineRaidDay&&typeof d.mineRaidDay==="object"){
+    if(!d.mineRaidProg.day) d.mineRaidProg.day=d.mineRaidDay.day||"";
+    delete d.mineRaidDay;
+  }
+  return d;
+}
+function mineRaidReset(){
+  ensureMineRaid(S);
+  const t=todayStr();
+  if(S.mineRaidProg.day!==t){
+    S.mineRaidProg={day:t,mines:{}};
+    for(let i=0;i<MINES.length;i++) S.mineRaidProg.mines[i]={step:0,readyAt:0};
+  }
+  for(let i=0;i<MINES.length;i++){
+    const m=S.mineRaidProg.mines[i];
+    if(!m||typeof m!=="object") S.mineRaidProg.mines[i]={step:0,readyAt:0};
+    else {
+      if(m.step==null) m.step=0;
+      if(m.readyAt==null) m.readyAt=0;
+    }
+  }
+}
+function mineRaidDef(id){
+  const list=(BALANCE.mineRaid&&BALANCE.mineRaid.raids)||[];
+  return list.find(r=>r.id===id)||list[id]||null;
+}
+function mineRaidSlot(id){
+  mineRaidReset();
+  id=id|0;
+  const fib=mineRaidFib();
+  const m=S.mineRaidProg.mines[id]||{step:0,readyAt:0};
+  const step=Math.max(0, m.step|0);
+  const done=step>=fib.length;
+  const readyAt=done?Number.POSITIVE_INFINITY:(+m.readyAt||0);
+  const leftMs=done?0:Math.max(0, readyAt-Date.now());
+  const ready=!done && leftMs<=0;
+  return {step, readyAt, leftMs, ready, done, fib:done?0:mineRaidFibAt(step), max:fib.length};
+}
+function mineRaidKeysLeft(id){
+  /* совместимость UI/тестов: «доступно сейчас» = 1 или 0 */
+  const s=mineRaidSlot(id);
+  return s.ready?1:0;
+}
+function mineRaidLevel(){ return Math.max(1, Math.floor((S.mine||0)/MINES.length)+1); }
+function mineRaidRewardAmt(def, step){
+  if(!def) return 1;
+  const lv=mineRaidLevel();
+  const base=Math.max(1, Math.round((def.base||1)*Math.pow(def.g||1.1, lv-1)));
+  const mul=mineRaidFibAt(step==null?mineRaidSlot(def.id|0).step:step);
+  return Math.max(1, Math.round(base*mul));
+}
+function mineRaidAdvance(mineId){
+  mineRaidReset();
+  const fib=mineRaidFib();
+  const cur=S.mineRaidProg.mines[mineId]||{step:0,readyAt:0};
+  const next=(cur.step|0)+1;
+  const unit=((BALANCE.mineRaid&&BALANCE.mineRaid.timerUnitSec)||1800)*1000;
+  if(next>=fib.length){
+    S.mineRaidProg.mines[mineId]={step:next, readyAt:Number.POSITIVE_INFINITY};
+  } else {
+    S.mineRaidProg.mines[mineId]={step:next, readyAt:Date.now()+mineRaidFibAt(next)*unit};
+  }
+}
+function grantMineRaidReward(snap){
+  const res=snap.res, amt=Math.max(1, snap.amt|0), ic=snap.ic||"⛏", n=snap.n||"награда";
+  if(res==="bags") grantBags(amt);
+  else S[res]=(S[res]||0)+amt;
+  const fib=snap.fib||1;
+  showToast(ic,"Особый камень!","", n+" · ×"+fib, "+"+amt+" "+(snap.label||ic), true);
+  sayQuip("Чертог отдал своё. Следующая ступень — по таймеру Фибоначчи.",4);
+  Platform.logEvent("mine_raid",{mineId:snap.mineId,res,amt,fib,step:snap.step});
+}
+function startMineRaid(mineId){
+  mineId=mineId|0;
+  if(!(mineId>=0 && mineId<MINES.length)) return false;
+  if(typeof requireFeat==="function" && !requireFeat("mines")) return false;
+  const curAbs=S.mine||0, cur=curAbs%MINES.length;
+  if(mineId>cur){
+    showToast("⛏","Чертог закрыт","","Сначала дойди сюда обычной добычей","сейчас "+(cur+1)+"/5");
+    return false;
+  }
+  const slot=mineRaidSlot(mineId);
+  if(slot.done){
+    showToast("🔑","Ступени на сегодня","","Фибоначчи кончился · завтра снова с ×1");
+    return false;
+  }
+  if(!slot.ready){
+    showToast("⏱","Ещё рано","","Следующая ступень ×"+slot.fib, fmtClock(slot.leftMs));
+    return false;
+  }
+  if(S.mineRaid){
+    showToast("⛏","Уже идёт","","Сначала разбей текущий особый камень");
+    return false;
+  }
+  const def=mineRaidDef(mineId);
+  if(!def) return false;
+  const step=slot.step, fib=slot.fib;
+  const amt=mineRaidRewardAmt(def, step);
+  mineRaidAdvance(mineId);
+  S.mineRaid={ mineId, res:def.res, amt, ic:def.ic, n:def.n, label:def.label, step, fib };
+  const cycle=Math.floor(curAbs/MINES.length);
+  const nextAbs=cycle*MINES.length+mineId;
+  if(nextAbs!==curAbs){
+    S.mine=nextAbs; S.stage=Math.min(S.stage||1, STAGES_PER_MINE);
+    S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max;
+  }
+  dead=false;
+  try{ if(typeof UIS!=="undefined"&&UIS.close) UIS.close(); }catch(e){}
+  newRock(); save(); render();
+  const next=mineRaidSlot(mineId);
+  const nextHint=next.done
+    ? "на сегодня всё"
+    : ("далее ×"+next.fib+" через "+fmtClock(next.leftMs));
+  showToast(def.ic||"🔑","Особый камень · ступень "+(step+1),"",
+    "Разбей — "+amt+" "+(def.label||def.n)+" (×"+fib+")", nextHint);
+  Platform.logEvent("mine_raid_start",{mineId,amt,step,fib});
+  return true;
+}
+
 /* Спринт 3: выбор штольни внутри текущего круга (5 чертогов).
    Можно вернуться в уже пройденные (id <= текущего mineKey). */
 function switchMine(id){
   if(!(id>=0 && id<MINES.length)) return false;
   const curAbs=S.mine||0, cur=curAbs%MINES.length, cycle=Math.floor(curAbs/MINES.length);
   if(id>cur){ showToast("⛏","Закрыто","","Дойди до этого чертога в круге","сейчас "+(cur+1)+"/5"); return false; }
+  if(S.mineRaid){
+    showToast("⛏","Сначала особый камень","","Ступень уже взята — добей жилу");
+    return false;
+  }
   const nextAbs=cycle*MINES.length + id;
   if(nextAbs===curAbs){ switchTab("Mine"); return true; }
   S.mine=nextAbs;
@@ -5319,7 +5768,7 @@ function openCollection(){
   const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
   $("colTitle").textContent="Коллекция: "+m.n;
   const got=Object.keys(col).length;
-  const bonusLine=`<div class="col-item"><span>Пассив: +2% STONE за камень</span><span class="cnt">сейчас +${2*uniqueStones()}%</span></div>`
+  const bonusLine=`<div class="col-item"><span>Пассив: +2% жадности за камень</span><span class="cnt">сейчас +${2*uniqueStones()}%</span></div>`
     +`<div class="col-item"><span>Сет чертога (8/8): <b>${SET_BONUS[mineKey].label}</b></span><span class="cnt">${setDone(mineKey)?"АКТИВЕН ✓":got+"/8"}</span></div>`;
   $("colList").innerHTML=bonusLine+m.stones.map((s,i)=>{
     const c=col[i]||0;
@@ -5486,18 +5935,19 @@ function ensureWorkouts(d){ if(!d) return d;
 function ensureAll(d){
   ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d);
   ensureCards(d); ensureFair(d); ensureScience(d); ensureGacha(d); ensureBonus(d); ensureGrowth(d);
-  ensureWorkouts(d);
+  ensureWorkouts(d); ensureFeat(d); ensureMineRaid(d);
   return d;
 }
 function ensureGacha(d){ if(!d) return d;
-  if(d.eggs==null) d.eggs=Math.max(1, Math.min(5, 1+(d.petRolls||0)));
-  if(d.combs==null) d.combs=Math.max(1, Math.min(5, 1+(d.geoRolls||0)));
+  if(d.eggs==null) d.eggs=0;
+  if(d.combs==null) d.combs=0;
   if(d.bagActive && typeof d.bagActive.end!=="number") d.bagActive=null;
   if(d.bagActive && d.ftue && !d.ftue.b) d.ftue.b=1;   // апгрейд уже идёт — не пульсировать СИЛУ
   if(d.ftue){
     if(d.ftue.c==null) d.ftue.c=d.ftue.b?1:0;
-    if(d.ftue.t==null) d.ftue.t=(d.stageIdx||1)>5?1:0;
-    if(d.ftue.g==null) d.ftue.g=(d.stageIdx||1)>8?1:0;
+    const U=BALANCE.unlocks||{};
+    if(d.ftue.t==null) d.ftue.t=(d.stageIdx||1)>=(U.social||160)?1:0;
+    if(d.ftue.g==null) d.ftue.g=(d.stageIdx||1)>=(U.social||160)?1:0;
     if(d.ftue.m==null) d.ftue.m=(d.mine||0)>0?1:0;
   }
   return d; }
@@ -5816,6 +6266,7 @@ function checkStreak(){
 const OFFLINE_CAP_H=BALANCE.idle.capSec/3600;   // 2ч (boxer 1:1)
 let offlinePending=0, offlineBagsPending=0;
 function checkOffline(){
+  if(!featUnlocked("auto")) return;
   if(!S.lastSeen) return;
   const sec=Math.min(OFFLINE_CAP_H*3600, (Date.now()-S.lastSeen)/1000);
   if(sec<120) return;                                   // <2 минут не считаем
@@ -5847,13 +6298,13 @@ function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub"
    Уровень шахтёра за жилы даёт очки навыков (база + бонус от Разума).
    Теги дешевле тренировать. Карточные навыки из ларей остаются. */
 const SPECIAL_DEFS=[
-  {id:"e", n:"Крепость", letter:"К", stats:["energy","tough"], tip:"Держать штольню"},
+  {id:"e", n:"Крепость", letter:"К", stats:["energy","tough"], tip:"Влияет на энергию и защиту"},
   {id:"i", n:"Разум",    letter:"Р", stats:[],                tip:"Больше очков навыков за уровень"},
-  {id:"a", n:"Атлетизм", letter:"А", stats:["spd"],           tip:"Темп ударов"},
-  {id:"s", n:"Сила",     letter:"С", stats:["atk"],          tip:"Удар киркой"},
-  {id:"c", n:"Аура",     letter:"А", stats:["stone"],         tip:"Торг со скупщиком"},
-  {id:"l", n:"Везение",  letter:"В", stats:["luck"],          tip:"Нюх на жилу"},
-  {id:"p", n:"Анализ",   letter:"А", stats:["mining","crit"], tip:"Видеть трещины в жиле"}
+  {id:"a", n:"Атлетизм", letter:"А", stats:["spd"],           tip:"Влияет на темп"},
+  {id:"s", n:"Сила",     letter:"С", stats:["atk"],          tip:"Влияет на атаку"},
+  {id:"c", n:"Аура",     letter:"А", stats:["stone"],         tip:"Влияет на жадность"},
+  {id:"l", n:"Удача",    letter:"В", stats:["luck"],          tip:"Влияет на удачу"},
+  {id:"p", n:"Анализ",   letter:"А", stats:["mining","crit"], tip:"Влияет на чутьё и крит"}
 ];
 const KRASAVA_TITLE="К.Р.А.С.А.В.А.";
 function ensureSpecial(){
@@ -5929,7 +6380,7 @@ const PERK_DEFS=[
   {id:"hth",      n:"Тяжёлый удар",     ico:"💪", stats:["atk"],
     desc:"Кирка ложится тяжелее. Каждый замах выгрызает больше породы."},
   {id:"cautious", n:"Осторожный забой", ico:"🛡", stats:["tough"],
-    desc:"Не лезешь под обвал зря. Крепь держит дольше — меньше штрафов от усталости."},
+    desc:"Не лезешь под обвал зря. Защита держит дольше — меньше штрафов от усталости."},
   {id:"heal",     n:"Быстрое дыхание",  ico:"❤", stats:["regen"],
     desc:"Лёгкие шахтёра восстанавливаются быстрее. Энергия ползёт вверх даже в забое."},
   {id:"sequence", n:"Ранний удар",      ico:"⚡", stats:["spd"],
@@ -5957,40 +6408,40 @@ const TRAIT_DEFS=[
     desc:"Низкий, крепкий. Своды тебя любят (+крепь), но кирка ходит медленнее (−темп).",
     statsPlus:["tough"], statsMinus:["spd"]},
   {id:"bruiser", n:"Силач", ico:"💪",
-    desc:"Бьёшь как дед кувалдой. Больше урона, меньше темпа — жила должна успеть испугаться.",
+    desc:"Сила бьёт через атаку: больше атаки, меньше темпа — жила должна успеть испугаться.",
     statsPlus:["atk"], statsMinus:["spd"]},
   {id:"finesse", n:"Точный", ico:"🎯",
-    desc:"Бьёшь в трещину, не в дух. Крит чаще, но каждый удар легче (−ATK).",
+    desc:"Бьёшь в трещину, не в дух. Крит чаще, но каждый удар легче (−атака).",
     statsPlus:["crit"], statsMinus:["atk"]},
   {id:"kamikaze", n:"Безбашенный", ico:"💥",
-    desc:"Крепь? Какая крепь. Мчишься в забой (+темп), но своды мстят (−крепь).",
+    desc:"Защита? Какая защита. Мчишься в забой (+темп), но своды мстят (−защита).",
     statsPlus:["spd"], statsMinus:["tough"]},
   {id:"greed", n:"Жадный", ico:"🪙",
-    desc:"Скупщик плачет от счастья (+STONE). Гора обижается: удача на находки падает.",
+    desc:"Скупщик плачет от счастья (+жадность). Гора обижается: удача на находки падает.",
     statsPlus:["stone"], statsMinus:["luck"]},
   {id:"jinxed", n:"Баловень Горы", ico:"🍀",
-    desc:"Камень сам прыгает в карман (+удача). Чутьё пласта слепнет (−mining): находишь всё, кроме жилы.",
+    desc:"Камень сам прыгает в карман (+удача). Чутьё пласта слепнет (−чутьё): находишь всё, кроме жилы.",
     statsPlus:["luck"], statsMinus:["mining"]},
-  {id:"aleblood", n:"Эль в крови", ico:"🍺",
-    desc:"Запас сил как у бочки (+энергия). После третьей кружки чутьё пласта плывёт (−mining).",
+  {id:"aleblood", n:"Пиво в крови", ico:"🍺",
+    desc:"Запас сил как у бочки (+энергия). После третьей кружки чутьё пласта плывёт (−чутьё).",
     statsPlus:["energy"], statsMinus:["mining"]},
   {id:"sober", n:"Трезвенник", ico:"🧊",
-    desc:"Вода вместо эля. Видишь каждую трещину (+mining), но устаёшь как смертный (−энергия).",
+    desc:"Вода вместо пива. Видишь каждую трещину (+чутьё), но устаёшь как смертный (−энергия).",
     statsPlus:["mining"], statsMinus:["energy"]},
   {id:"goodnat", n:"Добряк", ico:"🤝",
-    desc:"Даже порода с тобой здоровается (+STONE у скупщика). Бить сильно — не по-дружески (−ATK).",
+    desc:"Даже порода с тобой здоровается (+жадность у скупщика). Бить сильно — не по-дружески (−атака).",
     statsPlus:["stone"], statsMinus:["atk"]},
   {id:"heavy", n:"Тяжёлая рука", ico:"⛏",
-    desc:"Удар глушит эхо. Больше ATK, но крит почти не ловишь — куда уж точнее, если уже дыра.",
+    desc:"Удар глушит эхо. Больше атаки, но крит почти не ловишь — куда уж точнее, если уже дыра.",
     statsPlus:["atk"], statsMinus:["crit"]},
   {id:"lantern", n:"Глаза-фонари", ico:"🕯",
-    desc:"В полумраке видишь жилу (+mining, +крит). На солнце жмуришься: темп падает.",
+    desc:"В полумраке видишь жилу (+чутьё, +крит). На солнце жмуришься: темп падает.",
     statsPlus:["mining","crit"], statsMinus:["spd"]},
   {id:"bearded", n:"Бородатый с пелёнок", ico:"🧔",
-    desc:"Борода тащит удачу (+luck) и уважение клана. Зато путается в кирке (−темп).",
+    desc:"Борода тащит удачу (+удача) и уважение клана. Зато путается в кирке (−темп).",
     statsPlus:["luck"], statsMinus:["spd"]},
   {id:"winded", n:"Короткая дыхалка", ico:"😮‍💨",
-    desc:"Комбо рвётся реже? Наоборот: stamina слабее, зато бьёшь злее (+ATK) пока хватает воздуха.",
+    desc:"Дыхалка слабее, зато бьёшь злее (+атака), пока хватает воздуха.",
     statsPlus:["atk"], statsMinus:["stamina"]}
 ];
 function hasPerk(id){ ensureSpecial(); return (S.perks||[]).indexOf(id)>=0; }
@@ -6015,7 +6466,8 @@ function perkBonusPct(statId){
 }
 function availablePerks(){
   ensureSpecial();
-  const max=(BALANCE.perks&&BALANCE.perks.maxOwned)||10;
+  const max=(BALANCE.perks&&BALANCE.perks.maxOwned)!=null
+    ? BALANCE.perks.maxOwned : PERK_DEFS.length;
   if((S.perks||[]).length>=max) return [];
   return PERK_DEFS.filter(p=>!hasPerk(p.id));
 }
@@ -6024,7 +6476,7 @@ function perkPickOpen(){ const m=$("perkModal"); return !!(m&&m.style.display===
 function openPerkPick(){
   ensureSpecial(); checkMinerLevelUp(false);
   if(!canPickPerk()){
-    showToast("📜","Нечего выбирать","",(S.perkPicks||0)<1?"Перк каждые "+((BALANCE.perks&&BALANCE.perks.everyLv)||3)+" ур. шахтёра":"Все перки взяты");
+    showToast("📜","Нечего выбирать","",(S.perkPicks||0)<1?"Перк каждые "+((BALANCE.perks&&BALANCE.perks.everyLv)||3)+" ур. шахтёра":"Все перки из пула уже взяты");
     window._charTab="perks"; openCharSheet({tab:"perks"}); return false;
   }
   window._perkSel=(availablePerks()[0]||{}).id||null;
@@ -6079,10 +6531,27 @@ function cancelPerkPick(){
   if(_skillsShellTab!=null) openSkills(_skillsShellTab==="train"||_skillsShellTab==="cards"?_skillsShellTab:"perks");
   else if(charSheetOpen()){ window._charTab="perks"; renderCharSheet(); }
 }
+/** Снять перк → вернуть очко выбора (перекачка бесплатна). */
+function dropPerk(id){
+  ensureSpecial();
+  if(!hasPerk(id)) return false;
+  const p=perkDef(id);
+  S.perks=(S.perks||[]).filter(x=>x!==id);
+  S.perkPicks=(S.perkPicks||0)+1;
+  Platform.logEvent("perk_drop",{id, left:S.perkPicks});
+  showToast(p&&p.ico||"📜","Перк снят","",p?p.n:id,"выбор +1 · возьми другой");
+  save();
+  window._charTab="perks"; refreshSpecialUi();
+  return true;
+}
+function traitMax(){
+  const m=BALANCE.traits&&BALANCE.traits.maxOwned;
+  return m!=null?m:TRAIT_DEFS.length;
+}
 function canPickTrait(id){
   ensureSpecial();
   if(hasTrait(id)) return false;
-  if((S.traits||[]).length>=2) return false;
+  if((S.traits||[]).length>=traitMax()) return false;
   return !!traitDef(id);
 }
 function pickTrait(id){
@@ -6097,6 +6566,23 @@ function pickTrait(id){
   window._charTab="perks"; refreshSpecialUi();
   return true;
 }
+/** Снять черту; бонус gifted к КРАСАВА откатывается. */
+function unpickTrait(id){
+  ensureSpecial();
+  if(!hasTrait(id)) return false;
+  const t=traitDef(id);
+  S.traits=(S.traits||[]).filter(x=>x!==id);
+  if(t&&t.specialAdd){
+    const floor=BALANCE.special.start||5;
+    SPECIAL_DEFS.forEach(d=>{
+      S.special[d.id]=Math.max(floor, specialAttr(d.id)-t.specialAdd);
+    });
+  }
+  Platform.logEvent("trait_drop",{id}); save();
+  showToast(t&&t.ico||"✨","Черта снята","",t?t.n:id,"можно взять другую");
+  window._charTab="perks"; refreshSpecialUi();
+  return true;
+}
 function isSkillTagged(id){ ensureSpecial(); return (S.skillTags||[]).indexOf(id)>=0; }
 function trainCost(id){
   const B=BALANCE.special||{};
@@ -6106,7 +6592,8 @@ function canTagSkill(id){
   ensureSpecial();
   if(!SKILL_DEFS.some(s=>s.id===id)) return false;
   if(isSkillTagged(id)) return false;
-  return (S.skillTags||[]).length<(BALANCE.special.tagSlots||3);
+  const slots=BALANCE.special.tagSlots!=null?BALANCE.special.tagSlots:SKILL_DEFS.length;
+  return (S.skillTags||[]).length<slots;
 }
 function charSheetOpen(){
   const m=$("charModal"); return !!(m&&m.style.display==="flex");
@@ -6118,7 +6605,7 @@ function refreshSpecialUi(tab){
 }
 function tagSkill(id){
   ensureSpecial();
-  if(!canTagSkill(id)){ showToast("🏷","Нельзя отметить","","Уже отмечен или нет слотов","макс "+(BALANCE.special.tagSlots||3)); return false; }
+  if(!canTagSkill(id)){ showToast("🏷","Нельзя отметить","","Уже отмечен или нет слотов","макс "+(BALANCE.special.tagSlots||SKILL_DEFS.length)); return false; }
   S.skillTags.push(id);
   Platform.logEvent("skill_tag",{id}); save();
   if(typeof window._charFocus!=="undefined") window._charFocus={kind:"skill",id};
@@ -6146,16 +6633,37 @@ function spendSpecial(id){
   save(); refreshSpecialUi("special");
   return true;
 }
-/* Вложения в КРАСАВА окончательные — откат запрещён (как в SPECIAL Fallout). */
+/** Вернуть очко КРАСАВА в пул (не ниже стартового). */
 function refundSpecial(id){
   ensureSpecial();
-  const d=SPECIAL_DEFS.find(x=>x.id===id);
-  showToast("🧬","Навсегда","",d?d.n:"Черта","вкачал — назад нельзя");
-  return false;
+  const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
+  const floor=BALANCE.special.start||5;
+  if(specialAttr(id)<=floor){
+    showToast("🧬","Уже база","",d.n,"ниже "+floor+" нельзя");
+    return false;
+  }
+  S.special[id]=specialAttr(id)-1;
+  S.specialPool=(S.specialPool||0)+1;
+  Platform.logEvent("special_refund",{id,v:S.special[id]});
+  showToast("🧬",d.letter+" "+d.n,"","="+S.special[id],"очко вернулось в пул");
+  window._charFocus={kind:"special",id};
+  save(); refreshSpecialUi("special");
+  return true;
 }
 function resetSpecial(){
-  showToast("🧬","Навсегда","","Перекачки нет","новые очки — только в пустые слоты");
-  return false;
+  ensureSpecial();
+  const floor=BALANCE.special.start||5;
+  let back=0;
+  SPECIAL_DEFS.forEach(d=>{
+    const v=specialAttr(d.id);
+    if(v>floor){ back+=v-floor; S.special[d.id]=floor; }
+  });
+  if(!back){ showToast("🧬","Нечего сбрасывать","","Все черты на старте"); return false; }
+  S.specialPool=(S.specialPool||0)+back;
+  Platform.logEvent("special_reset",{back});
+  showToast("🧬","КРАСАВА сброшена","","+"+back+" очк. в пул");
+  save(); refreshSpecialUi("special");
+  return true;
 }
 function canTrainSkill(id){
   ensureSpecial();
@@ -6209,26 +6717,26 @@ function foStatTxt(id){
   return pct?(Math.round(v)+"%"):fmt(v);
 }
 const FO_SPECIAL_INFO={
-  e:{ico:"🛡", txt:"Крепость шахтёра (выносливость). Больше энергии и крепи — дольше комбо до «устала кирка»."},
-  i:{ico:"🧠", txt:"Разум старателя (интеллект). Каждый уровень шахтёра даёт больше очков навыков. Качай Разум — учись быстрее."},
-  a:{ico:"⚡", txt:"Атлетизм забоя (ловкость). Темп ударов (SPD) — сколько раз кирка стучит в секунду."},
-  s:{ico:"💪", txt:"Сила рук и кирки. Точки выше базы усиливают ATK (с капом). Без силы жила стоит вечность."},
-  c:{ico:"💰", txt:"Аура у скупщика (харизма). Больше золота (STONE) за жилу — умеешь торговаться даже с камнем."},
-  l:{ico:"🍀", txt:"Везение в забое (удача). Шанс находки и жирных жил. Гора любит везучих — или делает вид."},
-  p:{ico:"👁", txt:"Анализ пласта (сообразительность / восприятие). Растёт mining и крит — видишь, где камень врёт, раньше остальных."}
+  e:{ico:"🛡", txt:"Крепость шахтёра. Влияет на энергию и защиту: дольше стоишь у забоя, меньше штрафов от усталости. Крепь штольни (брёвна) — отдельно: тап по ⚡."},
+  i:{ico:"🧠", txt:"Разум старателя. Каждый уровень шахтёра даёт больше очков навыков. Качай Разум — учись быстрее."},
+  a:{ico:"⚡", txt:"Атлетизм забоя. Влияет на темп — сколько раз кирка стучит в секунду."},
+  s:{ico:"💪", txt:"Сила рук и кирки. Влияет на атаку: выше сила — сильнее удар по жиле. Сила ≠ атака: атака — итоговый урон, сила его растит."},
+  c:{ico:"💰", txt:"Аура у скупщика. Влияет на жадность — больше золота за жилу."},
+  l:{ico:"🍀", txt:"Удача в забое. Влияет на удачу — шанс находки камней и жирных жил."},
+  p:{ico:"👁", txt:"Анализ пласта. Влияет на чутьё и крит — видишь, где камень врёт, раньше остальных."}
 };
 const FO_SKILL_ICO={crit_up:"🎯",atk_up:"⛏",luck_up:"💎",stone_up:"🪙",energy_up:"💨",mining_up:"🧭",tough_up:"🪵",regen_up:"❤",stam_up:"🫁"};
 /* Подсказки к навыкам — тон Борина / Устав Горы, не сухая формула. */
 const FO_SKILL_INFO={
-  crit_up:"Точный удар. Бьёшь не «куда попало», а в трещину, которую видит только дворф после третьего эля. Порода обижается лично.",
-  atk_up:"Сила забоя. Кирка тяжелеет — зато жила понимает намёки с первого раза. Дед говорил: «Сила есть — ума не надо». Дед врал только наполовину.",
-  luck_up:"Нюх на камни. Нос знает раньше глаз. Если зачесалась борода — копай левее. Если зачесалась дважды — это блохи, не жила.",
-  stone_up:"Жадность. Скупщик плачет, ты киваешь. Золото липнет к перчаткам само — Гора уважает тех, кто считает вслух.",
-  energy_up:"Второе дыхание. Когда лёгкие говорят «всё», дворф отвечает «ещё один удар». Кардио? Нет. Вторник.",
-  mining_up:"Чутьё пласта. Слышишь, где камень врёт. Эльфы зовут это «интуицией». Мы зовём «не бей впустую, дубина».",
-  tough_up:"Дубовая крепь. Своды держат, потому что ты тоже дуб. Обвал смотрит — и идёт мимо. Вежливо.",
-  regen_up:"Второе сердце. Первое стучит по жиле, второе — по таверне. Пока одно отдыхает, другое уже снова в забое.",
-  stam_up:"Дыхалка. Комбо не обрывается от чиха. Кто выдохся первым — тот не дворф, а турист с киркой напрокат."
+  crit_up:"Точный удар. Бьёшь не «куда попало», а в трещину. Растёт крит.",
+  atk_up:"Атака забоя. Кирка тяжелеет — жила понимает намёки с первого раза. Растёт атака.",
+  luck_up:"Нюх на камни. Нос знает раньше глаз. Растёт удача.",
+  stone_up:"Жадность. Скупщик плачет, ты киваешь. Растёт жадность — золото за жилу.",
+  energy_up:"Второе дыхание. Когда лёгкие говорят «всё», дворф отвечает «ещё один удар». Растёт энергия.",
+  mining_up:"Чутьё пласта. Слышишь, где камень врёт. Растёт чутьё — шанс двойного удара.",
+  tough_up:"Дубовая защита. Своды держат, потому что ты тоже дуб. Растёт защита.",
+  regen_up:"Второе сердце. Первое стучит по жиле, второе — по таверне. Растёт реген.",
+  stam_up:"Дыхалка. Комбо не обрывается от чиха. Растёт дыхалка."
 };
 function charFocus(kind,id){
   window._charFocus={kind,id};
@@ -6295,16 +6803,18 @@ function buildCharSheetHtml(inShell){
     const owned=(S.perks||[]).map(id=>{
       const p=perkDef(id); if(!p) return "";
       const on=focus.kind==="perk"&&focus.id===id?" on":"";
-      return `<div class="row${on}" onclick="charFocus('perk','${id}')"><span class="ic">${p.ico}</span><span class="nm">${esc(p.n)}</span></div>`;
+      return `<div class="row${on}" onclick="charFocus('perk','${id}')"><span class="ic">${p.ico}</span><span class="nm">${esc(p.n)}</span>
+        <button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();dropPerk('${id}')">снять</button></div>`;
     }).join("")||`<div class="empty">Пока пусто. Перк каждые ${((BALANCE.perks&&BALANCE.perks.everyLv)||3)} ур. шахтёра.</div>`;
     const traitRows=TRAIT_DEFS.map(t=>{
       const have=hasTrait(t.id), can=canPickTrait(t.id);
       return `<div class="row${have?" on":""}" onclick="charFocus('trait','${t.id}')">
         <span class="ic">${t.ico}</span><span class="nm">${esc(t.n)}${have?" · ✓":""}</span>
+        ${have?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();unpickTrait('${t.id}')">снять</button>`:""}
         ${!have&&can?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();pickTrait('${t.id}')">взять</button>`:""}
       </div>`;
     }).join("");
-    let infoIco="📜", infoTtl="Перки", infoTxt="Каждые несколько уровней шахтёра Гора даёт новый перк. Выбери из списка.";
+    let infoIco="📜", infoTtl="Перки", infoTxt="Каждые несколько уровней шахтёра Гора даёт новый перк. Снять — вернуть выбор и взять другой.";
     if(focus.kind==="perk"){
       const p=perkDef(focus.id);
       if(p){ infoIco=p.ico; infoTtl=p.n; infoTxt=p.desc+" Эффект: +"+((BALANCE.perks&&BALANCE.perks.pct)||2)+"% к "+(p.stats||[]).map(s=>s.toUpperCase()).join(", ")+"."; }
@@ -6312,11 +6822,12 @@ function buildCharSheetHtml(inShell){
       const t=traitDef(focus.id);
       if(t){ infoIco=t.ico; infoTtl=t.n; infoTxt=t.desc; }
     }
+    const perkMax=(BALANCE.perks&&BALANCE.perks.maxOwned)||PERK_DEFS.length;
     return tabs+
       `<div class="foHead">
         <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
         <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
-        <div class="foCell"><span class="k">Перки</span><span class="v">${(S.perks||[]).length}/${(BALANCE.perks&&BALANCE.perks.maxOwned)||10}</span></div>
+        <div class="foCell"><span class="k">Перки</span><span class="v">${(S.perks||[]).length}/${perkMax}</span></div>
         <div class="foCell"><span class="k">Выбор</span><span class="v">${S.perkPicks||0}</span></div>
       </div>
       <div class="foInfo" style="margin-bottom:6px">
@@ -6331,7 +6842,7 @@ function buildCharSheetHtml(inShell){
       <div class="foPanel" style="margin-bottom:6px">
         <h4>Черты</h4>
         <div class="foPerkOwned">${traitRows}</div>
-        <div class="sub" style="margin-top:6px;color:#8a7a60">До 2 черт. У каждой есть цена. Сейчас в колоде: ${TRAIT_DEFS.length}.</div>
+        <div class="sub" style="margin-top:6px;color:#8a7a60">Бери любые · снять можно в любой момент. В колоде: ${TRAIT_DEFS.length}.</div>
       </div>
       <div class="foFoot">
         <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Статы</button>
@@ -6342,27 +6853,29 @@ function buildCharSheetHtml(inShell){
   const specRows=SPECIAL_DEFS.map(d=>{
     const v=specialAttr(d.id);
     const canUp=(S.specialPool||0)>0 && v<max;
+    const canDown=v>(BALANCE.special.start||5);
     const on=focus.kind==="special"&&focus.id===d.id?" on":"";
     return `<div class="foSpecRow${on}">
       <span class="nm" onclick="charFocus('special','${d.id}')">${d.n}</span>
       <span class="foSpecCtrl">
+        <button type="button" class="${canDown?"":"dim"}" title="Вернуть очко в пул" onclick="refundSpecial('${d.id}')">−</button>
         <span class="num">${String(v).padStart(2,"0")}</span>
-        <button type="button" class="${canUp?"":"dim"}" title="Вложить очко навсегда" onclick="spendSpecial('${d.id}')">+</button>
+        <button type="button" class="${canUp?"":"dim"}" title="Вложить очко" onclick="spendSpecial('${d.id}')">+</button>
       </span>
     </div>`;
   }).join("");
 
   const derRows=[
-    ["Энергия", eCur+"/"+eMax],
-    ["Крепь (DEF)", foStatTxt("tough")],
-    ["Урон (ATK)", foStatTxt("atk")],
-    ["Темп", foStatTxt("spd")+"/с"],
-    ["Чутьё", foStatTxt("mining")],
-    ["Крит", foStatTxt("crit")],
-    ["Удача", foStatTxt("luck")],
-    ["Жадность", foStatTxt("stone")],
-    ["Реген", foStatTxt("regen")],
-    ["Дыхалка", foStatTxt("stamina")],
+    [statLbl("energy"), eCur+"/"+eMax],
+    [statLbl("tough"), foStatTxt("tough")],
+    [statLbl("atk"), foStatTxt("atk")],
+    [statLbl("spd"), foStatTxt("spd")+"/с"],
+    [statLbl("mining"), foStatTxt("mining")],
+    [statLbl("crit"), foStatTxt("crit")],
+    [statLbl("luck"), foStatTxt("luck")],
+    [statLbl("stone"), foStatTxt("stone")],
+    [statLbl("regen"), foStatTxt("regen")],
+    [statLbl("stamina"), foStatTxt("stamina")],
     ["Ур. шахтёра", String(S.minerLv||0)],
     ["Престиж", String(S.prestigeLv||0)]
   ].map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("");
@@ -6384,14 +6897,14 @@ function buildCharSheetHtml(inShell){
   if(focus.kind==="special"){
     const d=SPECIAL_DEFS.find(x=>x.id===focus.id), info=FO_SPECIAL_INFO[focus.id]||{};
     if(d){ infoIco=info.ico||"🧬"; infoTtl=d.letter+". "+d.n+" · "+specialAttr(d.id);
-      infoTxt=(info.txt||d.tip)+(d.stats&&d.stats.length?(" Влияет: "+d.stats.map(s=>s.toUpperCase()).join(", ")+"."):" Влияет на очки навыков за уровень."); }
+      infoTxt=(info.txt||d.tip)+(d.stats&&d.stats.length?(" Влияет: "+d.stats.map(s=>statLbl(s)).join(", ")+"."):" Влияет на очки навыков за уровень."); }
   }else if(focus.kind==="skill"){
     const d=SKILL_DEFS.find(x=>x.id===focus.id);
     if(d){
       const tr=(S.trained||{})[d.id]|0, card=(typeof skillLv==="function"?skillLv(d.id):0)|0;
       const fluff=FO_SKILL_INFO[d.id]||d.n;
       infoIco=FO_SKILL_ICO[d.id]||"📜"; infoTtl=d.n+" · "+skillSheetPct(d.id)+"%";
-      infoTxt=fluff+" Карта ур."+card+" · трен. "+tr+"/"+(B.trainCap||15)+" · +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+d.stat.toUpperCase()+"/трен. Тег: −"+(B.tagCost||1)+" очк. вместо "+(B.untagCost||2)+".";
+      infoTxt=fluff+" Карта ур."+card+" · трен. "+tr+"/"+(B.trainCap||15)+" · +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+statLbl(d.stat)+"/трен. Тег: −"+(B.tagCost||1)+" очк. вместо "+(B.untagCost||2)+".";
     }
   }
 
@@ -6420,7 +6933,7 @@ function buildCharSheetHtml(inShell){
     <div class="foPanel" style="margin-bottom:6px">
       <h4>Навыки · теги и тренировка</h4>
       ${skillRows}
-      <div class="foTagBar"><span>Теги ${(S.skillTags||[]).length}/${B.tagSlots||3}</span>
+      <div class="foTagBar"><span>Теги ${(S.skillTags||[]).length}/${B.tagSlots||SKILL_DEFS.length}</span>
         <span>Очки навыков <b>${S.skillPts||0}</b></span></div>
     </div>
     <div class="foFoot">
@@ -6428,6 +6941,7 @@ function buildCharSheetHtml(inShell){
         ?`<button type="button" class="btn btn-soft" onclick="openSkills('cards')">Карты</button>`
         :`<button type="button" class="btn btn-soft" onclick="closeCharSheet();openSkills('cards')">Ларь карт</button>`}
       ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" onclick="openPerkPick()">ПЕРК · ${S.perkPicks}</button>`:""}
+      <button type="button" class="btn btn-soft" title="Сбросить КРАСАВА в пул" onclick="resetSpecial()">↺ КРАСАВА</button>
       ${doneBtn}
     </div>`;
 }
@@ -6438,12 +6952,12 @@ function renderCharSheet(){
 
 const SKILL_DEFS=[
   {id:"crit_up",  n:"Точный удар",    stat:"crit",  per:1.5, r:1},
-  {id:"atk_up",   n:"Сила забоя",     stat:"atk",   per:8,   r:0},
+  {id:"atk_up",   n:"Атака забоя",    stat:"atk",   per:8,   r:0},
   {id:"luck_up",  n:"Нюх на камни",   stat:"luck",  per:1.2, r:2},
   {id:"stone_up", n:"Жадность",       stat:"stone", per:12,  r:0},
   {id:"energy_up",n:"Второе дыхание", stat:"energy",per:15,  r:1},
   {id:"mining_up",n:"Чутьё пласта",   stat:"mining",per:2,   r:2},
-  {id:"tough_up", n:"Дубовая крепь",  stat:"tough", per:6,   r:3},
+  {id:"tough_up", n:"Дубовая защита", stat:"tough", per:6,   r:3},
   {id:"regen_up", n:"Второе сердце",  stat:"regen", per:3,   r:2},
   {id:"stam_up",  n:"Дыхалка",        stat:"stamina",per:6,  r:3}
 ];
@@ -6466,6 +6980,7 @@ function skillsTabBar(tab){
   </div>`;
 }
 function openSkills(tab){
+  if(!requireFeat("skills")) return;
   ensureSpecial(); checkMinerLevelUp(false);
   tab=tab||"cards";
   if(tab==="workouts") tab="train";
@@ -6680,12 +7195,12 @@ function openPvp(){
     const fav=me>=o.power;
     const rec=pvpBotRec(o.id);
     return `<div class="metarow"><span>${o.ic||"🤖"} <b>${o.name}</b> · <span class="sub">${o.tag||"ИИ"}</span>
-      <br><span class="sub" style="color:${fav?"var(--green)":"#e8a24a"}">Power ${fmt(o.power)} · ~${fmt(pvpMineOrePerSec(o.power))}/с · счёт ${rec.w}:${rec.l}</span>
+      <br><span class="sub" style="color:${fav?"var(--green)":"#e8a24a"}">Сила арены ${fmt(o.power)} · ~${fmt(pvpMineOrePerSec(o.power))}/с · счёт ${rec.w}:${rec.l}</span>
       <br><span class="sub">${o.fluff||""}</span></span>
       <button class="btn btn-soft" onclick="pvpFight(${i})">В забой</button></div>`;
   }).join("") : '<div class="sub" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>';
   metaOpen("⚔ PvP · гонка с ИИ",
-    "Лига "+BALANCE.pvp.names[li]+" · Power "+fmt(me)+" · "+(BALANCE.pvp.raceSec||180)+"с · осталось: "+left+"/"+BALANCE.pvpDayLimit,
+    "Лига "+BALANCE.pvp.names[li]+" · сила арены "+fmt(me)+" · "+(BALANCE.pvp.raceSec||180)+"с · осталось: "+left+"/"+BALANCE.pvpDayLimit,
     `<div class="metarow"><span>Кубки: ${fmt(S.trophies||0)} · побед: ${S.pvpWins||0}</span></div>
      <div class="sub" style="margin:6px 0">5 ИИ-агентов копают ту же жилу ${(BALANCE.pvp.raceSec||180)}с. Кто добыл больше — победил. Выбери соперника:</div>
      ${cards}
@@ -6740,6 +7255,7 @@ function keyTimerStr(){
 }
 function eventLevel(){ return Math.max(1, Math.floor((S.mine||0)/2)+1); }
 function openEvents(){
+  if(!requireFeat("daily")) return;
   refillKeys();
   const lvl=eventLevel();
   const rows=EVENT_LIST.map(([id,nm,desc])=>{
@@ -7015,9 +7531,8 @@ function openProfile(){
 }
 
 
-/* ---------- Окно сундука: открыть (надеть/продать) + апгрейд (шансы/таймер/пропуск) ---------- */
-const CHEST_STAT_LBL={atk:"АТК",energy:"Энергия",tough:"Крепёж",crit:"Крит",luck:"Удача",
-  mining:"Добыча",stone:"Камни",spd:"Скорость",regen:"Реген",stamina:"Выносл."};
+/* ---------- Окно сумки: открыть (надеть/продать) + апгрейд (шансы/таймер/пропуск) ---------- */
+const CHEST_STAT_LBL=STAT_LBL;
 let chestPending=null;   // предмет, ждущий решения игрока (надеть/продать)
 function chestStatVal(v){ return v>=100?Math.round(v):(v>=10?v.toFixed(1):v.toFixed(2)); }
 function chestChanceRows(lvl){
@@ -7129,7 +7644,7 @@ function renderChestCard(){
       +'<button id="chSkipBtn" onclick="chestSkip()" '+(upNow?'':'disabled')+' title="сразу пропустить за кристаллы">Пропуск ⏩ · 💎'+bagSkipGems()+'</button>'
       +'</div></div>';
   }
-  el.innerHTML='<div class="uiSub" style="margin-bottom:10px">Сундук находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
+  el.innerHTML='<div class="uiSub" style="margin-bottom:10px">Сумка находок · ур.'+lvl+' · дроп-редкости растут с уровнем</div>'
     +'<div class="chOpen">'+openBtn+autoRow+'</div>'
     +pend+upBlock;
   const tit=$("chestTitle"); if(tit) tit.textContent="🧰 "+bagName(lvl);
@@ -7221,7 +7736,7 @@ function openStickers(){
   const owned=S.stickers||{};
   const have=STICKERS.filter(s=>(owned[s.id]||0)>0).length;
   const rows=STICKERS.map(s=>{ const c=owned[s.id]||0;
-    const nm={atk:"ATK",crit:"CRIT",luck:"LUCK",mining:"MINING",stone:"STONE",energy:"Энергия",tough:"Крепёж",regen:"Regen",stamina:"Stamina"}[s.stat]||s.stat.toUpperCase();
+    const nm=statLbl(s.stat);
     return `<div class="metarow" style="${c?'':'opacity:.4'}"><span>${s.ic} <b class="r${s.r}">${s.n}</b>${c>1?(" ×"+c):""}
       <br><span class="sub">${c?"+"+s.val+" "+nm:"не найден"}</span></span></div>`;
   }).join("");
@@ -7247,6 +7762,7 @@ function craftPetExotic(){
   return true;
 }
 function rollPet(){
+  if(!requireFeat("pets")) return;
   if((S.eggs||0)<1){ showToast("🥚","Нет яиц","","Яйца — с жил, дейликов и боссов"); return; }
   S.eggs--;
   const r=rollRarity(geoWeights(S.petRolls||0)); S.petRolls=(S.petRolls||0)+1;
@@ -7262,7 +7778,7 @@ function rollPet(){
 }
 
 /* --- Тренировки: пить пиво → очки → путь с таймером (§10) --- */
-const WK_PATH_NAME={energy:"Энергия",atk:"Урон",tough:"Крепёж",mining:"Чутьё",crit:"Крит",stone:"Жадность",luck:"Удача"};
+const WK_PATH_NAME=STAT_LBL;
 let _wkRefreshT=0, _drinkCdUntil=0;
 function workoutCost(path){
   const W=BALANCE.workouts, lv=(S.workouts&&S.workouts[path])||0;
@@ -7451,12 +7967,13 @@ function dailyProgress(id,amt){ dailyReset(); const q=BALANCE.dailyQuests.find(x
   }
 }
 function openDaily(){
+  if(!requireFeat("daily")) return;
   dailyReset();
   const maxTok=dailyQuestMaxTok();
   const tok=S.daily.tok||0;
   const doneN=BALANCE.dailyQuests.filter(q=>(S.daily.prog[q.id]||0)>=q.need).length;
   const tip=[
-    "Борин: эль не для красоты. Пей — копи очки — качай застолье.",
+    "Борин: пиво не для красоты. Пей — копи очки — качай застолье.",
     "Борин: жила без удара — как кружка без пены. Бери кирку.",
     "Борин шепчет: артель старейшин помнит тех, кто не забывает расчёску.",
     "Борин: на арене пьют победители. Остальные — воду."
@@ -7496,7 +8013,7 @@ function openDaily(){
     +(adDone?'<span style="color:var(--green)">✓</span>'
       :'<button class="btn btn-soft" onclick="claimDailyAd()">Смотреть</button>');
   metaOpen("Дейлики",
-    "Смена с рассветом · жечь эль, качать артель, бить жилы",
+    "Смена с рассветом · жечь пиво, качать артель, бить жилы",
     head+qrows+'<div style="height:6px"></div>'+trows+ad);
 }
 function claimDailyAd(){
@@ -7540,27 +8057,103 @@ function shopFreeReset(){
   const t=todayStr();
   if(!S.shopFree||S.shopFree.day!==t) S.shopFree={day:t,taken:{}};
 }
-function shopFreeLeft(id){
+function shopDailyDef(id){
+  const D=BALANCE.shopDaily||{};
+  return D[id]||null;
+}
+function shopDailyKeys(){
+  return Object.keys(BALANCE.shopDaily||{});
+}
+function shopDailyTaken(id, viaAd){
   shopFreeReset();
-  const n=BALANCE.shopFreeN||2;
-  /* id: "a"|"b" × modes free/ad → ключ id_mode */
-  return n;
+  return !!(S.shopFree.taken&&S.shopFree.taken[id+(viaAd?"_ad":"_free")]);
+}
+function shopDailyAnyLeft(id){
+  if(id) return !shopDailyTaken(id,false)||!shopDailyTaken(id,true);
+  return shopDailyKeys().some(k=>shopDailyAnyLeft(k));
+}
+function grantShopStickers(n){
+  S.stickers=S.stickers||{};
+  const got=[];
+  for(let i=0;i<(n|0);i++){
+    const s=STICKERS[Math.floor(Math.random()*STICKERS.length)];
+    S.stickers[s.id]=(S.stickers[s.id]||0)+1;
+    got.push(s.ico? (s.ico+" "+(s.n||s.id)) : (s.n||s.id));
+  }
+  return got;
+}
+function applyShopReward(rew){
+  if(!rew) return "";
+  const parts=[];
+  let gold=rew.gold|0;
+  if(rew.goldMul) gold+=Math.max(1, Math.round(veinReward()*rew.goldMul));
+  if(gold){ S.gold=(S.gold||0)+gold; parts.push("+"+fmt(gold)+" 🪙"); }
+  if(rew.gems){ S.gems=(S.gems||0)+rew.gems; parts.push("+"+rew.gems+" 💎"); }
+  if(rew.bags){ grantBags(rew.bags); parts.push("+"+rew.bags+" 🎒"); }
+  if(rew.eggs){ S.eggs=(S.eggs||0)+rew.eggs; parts.push("+"+rew.eggs+" 🥚"); }
+  if(rew.combs){ S.combs=(S.combs||0)+rew.combs; parts.push("+"+rew.combs+" 🪮"); }
+  if(rew.protein){ S.protein=(S.protein||0)+rew.protein; parts.push("+"+rew.protein+" 🍺"); }
+  if(rew.chestKeys){ S.chestKeys=(S.chestKeys||0)+rew.chestKeys; parts.push("+"+rew.chestKeys+" 🗝"); }
+  if(rew.stickers){
+    const g=grantShopStickers(rew.stickers);
+    if(g.length) parts.push(g.join(" · "));
+  }
+  return parts.join(" · ");
+}
+function shopRewardPreview(rew){
+  if(!rew) return "";
+  const parts=[];
+  if(rew.gold||rew.goldMul){
+    const g=(rew.gold|0)+(rew.goldMul?Math.max(1,Math.round(veinReward()*rew.goldMul)):0);
+    parts.push("+"+fmt(g)+" 🪙");
+  }
+  if(rew.gems) parts.push("+"+rew.gems+" 💎");
+  if(rew.bags) parts.push("+"+rew.bags+" 🎒");
+  if(rew.eggs) parts.push("+"+rew.eggs+" 🥚");
+  if(rew.combs) parts.push("+"+rew.combs+" 🪮");
+  if(rew.protein) parts.push("+"+rew.protein+" 🍺");
+  if(rew.chestKeys) parts.push("+"+rew.chestKeys+" 🗝");
+  if(rew.stickers) parts.push("артефакт ×"+rew.stickers);
+  return parts.join(" · ");
 }
 function claimShopFree(offerId, viaAd){
   shopFreeReset();
+  const def=shopDailyDef(offerId);
+  if(!def){ showToast("🎁","Нет оффера","",String(offerId)); return; }
   const key=offerId+(viaAd?"_ad":"_free");
-  if(S.shopFree.taken[key]){ showToast("🎁","Уже взято","","Завтра снова"); return; }
+  if(S.shopFree.taken[key]){ showToast("🎁","Уже взято","","Завтра снова · зайди в другой раздел"); return; }
+  const rew=viaAd?def.ad:def.free;
   const grant=()=>{
     S.shopFree.taken[key]=1;
-    if(offerId==="a"){ S.eggs=(S.eggs||0)+1; S.combs=(S.combs||0)+1; showToast("🎁","Подарок","","+1 🥚 +1 🪮"); }
-    else { S.protein=(S.protein||0)+40; S.bags=(S.bags||0)+1; showToast("🎁","Подарок","","+40 🍺 +1 🎒"); }
-    Platform.logEvent("shop_free",{offerId,viaAd:!!viaAd}); save(); render();
+    const line=applyShopReward(rew);
+    showToast(def.ic||"🎁", viaAd?"За рекламу":"Бесплатно", "", def.title, line||"получено", true);
+    Platform.logEvent("shop_free",{offerId,viaAd:!!viaAd,tab:offerId});
+    save(); render();
     if(typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
   };
   if(viaAd){
-    try{ if(Platform&&Platform.showRewarded){ Platform.showRewarded(ok=>{ if(ok) grant(); }, "shop_free"); return; } }catch(e){}
+    try{ if(Platform&&typeof Platform.showRewarded==="function"){
+      Platform.showRewarded(function(ok){ if(ok) grant(); }, "shop_free_"+offerId);
+      return;
+    } }catch(e){}
   }
   grant();
+}
+/** Карточка daily free+ad для вкладки рынка (HTML). */
+function shopDailyCardHtml(id){
+  const def=shopDailyDef(id); if(!def) return "";
+  const freeDone=shopDailyTaken(id,false), adDone=shopDailyTaken(id,true);
+  const freePrev=shopRewardPreview(def.free), adPrev=shopRewardPreview(def.ad);
+  return '<div class="uiCard shopDaily">'
+    +'<div class="uiCardIc">'+(def.ic||"🎁")+'</div>'
+    +'<div class="uiCardBody"><b>'+esc(def.title)+'</b>'
+    +'<div class="uiSub">'+(def.sub?esc(def.sub)+" · ":"")+'сброс ежедневно</div>'
+    +'<div class="uiBtnStack" style="margin-top:8px">'
+    +'<button type="button" class="btn btn-soft" onclick="claimShopFree(\''+id+'\',false)" '+(freeDone?"disabled":"")+'>'
+    +(freeDone?"✓ бесплатно":("Бесплатно · "+freePrev))+'</button>'
+    +'<button type="button" class="btn btn-hard" onclick="claimShopFree(\''+id+'\',true)" '+(adDone?"disabled":"")+'>'
+    +(adDone?"✓ реклама":("× реклама · "+adPrev))+'</button>'
+    +'</div></div></div>';
 }
 function buyGems(i){ Platform.buy("gems_"+i); growthTrackPurchase([1999,5999,19999][i],"gems_"+i); S.gems+=BALANCE.shop.gemPacks[i]; showToast("💎","Покупка","",BALANCE.shop.gemPacks[i]+" кристаллов","спасибо!"); save(); render(); openShop(); }
 function buyPack(i){ Platform.buy("pack_"+i); growthTrackPurchase([699,1699,2499][i],"pack_"+i); const [g,gold]=BALANCE.shop.comeback[i]; S.gems+=g; S.gold+=gold; showToast("🎁","Пак куплен","","+"+g+"💎 +"+fmt(gold)+"🪙","спасибо!"); save(); render(); openShop(); }
@@ -7580,7 +8173,7 @@ function buyStarterPack(){
 
 /* ---------- распитие эля (косметика + чуть энергии) ---------- */
 let aleNext=25+Math.random()*20, aleAnim=0;
-const ALE_QUIPS=["За Гору! *глоток*","Эль честно заслужен.","Ах, пивовар не подвёл!","Пыль в горле — не беда.","Один глоток за деда."];
+const ALE_QUIPS=["За Гору! *глоток*","Пиво честно заслужено.","Ах, пивовар не подвёл!","Пыль в горле — не беда.","Один глоток за деда."];
 /* хмельные подколы про бывших — таверный юмор, PG-13 (стор-безопасно) */
 const EX_QUIPS=[
   "Бывшая говорила, борода колется. Теперь борода длиннее наших отношений.",
@@ -7631,7 +8224,7 @@ const BORIN_JOKE_QUIPS=[
   "Пил за здоровье. Здоровье ушло в забой. Я — за ним с кружкой."
 ];
 const BORIN_HINT_QUIPS=[
-  "Эль не для красоты. Пей — копи очки — качай застолье.",
+  "Пиво не для красоты. Пей — копи очки — качай застолье.",
   "Стойка помнит каждого. Уважение растёт от тренировок, PvP и дейликов.",
   "Тегнутый навык на листе дешевле. А тут — пиво в очки, очки в силу.",
   "Пустой кружки не бывает: +5 🍺/ч капается само, пока ты в забое.",
@@ -7679,7 +8272,7 @@ function openBeard(){
   const isMax=w.lv>=BEARD_RANKS.length-1;
   metaOpen("Мудрость Бороды","Чем длиннее и седее борода — тем выше ранг и мощнее бонус.",
     `<div class="metarow"><span>Ранг: <b class="r5">${w.title}</b> (${w.lv}/${BEARD_RANKS.length-1})</span></div>
-     <div class="metarow"><span>Бонус: <b style="color:var(--gold)">+${w.goldPct}% доход · +${w.luckAdd.toFixed(1)} LUCK</b></span></div>
+     <div class="metarow"><span>Бонус: <b style="color:var(--gold)">+${w.goldPct}% доход · +${w.luckAdd.toFixed(1)} удачи</b></span></div>
      <div class="metarow"><span>Прогресс</span><span>${isMax?"МАКСИМУМ ✓":fmt(have)+" / "+fmt(need)+" XP"}</span></div>
      <div class="sub" style="margin-top:10px">Борода растёт от добычи жил, вех глубины и дней стрика. Ранг виден в HUD и на карточке хвастовства.</div>`);
   Platform.logEvent("beard_view",{lv:w.lv});
@@ -7813,17 +8406,30 @@ function fuseBoxes(tier){
 }
 /* ---------- Вкладки, бейджи «есть что забрать», аура сетов ---------- */
 var TABS=["Mine","Hero","Meta"];
-/** Подсветка нижнего навбара: активный экран UIS / лист навыков. */
+/** Подсветка нижнего навбара: активный экран UIS / лист навыков.
+ *  На главном забое ни одна кнопка не «on»; повторный тап активного — закрыть в забой. */
 function syncBottomNav(){
-  const map={navShop:"shop", navMines:"mines", navTavBtn:"tavern", navPvp:"pvp"};
-  const uiId=(typeof UIS!=="undefined"&&UIS)?UIS.id:null;
-  const skillsOn=(uiId==="panel" && typeof _skillsShellTab!=="undefined" && _skillsShellTab!=null)
-    || (typeof charSheetOpen==="function" && charSheetOpen() && !uiId);
-  for(const btnId in map){
+  const ui=$("uiScreen");
+  const uiOpen=!!(typeof UIS!=="undefined" && UIS && UIS.id && ui
+    && (ui.style.display==="flex" || (ui.classList && ui.classList.contains("open"))));
+  const uiId=uiOpen?UIS.id:null;
+  const skillsOn=!!(uiOpen && (
+    (uiId==="panel" && typeof _skillsShellTab!=="undefined" && _skillsShellTab!=null)
+    || (typeof charSheetOpen==="function" && charSheetOpen() && uiId==="panel")
+  ));
+  const pairs=[["navShop","shop"],["navMines","mines"],["navTavBtn","tavern"],["navPvp","pvp"]];
+  for(let i=0;i<pairs.length;i++){
+    const btnId=pairs[i][0], scr=pairs[i][1];
     const el=$(btnId); if(!el||!el.classList) continue;
-    el.classList.toggle("on", uiId===map[btnId]);
+    const on=uiId===scr;
+    el.classList.toggle("on", on);
+    if(el.setAttribute) el.setAttribute("aria-current", on?"page":"false");
   }
-  const sk=$("navSkills"); if(sk&&sk.classList) sk.classList.toggle("on", !!skillsOn);
+  const sk=$("navSkills");
+  if(sk&&sk.classList){
+    sk.classList.toggle("on", skillsOn);
+    if(sk.setAttribute) sk.setAttribute("aria-current", skillsOn?"page":"false");
+  }
 }
 function switchTab(name){
   if(!TABS.includes(name)) name="Mine";
@@ -7841,10 +8447,9 @@ function switchTab(name){
     const lw=$("logWrap"); if(lw&&lw.style) lw.style.display = onMine ? "" : "none";
   }
   if(S&&S.ftue&&name==="Meta"&&!S.ftue.t){ S.ftue.t=1; save(); }
-  document.querySelectorAll&&document.querySelectorAll("#bottomNav .btn-nav").forEach(b=>{
-    if(b.classList) b.classList.toggle("on", b.getAttribute&&b.getAttribute("data-nav")===name);
-  });
-  const v=$("view"); if(v) v.scrollTop=0;   // при смене экрана — наверх
+  /* #bottomNav .on — только syncBottomNav (не legacy Mine/Hero/Meta). */
+  try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
+  const v=$("view"); if(v) v.scrollTop=0;
   if(S){ S.tab=name; save(); }
   togglePaperdoll(name==="Hero");
   Platform.logEvent("tab",{t:name});
@@ -7860,7 +8465,8 @@ function badges(){
       return BALANCE.dailyTrack.some(([need],i)=>(S.daily.tok||0)>=need && !(S.daily.claimed||[]).includes(i)); }catch(e){ return false; } })();
   const bagsReady  = (S.bags||0)>0 && !S.autoRoll;
   const upgReady   = UPGRADES.some(u=>!statCapped(u.id) && S.gold>=upCost(u));
-  return { skillReady, petReady, geoReady, lootReady, workReady, dailyReady, bagsReady, upgReady,
+  const shopReady  = (function(){ try{ return shopDailyAnyLeft(); }catch(e){ return false; } })();
+  return { skillReady, petReady, geoReady, lootReady, workReady, dailyReady, bagsReady, upgReady, shopReady,
     prestigeReady: canPrestige(),
     mine: upgReady||bagsReady,
     hero: false,
@@ -7874,6 +8480,7 @@ function renderBadges(){
   setDot("ndotPets",b.petReady||b.geoReady);
   setDot("dotSkills",b.skillReady); setDot("dotPets",b.petReady||b.geoReady);
   setDot("dotWork",b.workReady); setDot("dotDaily",b.dailyReady); setDot("dotDailySide",b.dailyReady); setDot("dotLoot",b.lootReady);
+  setDot("dotShop",b.shopReady);
   { const up=$("skillsUp"); if(up&&up.classList) up.classList.toggle("on", !!(S.skillPts>0 || (S.perkPicks||0)>0 || SKILL_DEFS.some(d=>canUpSkill(d.id)))); }
   try{ updateGrowthDot(); }catch(e){}
 }
@@ -7892,18 +8499,26 @@ function openGearSlot(id){
   }
   const sl=SLOTS.find(s=>s.id===id); if(!sl) return;
   const it=S.gear[id];
+  const canUp=slotCanBagUp(it);
   const statLines=Object.keys(sl.st).map(k=>{
     const base=sl.st[k]; const v=it?itemStat(it,k):0;
-    const nm={atk:"ATK",energy:"Энергия",tough:"Крепёж",crit:"CRIT",luck:"LUCK",
-      mining:"MINING",stone:"STONE",spd:"SPD"}[k]||k.toUpperCase();
+    const nm=statLbl(k);
     return `<div class="metarow"><span>${nm}</span><span>${it?("+"+(v>=100?fmt(v):v.toFixed(1))):"—"}</span></div>`;
   }).join("");
   const head=it
-    ? `<div class="metarow"><span>Надето: <b class="r${it.r}">${RAR_NAMES[it.r]}</b>${(id==="pick"&&it.n)?(" «"+it.n+"»"):""}</span><span>сила ${fmt(itemPower(it))}</span></div>`
+    ? `<div class="metarow"><span>Надето: <b class="r${it.r}">${RAR_NAMES[it.r]}</b>${(id==="pick"&&it.n)?(" «"+it.n+"»"):""}</span><span>мощь ${fmt(itemPower(it))}</span></div>`
     : `<div class="sub">Слот пуст. Открывай сумки — что выпадет лучше, дворф наденет сам.</div>`;
+  const bagCta=canUp
+    ? '<div class="btnrow" style="margin-top:12px">'
+      +'<button type="button" class="btn btn-hard" onclick="document.getElementById(\'metaModal\').style.display=\'none\';openChest(false)">📦 Открыть сумку</button>'
+      +'</div>'
+      +'<div class="sub" style="margin-top:8px">Зелёная ↑ на слоте — сумка может дать лучше текущего.</div>'
+    : ((S.bags||0)<1
+      ? '<div class="sub" style="margin-top:10px">Сумок нет. Крути с кнопки 📦 над инвентарём.</div>'
+      : '');
   metaOpen(sl.ic+" "+sl.n,
     "Что выпало, то надето — если лучше текущего."+(sl.extra?(" Особое: "+sl.extra+"."):""),
-    head+statLines);
+    head+statLines+bagCta);
   Platform.logEvent("paperdoll_slot",{id});
 }
 /* ---------- Гильдия Рудознатцев: человеческая разметка ----------
@@ -8136,6 +8751,7 @@ function renderSetFx(){
   }
 }
 function openWall(){
+  if(!requireFeat("artifacts")) return;
   const me=playerName();
   submitMyScore();
   const lb=Platform.getLeaderboard();
@@ -8206,8 +8822,8 @@ function openPrestige(){
   const nextLvStage=Math.pow(lv+1,2)*BALANCE.prestige.div;
   metaOpen("⛰️ Глубинный Зов (престиж "+lv+")",
     "Гора отпускает дворфа наверх, чтобы он спустился заново — сильнее.",
-    `<div class="metarow"><span>Текущая сила престижа</span><span><b style="color:var(--gold)">×${fmt(now)}</b></span></div>
-     <div class="metarow"><span>Эхо прежних кирок</span><span><b>+${fmt(S.echo||0)} ATK</b></span></div>
+    `<div class="metarow"><span>Множитель атаки (престиж)</span><span><b style="color:var(--gold)">×${fmt(now)}</b></span></div>
+     <div class="metarow"><span>Эхо прежних кирок</span><span><b>+${fmt(S.echo||0)} атаки</b></span></div>
      <div class="metarow"><span>Спусков совершено</span><span>${S.prestigeRuns||0}</span></div>
      <div class="sub" style="margin-top:12px">${ok
        ? `Готово к спуску: <b style="color:var(--gold)">+${gain} ур.</b> · сила станет <b style="color:var(--gold)">×${fmt(next)}</b> · эхо <b>+${fmt(echoAdd)} ATK</b>`
@@ -8662,7 +9278,7 @@ bindSaveLifecycle();
   }
 })();
 </script>
-<script src="tools/ui_screens.js?v=8"></script>
+<script src="tools/ui_screens.js?v=15"></script>
 <script data-diag="1">
 /* Сторож запуска. Живёт в отдельном теге, поэтому переживает даже
    синтаксическую ошибку главного скрипта. Если через 3 секунды игра
