@@ -65,6 +65,7 @@ const UIS={
     }
     this.setChrome(false);
     this.id=null; this.tab=null; this._stack=[]; this._lastMeta=null;
+    try{ const b=this.$("uiBody"); if(b&&b.classList) b.classList.remove("foLock"); }catch(e){}
     try{ if(typeof _skillsShellTab!=="undefined") _skillsShellTab=null; }catch(e){}
     try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
     try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
@@ -112,6 +113,7 @@ const UIS={
     
     if(id!=="panel"){
       try{ if(typeof _skillsShellTab!=="undefined") _skillsShellTab=null; }catch(e){}
+      try{ const b=this.$("uiBody"); if(b&&b.classList) b.classList.remove("foLock"); }catch(e){}
     }
     this.id=id; this.tab=tab||null;
     this.render(id); this.show();
@@ -952,7 +954,9 @@ const UIS={
     this.$("uiTitle").textContent=title;
     this.$("uiHeadAct").innerHTML="";
     this.$("uiTabs").innerHTML="";
-    this.$("uiBody").innerHTML=(sub?'<div class="uiSub" style="margin-bottom:10px;line-height:1.6">'+sub+'</div>':"")+html;
+    const bodyEl=this.$("uiBody");
+    if(bodyEl&&bodyEl.classList) bodyEl.classList.remove("foLock");
+    bodyEl.innerHTML=(sub?'<div class="uiSub" style="margin-bottom:10px;line-height:1.6">'+sub+'</div>':"")+html;
     this.show();
   },
   refresh(){

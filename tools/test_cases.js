@@ -242,7 +242,7 @@ T("пиво не превышает максимум", S.energy<=stat("energy"))
   UIS.close(); }
 { openSkills("cards");
   const cardsHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
-  T("навыки: табы ведут в openSkills", /openSkills\('train'\)/.test(cardsHtml) && /openSkills\('sheet'\)/.test(cardsHtml));
+  T("навыки: табы ведут в openSkills", /openSkills\('train'\)/.test(cardsHtml) && /openSkills\('sheet'\)/.test(cardsHtml) && /openSkills\('list'\)/.test(cardsHtml));
   openSkills("train");
   const trainHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("openSkills('train') держит табы и тренировки", UIS.id==="panel"
@@ -252,11 +252,18 @@ T("пиво не превышает максимум", S.energy<=stat("energy"))
   T("openSkills('sheet') полный лист + табы ларя", UIS.id==="panel"
     && /skillsTabs|openSkills\('cards'\)/.test(sheetHtml)
     && /foGrid|foSpecRow|Боевые|К\.Р\.А\.С\.А\.В\.А/i.test(sheetHtml)
+    && !/foSkillRow/.test(sheetHtml)
     && /Навыки добычи/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  openSkills("list");
+  const listHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("openSkills('list') скилы с описанием сверху", UIS.id==="panel"
+    && /foSkillRow/.test(listHtml) && /foPin/.test(listHtml) && /foInfo/.test(listHtml)
+    && /Навыки · теги/.test(listHtml));
   openSkills("perks");
   const perksHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("openSkills('perks') полный лист перков + табы", UIS.id==="panel"
     && /openSkills\('sheet'\)/.test(perksHtml) && /Черты|Перки/i.test(perksHtml)
+    && /foPin/.test(perksHtml) && /foScroll/.test(perksHtml)
     && /Навыки добычи/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
   closeSkillsShell(); }
 { UIS.open("tavern","ale");
@@ -697,9 +704,10 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="К.Р.А.С.А.В
   T("все навыки качаются с тегом ("+(failId||"ok")+")", taggedTrainOk);
   S.skillTags=["crit_up"]; S.skillPts=16; S.trained={};
   openCharSheet({kind:"skill",id:"crit_up"});
-  const html=($("charSheet")&&$("charSheet").innerHTML)||"";
+  const html=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("charSheet")&&$("charSheet").innerHTML)||"");
   T("лист: Точный удар с тегом кликабелен",
     /trainSkill\('crit_up'\)/.test(html) && !/trainSkill\('crit_up'\)"[^>]*\bdisabled\b/.test(html));
+  closeSkillsShell();
   /* даже у капа крита тренировка с тегом проходит */
   S.skillTags=["crit_up"]; S.skillPts=5; S.trained={}; S.lvls.crit=99; S.skills={};
   T("крит на капе — тегнутый Точный удар всё равно качается",
@@ -844,11 +852,9 @@ console.log("\n[34] Paperdoll не перекрывает дворфа");
 localStorage.removeItem("oredeep_v3"); load();
 T("по умолчанию маркеры скрыты", !__ids.paperdoll.classList.contains("on"));
 __ids.miner.onclick();
-T("тап по дворфу показывает маркеры", __ids.paperdoll.classList.contains("on"));
-__ids.miner.onclick();
-T("повторный тап прячет", !__ids.paperdoll.classList.contains("on"));
-switchTab("Hero"); T("вкладка Герой показывает маркеры сама", __ids.paperdoll.classList.contains("on"));
-switchTab("Mine"); T("уход с Героя прячет маркеры", !__ids.paperdoll.classList.contains("on"));
+T("тап по дворфу не вешает одежду на сцену", !__ids.paperdoll.classList.contains("on"));
+switchTab("Hero"); T("вкладка Герой не вешает одежду на спрайт", !__ids.paperdoll.classList.contains("on"));
+switchTab("Mine"); T("на забое одежда не висит", !__ids.paperdoll.classList.contains("on"));
 S.gear={}; SLOTS.slice(0,3).forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:2,m:1,i:1}; });
 renderPaperdoll();
 { const kids=[...__ids.paperdoll.children];
@@ -860,6 +866,21 @@ renderPaperdoll();
   T("пустые слоты приглушены", kids.filter(k=>k.className.includes("empty")).length===SLOTS.length-3);
   kids[0].onclick({stopPropagation(){}});
   T("клик по маркеру открывает карточку слота", modalOpen()); }
+{ S.bags=2; S.bag=1; S.gear={glove:{s:"glove",r:0,m:1,i:1}};
+  openGearSlot("glove");
+  const h1=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("окно слота с сумками: кнопка Открыть", /Открыть сумку/.test(h1) && /Зелёная ↑/.test(h1));
+  S.bags=0; openGearSlot("robe");
+  const h2=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("окно слота без сумок: та же кнопка (disabled) + подсказка",
+    /Нет сумок/.test(h2) && /btnrow/.test(h2) && /Падают за жилы|над инвентарём/.test(h2));
+  openGearSlot("boots");
+  const h3=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("окно слота: флёр — эффект и история",
+    /НА ЧТО ВЛИЯЕТ/.test(h3) && /ИСТОРИЯ/.test(h3) && /Темп/.test(h3) && /Борин/.test(h3));
+  T("флёр есть у всех слотов шмота", gearSlots().every(s=>SLOT_FLUFF[s.id]&&SLOT_FLUFF[s.id].effect&&SLOT_FLUFF[s.id].lore));
+  try{ if(typeof UIS!=="undefined") UIS.close(); }catch(e){}
+  const mm=$("metaModal"); if(mm) mm.style.display="none"; }
 
 console.log("\n[35] Интро «Устав Горы»");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1269,6 +1290,12 @@ closeChest();
   T("1-tap показывает пилюли сравнения", /chPill/.test(__ids.dropCard.innerHTML||""));
   sellChestItem();
   T("продажа закрывает dropModal", chestPending===null && __ids.dropModal.style.display!=="flex"); }
+{ const g=gearSlots();
+  T("питомец не в слотах сумок", g.every(s=>s.id!=="pet") && SLOTS.some(s=>s.id==="pet"));
+  let petDrop=false;
+  for(let i=0;i<400;i++){ if(rollGearSlot().id==="pet") petDrop=true; }
+  T("rollGearSlot не выбирает питомца", petDrop===false);
+}
 { buildUpgrades(); render();
   T("карточки апгрейдов показывают Ур. N", /Ур\.\s*\d+/.test((__ids.u_atk&&__ids.u_atk.innerHTML)||"")); }
 { S.bag=1; S.gold=bagCost()*2; S.bagActive=null; bagSkipArmed=false; render();
@@ -1299,15 +1326,19 @@ T("новый игрок стартует без яиц/расчёсок (отк
 T("на старте авто/таверна/пвп закрыты по фиче",
   featUnlocked("auto")===false && featUnlocked("social")===false && featUnlocked("pvp")===false);
 render();
-T("хром: АВТО на месте с 🔒, друзья/таверна скрыты",
+T("хром: АВТО на месте с 🔒, друзья скрыты, навбар с замками",
   ($("auto")&&!$("auto").classList.contains("featOff") && /🔒/.test(($("autoLbl2")&&$("autoLbl2").textContent)||""))
   && ($("autoTier")&&!$("autoTier").classList.contains("featOff") && /🔒/.test(($("autoTierLbl")&&$("autoTierLbl").textContent)||""))
   && ($("friendsBtn")&&$("friendsBtn").classList.contains("featOff"))
-  && ($("navTavBtn")&&$("navTavBtn").classList.contains("featOff")));
+  && ($("navTavBtn")&&!$("navTavBtn").classList.contains("featOff") && $("navTavBtn").classList.contains("featLocked"))
+  && ($("navMines")&&!$("navMines").classList.contains("featOff") && $("navMines").classList.contains("featLocked"))
+  && ($("navSkills")&&!$("navSkills").classList.contains("featOff") && $("navSkills").classList.contains("featLocked"))
+  && ($("navPvp")&&!$("navPvp").classList.contains("featOff") && $("navPvp").classList.contains("featLocked")));
 S.stageIdx=featNeedStage("auto")-1; render();
 T("авто ещё закрыт за этап до порога", featUnlocked("auto")===false);
 S.stageIdx=featNeedStage("auto"); notifyFeatUnlocks(); render();
 T("авто открывается на пороге", featUnlocked("auto")===true && !$("auto").classList.contains("featOff"));
+T("штольни с замком до своего этапа", $("navMines")&&$("navMines").classList.contains("featLocked"));
 S.stageIdx=featNeedStage("pets"); S.eggs=0; S.combs=0; rollPet();
 T("без яиц ролл питомца не проходит", (S.eggs||0)===0);
 S.stageIdx=featNeedStage("beards"); S.combs=0; hireGeo();

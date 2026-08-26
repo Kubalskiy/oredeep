@@ -154,10 +154,10 @@ button:disabled{opacity:.45;cursor:default;}
 
 #uiScreen::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background-size:cover;background-position:center;opacity:0;transition:opacity .25s;}
-#uiScreen[data-scr="tavern"]::before{background-image:url("art/scr_tavern.webp");opacity:.17;}
+#uiScreen[data-scr="tavern"]::before,
+#uiScreen[data-scr="mines"]::before,
+#uiScreen[data-scr="pvp"]::before{background-image:none;opacity:0;}
 #uiScreen[data-scr="shop"]::before{background-image:url("art/scr_market.webp");opacity:.16;}
-#uiScreen[data-scr="mines"]::before{background-image:url("art/scr_minemap.webp");opacity:.15;}
-#uiScreen[data-scr="pvp"]::before{background-image:url("art/scr_pvp.webp");opacity:.17;}
 #uiScreen[data-scr="skills"]::before{background-image:url("art/scr_skills.webp");opacity:.15;}
 #uiScreen[data-scr="beards"]::before{background-image:url("art/scr_skills.webp");opacity:.13;}
 .slotArt{image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 1px 0 rgba(0,0,0,.6));}
@@ -261,6 +261,7 @@ button:disabled{opacity:.45;cursor:default;}
     @keyframes chopBody{0%{transform:translate(0,0) rotate(0deg)}22%{transform:translate(-4px,-2px) rotate(-5deg)}58%{transform:translate(6px,3px) rotate(8deg)}78%{transform:translate(2px,1px) rotate(3deg)}100%{transform:translate(0,0) rotate(0deg)}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .ml{position:absolute;left:0;top:0;width:95px;height:110px;image-rendering:pixelated;}
+#mlPack,#mlRobe,#mlBoots,#mlGlove,#mlHelm,#mlBeard{display:none!important;}
 
 #pickHand{position:absolute;left:54px;top:-7px;width:54px;image-rendering:pixelated;
   transform-origin:5% 92%;transform:rotate(0deg);z-index:4;}
@@ -439,7 +440,7 @@ button:disabled{opacity:.45;cursor:default;}
 .pdm{position:absolute;width:13px;height:13px;transform:translate(-50%,-50%);
   border-radius:50%;border:1.5px solid #ffffff44;background:#0d0f14e6;
   display:flex;align-items:center;justify-content:center;font-size:7px;cursor:pointer;}
-.pdm img{width:9px;height:9px;image-rendering:pixelated;}
+.pdm img,.pdm .slotArt,#paperdoll .slotArt{width:9px!important;height:9px!important;image-rendering:pixelated;}
 #cart{display:none;}
 #speedBtn{display:none;}
 
@@ -583,6 +584,16 @@ button:disabled{opacity:.45;cursor:default;}
 .btn-nav .dot.on{display:block;}
 .btn-nav .up{position:absolute;top:2px;right:calc(50% - 18px);color:var(--income);font-size:12px;display:none;}
 .btn-nav .up.on{display:block;}
+.btn-nav.featLocked{opacity:.78;}
+.btn-nav.featLocked .navArt{opacity:.36;filter:grayscale(.6) drop-shadow(0 1px 2px rgba(0,0,0,.8));}
+.btn-nav.featLocked .nl{opacity:.55;}
+.btn-nav.featLocked .ni{position:relative;}
+.btn-nav.featLocked .ni::after{
+  content:"🔒";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:13px;line-height:1;pointer-events:none;
+  text-shadow:0 1px 2px #000,0 0 6px #000;
+}
+.btn-nav.featLocked .dot,.btn-nav.featLocked .up{display:none!important;}
 
 #uiScreen{
   position:absolute;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg);
@@ -703,10 +714,26 @@ button:disabled{opacity:.45;cursor:default;}
   border-radius:0;border:none;background:#1a1510;padding:0;display:flex;flex-direction:column;
   overflow:hidden;
 }
-#charSheet{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:8px 8px 12px;
+#charSheet{flex:1;overflow:hidden;display:flex;flex-direction:column;
+  padding:8px 8px 12px;
   font-family:var(--font-body);color:#d8c49a;}
+#charSheet > .foTabs,#charSheet > .foPin{flex:none;}
+#charSheet > .foScroll{flex:1;min-height:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#charSheet > .foFoot{flex:none;position:static;background:#1a1510;padding-top:8px;margin-top:6px;}
 #charSheet .skillsTabs,#uiBody .skillsTabs{margin-bottom:8px;}
 #uiBody .foInPanel{font-family:var(--font-body);color:#d8c49a;}
+#uiBody.foLock{overflow:hidden;display:flex;flex-direction:column;padding-bottom:8px;}
+#uiBody.foLock > .uiSub,#uiBody.foLock > .skillsTabs{flex:none;}
+#uiBody.foLock > .foInPanel{
+  flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;
+}
+#uiBody.foLock .foPin,#charSheet .foPin{flex:none;}
+#uiBody.foLock .foScroll,#charSheet .foScroll{
+  flex:1;min-height:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+#uiBody.foLock .foFoot,#charSheet .foFoot{
+  flex:none;position:static;background:#1a1510;padding-top:8px;margin-top:6px;
+}
 .foHead{display:grid;grid-template-columns:1.4fr .7fr .7fr .9fr;gap:4px;margin-bottom:6px;}
 .foCell{background:#0e0b08;border:2px solid #5a4830;border-radius:4px;padding:5px 7px;min-height:36px;}
 .foCell .k{display:block;font-size:10px;letter-spacing:1px;color:#c9974a;text-transform:uppercase;
@@ -839,9 +866,10 @@ body > .modal{
 .oreimg{width:26px;height:26px;image-rendering:pixelated;vertical-align:middle;margin-right:6px;}
 .oreimg.big{width:44px;height:44px;}
 
-#toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--bgPanel);border:2px solid var(--gold);
+#toast{position:absolute;left:50%;top:10px;bottom:auto;transform:translateX(-50%);background:rgba(26,21,16,.78);border:2px solid rgba(242,212,136,.72);
   border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:auto;cursor:pointer;
-  font-family:var(--font-body);touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+  font-family:var(--font-body);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
 #toast .big{font-size:30px;}
 #toast .r{font-weight:400;font-size:16px;text-transform:uppercase;letter-spacing:1px;font-family:var(--font-display);}
 #toast .nm{font-size:16px;font-weight:400;margin:2px 0;font-family:var(--font-display);}
@@ -1068,8 +1096,9 @@ body > .modal{
     background:#12151dcc;border:1px solid var(--gold);border-radius:6px;padding:3px 7px;display:none;
     font-family:var(--font-display);letter-spacing:.5px;}
 
-  #toast{position:absolute;left:50%;bottom:calc(var(--bottom-nav-h, 60px) + 12px);transform:translateX(-50%);background:var(--panel);border:2px solid var(--gold);
-    border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:auto;cursor:pointer;}
+  #toast{position:absolute;left:50%;top:10px;bottom:auto;transform:translateX(-50%);background:rgba(26,21,16,.78);border:2px solid rgba(242,212,136,.72);
+    border-radius:14px;padding:12px 20px;text-align:center;z-index:320;display:none;box-shadow:0 8px 30px #000a;min-width:230px;max-width:min(320px,92%);pointer-events:auto;cursor:pointer;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
 
   #toast .big{font-size:30px;}
 
@@ -1284,18 +1313,16 @@ body > .modal{
 
 .uiTavArt{display:none;}
 .uiTavExt{position:relative;min-height:168px;border:2px solid var(--gold,#f2d488);border-radius:6px;
-  background:linear-gradient(180deg,rgba(10,7,4,.10),rgba(10,7,4,.62)),
-             url("art/scr_tavern.webp") center/cover no-repeat;
+  background:linear-gradient(180deg,#24180e,#120e0a);
   box-shadow:inset 0 0 40px rgba(0,0,0,.6);overflow:hidden;}
 
-.uiMineCard{background-size:cover !important;background-position:center !important;}
-.uiMineCard.t0{background-image:linear-gradient(90deg,rgba(14,10,6,.95) 46%,rgba(14,10,6,.70)),url("art/mine0.webp") !important;}
-.uiMineCard.t1{background-image:linear-gradient(90deg,rgba(8,11,16,.95) 46%,rgba(8,11,16,.70)),url("art/mine1.webp") !important;}
-.uiMineCard.t2{background-image:linear-gradient(90deg,rgba(16,8,4,.95) 46%,rgba(16,8,4,.70)),url("art/mine2.webp") !important;}
-.uiMineCard.t3{background-image:linear-gradient(90deg,rgba(6,14,16,.95) 46%,rgba(6,14,16,.70)),url("art/mine3.webp") !important;}
-.uiMineCard.t4{background-image:linear-gradient(90deg,rgba(5,7,6,.95) 46%,rgba(5,7,6,.70)),url("art/mine4.webp") !important;}
-.uiMineHero{background-image:linear-gradient(180deg,rgba(10,8,5,.86),rgba(10,8,5,.93)),
-  url("art/scr_minemap.webp") !important;background-size:cover !important;background-position:center 18% !important;}
+.uiMineCard{background-image:none !important;}
+.uiMineCard.t0{background:#1a140c !important;}
+.uiMineCard.t1{background:#121820 !important;}
+.uiMineCard.t2{background:#1c100a !important;}
+.uiMineCard.t3{background:#0e181a !important;}
+.uiMineCard.t4{background:#141018 !important;}
+.uiMineHero{background:#16120c !important;}
 
 #introArt{image-rendering:auto;}
 
@@ -3365,6 +3392,54 @@ const SLOTS=[
   {id:"robe",  n:"Роба",     ic:"🦺", st:{tough:2.5}},
   {id:"pet",   n:"Питомец",  ic:"🐕", st:{luck:1.5,mining:3}}
 ];
+function gearSlots(){ return SLOTS.filter(s=>s.id!=="pet"); }
+function rollGearSlot(){ const g=gearSlots(); return g[Math.floor(Math.random()*g.length)]; }
+
+const SLOT_FLUFF={
+  helm:{
+    effect:"Энергия — сколько дворф выдерживает у забоя до перекура. Защита — порода слабее кусает, крепь штольни живёт дольше.",
+    lore:"Каску ковал Дурин для смены, что ушла в Эхо-Дум и не вернулась. Козырёк помнит их имена — стукни по нему, и услышишь эхо."
+  },
+  glove:{
+    effect:"Крит — шанс попасть в слабину жилы: удар сильнее, награда гуще, камень трещит от обиды.",
+    lore:"Перчатки старого счётчика Нори. Он считал удары, а не золото — поэтому и дожил до седой бороды."
+  },
+  pick:{
+    effect:"Атака — сила каждого удара по породе. Особое: кирка чует находки — вещи и камни в жиле.",
+    lore:"В шахте говорят: хорошая кирка помнит руку хозяина. Плохая — только чужие кости и чужие клятвы."
+  },
+  lamp:{
+    effect:"Чутьё — шанс двойного удара. Удача — реже получаешь ответ породы и чаще находишь редкие камни.",
+    lore:"Фонарь Гильдии Рудознатцев. Масло горит ровно, пока не врёшь о глубине. Соврал — коптит."
+  },
+  pants:{
+    effect:"Защита — меньше расход энергии от ударов породы; своды и крепь держатся крепче.",
+    lore:"Штаны «недра не берут». Сшил Грур Однорукий одной рукой и клялся, что второй для этого дела не нужна."
+  },
+  boots:{
+    effect:"Темп — удары в секунду. Быстрее ноги — чаще кирка касается камня, жила кончается раньше.",
+    lore:"Сапоги шил Борин у стойки: «Чтоб не стоял столбом, когда Гора зовёт». Подошва до сих пор пахнет смолой и упрямством."
+  },
+  pack:{
+    effect:"Жадность — больше золота с каждой жилы. Пояс тянет к доходу, а не к красоте наряда.",
+    lore:"Пояс скупщика Шлака Безбородого. На пряжке выцарапано: «Сначала вес, потом совесть»."
+  },
+  robe:{
+    effect:"Защита — порода слабее сжирает энергию; дворф дольше стоит у жилы без перекура.",
+    lore:"Роба смены «Подгорный Огонь». На спине пятно от магмы — носят как орден, не как позор."
+  }
+};
+function gearSlotFluffHtml(sl, it){
+  const f=SLOT_FLUFF[sl.id]; if(!f) return "";
+  let lore=f.lore;
+  if(sl.id==="pick"&&it&&it.n) lore="«"+it.n+"» · "+f.lore;
+  return '<div class="uiCard" style="margin-top:10px;flex-direction:column;align-items:stretch;gap:8px">'
+    +'<div><div class="uiSub" style="color:var(--gold);margin:0 0 4px;font-family:var(--font-display);letter-spacing:.5px">НА ЧТО ВЛИЯЕТ</div>'
+    +'<div class="uiSub" style="margin:0;line-height:1.55;color:var(--textBody)">'+esc(f.effect)+'</div></div>'
+    +'<div><div class="uiSub" style="color:var(--gold);margin:0 0 4px;font-family:var(--font-display);letter-spacing:.5px">ИСТОРИЯ</div>'
+    +'<div class="uiSub" style="margin:0;line-height:1.55;color:var(--textBody)">'+esc(lore)+'</div></div>'
+    +'</div>';
+}
 const STAT_CAPS={crit:60,luck:100,mining:80,stamina:90,spd:BALANCE.combat.maxAPS};
 
 const MINE_DURAB={max:100, decayPerSec:0.08, safe:50, checkSec:6, baseP:0.008,
@@ -3897,7 +3972,7 @@ function prepBuried(){
 
   const dropRoll=(rock.isBoss||S.stageIdx<=3)?100:DROP_CHANCE;
   if(Math.random()*100<dropRoll){
-    const slot=SLOTS[Math.floor(Math.random()*SLOTS.length)];
+    const slot=rollGearSlot();
     rock.buried.item=makeItem(slot.id);
   }
 
@@ -4114,7 +4189,7 @@ function openUpgradesModal(){
 }
 
 function itemPower(it){ return RAR_POW[it.r]*(1+it.i/60)*it.m; }
-function dropGear(){ dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id)); }
+function dropGear(){ dropGearItem(makeItem(rollGearSlot().id)); }
 
 let autoRollAcc=0;
 function grantBags(n){ S.bags=Math.min(BALANCE.bags.cap,(S.bags||0)+n); }
@@ -4181,7 +4256,15 @@ function applyFeatureChrome(){
     const on=featUnlocked(id);
     for(const elId of FEAT_CHROME[id]){
       const el=$(elId); if(!el||!el.classList) continue;
-      el.classList.toggle("featOff", !on);
+      const isNav=elId==="navMines"||elId==="navSkills"||elId==="navPvp"||elId==="navTavBtn";
+      if(isNav){
+        el.classList.remove("featOff");
+        el.classList.toggle("featLocked", !on);
+        el.title=!on?("Откроется на этапе "+featNeedStage(id)):"";
+      } else {
+        el.classList.remove("featLocked");
+        el.classList.toggle("featOff", !on);
+      }
     }
   }
   const sm=$("sideMenu");
@@ -4231,7 +4314,7 @@ function openBag(){
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
   S.bags--; dailyProgress("bag",1);
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1; { const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }; }
-  dropGearItem(makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id));
+  dropGearItem(makeItem(rollGearSlot().id));
   Platform.logEvent("bag_open",{}); save(); render();
   return true;
 }
@@ -4266,7 +4349,7 @@ function flushSales(){
 function autoOpenBag(quiet){
   if((S.bags||0)<1) return false;
   S.bags--; dailyProgress("bag",1);
-  const it=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
+  const it=makeItem(rollGearSlot().id);
   if(it.r < (S.autoRollTier||0)){
     const p=sellPrice(it); S.gold+=p;
     autoSoldN++; autoSoldGold+=p;
@@ -4282,11 +4365,12 @@ function flushAutoSold(){
 
 function autoRollUnlocked(){
   const b=BALANCE.bags||{};
-  const needSlots=b.autoUnlockSlots!=null?b.autoUnlockSlots:SLOTS.length;
+  const slots=gearSlots();
+  const needSlots=b.autoUnlockSlots!=null?b.autoUnlockSlots:slots.length;
   const needRare=b.autoUnlockRares!=null?b.autoUnlockRares:3;
   let filled=0, rares=0;
-  for(let i=0;i<SLOTS.length;i++){
-    const it=S.gear[SLOTS[i].id];
+  for(let i=0;i<slots.length;i++){
+    const it=S.gear[slots[i].id];
     if(!it) continue;
     filled++;
     if((it.r|0)>=1) rares++;
@@ -4349,7 +4433,9 @@ function openAutoTierModal(){
     rows);
 }
 function dropGearItem(it, quiet){
+  if(!it || it.s==="pet") it=makeItem(rollGearSlot().id);
   const slot=SLOTS.find(s=>s.id===it.s);
+  if(!slot || slot.id==="pet") return;
   const old=S.gear[slot.id];
 
   const strictlyBetter = !old || (itemPower(it)>itemPower(old) && it.r>=old.r);
@@ -4892,9 +4978,9 @@ function openPickGallery(){
   Platform.logEvent("pick_gallery",{});
 }
 function checkLoadout(){
-  const slots=Object.keys(S.gear);
-  if(slots.length<SLOTS.length) return;
-  let minR=99; for(const k of slots) minR=Math.min(minR, S.gear[k].r);
+  const slots=gearSlots();
+  if(slots.some(sl=>!S.gear[sl.id])) return;
+  let minR=99; for(const sl of slots) minR=Math.min(minR, S.gear[sl.id].r);
   if(minR>=1 && minR>(S.loadoutTier||0)){
     const got=minR-(S.loadoutTier||0);
     for(let t=(S.loadoutTier||0)+1; t<=minR; t++) S.boxes.push(t);
@@ -5583,8 +5669,11 @@ function switchMine(id){
   switchTab("Mine");
   return true;
 }
-if($("miner")) $("miner").onclick=()=>togglePaperdoll();
-if($("rock")) $("rock").onclick=()=>{ if(!dead&&rock&&S.rockHP>0){ fxSwing(); hitTimer=Math.max(hitTimer, 1/stat("spd")-0.02); } };
+function tapVein(){
+  if(!dead&&rock&&S.rockHP>0){ fxSwing(); hitTimer=Math.max(hitTimer, 1/stat("spd")-0.02); }
+}
+if($("miner")) $("miner").onclick=tapVein;
+if($("rock")) $("rock").onclick=tapVein;
 if($("setMusic")) $("setMusic").onclick=()=>toggleMusic();
 if($("introGo")) $("introGo").onclick=closeIntro;
 ["Mine","Hero","Meta"].forEach(t=>{ const b=$("tab"+t+"Btn"); if(b) b.onclick=()=>switchTab(t); });
@@ -6416,7 +6505,7 @@ function charSheetOpen(){
 }
 function refreshSpecialUi(tab){
   if(charSheetOpen()) renderCharSheet();
-  else if(_skillsShellTab==="sheet"||_skillsShellTab==="perks"||_skillsShellTab==="cards")
+  else if(_skillsShellTab==="sheet"||_skillsShellTab==="perks"||_skillsShellTab==="cards"||_skillsShellTab==="list")
     openSkills(_skillsShellTab);
 }
 function tagSkill(id){
@@ -6554,7 +6643,7 @@ const FO_SKILL_INFO={
 };
 function charFocus(kind,id){
   window._charFocus={kind,id};
-  if(_skillsShellTab==="sheet"||_skillsShellTab==="perks") openSkills(_skillsShellTab);
+  if(_skillsShellTab==="sheet"||_skillsShellTab==="perks"||_skillsShellTab==="list") openSkills(_skillsShellTab);
   else renderCharSheet();
 }
 function closeCharSheet(){
@@ -6564,6 +6653,7 @@ function closeCharSheet(){
 }
 function closeSkillsShell(){
   _skillsShellTab=null;
+  const b=$("uiBody"); if(b&&b.classList) b.classList.remove("foLock");
   closeCharSheet();
   try{ if(typeof UIS!=="undefined") UIS.close(); }catch(e){}
   const meta=$("metaModal"); if(meta) meta.style.display="none";
@@ -6571,6 +6661,11 @@ function closeSkillsShell(){
 function openCharSheet(focus){
   ensureSpecial(); checkMinerLevelUp(false);
 
+  if(focus&&focus.kind==="skill"){
+    window._charFocus=focus;
+    openSkills("list");
+    return;
+  }
   if(!(focus&&focus.kind)){
     openSkills((focus&&focus.tab==="perks")?"perks":"sheet");
     return;
@@ -6590,7 +6685,7 @@ function openCharSheet(focus){
 function setCharTab(tab){
   window._charTab=tab||"stats";
   if(_skillsShellTab!=null){
-    openSkills(tab==="perks"?"perks":"sheet");
+    openSkills(tab==="perks"?"perks":tab==="list"?"list":"sheet");
     return;
   }
   renderCharSheet();
@@ -6598,7 +6693,7 @@ function setCharTab(tab){
 function buildCharSheetHtml(inShell){
   ensureSpecial();
   const B=BALANCE.special||{}, max=B.attrMax||10;
-  if(inShell) window._charTab=_skillsShellTab==="perks"?"perks":"stats";
+  if(inShell) window._charTab=_skillsShellTab==="perks"?"perks":(_skillsShellTab==="list"?"list":"stats");
   const tab=window._charTab||"stats";
   const focus=window._charFocus||{kind:"special",id:"s"};
   const w=(typeof beardWisdom==="function")?beardWisdom():{title:"Борода"};
@@ -6607,6 +6702,7 @@ function buildCharSheetHtml(inShell){
 
   const tabs=inShell?"":`<div class="foTabs">
     <button type="button" class="${tab==="stats"?"on":""}" onclick="setCharTab('stats')">Статы</button>
+    <button type="button" class="${tab==="list"?"on":""}" onclick="setCharTab('list')">Скилы</button>
     <button type="button" class="${tab==="perks"?"on":""}" onclick="setCharTab('perks')">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
   </div>`;
   const doneBtn=inShell
@@ -6638,28 +6734,77 @@ function buildCharSheetHtml(inShell){
     }
     const perkMax=(BALANCE.perks&&BALANCE.perks.maxOwned)||PERK_DEFS.length;
     return tabs+
-      `<div class="foHead">
-        <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
-        <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
-        <div class="foCell"><span class="k">Перки</span><span class="v">${(S.perks||[]).length}/${perkMax}</span></div>
-        <div class="foCell"><span class="k">Выбор</span><span class="v">${S.perkPicks||0}</span></div>
+      `<div class="foPin">
+        <div class="foHead">
+          <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
+          <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
+          <div class="foCell"><span class="k">Перки</span><span class="v">${(S.perks||[]).length}/${perkMax}</span></div>
+          <div class="foCell"><span class="k">Выбор</span><span class="v">${S.perkPicks||0}</span></div>
+        </div>
+        <div class="foInfo" style="margin-bottom:6px">
+          <div class="ico">${infoIco}</div>
+          <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
+        </div>
       </div>
-      <div class="foInfo" style="margin-bottom:6px">
-        <div class="ico">${infoIco}</div>
-        <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
-      </div>
-      <div class="foPanel" style="margin-bottom:6px">
-        <h4>Перки</h4>
-        <div class="foPerkOwned">${owned}</div>
-        ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" style="width:100%;margin-top:8px" onclick="openPerkPick()">ВЫБРАТЬ ПЕРК · ${S.perkPicks}</button>`:""}
-      </div>
-      <div class="foPanel" style="margin-bottom:6px">
-        <h4>Черты</h4>
-        <div class="foPerkOwned">${traitRows}</div>
-        <div class="sub" style="margin-top:6px;color:#8a7a60">Бери любые · снять можно в любой момент. В колоде: ${TRAIT_DEFS.length}.</div>
+      <div class="foScroll">
+        <div class="foPanel" style="margin-bottom:6px">
+          <h4>Перки</h4>
+          <div class="foPerkOwned">${owned}</div>
+          ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" style="width:100%;margin-top:8px" onclick="openPerkPick()">ВЫБРАТЬ ПЕРК · ${S.perkPicks}</button>`:""}
+        </div>
+        <div class="foPanel" style="margin-bottom:6px">
+          <h4>Черты</h4>
+          <div class="foPerkOwned">${traitRows}</div>
+          <div class="sub" style="margin-top:6px;color:#8a7a60">Бери любые · снять можно в любой момент. В колоде: ${TRAIT_DEFS.length}.</div>
+        </div>
       </div>
       <div class="foFoot">
         <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Статы</button>
+        ${doneBtn}
+      </div>`;
+  }
+
+  if(tab==="list"){
+    const skillFocus=focus.kind==="skill"?focus.id:(SKILL_DEFS[0]&&SKILL_DEFS[0].id);
+    const skillRows=SKILL_DEFS.map(d=>{
+      const pct=skillSheetPct(d.id), tagged=isSkillTagged(d.id), cost=trainCost(d.id), ok=canTrainSkill(d.id);
+      const on=d.id===skillFocus?" on":"";
+      return `<div class="foSkillRow${on}">
+        <button type="button" class="tag${tagged?" on":""}" title="${tagged?"Снять тег":"Тег · дешевле качать"}"
+          onclick="toggleSkillTag('${d.id}')"></button>
+        <span class="sn" onclick="charFocus('skill','${d.id}')">${d.n}</span>
+        <span class="pct" onclick="charFocus('skill','${d.id}')">${pct}%</span>
+        <button type="button" class="trn${ok?"":" dim"}" title="Тренировка −${cost}"
+          onclick="trainSkill('${d.id}')">+${cost}</button>
+      </div>`;
+    }).join("");
+    let infoIco="📜", infoTtl="Скилы", infoTxt="Выбери навык — сверху будет подсказка. Тег дешевле качает.";
+    const d=SKILL_DEFS.find(x=>x.id===skillFocus);
+    if(d){
+      const tr=(S.trained||{})[d.id]|0, card=(typeof skillLv==="function"?skillLv(d.id):0)|0;
+      const fluff=FO_SKILL_INFO[d.id]||d.n;
+      infoIco=FO_SKILL_ICO[d.id]||"📜"; infoTtl=d.n+" · "+skillSheetPct(d.id)+"%";
+      infoTxt=fluff+" Карта ур."+card+" · трен. "+tr+"/"+(B.trainCap||15)+" · +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+statLbl(d.stat)+"/трен. Тег: −"+(B.tagCost||1)+" очк. вместо "+(B.untagCost||2)+".";
+    }
+    return tabs+
+      `<div class="foPin">
+        <div class="foInfo" style="margin:0 0 6px">
+          <div class="ico">${infoIco}</div>
+          <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
+        </div>
+      </div>
+      <div class="foScroll">
+        <div class="foPanel" style="margin-bottom:6px">
+          <h4>Навыки · теги и тренировка</h4>
+          ${skillRows}
+          <div class="foTagBar"><span>Теги ${(S.skillTags||[]).length}/${B.tagSlots||SKILL_DEFS.length}</span>
+            <span>Очки навыков <b>${S.skillPts||0}</b></span></div>
+        </div>
+      </div>
+      <div class="foFoot">
+        ${inShell
+          ?`<button type="button" class="btn btn-soft" onclick="openSkills('sheet')">← КРАСАВА</button>`
+          :`<button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Статы</button>`}
         ${doneBtn}
       </div>`;
   }
@@ -6694,66 +6839,43 @@ function buildCharSheetHtml(inShell){
     ["Престиж", String(S.prestigeLv||0)]
   ].map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("");
 
-  const skillRows=SKILL_DEFS.map(d=>{
-    const pct=skillSheetPct(d.id), tagged=isSkillTagged(d.id), cost=trainCost(d.id), ok=canTrainSkill(d.id);
-    const on=focus.kind==="skill"&&focus.id===d.id?" on":"";
-    return `<div class="foSkillRow${on}">
-      <button type="button" class="tag${tagged?" on":""}" title="${tagged?"Снять тег":"Тег · дешевле качать"}"
-        onclick="toggleSkillTag('${d.id}')"></button>
-      <span class="sn" onclick="charFocus('skill','${d.id}')">${d.n}</span>
-      <span class="pct" onclick="charFocus('skill','${d.id}')">${pct}%</span>
-      <button type="button" class="trn${ok?"":" dim"}" title="Тренировка −${cost}"
-        onclick="trainSkill('${d.id}')">+${cost}</button>
-    </div>`;
-  }).join("");
-
-  let infoIco="🧔", infoTtl="Дворф", infoTxt="Выбери черту КРАСАВА или навык — справа будет подсказка.";
+  let infoIco="🧔", infoTtl="Дворф", infoTxt="Выбери черту КРАСАВА — сверху будет подсказка.";
   if(focus.kind==="special"){
     const d=SPECIAL_DEFS.find(x=>x.id===focus.id), info=FO_SPECIAL_INFO[focus.id]||{};
     if(d){ infoIco=info.ico||"🧬"; infoTtl=d.letter+". "+d.n+" · "+specialAttr(d.id);
       infoTxt=(info.txt||d.tip)+(d.stats&&d.stats.length?(" Влияет: "+d.stats.map(s=>statLbl(s)).join(", ")+"."):" Влияет на очки навыков за уровень."); }
-  }else if(focus.kind==="skill"){
-    const d=SKILL_DEFS.find(x=>x.id===focus.id);
-    if(d){
-      const tr=(S.trained||{})[d.id]|0, card=(typeof skillLv==="function"?skillLv(d.id):0)|0;
-      const fluff=FO_SKILL_INFO[d.id]||d.n;
-      infoIco=FO_SKILL_ICO[d.id]||"📜"; infoTtl=d.n+" · "+skillSheetPct(d.id)+"%";
-      infoTxt=fluff+" Карта ур."+card+" · трен. "+tr+"/"+(B.trainCap||15)+" · +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+statLbl(d.stat)+"/трен. Тег: −"+(B.tagCost||1)+" очк. вместо "+(B.untagCost||2)+".";
-    }
   }
 
   return tabs+
-    `<div class="foHead">
-      <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
-      <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
-      <div class="foCell"><span class="k">Стаж</span><span class="v">${age}</span></div>
-      <div class="foCell"><span class="k">Ранг</span><span class="v">${esc(w.title||"—")}</span></div>
-    </div>
-    <div class="foGrid">
-      <div class="foPanel">
-        <h4>${KRASAVA_TITLE}</h4>
-        ${specRows}
-        <div class="foPoints"><span>Очки черт</span><b>${S.specialPool||0}</b></div>
+    `<div class="foPin">
+      <div class="foHead">
+        <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
+        <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
+        <div class="foCell"><span class="k">Стаж</span><span class="v">${age}</span></div>
+        <div class="foCell"><span class="k">Ранг</span><span class="v">${esc(w.title||"—")}</span></div>
       </div>
-      <div class="foPanel">
-        <h4>Боевые</h4>
-        <div class="foDer">${derRows}</div>
+      <div class="foInfo" style="margin:6px 0">
+        <div class="ico">${infoIco}</div>
+        <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
       </div>
     </div>
-    <div class="foInfo" style="margin:6px 0">
-      <div class="ico">${infoIco}</div>
-      <div><div class="ttl">${esc(infoTtl)}</div><div class="txt">${esc(infoTxt)}</div></div>
-    </div>
-    <div class="foPanel" style="margin-bottom:6px">
-      <h4>Навыки · теги и тренировка</h4>
-      ${skillRows}
-      <div class="foTagBar"><span>Теги ${(S.skillTags||[]).length}/${B.tagSlots||SKILL_DEFS.length}</span>
-        <span>Очки навыков <b>${S.skillPts||0}</b></span></div>
+    <div class="foScroll">
+      <div class="foGrid">
+        <div class="foPanel">
+          <h4>${KRASAVA_TITLE}</h4>
+          ${specRows}
+          <div class="foPoints"><span>Очки черт</span><b>${S.specialPool||0}</b></div>
+        </div>
+        <div class="foPanel">
+          <h4>Боевые</h4>
+          <div class="foDer">${derRows}</div>
+        </div>
+      </div>
     </div>
     <div class="foFoot">
       ${inShell
-        ?`<button type="button" class="btn btn-soft" onclick="openSkills('cards')">Карты</button>`
-        :`<button type="button" class="btn btn-soft" onclick="closeCharSheet();openSkills('cards')">Ларь карт</button>`}
+        ?`<button type="button" class="btn btn-soft" onclick="openSkills('list')">Скилы</button>`
+        :`<button type="button" class="btn btn-soft" onclick="setCharTab('list')">Скилы</button>`}
       ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" onclick="openPerkPick()">ПЕРК · ${S.perkPicks}</button>`:""}
       <button type="button" class="btn btn-soft" title="Сбросить КРАСАВА в пул" onclick="resetSpecial()">↺ КРАСАВА</button>
       ${doneBtn}
@@ -6788,10 +6910,14 @@ let _skillsShellTab=null;
 function skillsTabBar(tab){
   return `<div class="btnrow skillsTabs" style="margin-bottom:10px;flex-wrap:wrap">
     <button class="btn ${tab==="cards"?"btn-hard":"btn-soft"}" onclick="openSkills('cards')">Карты</button>
-    <button class="btn ${tab==="sheet"?"btn-hard":"btn-soft"}" onclick="openSkills('sheet')">Лист · КРАСАВА</button>
+    <button class="btn ${tab==="list"?"btn-hard":"btn-soft"}" onclick="openSkills('list')">Скилы</button>
+    <button class="btn ${tab==="sheet"?"btn-hard":"btn-soft"}" onclick="openSkills('sheet')">КРАСАВА</button>
     <button class="btn ${tab==="perks"?"btn-hard":"btn-soft"}" onclick="openSkills('perks')">Перки${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
     <button class="btn ${tab==="train"?"btn-hard":"btn-soft"}" onclick="openSkills('train')">Тренировка${(S.wkPts||0)>0?(" · "+(S.wkPts|0)):""}</button>
   </div>`;
+}
+function skillsLockBody(on){
+  const b=$("uiBody"); if(b&&b.classList) b.classList.toggle("foLock", !!on);
 }
 function openSkills(tab){
   if(!requireFeat("skills")) return;
@@ -6799,17 +6925,20 @@ function openSkills(tab){
   tab=tab||"cards";
   if(tab==="workouts") tab="train";
   if(tab==="special") tab="sheet";
+  if(tab==="skills") tab="list";
   const cm=$("charModal"); if(cm) cm.style.display="none";
   closePerkPick();
   _skillsShellTab=tab;
   const tabBar=skillsTabBar(tab);
   let body="", sub="Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0);
-  if(tab==="sheet"||tab==="perks"){
-    window._charTab=tab==="perks"?"perks":"stats";
+  if(tab==="sheet"||tab==="perks"||tab==="list"){
+    window._charTab=tab==="perks"?"perks":(tab==="list"?"list":"stats");
     body=`<div class="foInPanel">${buildCharSheetHtml(true)}</div>`;
     sub=tab==="perks"
       ?"Перки и черты · пиво 🍺 "+Math.floor(S.protein||0)
-      :"КРАСАВА · очки черт "+(S.specialPool||0)+" · пиво 🍺 "+Math.floor(S.protein||0);
+      :(tab==="list"
+        ?"Скилы · очки "+(S.skillPts||0)+" · пиво 🍺 "+Math.floor(S.protein||0)
+        :"КРАСАВА · очки черт "+(S.specialPool||0)+" · пиво 🍺 "+Math.floor(S.protein||0));
   } else if(tab==="train"){
     ensureWorkouts(S);
     body=workoutsPanelHtml();
@@ -6844,6 +6973,7 @@ function openSkills(tab){
     sub="Ларь карт. Пиво 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · очк. "+(S.skillPts||0);
   }
   metaOpen("Навыки добычи", sub, tabBar+body);
+  skillsLockBody(tab==="sheet"||tab==="perks"||tab==="list");
   if(tab==="train") workoutsBindRefresh();
 }
 
@@ -7459,7 +7589,7 @@ function quickOpenBag(){
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return false; }
   S.bags--; dailyProgress("bag",1);
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
-  chestPending=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
+  chestPending=makeItem(rollGearSlot().id);
   Platform.logEvent("chest_open",{r:chestPending.r,quick:1});
   save(); render();
   showDropDecide();
@@ -7489,11 +7619,12 @@ function chestOpenOne(){
   if((S.bags||0)<1){ showToast("🎒","Нет сумок","","Сумки падают за жилы"); return; }
   S.bags--; dailyProgress("bag",1);
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
-  chestPending=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id);
+  chestPending=makeItem(rollGearSlot().id);
   Platform.logEvent("chest_open",{r:chestPending.r}); save(); render(); renderChestCard();
 }
 function equipChestItem(){
   if(!chestPending) return;
+  if(chestPending.s==="pet") chestPending=makeItem(rollGearSlot().id);
   const it=chestPending, old=S.gear[it.s];
   if(it.s==="pick"&&it.n){ S.pickLog=S.pickLog||{}; S.pickLog[it.n]=true; }
   S.gear[it.s]=it;
@@ -8242,7 +8373,7 @@ function switchTab(name){
   try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
   const v=$("view"); if(v) v.scrollTop=0;
   if(S){ S.tab=name; save(); }
-  togglePaperdoll(name==="Hero");
+  togglePaperdoll(false);
   Platform.logEvent("tab",{t:name});
 }
 
@@ -8288,7 +8419,9 @@ function openGearSlot(id){
   }
   const sl=SLOTS.find(s=>s.id===id); if(!sl) return;
   const it=S.gear[id];
+  const bags=(S.bags||0)|0;
   const canUp=slotCanBagUp(it);
+  const bagCap=Math.min(7, 1+Math.floor((S.bag||1)/7));
   const statLines=Object.keys(sl.st).map(k=>{
     const base=sl.st[k]; const v=it?itemStat(it,k):0;
     const nm=statLbl(k);
@@ -8297,17 +8430,19 @@ function openGearSlot(id){
   const head=it
     ? `<div class="metarow"><span>Надето: <b class="r${it.r}">${RAR_NAMES[it.r]}</b>${(id==="pick"&&it.n)?(" «"+it.n+"»"):""}</span><span>мощь ${fmt(itemPower(it))}</span></div>`
     : `<div class="sub">Слот пуст. Открывай сумки — что выпадет лучше, дворф наденет сам.</div>`;
-  const bagCta=canUp
-    ? '<div class="btnrow" style="margin-top:12px">'
-      +'<button type="button" class="btn btn-hard" onclick="document.getElementById(\'metaModal\').style.display=\'none\';openChest(false)">📦 Открыть сумку</button>'
-      +'</div>'
-      +'<div class="sub" style="margin-top:8px">Зелёная ↑ на слоте — сумка может дать лучше текущего.</div>'
-    : ((S.bags||0)<1
-      ? '<div class="sub" style="margin-top:10px">Сумок нет. Крути с кнопки 📦 над инвентарём.</div>'
-      : '');
+  let tip="";
+  if(bags<1) tip="Сумок нет. Падают за жилы · крути с кнопки 📦 над инвентарём.";
+  else if(canUp) tip="Зелёная ↑ на слоте — сумка может дать лучше текущего.";
+  else if(it && it.r>=bagCap) tip="Этот слот уже на потолке сумки ур."+(S.bag||1)+" · качай сумку, чтобы выбивать выше.";
+  else tip="Сумка есть · открой с кнопки 📦 над инвентарём.";
+  const bagBtn=bags>0
+    ? '<button type="button" class="btn btn-hard" onclick="document.getElementById(\'metaModal\').style.display=\'none\';openChest(false)">📦 Открыть сумку'+(bags>1?(" · "+bags):"")+'</button>'
+    : '<button type="button" class="btn btn-soft" disabled style="opacity:.45">📦 Нет сумок</button>';
+  const bagCta='<div class="btnrow" style="margin-top:12px">'+bagBtn+'</div>'
+    +'<div class="uiSub" style="margin-top:8px">'+tip+'</div>';
   metaOpen(sl.ic+" "+sl.n,
     "Что выпало, то надето — если лучше текущего."+(sl.extra?(" Особое: "+sl.extra+"."):""),
-    head+statLines+bagCta);
+    head+statLines+gearSlotFluffHtml(sl,it)+bagCta);
   Platform.logEvent("paperdoll_slot",{id});
 }
 
