@@ -372,10 +372,30 @@ console.log("\n[20] Полный паритет: питомцы, трениро�
 localStorage.removeItem("oredeep_v3"); load();
 // питомец: гача + пассив
 S.eggs=50; S.pet=null; S.petRolls=0;
-for(let i=0;i<30;i++) rollPet();
+{ const _op=typeof openPets==="function"?openPets:null; openPets=function(){};
+  try{ for(let i=0;i<30;i++) rollPet(); }
+  finally{ if(_op) openPets=_op; }
+}
 T("питомец приручён после роллов", !!S.pet && typeof S.pet.t==="number");
 { const st=PET_TYPES[S.pet.t].stat; const before=stat(st);
   T("питомец даёт % к своему стату", petBonus(st)>0); }
+{ S.stageIdx=Math.max(S.stageIdx||1, featNeedStage("pets"));
+  S.pet={t:0,r:2}; S.eggs=0; S.petBox={};
+  const _openPets=typeof openPets==="function"?openPets:null;
+  openPets=function(){};
+  try{
+    renderGear();
+    const g=$("gearGrid");
+    const petEl=(g.children||[]).find(c=>String(c.className||"").includes("petSlot"));
+    const ph=petEl?String(petEl.innerHTML||""):"";
+    T("слот Питомца на главном показывает приручённого",
+      !!petEl && /Золотой дракон/.test(ph) && /pet_dragon_gold\.png/.test(ph)
+      && ph.indexOf(String(PET_TYPES[0].pct[2]))>=0
+      && !/<div class="sv">—<\/div>/.test(ph));
+  } finally {
+    if(_openPets) openPets=_openPets;
+  }
+}
 // тренировки: пиво → очки → таймер → буст
 S.protein=0; S.wkPts=0; S.wkActive=null; S.workouts={}; _drinkCdUntil=0;
 T("глоток без пива не проходит", drinkBeer()===false);
@@ -426,12 +446,25 @@ const p0=powerScore(); S.lvls.atk=50; T("Power Score реагирует на п�
 // PvP лига по кубкам
 S.trophies=0; T("лига ROOKIE на 0 кубков", BALANCE.pvp.names[pvpLeagueIdx()]==="ROOKIE");
 S.trophies=500; T("лига CHAMP III на 500 кубков", pvpLeagueIdx()===8);
-// ивент: победа тратит ключ, награда по геометрии
-S.keys=2; S.keyAt=Date.now(); S.mine=4; S.shards=0; let spent=false, gotRes=false;
-for(let i=0;i<40;i++){ const k=S.keys, r=S.shards; playEvent("rockfall"); if(S.keys<k){spent=true; if(S.shards>r)gotRes=true;} }
-T("ивент: победа тратит ключ", spent);
-T("ивент rockfall даёт осколки (реальный ресурс)", gotRes);
-S.keys=0; S.keyAt=Date.now(); { const g=S.gold; playEvent("rockfall"); T("без ключей ивент недоступен", S.gold===g); }
+// ивент: старт без траты ключа; победа (все волны) тратит ключ
+S.keys=2; S.keyAt=Date.now(); S.mine=4; S.shards=0; S.eventRun=null; S.mineRaid=null;
+playEvent("rockfall");
+T("ивент стартует без траты ключа", S.keys===2 && !!S.eventRun && S.eventRun.id==="rockfall" && S.eventRun.waves===5);
+{ const waves=S.eventRun.waves;
+  for(let w=0;w<waves;w++){
+    rock={hp:10,hard:0,abr:0,resp:1,isRaid:true,isBoss:true,isEvent:true,buried:null};
+    S.rockHP=0;
+    breakVein();
+  }
+}
+T("ивент: победа тратит ключ", S.keys===1 && !S.eventRun);
+T("ивент rockfall даёт осколки (реальный ресурс)", S.shards>=200);
+S.keys=0; S.keyAt=Date.now(); S.eventRun=null; { const g=S.gold; playEvent("rockfall"); T("без ключей ивент недоступен", S.gold===g && !S.eventRun); }
+// провал: ключ цел
+S.keys=2; S.eventRun=null; playEvent("lavaVein");
+T("lavaVein стартует", !!S.eventRun && S.eventRun.waves===3);
+failEventRun("тест");
+T("провал забега не тратит ключ", S.keys===2 && !S.eventRun);
 
 console.log("\n[18] BALANCE и геометрический движок наград");
 T("idle-константы = boxer", BALANCE.idle.base===100000 && BALANCE.idle.growth===2.5 && BALANCE.idle.damp===0.65);
@@ -874,11 +907,41 @@ renderPaperdoll();
   const h2=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("окно слота без сумок: та же кнопка (disabled) + подсказка",
     /Нет сумок/.test(h2) && /btnrow/.test(h2) && /Падают за жилы|над инвентарём/.test(h2));
+  S.gear.boots={s:"boots",r:1,m:1,i:1};
   openGearSlot("boots");
   const h3=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("окно слота: флёр — эффект и история",
     /НА ЧТО ВЛИЯЕТ/.test(h3) && /ИСТОРИЯ/.test(h3) && /Темп/.test(h3) && /Борин/.test(h3));
-  T("флёр есть у всех слотов шмота", gearSlots().every(s=>SLOT_FLUFF[s.id]&&SLOT_FLUFF[s.id].effect&&SLOT_FLUFF[s.id].lore));
+  T("флёр есть у всех слотов шмота", gearSlots().every(s=>{
+    const f=SLOT_FLUFF[s.id];
+    return !!(f&&f.effect&&Array.isArray(f.lore)&&f.lore.length===8&&f.lore.every(t=>typeof t==="string"&&t.length>8));
+  }));
+  { const a=gearSlotLoreText({id:"glove"},{r:1}), b=gearSlotLoreText({id:"glove"},{r:5});
+    T("история перчаток разная по тиру", a!==b && /Нори/.test(a) && /Жала Горы/.test(b)); }
+  S.gear.glove={s:"glove",r:5,m:1,i:1}; openGearSlot("glove");
+  const hg=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("миф-перчатки показывают миф-историю", /Жала Горы/.test(hg) && !/счётчика Нори/.test(hg));
+  openGearSlot("helm");
+  const h4=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
+  T("окно слота показывает картинку шмотки", /eq_helm|gearSlotImg|gearSlotHero/.test(h4));
+  T("арт слота зависит от редкости",
+    gearArtSrc("helm",0)!==gearArtSrc("helm",7)
+    && /eq_helm_r0\.png/.test(gearArtSrc("helm",0))
+    && /eq_helm_r7\.png/.test(gearArtSrc("helm",7))
+    && gearArtSrc("pick",3)===PICK_ICONS[3]);
+  S.gear.helm={s:"helm",r:7,m:1,i:1}; renderGear();
+  { const g=$("gearGrid");
+    const helmEl=(g.children||[]).find(c=>/Каска/.test(String(c.innerHTML||"")));
+    T("инвентарь: космическая каска с тир-артом",
+      !!helmEl && /eq_helm_r7\.png/.test(String(helmEl.innerHTML||""))); }
+  S.bags=5; S.gear.boots={s:"boots",r:0,m:1,i:1};
+  openGearSlot("boots");
+  T("счётчик сумок на кнопке слота", /Открыть сумку · 5/.test((($("uiBody")&&$("uiBody").innerHTML)||"")));
+  S.bags=3; render();
+  T("счётчик сумок обновляется после render", /Открыть сумку · 3/.test((($("uiBody")&&$("uiBody").innerHTML)||"")));
+  openBagFromGearSlot();
+  T("после открытия счётчик падает", ((S.bags|0)===2) && /Открыть сумку · 2/.test((($("uiBody")&&$("uiBody").innerHTML)||"")));
+  try{ if(typeof sellChestItem==="function") sellChestItem(); else chestPending=null; }catch(e){ chestPending=null; }
   try{ if(typeof UIS!=="undefined") UIS.close(); }catch(e){}
   const mm=$("metaModal"); if(mm) mm.style.display="none"; }
 
@@ -1138,7 +1201,7 @@ T("открытие сумки двигает дейлик", (S.daily.prog.bag||
 T("дейлик «открой сумки» существует", BALANCE.dailyQuests.some(q=>q.id==="bag"));
 T("дейлик на пиво у Борина", BALANCE.dailyQuests.some(q=>q.id==="drink"&&q.need===5));
 T("дейлик на застолье", BALANCE.dailyQuests.some(q=>q.id==="feast"));
-T("дейлик на геолога", BALANCE.dailyQuests.some(q=>q.id==="geo"));
+T("дейлика на геолога нет", !BALANCE.dailyQuests.some(q=>q.id==="geo"));
 { S.daily={day:todayStr(),prog:{},tok:0,claimed:[],adTok:false}; S.protein=1000; _drinkCdUntil=0;
   for(let i=0;i<5;i++){ _drinkCdUntil=0; drinkBeer(); }
   T("5 глотков закрывают дейлик drink", (S.daily.prog.drink||0)>=5 && S.daily.tok>=10); }
@@ -1166,6 +1229,11 @@ T("скины кошки по 5 редкостям", typeof PET_SKIN_POOL!=="und
   && PET_SKIN_POOL.every(p=>p.length>=1));
 T("ржавый скин на Rare", petSkinOf({t:0,r:1}).id==="rust");
 T("ржавомер на Exotic", petSkinOf({t:0,r:4}).id==="leo");
+T("иконки питомцев разные по семейству",
+  PET_TYPES.length===3
+  && /pet_dragon_gold/.test(petIcon(0)) && /pet_dragon_chaos/.test(petIcon(1)) && /pet_dragon_storm/.test(petIcon(2))
+  && new Set(PET_TYPES.map(p=>p.art)).size===PET_TYPES.length
+  && /Золотой/.test(PET_TYPES[0].n) && /хаоса/.test(PET_TYPES[1].n) && /Штормовой/.test(PET_TYPES[2].n));
 T("applyPetMood ставит class mood-*", (function(){
   if(typeof applyPetMood!=="function"||!document.getElementById("petBox")) return true;
   applyPetMood("belly");
@@ -1422,7 +1490,8 @@ dead=false; S.durab=40; S.gold=Math.max(S.gold||0, reinforceCost()*3);
   const skipAt=bagSkipGems(b0);
   tryBagUpgrade();
   T("тап во время таймера показывает цену пропуска", bagSkipArmed===true
-    && /💎/.test((__ids.bagAreaLvl&&__ids.bagAreaLvl.textContent)||"")
+    && /ПРОПУСК/.test((__ids.bagAreaLvl&&__ids.bagAreaLvl.textContent)||"")
+    && /💎/.test((__ids.bagAreaTimer&&__ids.bagAreaTimer.textContent)||"")
     && left0>0);
   tryBagUpgrade();
   T("второй тап качает за кристаллы без ожидания", !bagUpgrading() && S.bag===b0+1

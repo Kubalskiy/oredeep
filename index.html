@@ -154,10 +154,10 @@ button:disabled{opacity:.45;cursor:default;}
 
 #uiScreen::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   background-size:cover;background-position:center;opacity:0;transition:opacity .25s;}
-#uiScreen[data-scr="tavern"]::before,
-#uiScreen[data-scr="mines"]::before,
-#uiScreen[data-scr="pvp"]::before{background-image:none;opacity:0;}
+#uiScreen[data-scr="tavern"]::before{background-image:url("art/scr_tavern.webp");opacity:.17;}
 #uiScreen[data-scr="shop"]::before{background-image:url("art/scr_market.webp");opacity:.16;}
+#uiScreen[data-scr="mines"]::before{background-image:none;opacity:0;}
+#uiScreen[data-scr="pvp"]::before{background-image:none;opacity:0;}
 #uiScreen[data-scr="skills"]::before{background-image:url("art/scr_skills.webp");opacity:.15;}
 #uiScreen[data-scr="beards"]::before{background-image:url("art/scr_skills.webp");opacity:.13;}
 .slotArt{image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 1px 0 rgba(0,0,0,.6));}
@@ -265,7 +265,7 @@ button:disabled{opacity:.45;cursor:default;}
 
 #pickHand{position:absolute;left:54px;top:-7px;width:54px;image-rendering:pixelated;
   transform-origin:5% 92%;transform:rotate(0deg);z-index:4;}
-#aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
+#aleMug{position:absolute;left:22px;top:36px;width:48px;height:44px;object-fit:contain;image-rendering:pixelated;display:none;z-index:6;}
 
 #petBox{
   position:absolute;left:calc(4% + 0.75cm);bottom:36px;z-index:5;display:none;
@@ -512,12 +512,12 @@ button:disabled{opacity:.45;cursor:default;}
 #powerUp span{font-size:13px;color:var(--goldMuted);}
 #powerUp.skipOffer{border-color:var(--gold);box-shadow:0 0 0 1px rgba(212,168,75,.35);}
 #powerUp.skipOffer b{color:#ffe09a;}
+#powerUp.skipOffer #bagAreaTimer{color:#ffe09a;}
 #bagUpDot{
   position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;
   background:var(--income);color:#fff;font-size:12px;line-height:18px;text-align:center;
   display:none;font-family:var(--font-display);pointer-events:none;
 }
-#powerUp.skipOffer #bagUpDot{background:var(--gem);font-size:10px;}
 #powerUp.busyBag{border-color:var(--goldMuted);}
 #powerUp.busyBag b{color:#ffe09a;}
 #autoGroup{
@@ -998,7 +998,7 @@ body > .modal{
   #pickHand{position:absolute;left:54px;top:-7px;width:54px;image-rendering:pixelated;
     transform-origin:5% 92%;transform:rotate(0deg);z-index:4;}
 
-  #aleMug{position:absolute;left:26px;top:40px;width:40px;image-rendering:pixelated;display:none;z-index:6;}
+  #aleMug{position:absolute;left:22px;top:36px;width:48px;height:44px;object-fit:contain;image-rendering:pixelated;display:none;z-index:6;}
 
   #aleMug.sip{display:block;animation:drink 2.4s ease-in-out forwards;}
 
@@ -1287,6 +1287,14 @@ body > .modal{
   .uiTavDrinkBtn:disabled{opacity:.45;filter:grayscale(.25);}
   .uiTavDrinkBtn .cost{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;
     background:#0e0a06cc;border:1px solid #8a6233;color:#ffd27a;font-size:13px;letter-spacing:0;}
+  .uiMugArt{width:36px;height:36px;display:block;image-rendering:pixelated;object-fit:contain;}
+  .uiMugArt.sm,.uiTavDrinkBtn .uiMugArt{width:18px;height:18px;display:inline-block;vertical-align:-3px;}
+  .uiCard.tav .uiCardIc .uiMugArt{width:40px;height:40px;}
+  .uiPetArt{width:36px;height:36px;display:block;image-rendering:pixelated;object-fit:contain;margin:0 auto;}
+  .uiSlotIc .uiPetArt{width:28px;height:28px;}
+  .uiCardIc .uiPetArt{width:32px;height:32px;}
+  .slot .ic .uiPetArt{width:30px;height:30px;}
+  .toast .uiPetArt{width:28px;height:28px;display:inline-block;vertical-align:middle;}
   .uiTavMugUp{margin-top:8px;min-height:40px;font-size:13px;}
   .uiTavEnergy{margin-top:10px;}
   .uiTavEnergy .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#a89880;margin-bottom:4px;}
@@ -1313,7 +1321,8 @@ body > .modal{
 
 .uiTavArt{display:none;}
 .uiTavExt{position:relative;min-height:168px;border:2px solid var(--gold,#f2d488);border-radius:6px;
-  background:linear-gradient(180deg,#24180e,#120e0a);
+  background:linear-gradient(180deg,rgba(10,7,4,.10),rgba(10,7,4,.62)),
+             url("art/scr_tavern.webp") center/cover no-repeat;
   box-shadow:inset 0 0 40px rgba(0,0,0,.6);overflow:hidden;}
 
 .uiMineCard{background-image:none !important;}
@@ -1484,7 +1493,7 @@ window.addEventListener("unhandledrejection",function(ev){
         <img class="ml" id="mlBeard" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
         <img class="ml" id="mlHelm" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
         <img id="pickHand" alt="">
-        <img id="aleMug" alt="">
+        <img id="aleMug" src="art/ic_mug.png" alt="кружка">
         <div id="paperdoll"></div>
       </div>
       <div id="petBox" class="pet mood-gaze" style="display:none" title="Тап — погладить · удержи — питомцы">
@@ -2914,7 +2923,7 @@ window.addEventListener("unhandledrejection",function(ev){
   <h2 id="ovTitle">ПЕРЕКУР В ЧЕРТОГАХ</h2>
   <p id="ovText">🍺 Пиво честно заслужено 🍺</p>
   <div id="ovActions">
-    <button type="button" class="btn ovAle" onclick="overlayAle()">🍺 Выпить пиво</button>
+    <button type="button" class="btn ovAle" onclick="overlayAle()"><img class="uiMugArt sm" src="art/ic_mug.png" alt=""> Выпить пиво</button>
     <button type="button" class="btn ovShop" onclick="openShop()">🛒 Магазин</button>
   </div>
   <button type="button" id="ovRetry" onclick="closeOverlay()">⛏ Ещё разок, за Гору!</button>
@@ -2996,9 +3005,7 @@ const BALANCE = {
     {id:"feast",ic:"💪",n:"Закончи 1 застолье",need:1,tok:10,
       lore:"Уважение зала растёт за столом, не за речами."},
     {id:"pvp",ic:"⚔",n:"Победи 2 на арене",need:2,tok:10,
-      lore:"На арене пьют только победители."},
-    {id:"geo",ic:"💇",n:"Найми или слей геолога",need:1,tok:10,
-      lore:"Артель старейшин не терпит пустоты."}],
+      lore:"На арене пьют только победители."}],
   dailyTrack:[[25,"🗝 ключ ×1"],[50,"🥚 яйцо ×3"],[100,"💎 кристаллы ×50"],[150,"🪮 расчёска ×2"]],
   dailyAdTok:30,
   noAdsPrice:"49.99",
@@ -3127,12 +3134,14 @@ const BALANCE = {
     waitlist:{ bonusGems:100, eggs:3, combs:3, loot2xMin:1440 }
   },
   events:{
+    hpMul:3,
     rockfall:{ maxLvl:10, total:50000, first:200, currency:"осколки", res:"shards", ic:"💠", waveSize:5 },
-    lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"пиво", res:"protein", ic:"🍺" },
-    prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"кристаллы", res:"gems", ic:"💎" },
-    crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", res:"gems", ic:"💎", flat:10 },
-    critterDen:{ maxLvl:10, total:8000, first:100, currency:"золото", res:"gold", ic:"🪙", mult:50 } },
+    lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"пиво", res:"protein", ic:"🍺", waveSize:3 },
+    prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"кристаллы", res:"gems", ic:"💎", waveSize:1 },
+    crystalCave:{ maxLvl:10, total:0, first:0, currency:"кристаллы", res:"gems", ic:"💎", flat:10, waveSize:5 },
+    critterDen:{ maxLvl:10, total:8000, first:100, currency:"золото", res:"gold", ic:"🪙", mult:50, waveSize:4 } },
   keyMax:2, keyRefillSec:Math.round(6*3600),
+  eventKeyGem:50,
 
   mineRaid:{
     hpMul:5,
@@ -3390,7 +3399,7 @@ const SLOTS=[
   {id:"boots", n:"Сапоги",   ic:"🥾", st:{spd:0.35}},
   {id:"pack",  n:"Пояс",     ic:"🪢", st:{stone:14}},
   {id:"robe",  n:"Роба",     ic:"🦺", st:{tough:2.5}},
-  {id:"pet",   n:"Питомец",  ic:"🐕", st:{luck:1.5,mining:3}}
+  {id:"pet",   n:"Питомец",  ic:"🐉", st:{luck:1.5,mining:3}}
 ];
 function gearSlots(){ return SLOTS.filter(s=>s.id!=="pet"); }
 function rollGearSlot(){ const g=gearSlots(); return g[Math.floor(Math.random()*g.length)]; }
@@ -3398,41 +3407,135 @@ function rollGearSlot(){ const g=gearSlots(); return g[Math.floor(Math.random()*
 const SLOT_FLUFF={
   helm:{
     effect:"Энергия — сколько дворф выдерживает у забоя до перекура. Защита — порода слабее кусает, крепь штольни живёт дольше.",
-    lore:"Каску ковал Дурин для смены, что ушла в Эхо-Дум и не вернулась. Козырёк помнит их имена — стукни по нему, и услышишь эхо."
+    lore:[
+      "Простая каска смены. На подкладке мелом: «не геройствуй — вернись».",
+      "Каска разведчика Нори. Вмятина от камня — он сказал «ещё раз» и докопал жилу.",
+      "Шлем бригады Эхо-Дум. Козырёк помнит имена тех, кто ушёл вглубь и не вернулся.",
+      "Каску ковал Дурин для старшего смены. Стукни по ней — услышишь эхо клятвы.",
+      "Шлем чужака из-за моря лавы. На забрале руны, которых не учат в Гильдии.",
+      "Миф про каску, что сама гасит обвал: носят суеверные — и как-то живут дольше.",
+      "Вознесённый венец Подгорья. Говорят, его надевал первый, кто услышал Зов.",
+      "Космический шлем Бездны. Внутри — тишина звёзд; снаружи — грохот кирки."
+    ]
   },
   glove:{
     effect:"Крит — шанс попасть в слабину жилы: удар сильнее, награда гуще, камень трещит от обиды.",
-    lore:"Перчатки старого счётчика Нори. Он считал удары, а не золото — поэтому и дожил до седой бороды."
+    lore:[
+      "Рабочие рукавицы. Пахнут потом, смолой и обещанием «ещё один удар».",
+      "Перчатки счётчика Нори. Он считал удары, а не золото — дожил до седой бороды.",
+      "Краги бойца забоя. На левой — зарубка за каждый критический удар по боссу.",
+      "Перчатки мастера Гирума. Ими он ломал «неломаемые» жилы на спор.",
+      "Экзотика из пещер светлячков: ткань сама ищет трещину в камне.",
+      "Мифические краги Жала Горы. Камень якобы сам подставляет слабину.",
+      "Вознесённые перчатки Звона. Каждый крит — как колокол в глубине.",
+      "Космические перчатки Пустоты. Удар не бьёт — он «находит», где руда уже сдалась."
+    ]
   },
   pick:{
     effect:"Атака — сила каждого удара по породе. Особое: кирка чует находки — вещи и камни в жиле.",
-    lore:"В шахте говорят: хорошая кирка помнит руку хозяина. Плохая — только чужие кости и чужие клятвы."
+    lore:[
+      "Ученическая кирка. Тяжёлая, честная, без имени — пока не заслужишь.",
+      "Кирка подёнщика. На обухе насечки дней без выходных.",
+      "Боевая кирка артели. Ею гнали жилу, когда своды уже пели обвалом.",
+      "Легенда кузницы Торина: «хорошая кирка помнит руку хозяина».",
+      "Клинок-кирка из звездопада. Чует металл сквозь породу, как нюх у пса.",
+      "Миф о Кирке-Что-Поёт. Пока звенит — жила не кончится зря.",
+      "Вознесённая кирка Завета. Ею копали путь к первому Зову.",
+      "Космическая кирка Бездны. Бьёт не по камню — по слою мира, где руда прячется."
+    ]
   },
   lamp:{
     effect:"Чутьё — шанс двойного удара. Удача — реже получаешь ответ породы и чаще находишь редкие камни.",
-    lore:"Фонарь Гильдии Рудознатцев. Масло горит ровно, пока не врёшь о глубине. Соврал — коптит."
+    lore:[
+      "Масляный фонарь новичка. Коптит, если врёшь о глубине — даже случайно.",
+      "Фонарь разведчика. Стекло в трещинах, но луч всё равно находит тропу.",
+      "Свет Гильдии Рудознатцев. Горит ровно, пока отчёт честный.",
+      "Легендарный светильник Балина: в нём масло из смолы тысячелетней ели.",
+      "Экзотический кристалл-фонарь. Светит туда, где удача уже решила за тебя.",
+      "Мифический огонь Подгорья. Двойной удар — будто два дворфа в одной тени.",
+      "Вознесённый светоч Зова. Им освещали штольню, куда не ступала нога.",
+      "Космический маяк Пустоты. Удача здесь — не случай, а маршрут."
+    ]
   },
   pants:{
     effect:"Защита — меньше расход энергии от ударов породы; своды и крепь держатся крепче.",
-    lore:"Штаны «недра не берут». Сшил Грур Однорукий одной рукой и клялся, что второй для этого дела не нужна."
+    lore:[
+      "Холщовые штаны смены. Заплаты важнее вышивки.",
+      "Штаны «недра не берут». Сшил Грур Однорукий — клялся, что второй руки и не надо.",
+      "Бриджи забойщика. В кармане навсегда застрял кусок кварца на удачу.",
+      "Легендарные поножи Дурина: ими отбивали обвал, стоя на коленях у крепи.",
+      "Экзотика из шкуры глубинного зверя — царапает камень, а дворфа бережёт.",
+      "Мифические штаны Стойки. Пока стоишь — крепь держит вместе с тобой.",
+      "Вознесённые поножи Стража Сводов. Их носили те, кто закрывал выход последним.",
+      "Космические штаны Недр. Защита не «броня» — договор с Горой о перемирии."
+    ]
   },
   boots:{
     effect:"Темп — удары в секунду. Быстрее ноги — чаще кирка касается камня, жила кончается раньше.",
-    lore:"Сапоги шил Борин у стойки: «Чтоб не стоял столбом, когда Гора зовёт». Подошва до сих пор пахнет смолой и упрямством."
+    lore:[
+      "Гвоздевые ботинки ученика. Тяжёлые — чтоб не бежал от работы.",
+      "Сапоги Борина у стойки: «чтоб не стоял столбом, когда Гора зовёт».",
+      "Скороходы артели. Подошва пахнет смолой, упрямством и ночной сменой.",
+      "Легендарные сапоги Гонца: ими носили весть о жиле через три чертога.",
+      "Экзотические боты из пепла лавы — ступаешь мягко, бьёшь чаще.",
+      "Мифические сапоги Ритма. Нога сама знает, когда следующий удар.",
+      "Вознесённые сапоги Тропы. Ими ходили туда, где карты кончаются.",
+      "Космические сапоги Пульса. Темп — это дыхание Горы, подогнанное под тебя."
+    ]
   },
   pack:{
     effect:"Жадность — больше золота с каждой жилы. Пояс тянет к доходу, а не к красоте наряда.",
-    lore:"Пояс скупщика Шлака Безбородого. На пряжке выцарапано: «Сначала вес, потом совесть»."
+    lore:[
+      "Ремень с сумкой на гвоздях. Тяжёлый от мелочи и привычки копить.",
+      "Пояс скупщика Шлака Безбородого. На пряжке: «сначала вес, потом совесть».",
+      "Пояс артельного казначея. Пряжка щёлкает, когда жила дала лишнее.",
+      "Легендарный пояс Золотой Жилы. Им мерили добычу до первой лжи в отчёте.",
+      "Экзотический пояс Драконьей Чешуи — золото липнет само, совесть — нет.",
+      "Мифический пояс Жадности Горы. Чем глубже, тем звонче монеты в ушах.",
+      "Вознесённый пояс Дани. С него платили Зов — и всё равно набивали карманы.",
+      "Космический пояс Изобилия. Жадность здесь — закон физики, не порок."
+    ]
   },
   robe:{
     effect:"Защита — порода слабее сжирает энергию; дворф дольше стоит у жилы без перекура.",
-    lore:"Роба смены «Подгорный Огонь». На спине пятно от магмы — носят как орден, не как позор."
+    lore:[
+      "Рабочий халат с пятнами руды. Стирают редко — «на удачу».",
+      "Роба смены «Подгорный Огонь». Пятно магмы на спине носят как орден.",
+      "Плащ смотрителя штольни. Подкладка пропитана дымом и приказами.",
+      "Легендарная роба Кузни: ею гасили искры, когда лили кирки для героев.",
+      "Экзотический плащ из шёлка глубин — лёгкий, а держит жар породы.",
+      "Мифическая роба Щита. Пока на плечах — энергия уходит медленнее злости.",
+      "Вознесённая мантия Стража. Её надевали на вахту у входа в Бездну.",
+      "Космическая роба Тишины. Защита — будто Гора на миг забыла, что ты здесь."
+    ]
   }
 };
+function gearSlotLoreText(sl, it){
+  const f=SLOT_FLUFF[sl&&sl.id]; if(!f) return "";
+  const list=f.lore;
+  if(Array.isArray(list)){
+    if(!it) return "Слот пуст. История пишется рудой и ударами — надень вещь своего тира.";
+    const r=Math.max(0, Math.min(7, it.r|0));
+    return list[r]||list[0]||"";
+  }
+  return list||"";
+}
+function gearSlotArtHtml(sl, it){
+  const src=(it?gearArtSrc(sl.id, it.r):null)||SLOT_ART[sl.id]||null;
+  if(!src){
+    return '<div style="text-align:center;font-size:56px;line-height:1;margin:6px 0 10px;opacity:'+(it?".95":".4")+'">'+(sl.ic||"⚒")+'</div>';
+  }
+  const empty=!it;
+  return '<div class="gearSlotHero" style="text-align:center;margin:4px 0 12px">'
+    +'<img src="'+src+'" alt="'+esc(sl.n)+'" class="oreimg slotArt gearSlotImg"'
+    +' style="width:96px;height:96px;image-rendering:pixelated;object-fit:contain;'
+    +(empty?'opacity:.38;filter:grayscale(.55);':'filter:drop-shadow(0 4px 10px rgba(0,0,0,.75)) brightness(1.08) saturate(1.05);')
+    +'"></div>';
+}
 function gearSlotFluffHtml(sl, it){
   const f=SLOT_FLUFF[sl.id]; if(!f) return "";
-  let lore=f.lore;
-  if(sl.id==="pick"&&it&&it.n) lore="«"+it.n+"» · "+f.lore;
+  let lore=gearSlotLoreText(sl, it);
+  if(sl.id==="pick"&&it&&it.n) lore="«"+it.n+"» · "+lore;
   return '<div class="uiCard" style="margin-top:10px;flex-direction:column;align-items:stretch;gap:8px">'
     +'<div><div class="uiSub" style="color:var(--gold);margin:0 0 4px;font-family:var(--font-display);letter-spacing:.5px">НА ЧТО ВЛИЯЕТ</div>'
     +'<div class="uiSub" style="margin:0;line-height:1.55;color:var(--textBody)">'+esc(f.effect)+'</div></div>'
@@ -3477,6 +3580,16 @@ const ORE_SPRITES=[0,1,2,3,4,5].map(p=>[0,1,2,3].map(v=>ART+"ore_p"+p+"_s"+v+".p
 const MINER_BASES=[0,1,2,3,4,5,6,7].map(i=>ART+"dwarf"+i+".png");
 const SLOT_ART={helm:"art/eq_helm.png",glove:"art/eq_glove.png",lamp:"art/eq_lamp.png",pick:"art/eq_pick.png",
   pants:"art/eq_pants.png",boots:"art/eq_boots.png",pack:"art/eq_pack.png",robe:"art/eq_robe.png"};
+function gearArtSrc(slotId, rarity){
+  if(slotId==="pick"){
+    const r=Math.max(0, Math.min(7, rarity==null?0:(rarity|0)));
+    return PICK_ICONS[r];
+  }
+  if(!SLOT_ART[slotId]) return null;
+  if(rarity==null || rarity<0) return SLOT_ART[slotId];
+  const r=Math.max(0, Math.min(7, rarity|0));
+  return "art/eq_"+slotId+"_r"+r+".png";
+}
 const BEARD_STYLES=[0,1,2,3,4].map(()=>"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");
 const BEARD_NAMES=["Окладистая","Косы","Раздвоенная","Козлиная","Патриаршая"];
 const GEO_NAMES_POOL=["Грур Однорукий","Балин Каменщик","Тролль-в-законе","Дурин Забойщик",
@@ -3506,7 +3619,7 @@ function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
     if((S.specialPool||0)<99){ S.specialPool=(S.specialPool||0)+1;
       showToast("🧬","Черта гнома","","+1 очко КРАСАВА","распредели в Навыках",true); }
   } }
-const MUG_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAlklEQVR4nGNkQAIiYjL/GbCAN6+eMMLYjMiKH9w8hk09g4K6FVwTE1YVeAALzHRvTQ6G7AAnBm0FEcIakIGdxnMU/qEbknAnv3n1hBFDAzq4+uANg7cmBwMDAwPDVgaZ/0T5AdmZGDbAnIAAb1B4JIcSURquPkDYQtDT2goiDF3bnzAwMEBinGgnkR3TKGmJkOkMDAwMAC1BK8eiEIVdAAAAAElFTkSuQmCC";
+const MUG_ICON="art/ic_mug.png";
 const EQ=(()=>{const o={};for(const k of ["helm","robe","boots","glove","pack"])o[k]=[0,1,2,3,4,5,6,7].map(()=>"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");return o;})();
 
 const PICK_NAMES=[
@@ -3819,7 +3932,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 
 let S=null;
 function freshState(){
-  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, eventRun:null, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
     growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
       waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
       ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
@@ -3942,7 +4055,13 @@ function newRock(){
     if(d){ if(d.kind==="shock")  rock.hard*=(1-d.defCut);
            if(d.kind==="splash") rock.resp*=(1-d.spdCut); } }
 
-  if(S.mineRaid && (S.mineRaid.mineId|0)===(S.mine%MINES.length)){
+  if(S.eventRun && S.eventRun.id){
+    const er=S.eventRun;
+    const baseMul=(BALANCE.events&&BALANCE.events.hpMul)||3;
+    const mul=baseMul*(1+0.18*(er.wave|0));
+    rock.isRaid=true; rock.isBoss=true; rock.isEvent=true;
+    rock.hp=Math.max(rock.hp+1, Math.round(rock.hp*mul));
+  } else if(S.mineRaid && (S.mineRaid.mineId|0)===(S.mine%MINES.length)){
     const mul=(BALANCE.mineRaid&&BALANCE.mineRaid.hpMul)||5;
     rock.isRaid=true; rock.isBoss=true;
     rock.hp=Math.max(rock.hp+1, Math.round(rock.hp*mul));
@@ -3951,14 +4070,18 @@ function newRock(){
   S.energy=stat("energy");
   const mk=S.mine%MINES.length, cycle=Math.floor(S.mine/MINES.length);
   { const _p=ORE_SPRITES[rock.isBoss?5:mk]||ORE_SPRITES[0]; const _si=Number(S.stageIdx)||0; $("rockImg").src=_p[((_si*7+mk)%4+4)%4]||_p[0]; }
-  if(rock.isRaid && S.mineRaid){
+  if(rock.isEvent && S.eventRun){
+    const er=S.eventRun;
+    $("rockName").textContent=(er.ic||"◎")+" "+(er.n||"Ивент")+" · "+((er.wave|0)+1)+"/"+(er.waves||1);
+  } else if(rock.isRaid && S.mineRaid){
     $("rockName").textContent="ОСОБЫЙ КАМЕНЬ · "+(S.mineRaid.n||"награда")+" "+(S.mineRaid.ic||"");
   } else {
     $("rockName").textContent=rock.isBoss
       ? BOSS_POOLS[mk][cycle%BOSS_POOLS[mk].length]+" (босс)"
       : ROCK_POOLS[mk][S.stageIdx%ROCK_POOLS[mk].length];
   }
-  if(rock.isRaid) sayQuip("Особый камень! Разбей — чертог отдаст своё.",4);
+  if(rock.isEvent) sayQuip("Забег! Ключ спишется только если добьёшь все волны.",4);
+  else if(rock.isRaid) sayQuip("Особый камень! Разбей — чертог отдаст своё.",4);
   else if(rock.isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
   $("rockName").classList.toggle("bosslabel",!!rock.isBoss);
   $("rock").classList.toggle("boss",!!rock.isBoss);
@@ -4086,6 +4209,7 @@ function reinforceMine(){
 function caveIn(){
   if(dead) return;
   dead=true;
+  failEventRun("обвал сводов");
   Platform.logEvent("collapse",{stage:S.stageIdx});
   const lost=Math.floor((S.gold||0)*MINE_DURAB.penaltyGoldPct);
   S.gold-=lost; S.cartFill=0; S.energy=0;
@@ -4097,19 +4221,23 @@ function caveIn(){
 }
 function breakVein(){
   const prevIdx=S.stageIdx;
-  const wasRaid=!!(rock&&rock.isRaid&&S.mineRaid);
+  const wasEvent=!!(rock&&rock.isEvent&&S.eventRun);
+  const eventSnap=wasEvent?Object.assign({},S.eventRun):null;
+  const wasRaid=!!(rock&&rock.isRaid&&S.mineRaid&&!wasEvent);
   const raidSnap=wasRaid?Object.assign({},S.mineRaid):null;
   sfxBreak();
   addCartOre();
   S.gold+=veinReward()*(rock.isBoss?1.5:1)*activeLootMult();
-  if(wasRaid&&raidSnap){
+  if(wasEvent&&eventSnap){
+    advanceEventWave(eventSnap);
+  } else if(wasRaid&&raidSnap){
     grantMineRaidReward(raidSnap);
     S.mineRaid=null;
   } else {
     grantBags(rock.isBoss?BALANCE.bags.perBoss:BALANCE.bags.perVein);
   }
 
-  if(!wasRaid){
+  if(!wasRaid&&!wasEvent){
     const mk=S.mine%MINES.length, ex=(BALANCE.minesExtra||[])[mk];
     if(ex && Math.random()*100<ex.pct){
       const amt = rock.isBoss ? ex.boss : ex.vein;
@@ -4136,20 +4264,21 @@ function breakVein(){
     if(!S._wallShown){ S._wallShown=true;
       showToast("⛰️",BALANCE.run.wallMsg+"!","","Дальше — только Глубинный Зов","этап "+BALANCE.run.len+" · жми ⛰️",true);
       sayQuip("Свод. Дальше Гора не пускает. Пора звать заново.",6); }
-  } else if(!wasRaid){ S.stageIdx++; S.stage++; }
+  } else if(!wasRaid&&!wasEvent){ S.stageIdx++; S.stage++; }
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
   S.veinsBroken=(S.veinsBroken||0)+1;
   try{ checkMinerLevelUp(true); }catch(e){}
-  if(!wasRaid) rollVeinExtras(rock.isBoss);
+  if(!wasRaid&&!wasEvent) rollVeinExtras(rock.isBoss);
   checkDepthMark(prevIdx); submitMyScore();
-  if(rock.isBoss&&!wasRaid) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
-  if(!wasRaid && S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
+  if(rock.isBoss&&!wasRaid&&!wasEvent) Platform.logEvent("boss_kill",{stage:S.stageIdx,mine:S.mine});
+  if(!wasRaid&&!wasEvent && S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
   try{ notifyFeatUnlocks(); }catch(e){}
   newRock(); save();
 }
 function exhausted(){
   dead=true;
+  failEventRun("энергия на нуле");
   jingleKO();
   Platform.logEvent("exhaust",{stage:S.stageIdx});
   const ko=KO_SCREENS[Math.floor(Math.random()*KO_SCREENS.length)];
@@ -4470,7 +4599,6 @@ function hireGeo(){
     boxAdd(S.geoBox,t,r,1);
     showToast("👷",GEO_RAR[r],"r"+r,name,"в артель · материал для слияния");
   }
-  dailyProgress("geo",1);
   save(); render();
   return true;
 }
@@ -4999,26 +5127,48 @@ function renderGear(){
   const REF_ORDER=["helm","glove","pick","lamp","pants","boots","pack","robe","pet"];
   REF_ORDER.map(id=>SLOTS.find(s=>s.id===id)).filter(Boolean).forEach(sl=>{
     if(sl.id==="pet" && !featUnlocked("pets")) return;
-    const item=S.gear[sl.id];
     const d=document.createElement("div");
+    if(sl.id==="pet"){
+      const pet=S.pet;
+      const mergeReady=Object.keys(S.petBox||{}).some(k=>{
+        const [t,r]=k.split("_").map(Number); return canMergePet(t,r);
+      });
+      const hintUp=!!((S.eggs||0)>0 || mergeReady);
+      d.className="slot "+(pet?("br"+Math.min(7,pet.r|0)):"empty")+(hintUp?" canUp":"")+" petSlot";
+      let sv="—";
+      if(pet&&PET_TYPES[pet.t]){
+        const t=PET_TYPES[pet.t], r=pet.r|0;
+        sv='<div><span class="r'+r+'">'+(PET_RAR[r]||RAR_SHORT[r]||"")+'</span></div>'
+          +'<div class="svv">+'+t.pct[r]+'% '+t.stat.toUpperCase()+'</div>';
+      }
+      const icon=pet?petIcon(pet.t):(sl.ic||"❔");
+      d.innerHTML='<span class="up">↑</span><div class="ic">'+icon+'</div><div class="sn">'
+        +(pet&&PET_TYPES[pet.t]?PET_TYPES[pet.t].n:sl.n)+'</div><div class="sv">'+sv+'</div>';
+      d.title=pet
+        ? (PET_TYPES[pet.t].n+" · "+(PET_RAR[pet.r|0]||"")+(hintUp?" · есть яйца/слияние":""))
+        : (hintUp?"Питомцы · есть яйцо или слияние":"Питомцы");
+      d.onclick=function(){ if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha"); else if(typeof openPets==="function") openPets(); };
+      g.appendChild(d);
+      return;
+    }
+    const item=S.gear[sl.id];
     const canUp=slotCanBagUp(item);
-    d.className="slot "+(item?("br"+item.r):"empty")+(canUp?" canUp":"")+(sl.id==="pet"?" petSlot":"");
+    d.className="slot "+(item?("br"+item.r):"empty")+(canUp?" canUp":"");
     let sv="—";
     if(item){
       const firstStat=Object.keys(sl.st)[0];
       const v=itemStat(item,firstStat);
       sv=`<div><span class="r${item.r}">${(RAR_SHORT[item.r]||RAR_NAMES[item.r])}</span></div><div class="svv">+${v>=100?fmt(v):v.toFixed(1)}</div>`;
     }
-    const icon=(sl.id==="pick"&&item)?`<img src="${PICK_ICONS[item.r]}" class="oreimg" style="width:30px;height:30px;margin:0">`:(SLOT_ART[sl.id]?`<img src="${SLOT_ART[sl.id]}" class="oreimg slotArt" style="width:30px;height:30px;margin:0">`:sl.ic);
+    const iconSrc=item?gearArtSrc(sl.id, item.r):(SLOT_ART[sl.id]||null);
+    const icon=iconSrc
+      ?`<img src="${iconSrc}" class="oreimg slotArt" style="width:30px;height:30px;margin:0">`
+      :sl.ic;
     d.innerHTML=`<span class="up">↑</span><div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
-    if(sl.id==="pet"){
-      d.title="Питомцы";
-      d.onclick=function(){ if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha"); else if(typeof openPets==="function") openPets(); };
-    } else if(sl.id==="pick"){
+    if(sl.id==="pick"){
       d.title=canUp?"Кирки · ↑ сумка может дать лучше":"Кирки";
       d.onclick=openPickGallery;
     } else {
-
       d.title=canUp?"Тап — инфо · ↑ можно улучшить сумкой":"Инфо о слоте";
       d.onclick=function(){ openGearSlot(sl.id); };
     }
@@ -5151,7 +5301,7 @@ function render(){
 
   if($("bagBadge2")){ const n=S.bags||0; setTxt("bagBadge2",n>99?"99+":n); $("bagBadge2").style.display=n>0?"flex":"none"; }
   if($("bagAreaLvl")){
-    if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","ПРОПУСК 💎"+bagSkipGems());
+    if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","ПРОПУСК");
     else if(bagUpgrading()) setTxt("bagAreaLvl","СУМКА… "+bagUpgradeLeft()+"с");
     else if(S.bag>=50) setTxt("bagAreaLvl","СУМКА МАКС");
     else setTxt("bagAreaLvl","СУМКА УР "+S.bag);
@@ -5169,10 +5319,15 @@ function render(){
     if(dot){
       const busy=bagUpgrading();
       const can=!busy && S.bag<50 && (S.gold||0)>=bagCost();
-      if(busy){
+      if(busy && bagSkipArmed){
+        // цена уже в подписи — бейдж с 💎 дублировал и наезжал на «ПРОПУСК»
+        dot.style.display="none";
+        setTxt(dot,"");
+        dot.title="";
+      } else if(busy){
         dot.style.display="block";
-        setTxt(dot, bagSkipArmed?"💎":"⏩");
-        dot.title=bagSkipArmed?("Тап — списать "+bagSkipGems()+" 💎"):"Тап — цена пропуска";
+        setTxt(dot,"⏩");
+        dot.title="Тап — цена пропуска";
       } else {
         setTxt(dot,"↑");
         dot.style.display=can?"block":"none";
@@ -5252,6 +5407,8 @@ function render(){
   setTxt("colCount",got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · ещё один!":""))); }
   applyFeatureChrome();
   updateFtueHint();
+  try{ refreshGearSlotIfOpen(); }catch(e){}
+  try{ refreshEventsIfOpen(); }catch(e){}
 }
 function hideFtueTip(tip){
   tip=tip||$("ftueTip"); if(!tip) return;
@@ -5625,6 +5782,10 @@ function startMineRaid(mineId){
     showToast("⛏","Уже идёт","","Сначала разбей текущий особый камень");
     return false;
   }
+  if(S.eventRun){
+    showToast("◎","Идёт забег","","Сначала добей волны ивента","или проиграй — ключ сохранится");
+    return false;
+  }
   const def=mineRaidDef(mineId);
   if(!def) return false;
   const step=slot.step, fib=slot.fib;
@@ -5654,6 +5815,10 @@ function switchMine(id){
   if(!(id>=0 && id<MINES.length)) return false;
   const curAbs=S.mine||0, cur=curAbs%MINES.length, cycle=Math.floor(curAbs/MINES.length);
   if(id>cur){ showToast("⛏","Закрыто","","Дойди до этого чертога в круге","сейчас "+(cur+1)+"/5"); return false; }
+  if(S.eventRun){
+    showToast("◎","Идёт забег","","Сначала добей волны ивента");
+    return false;
+  }
   if(S.mineRaid){
     showToast("⛏","Сначала особый камень","","Ступень уже взята — добей жилу");
     return false;
@@ -5852,7 +6017,7 @@ function ensureWorkouts(d){ if(!d) return d;
 function ensureAll(d){
   ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d);
   ensureCards(d); ensureFair(d); ensureScience(d); ensureGacha(d); ensureBonus(d); ensureGrowth(d);
-  ensureWorkouts(d); ensureFeat(d); ensureMineRaid(d);
+  ensureWorkouts(d); ensureFeat(d); ensureMineRaid(d); ensureEventRun(d);
   return d;
 }
 function ensureGacha(d){ if(!d) return d;
@@ -5902,7 +6067,7 @@ function load(){
     const got=readSaveObject();
     if(got){
       S=Object.assign(freshState(), migrate(got.data));
-      sanitizeState(S); ensureAll(S); resetTimers();
+      sanitizeState(S); ensureAll(S); S.eventRun=null; resetTimers();
       if(got.fromBak){
         try{ save(); }catch(e){}
         try{ showToast("💾","Прогресс восстановлен","","из резервной копии",""); }catch(e){}
@@ -6883,7 +7048,11 @@ function buildCharSheetHtml(inShell){
 }
 function renderCharSheet(){
   const el=$("charSheet"); if(!el) return;
+  const fo=el.querySelector(".foScroll");
+  const keepY=fo?fo.scrollTop:0;
   el.innerHTML=buildCharSheetHtml(false);
+  const fo2=el.querySelector(".foScroll");
+  if(fo2) fo2.scrollTop=keepY;
 }
 
 const SKILL_DEFS=[
@@ -6926,6 +7095,7 @@ function openSkills(tab){
   if(tab==="workouts") tab="train";
   if(tab==="special") tab="sheet";
   if(tab==="skills") tab="list";
+  const prevTab=_skillsShellTab;
   const cm=$("charModal"); if(cm) cm.style.display="none";
   closePerkPick();
   _skillsShellTab=tab;
@@ -6974,6 +7144,11 @@ function openSkills(tab){
   }
   metaOpen("Навыки добычи", sub, tabBar+body);
   skillsLockBody(tab==="sheet"||tab==="perks"||tab==="list");
+  // Tab switch: start at top. Same-tab refresh (stat buy) keeps scroll via UIS.openPanel.
+  if(prevTab!=null && prevTab!==tab){
+    const b=$("uiBody"); if(b) b.scrollTop=0;
+    const fo=b&&b.querySelector(".foScroll"); if(fo) fo.scrollTop=0;
+  }
   if(tab==="train") workoutsBindRefresh();
 }
 
@@ -7198,45 +7373,150 @@ function keyTimerStr(){
   return "след. ключ через "+(h?h+"ч ":"")+m+"м";
 }
 function eventLevel(){ return Math.max(1, Math.floor((S.mine||0)/2)+1); }
+function eventNameOf(id){
+  for(let i=0;i<EVENT_LIST.length;i++) if(EVENT_LIST[i][0]===id) return EVENT_LIST[i][1];
+  return id;
+}
+function ensureEventRun(d){
+  if(!d) return d;
+  if(d.eventRun!=null && typeof d.eventRun!=="object") d.eventRun=null;
+  if(d.keys==null||!isFinite(d.keys)) d.keys=BALANCE.keyMax;
+  if(d.keyAt==null||!isFinite(d.keyAt)) d.keyAt=Date.now();
+  return d;
+}
+function failEventRun(reason){
+  if(!S.eventRun) return;
+  const id=S.eventRun.id;
+  S.eventRun=null;
+  showToast("★","Провал забега","","ключ НЕ потрачен", reason||"попробуй снова");
+  Platform.logEvent("event_fail",{id, reason:reason||""});
+  try{ save(); }catch(e){}
+}
+function grantEventWin(snap){
+  S.keys=Math.max(0,(S.keys||0)-1);
+  if(!S.keyAt||S.keys===BALANCE.keyMax-1) S.keyAt=Date.now();
+  const rew=Math.max(0, snap.rew|0);
+  if(snap.res) S[snap.res]=(S[snap.res]||0)+rew;
+  showToast("★","Забег пройден!","",(snap.ic||"◎")+" +"+fmt(rew)+" "+(snap.currency||""),"уровень "+(snap.lvl||1)+" · осталось 🔑"+S.keys,true);
+  Platform.logEvent("event_win",{id:snap.id,lvl:snap.lvl,waves:snap.waves});
+}
+function advanceEventWave(snap){
+  const next=(snap.wave|0)+1;
+  const waves=Math.max(1, snap.waves|0);
+  if(next>=waves){
+    grantEventWin(snap);
+    S.eventRun=null;
+  } else {
+    S.eventRun.wave=next;
+    showToast(snap.ic||"◎","Волна "+(next)+"/"+waves,"","ещё "+(waves-next),"ключ пока цел");
+    Platform.logEvent("event_wave",{id:snap.id,wave:next,waves});
+  }
+}
 function openEvents(){
   if(!requireFeat("daily")) return;
   refillKeys();
+  ensureEventRun(S);
   const lvl=eventLevel();
+  const busy=!!S.eventRun;
   const rows=EVENT_LIST.map(([id,nm,desc])=>{
     const s=BALANCE.events[id];
     const rew=eventReward(s,lvl)*(s.mult||1);
+    const waves=Math.max(1,s.waveSize||1);
     const cap=lvl>=s.maxLvl?" (макс)":"";
+    const btn=busy
+      ? `<button class="btn btn-soft" disabled>Идёт…</button>`
+      : ((S.keys||0)<1
+        ? `<button class="btn btn-soft" disabled>Нужен 🔑</button>`
+        : `<button class="btn btn-soft" onclick="playEvent('${id}')">Забег 🔑</button>`);
     return `<div class="metarow"><span><b>${nm}</b> · <span style="color:var(--dim)">${desc}</span><br>
-      <span style="color:var(--gold)">${s.ic} +${fmt(rew)} ${s.currency}</span> · ур.${lvl}/${s.maxLvl}${cap}</span>
-      <button class="btn btn-soft" onclick="playEvent('${id}')" ${(S.keys||0)<1?"disabled":""}>Забег 🔑</button></div>`;
+      <span style="color:var(--gold)">${s.ic} +${fmt(rew)} ${s.currency}</span> · ур.${lvl}/${s.maxLvl}${cap} · ${waves} волн</span>
+      ${btn}</div>`;
   }).join("");
+  let claim="";
+  if((S.keys||0)<BALANCE.keyMax && !busy){
+    const gemCost=BALANCE.eventKeyGem||50;
+    claim=`<div class="metarow"><span>Нет ключей? Возьми сейчас</span>
+      <span style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-soft" onclick="claimEventKey()">🔑 +1 реклама</button>
+        <button class="btn btn-hard" onclick="buyEventKey()">🔑 +1 · 💎${gemCost}</button>
+      </span></div>`;
+  }
+  if(busy){
+    const er=S.eventRun;
+    claim=`<div class="metarow"><span>Сейчас: <b>${er.n||er.id}</b> · волна ${(er.wave|0)+1}/${er.waves||1}</span>
+      <button class="btn btn-soft" disabled>ключ цел до победы</button></div>`+claim;
+  }
   metaOpen("Ивенты (5 режимов)",
     "🔑 "+(S.keys||0)+"/"+BALANCE.keyMax+" · "+keyTimerStr()+" · ключ тратится только на победе",
-    rows);
+    claim+rows);
+  try{ if(typeof UIS!=="undefined"&&UIS._lastMeta) UIS._lastMeta.kind="events"; }catch(e){}
 }
 function playEvent(id){
   refillKeys();
-  if((S.keys||0)<1){ showToast("🔑","Нет ключей","","подожди рефилл — "+keyTimerStr(),"событие"); return; }
-  const s=BALANCE.events[id], lvl=eventLevel();
-  const win=Math.random()<0.7;
-  if(win){
-    S.keys-=1; if(!S.keyAt||S.keys===BALANCE.keyMax-1) S.keyAt=Date.now();
-    const rew=eventReward(s,lvl)*(s.mult||1);
-    S[s.res]=(S[s.res]||0)+rew;
-    showToast("★","Забег пройден!","",s.ic+" +"+fmt(rew)+" "+s.currency,"уровень "+lvl+" · осталось 🔑"+S.keys,true);
-    Platform.logEvent("event_win",{id,lvl});
-  } else {
-    showToast("★","Провал забега","","ключ НЕ потрачен","попробуй снова");
-    Platform.logEvent("event_fail",{id});
-  }
+  ensureEventRun(S);
+  if((S.keys||0)<1){ showToast("🔑","Нет ключей","","подожди рефилл — "+keyTimerStr(),"или возьми за рекламу"); openEvents(); return false; }
+  if(S.eventRun){ showToast("◎","Уже идёт","","Добей текущий забег"); return false; }
+  if(S.mineRaid){ showToast("⛏","Особый камень","","Сначала разбей его"); return false; }
+  const s=BALANCE.events[id];
+  if(!s) return false;
+  const lvl=eventLevel();
+  const waves=Math.max(1, s.waveSize||1);
+  const rew=eventReward(s,lvl)*(s.mult||1);
+  S.eventRun={ id, wave:0, waves, rew, res:s.res, ic:s.ic, currency:s.currency, n:eventNameOf(id), lvl };
+  dead=false;
+  try{ if(typeof UIS!=="undefined"&&UIS.close) UIS.close(); }catch(e){}
+  newRock(); save(); render();
+  try{ switchTab("Mine"); }catch(e){}
+  showToast(s.ic||"◎","Забег: "+eventNameOf(id),"",
+    waves+" волн · награда "+fmt(rew)+" "+s.currency,
+    "ключ спишется только если добьёшь всё");
+  Platform.logEvent("event_start",{id,lvl,waves});
+  return true;
+}
+function claimEventKey(){
+  refillKeys();
+  if((S.keys||0)>=BALANCE.keyMax){ showToast("🔑","Полный запас","","уже "+BALANCE.keyMax+"/"+BALANCE.keyMax); openEvents(); return; }
+  const grant=()=>{
+    S.keys=(S.keys||0)+1;
+    showToast("🔑","Ключ получен","","за рекламу","можно в забег");
+    Platform.logEvent("event_key_ad",{});
+    save(); render(); openEvents();
+  };
+  try{
+    if(Platform&&typeof Platform.showRewarded==="function"){
+      Platform.showRewarded(ok=>{ if(ok) grant(); }, "event_key");
+      return;
+    }
+  }catch(e){}
+  grant();
+}
+function buyEventKey(){
+  refillKeys();
+  const cost=BALANCE.eventKeyGem||50;
+  if((S.keys||0)>=BALANCE.keyMax){ showToast("🔑","Полный запас","","уже максимум"); openEvents(); return; }
+  if((S.gems||0)<cost){ showToast("💎","Мало кристаллов","","нужно "+cost,"сейчас "+(S.gems||0)); return; }
+  S.gems-=cost;
+  S.keys=(S.keys||0)+1;
+  showToast("🔑","Ключ куплен","","−"+cost+" 💎","можно в забег");
+  Platform.logEvent("event_key_gem",{cost});
   save(); render(); openEvents();
 }
 
 const PET_TYPES=[
-  {stat:"luck",  n:"Канарейка",     pct:[8,24,72,216,648], dot:"bleed"},
-  {stat:"mining",n:"Рудный пёс",    pct:[10,30,90,270,810],dot:"shock"},
-  {stat:"stone", n:"Мул-тяжеловоз", pct:[12,36,108,324,972],dot:"splash"}
+  {stat:"luck",  n:"Золотой дракон",   ic:"🐉", art:"art/pet_dragon_gold.png",  pct:[8,24,72,216,648], dot:"bleed"},
+  {stat:"mining",n:"Дракон хаоса",     ic:"🐉", art:"art/pet_dragon_chaos.png", pct:[10,30,90,270,810],dot:"shock"},
+  {stat:"stone", n:"Штормовой дракон", ic:"🐉", art:"art/pet_dragon_storm.png", pct:[12,36,108,324,972],dot:"splash"}
 ];
+function petIcon(t){
+  const p=PET_TYPES[t|0];
+  if(!p) return "🐉";
+  if(p.art) return '<img class="uiPetArt" src="'+p.art+'" alt="'+(p.n||"дракон")+'">';
+  return p.ic||"🐉";
+}
+function petIconEmoji(t){
+  const p=PET_TYPES[t|0];
+  return (p&&p.ic)||"🐉";
+}
 const DOT_NAMES={bleed:"Кровотечение",shock:"Шок",splash:"Всплеск"};
 
 const GYM_XP={ perGift:5, perWorkout:20, perPvpWin:8, perDaily:15 };
@@ -7348,9 +7628,9 @@ function canMergePet(t,r){
   return r < PET_MERGE_MAX && boxCountAt(S.petBox,t,r) >= BALANCE.merge.petCost;
 }
 function mergePet(t,r){
-  if(r>=PET_MERGE_MAX){ showToast("🐕","Предел слияния","","Exotic только крафтом","3× Legendary + "+BALANCE.petCraft.gems+" 💎"); return false; }
+  if(r>=PET_MERGE_MAX){ showToast(petIcon(t),"Предел слияния","","Exotic только крафтом","3× Legendary + "+BALANCE.petCraft.gems+" 💎"); return false; }
   if(boxCountAt(S.petBox,t,r)<BALANCE.merge.petCost){
-    showToast("🐕","Мало копий","","Нужно "+BALANCE.merge.petCost+"× "+PET_TYPES[t].n,"есть "+boxCountAt(S.petBox,t,r));
+    showToast(petIcon(t),"Мало копий","","Нужно "+BALANCE.merge.petCost+"× "+PET_TYPES[t].n,"есть "+boxCountAt(S.petBox,t,r));
     return false;
   }
   S.petBox[boxKey(t,r)]-=BALANCE.merge.petCost;
@@ -7358,8 +7638,8 @@ function mergePet(t,r){
   const nt=Math.floor(Math.random()*PET_TYPES.length), nr=r+1;
   boxAdd(S.petBox,nt,nr,1);
   equipBestPet();
-  showToast("🐕","Слияние!","r"+nr,PET_TYPES[nt].n+" ("+PET_RAR[nr]+")","3× "+PET_TYPES[t].n+" ушли в Гору",true);
-  Platform.logEvent("pet_merge",{from:r,to:nr}); sfxGear(); save(); render();
+  showToast(petIcon(nt),"Слияние!","r"+nr,PET_TYPES[nt].n+" ("+PET_RAR[nr]+")","3× "+PET_TYPES[t].n+" ушли в Гору",true);
+  Platform.logEvent("pet_merge",{from:r,to:nr}); sfxGear(); save(); render(); renderGear();
   return true;
 }
 
@@ -7396,7 +7676,6 @@ function mergeGeo(){
     eaten+=S.geoBox[k]; delete S.geoBox[k];
   }
   S.geo.lv=(S.geo.lv||1)+eaten;
-  dailyProgress("geo",1);
   showToast("👷","Слияние!","r"+S.geo.r,S.geo.n+" ур."+S.geo.lv,"поглощено "+eaten+" · +"+geoPct(S.geo).toFixed(0)+"% "+GEO_TYPES[S.geo.t].stat.toUpperCase(),true);
   Platform.logEvent("geo_merge",{lv:S.geo.lv,eaten}); sfxGear(); save(); render();
   return true;
@@ -7692,7 +7971,7 @@ function craftPetExotic(){
   boxAdd(S.petBox,nt,4,1); equipBestPet();
   showToast("⚗","КРАФТ!","r4",PET_TYPES[nt].n+" (Exotic)","−по Legendary каждого · −"+BALANCE.petCraft.gems+" 💎",true);
   Platform.logEvent("pet_craft",{}); try{ jingleSet(); }catch(e){}
-  save(); render(); openPets();
+  save(); render(); renderGear(); openPets();
   return true;
 }
 function rollPet(){
@@ -7705,7 +7984,7 @@ function rollPet(){
   if(r===3) S.petLegSeen=(S.petLegSeen||0)+1;
   const wasBetter=!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r]);
   equipBestPet();
-  showToast("🐕",PET_RAR[r],"r"+r,PET_TYPES[t].n,
+  showToast(petIcon(t),PET_RAR[r],"r"+r,PET_TYPES[t].n,
     wasBetter?("приручён! +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase())
              :("в коллекцию · копий: "+boxCountAt(S.petBox,t,r)));
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
@@ -7753,8 +8032,11 @@ function drinkBeer(){
   S.wkPts=(S.wkPts||0)+pts;
   _drinkCdUntil=Date.now()+Math.round((W.drinkCdSec||1.2)*1000);
   const mug=$("aleMug");
-  if(mug){ mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
-    clearTimeout(drinkBeer._t); drinkBeer._t=setTimeout(()=>mug.classList.remove("sip"),2450); }
+  if(mug){
+    mug.src=MUG_ICON;
+    mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
+    clearTimeout(drinkBeer._t); drinkBeer._t=setTimeout(()=>mug.classList.remove("sip"),2450);
+  }
   aleAnim=2.4;
   const eGain=0.08*Math.min(mul,5);
   S.energy=Math.min(stat("energy"), S.energy+stat("energy")*eGain);
@@ -7789,7 +8071,7 @@ function workoutsPanelHtml(){
     </div>
   </div>
   <button class="btn btn-hard btn-wide" style="margin:8px 0 12px;min-height:48px;font-size:16px"
-    onclick="drinkBeer()" ${canDrink?"":"disabled"}>Выпить 🍺${drinkCost} → +${drinkPts} очк.</button>`;
+    onclick="drinkBeer()" ${canDrink?"":"disabled"}>Выпить <img class="uiMugArt sm" src="art/ic_mug.png" alt="">${drinkCost} → +${drinkPts} очк.</button>`;
   const rows=BALANCE.workoutPaths.map((p,i)=>{
     const lv=(S.workouts&&S.workouts[p])||0;
     const active=S.wkActive&&S.wkActive.path===p;
@@ -8188,8 +8470,12 @@ function borinBarTalk(){
   return {tag:pack.tag, text:line};
 }
 function sipAle(){
-  const mug=$("aleMug"); mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
-  clearTimeout(sipAle._t); sipAle._t=setTimeout(()=>mug.classList.remove("sip"),2450);
+  const mug=$("aleMug");
+  if(mug){
+    mug.src=MUG_ICON;
+    mug.classList.remove("sip"); void mug.offsetWidth; mug.classList.add("sip");
+    clearTimeout(sipAle._t); sipAle._t=setTimeout(()=>mug.classList.remove("sip"),2450);
+  }
   aleAnim=2.4;
   S.energy=Math.min(stat("energy"), S.energy+stat("energy")*0.12);
   sayQuip(beerLoreQuip(), 4);
@@ -8411,6 +8697,29 @@ const PD_POS={
   helm: [-20, 8], robe: [-20, 30], pack: [-20, 52], boots:[-20, 74], pants:[-20, 96],
   pick: [120, 8], glove:[120, 30], lamp: [120, 52], pet:  [120, 74]
 };
+let _gearSlotOpen=null, _gearSlotSig="";
+function openBagFromGearSlot(){
+  openChest(false);
+  if(_gearSlotOpen) openGearSlot(_gearSlotOpen);
+}
+function refreshGearSlotIfOpen(){
+  if(!_gearSlotOpen) return;
+  if(typeof UIS==="undefined"||UIS.id!=="panel"){ _gearSlotOpen=null; _gearSlotSig=""; return; }
+  if(!UIS._lastMeta||UIS._lastMeta.kind!=="gearSlot"){ _gearSlotOpen=null; _gearSlotSig=""; return; }
+  const it=S.gear[_gearSlotOpen];
+  const sig=_gearSlotOpen+"|"+((S.bags||0)|0)+"|"+(it?((it.r|0)+"|"+itemPower(it).toFixed(3)):"");
+  if(sig===_gearSlotSig) return;
+  openGearSlot(_gearSlotOpen);
+}
+function refreshEventsIfOpen(){
+  if(typeof UIS==="undefined"||UIS.id!=="panel") return;
+  if(!UIS._lastMeta||UIS._lastMeta.kind!=="events") return;
+  refillKeys();
+  const sig=(S.keys||0)+"|"+keyTimerStr()+"|"+(S.eventRun?(S.eventRun.id+"|"+S.eventRun.wave):"");
+  if(UIS._lastMeta._evSig===sig) return;
+  openEvents();
+  try{ if(UIS._lastMeta) UIS._lastMeta._evSig=sig; }catch(e){}
+}
 function openGearSlot(id){
   if(id==="pet"){
     if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha");
@@ -8436,13 +8745,16 @@ function openGearSlot(id){
   else if(it && it.r>=bagCap) tip="Этот слот уже на потолке сумки ур."+(S.bag||1)+" · качай сумку, чтобы выбивать выше.";
   else tip="Сумка есть · открой с кнопки 📦 над инвентарём.";
   const bagBtn=bags>0
-    ? '<button type="button" class="btn btn-hard" onclick="document.getElementById(\'metaModal\').style.display=\'none\';openChest(false)">📦 Открыть сумку'+(bags>1?(" · "+bags):"")+'</button>'
+    ? '<button type="button" class="btn btn-hard" onclick="openBagFromGearSlot()">📦 Открыть сумку · '+bags+'</button>'
     : '<button type="button" class="btn btn-soft" disabled style="opacity:.45">📦 Нет сумок</button>';
   const bagCta='<div class="btnrow" style="margin-top:12px">'+bagBtn+'</div>'
     +'<div class="uiSub" style="margin-top:8px">'+tip+'</div>';
+  _gearSlotOpen=id;
+  _gearSlotSig=id+"|"+bags+"|"+(it?((it.r|0)+"|"+itemPower(it).toFixed(3)):"");
   metaOpen(sl.ic+" "+sl.n,
     "Что выпало, то надето — если лучше текущего."+(sl.extra?(" Особое: "+sl.extra+"."):""),
-    head+statLines+gearSlotFluffHtml(sl,it)+bagCta);
+    gearSlotArtHtml(sl,it)+head+statLines+gearSlotFluffHtml(sl,it)+bagCta);
+  try{ if(typeof UIS!=="undefined"&&UIS._lastMeta) UIS._lastMeta.kind="gearSlot"; }catch(e){}
   Platform.logEvent("paperdoll_slot",{id});
 }
 
@@ -8630,7 +8942,8 @@ function renderPaperdoll(){
     const m=document.createElement("div");
     m.className="pdm "+(it?("r"+it.r):"empty");
     m.style.left=pos[0]+"%"; m.style.top=pos[1]+"%";
-    const ic=(sl.id==="pick"&&it)?`<img src="${PICK_ICONS[it.r]}">`:(SLOT_ART[sl.id]?`<img src="${SLOT_ART[sl.id]}" class="slotArt">`:sl.ic);
+    const src=it?gearArtSrc(sl.id, it.r):(SLOT_ART[sl.id]||null);
+    const ic=src?`<img src="${src}" class="slotArt">`:sl.ic;
     m.innerHTML=ic;
     if(m.setAttribute) m.setAttribute("title", sl.n+(it?(" · "+RAR_NAMES[it.r]):" · пусто"));
     m.onclick=(e)=>{ if(e&&e.stopPropagation) e.stopPropagation(); openGearSlot(sl.id); };

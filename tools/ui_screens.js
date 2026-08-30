@@ -15,6 +15,8 @@ const UI_ART_COLS=[
   {id:"forge",   n:"Кузня",  ic:'<img class="uiColArt" src="art/ic_col_forge.png" alt="">',   c:"#ff8a4a"},
   {id:"tavern",  n:"Таверна",ic:'<img class="uiColArt" src="art/ic_col_tavern.png" alt="">',  c:"#7ae8dc"}
 ];
+const UI_MUG_IC='<img class="uiMugArt" src="art/ic_mug.png" alt="">';
+const UI_MUG_IC_SM='<img class="uiMugArt sm" src="art/ic_mug.png" alt="">';
 
 const UI_TAV_RANKS=[
   {n:"Каменный Кубок",xp:1200},{n:"Медный Кубок",xp:980},{n:"Железный Кубок",xp:760},
@@ -65,6 +67,7 @@ const UIS={
     }
     this.setChrome(false);
     this.id=null; this.tab=null; this._stack=[]; this._lastMeta=null;
+    try{ if(typeof _gearSlotOpen!=="undefined"){ _gearSlotOpen=null; _gearSlotSig=""; } }catch(e){}
     try{ const b=this.$("uiBody"); if(b&&b.classList) b.classList.remove("foLock"); }catch(e){}
     try{ if(typeof _skillsShellTab!=="undefined") _skillsShellTab=null; }catch(e){}
     try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
@@ -227,7 +230,7 @@ const UIS={
     this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","craft","bag"],
       ["Гача","Слияние","Крафт","Клетка"],tab);
     let body="";
-    const cur=S.pet?('<div class="uiBanner r'+S.pet.r+'">В бою: '+PET_TYPES[S.pet.t].n
+    const cur=S.pet?('<div class="uiBanner r'+S.pet.r+'">В бою: '+petIcon(S.pet.t)+' '+PET_TYPES[S.pet.t].n
       +' · '+petSkinOf(S.pet).n
       +' · +'+PET_TYPES[S.pet.t].pct[S.pet.r]+'% '+PET_TYPES[S.pet.t].stat.toUpperCase()+'</div>'):"";
     if(tab==="gacha"){
@@ -240,7 +243,7 @@ const UIS={
       body=cur+(keys.length?keys.map(k=>{
         const [t,r]=k.split("_").map(Number), c=S.petBox[k], ok=canMergePet(t,r);
         const maxed=r>=PET_MERGE_MAX;
-        return this.card("🐕",PET_RAR[r]+" · "+PET_TYPES[t].n,"×"+c+' · нужно '+BALANCE.merge.petCost+' для слияния',
+        return this.card(petIcon(t),PET_RAR[r]+" · "+PET_TYPES[t].n,"×"+c+' · нужно '+BALANCE.merge.petCost+' для слияния',
           maxed?'<button class="btn btn-soft btn-wide" disabled style="opacity:.4">предел</button>'
             :'<button class="btn btn-soft btn-wide" onclick="mergePet('+t+','+r+')" '+(ok?"":'disabled style="opacity:.45"')+'>Слить 3 → '+PET_RAR[r+1]+'</button>');
       }).join(""):'<div class="uiEmpty">Коллекция пуста — крути яйца на вкладке Гача.</div>');
@@ -253,7 +256,7 @@ const UIS={
     } else {
       const slots=PET_TYPES.map((p,i)=>{
         let bestR=-1; for(const k in S.petBox||{}){ const [t,r]=k.split("_").map(Number); if(t===i&&r>bestR) bestR=r; }
-        const ic=bestR>=0?"🐕":"❔", sub=bestR>=0?PET_RAR[bestR]:"нет";
+        const ic=bestR>=0?petIcon(i):"❔", sub=bestR>=0?PET_RAR[bestR]:"нет";
         return this.slot(ic,p.n,sub,bestR>=0?"r"+bestR:"");
       });
       body=cur+this.grid(slots);
@@ -727,17 +730,17 @@ const UIS={
         +'</div>'
         +'<button type="button" class="uiTavDrinkBtn" onclick="drinkBeer()" '+(canDrink?"":"disabled")+'>'
         +'<span>Выпить '+(mug.mul>1?("×"+mug.mul):"кружку")+'</span>'
-        +'<span class="cost">🍺 '+drinkCost+'</span>'
+        +'<span class="cost">'+UI_MUG_IC_SM+' '+drinkCost+'</span>'
         +'</button>'
         +up
         +'<div class="uiTavEnergy">'
         +'<div class="row"><span>Энергия</span><b>'+eCur+' / '+eMax+'</b></div>'
         +'<div class="uiBar"><div class="uiBarFill" style="width:'+ePct+'%"></div></div>'
-        +'<div class="uiSub" style="margin-top:6px">Авто-глоток в забое · кружка ур.'+(mug.i+1)+'</div>'
+        +'<div class="uiSub" style="margin-top:6px">Авто-глоток в забое · '+UI_MUG_IC_SM+' кружка ур.'+(mug.i+1)+'</div>'
         +'</div>';
       body=facade+meters
         +'<div class="uiTavTip"><b>'+esc(talk.tag)+'</b> '+esc(talk.text)+'</div>'
-        +'<div class="uiTavDrink">'+this.card("🍺","Кружка ×"+mug.mul,
+        +'<div class="uiTavDrink">'+this.card(UI_MUG_IC,"Кружка ×"+mug.mul,
           canDrink?("В запасе "+beer+" · хватит на "+sips+" тап"+(sips===1?"":"а"))
             :("Мало пива · нужно "+drinkCost+", есть "+beer),
           drinkBody,"tav")+'</div>'
@@ -775,7 +778,7 @@ const UIS={
         +activeHtml
         +this.card("💪","Застолье",
           "Пиво → очки → путь. Полный список из "+(BALANCE.workoutPaths||[]).length+" путей.",
-          '<button class="btn btn-soft btn-wide" onclick="drinkBeer()">Выпить 🍺'+drinkCost+' → +'+drinkPts+' очк.</button>'
+          '<button class="btn btn-soft btn-wide" onclick="drinkBeer()">Выпить '+UI_MUG_IC_SM+drinkCost+' → +'+drinkPts+' очк.</button>'
           +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWorkouts()">Все тренировки</button>',
           "tav")
         +'<div class="uiSec tav">Быстрые пути</div>'
@@ -786,7 +789,7 @@ const UIS={
         ? this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r,"UIS.push('beards','merge')")
         : this.slot("❔","Борода","найми старейшину","","UIS.push('beards','gacha')");
       const petSlot=S.pet
-        ? this.slot("🐕",PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.push('pets','gacha')")
+        ? this.slot(petIcon(S.pet.t),PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.push('pets','gacha')")
         : this.slot("❔","Питомец","яйца ждут","","UIS.push('pets','gacha')");
       body=facade
         +'<div class="uiTavTip"><b>Стол компании.</b> Наставник, борода, зверь и будущий клан — кто сидит рядом в забое.</div>'
@@ -948,21 +951,42 @@ const UIS={
     if(!silent && this.id && this.id!=="panel"){
       (this._stack=this._stack||[]).push({kind:"screen", id:this.id, tab:this.tab});
     }
+    const bodyEl=this.$("uiBody");
+    // Keep scroll when refreshing an already-open panel (stat/perk/skill buys rebuild HTML).
+    let keepScroll=null;
+    if(this.id==="panel" && bodyEl){
+      keepScroll={ body: bodyEl.scrollTop||0 };
+      const fo=bodyEl.querySelector(".foScroll");
+      if(fo) keepScroll.fo=fo.scrollTop||0;
+    }
     this._lastMeta={title, sub, html};
     this.id="panel";
     this.tab=null;
     this.$("uiTitle").textContent=title;
     this.$("uiHeadAct").innerHTML="";
     this.$("uiTabs").innerHTML="";
-    const bodyEl=this.$("uiBody");
     if(bodyEl&&bodyEl.classList) bodyEl.classList.remove("foLock");
     bodyEl.innerHTML=(sub?'<div class="uiSub" style="margin-bottom:10px;line-height:1.6">'+sub+'</div>':"")+html;
     this.show();
+    if(keepScroll && bodyEl){
+      bodyEl.scrollTop=keepScroll.body;
+      const fo2=bodyEl.querySelector(".foScroll");
+      if(fo2 && keepScroll.fo!=null) fo2.scrollTop=keepScroll.fo;
+    }
   },
   refresh(){
     if(this.id==="panel"&&this._lastMeta){
+      if(this._lastMeta.kind==="gearSlot"&&typeof openGearSlot==="function"&&typeof _gearSlotOpen!=="undefined"&&_gearSlotOpen){
+        openGearSlot(_gearSlotOpen);
+        return;
+      }
       this.openPanel(this._lastMeta.title,this._lastMeta.sub,this._lastMeta.html, true);
-    } else if(this.id) this.render(this.id);
+    } else if(this.id){
+      const bodyEl=this.$("uiBody");
+      const keepY=bodyEl?bodyEl.scrollTop:0;
+      this.render(this.id);
+      if(bodyEl) bodyEl.scrollTop=keepY;
+    }
   }
 };
 
@@ -1107,7 +1131,7 @@ if(typeof metaOpen==="function"){
 }
 
 ["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","ascendGeo","hireGeo","buyGems","buyPack","claimDaily",
- "chestOpenOne","chestUpgrade","chestSkip","upSkill","openSkillChest","spinWheel","playEvent","sciAnswer","sciSkip",
+ "chestOpenOne","chestUpgrade","chestSkip","upSkill","openSkillChest","spinWheel","playEvent","claimEventKey","buyEventKey","sciAnswer","sciSkip",
  "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout","startWorkout","drinkBeer","upgradeMug",
  "spendSpecial",
  "toggleFair","setFairClient","revealFair","setPlayerName","buyStickerPack","giftStickers","sipAle"].forEach(uiWrap);

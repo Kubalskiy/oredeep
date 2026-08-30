@@ -5,7 +5,7 @@ const __ids = {};
 class FE {
   constructor(tag){ this.tag=tag; this._id=null; this.children=[];
     this.textContent=""; this._innerHTML=""; this.disabled=false; this.onclick=null; this.dataset={}; this.src=""; this.scrollTop=0; this.scrollHeight=0;
-    this.offsetWidth=0; this._q={};
+    this.offsetWidth=0; this._q={}; this.title="";
     const self=this;
     this.style=new Proxy({}, {get:(t,k)=> k==="setProperty"?((a,b)=>{t[a]=b}):t[k], set:(t,k,v)=>{t[k]=v;return true}});
     this._cls=new Set();
@@ -17,6 +17,20 @@ class FE {
   get id(){ return this._id; }
   set className(v){ this._cls=new Set(String(v).split(/\s+/).filter(Boolean)); }
   get className(){ return [...this._cls].join(" "); }
+  set innerHTML(v){
+    this._innerHTML=String(v==null?"":v);
+    this.children=[];
+  }
+  get innerHTML(){
+    if(this.children && this.children.length){
+      return this.children.map(c=>{
+        const cls=c.className?(' class="'+c.className+'"'):"";
+        const body=(c.innerHTML!=null&&c.innerHTML!=="")?c.innerHTML:(c.textContent||"");
+        return "<"+(c.tag||"div")+cls+">"+body+"</"+(c.tag||"div")+">";
+      }).join("");
+    }
+    return this._innerHTML||"";
+  }
   appendChild(c){ this.children.push(c); return c; }
   removeChild(c){ const i=this.children.indexOf(c); if(i>=0) this.children.splice(i,1); return c; }
   get firstChild(){ return this.children[0]; }
