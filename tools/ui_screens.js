@@ -15,8 +15,8 @@ const UI_ART_COLS=[
   {id:"forge",   n:"Кузня",  ic:'<img class="uiColArt" src="art/ic_col_forge.png" alt="">',   c:"#ff8a4a"},
   {id:"tavern",  n:"Таверна",ic:'<img class="uiColArt" src="art/ic_col_tavern.png" alt="">',  c:"#7ae8dc"}
 ];
-const UI_MUG_IC='<img class="uiMugArt" src="art/ic_mug.png" alt="">';
-const UI_MUG_IC_SM='<img class="uiMugArt sm" src="art/ic_mug.png" alt="">';
+const UI_MUG_IC='<img class="uiMugArt" src="art/ic_mug.png?v=2" alt="">';
+const UI_MUG_IC_SM='<img class="uiMugArt sm" src="art/ic_mug.png?v=2" alt="">';
 
 const UI_TAV_RANKS=[
   {n:"Каменный Кубок",xp:1200},{n:"Медный Кубок",xp:980},{n:"Железный Кубок",xp:760},

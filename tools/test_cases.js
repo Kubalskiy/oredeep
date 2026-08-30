@@ -1252,6 +1252,15 @@ T("syncPetBoxClass красит скин", (function(){
   return b.className.indexOf("skin-rust")>=0 && b.className.indexOf("pat-tabby")>=0;
 })());
 
+
+console.log("\n[44b] Вид героя = слабейший слот, не среднее");
+{ const bak=S.gear; S.gear={helm:{r:6},glove:{r:5},pick:{r:4},lamp:{r:7},pants:{r:7},boots:{r:7},pack:{r:7},robe:{r:7}};
+  T("винегрет → dwarfTier по минимуму", dwarfTier()===4);
+  T("подсказка про микс", /Микс/.test(gearLoadoutHint()) && /слабейший/.test(gearLoadoutHint()));
+  S.gear={helm:{r:5},glove:{r:5},pick:{r:5},lamp:{r:5},pants:{r:5},boots:{r:5},pack:{r:5},robe:{r:5}};
+  T("полный сет одной редкости", dwarfTier()===5 && /Сет/.test(gearLoadoutHint()));
+  S.gear=bak; }
+
 console.log("\n[45] Крафт питомцев → Exotic (PDF)");
 localStorage.removeItem("oredeep_v3"); load();
 S.petLegSeen=0; T("до 3 легендарных крафт закрыт", !petCraftUnlocked());
