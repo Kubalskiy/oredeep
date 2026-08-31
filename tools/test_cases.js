@@ -86,8 +86,14 @@ let died=false;
 for(let i=0;i<4000;i++){ if(pendingDrop) clickDrop(); frame(50); if(dead){died=true;break;} }
 T("истощение срабатывает на непосильной породе", died);
 T("оверлей показан", __ids.overlay.style.display==="flex");
+{ const hp0=S.rockHP, st0=S.stageIdx;
+  overlayAle();
+  T("после пива видна кнопка продолжить", __ids.ovContinue.style.display!=="none");
+  resumeFromExhaust();
+  T("продолжение: та же жила и этап", !dead && S.rockHP===hp0 && S.stageIdx===st0 && S.energy>0);
+}
 closeOverlay();
-T("продолжение: энергия восстановлена, этап тот же", !dead && S.energy===stat("energy") && S.stageIdx===2000);
+T("рестарт: энергия полная, этап тот же", !dead && S.energy===stat("energy") && S.stageIdx===2000);
 
 console.log("\n[6] Экономика на глубине");
 T("idle растёт с глубиной (2.5/блок)", (function(){S.stageIdx=1;const a=idleGoldPerDay();S.stageIdx=51;const b=idleGoldPerDay();return b>a*2 && b<a*3.2;})());
@@ -262,7 +268,7 @@ T("пиво не превышает максимум", S.energy<=stat("energy"))
   openSkills("perks");
   const perksHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("openSkills('perks') полный лист перков + табы", UIS.id==="panel"
-    && /openSkills\('sheet'\)/.test(perksHtml) && /Черты|Перки/i.test(perksHtml)
+    && /openSkills\('sheet'\)/.test(perksHtml) && /Перки и черты|Одарённый/i.test(perksHtml)
     && /foPin/.test(perksHtml) && /foScroll/.test(perksHtml)
     && /Навыки добычи/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
   closeSkillsShell(); }
@@ -524,6 +530,21 @@ T("кнопка CRIT заблокирована и показывает МАКС
 { const g0=S.gold, l0=S.lvls.crit;
   __ids.u_crit._q["button"].onclick();
   T("клик на капе: золото не списано, уровень не растёт", S.gold===g0 && S.lvls.crit===l0); }
+console.log("\n[14b] Шмот: мягкий скейл и перелив с капов");
+T("itemStat cosmic мягче сырого RAR×250", itemStat({s:"glove",r:7,m:1,i:1},"crit")<1.6*250);
+S.lvls.crit=100; S.gear={glove:{s:"glove",r:7,m:1,i:2000}}; S.geo=null; S.sets={};
+const critGear=stat("crit");
+T("CRIT с шмотом: ×множитель на капе", critGear>60 && critGear<=60*50, "crit="+critGear);
+T("statCapped по апгрейдам, не по шмоту", statCapped("crit"));
+const atkR=gearOverflowRoutes().atk||0;
+T("перелив CRIT→ATK", atkR>0, "atk route="+atkR);
+S.gear={lamp:{s:"lamp",r:7,m:1,i:2000}}; S.lvls.luck=200; S.lvls.mining=100;
+const stoneR=gearOverflowRoutes().stone||0;
+T("перелив LUCK→STONE", stoneR>0, "stone route="+stoneR);
+S.lvls.spd=200; S.gear={boots:{s:"boots",r:7,m:1,i:2000}};
+T("SPD на капе без ×множителя", stat("spd")===BALANCE.combat.maxAPS);
+T("перелив SPD→ENERGY", (gearOverflowRoutes().energy||0)>0);
+S.gear={}; S.lvls.crit=0; S.lvls.luck=0; S.lvls.mining=0;
 S.lvls.spd=200; T("SPD закапан на 4.5 (boxer max)", stat("spd")===BALANCE.combat.maxAPS);
 render();
 T("SPD: MAX и блок", __ids.u_spd._q["button"].disabled);
@@ -644,6 +665,18 @@ while(S.bags>0) autoOpenBag();
 T("Auto Roll с порога и выше: предметы в слоты", Object.keys(S.gear).length>0);
 S.autoRollTier=7; SLOTS.forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:1,m:1,i:1}; });
 cycleAutoTier(); T("порог циклится 7→0", S.autoRollTier===0);
+{ S.autoRollTier=0;
+  SLOTS.forEach(sl=>{ S.gear[sl.id]={s:sl.id,r:3,m:1,i:1}; });
+  openAutoTierModal();
+  T("порог: панель открыта", UIS.id==="panel" && /Порог автопродажи/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+  let body=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("порог: старт Обычный+", /Сейчас: Обычн/i.test(body));
+  setAutoTier(3);
+  body=($("uiBody")&&$("uiBody").innerHTML)||"";
+  T("порог: субтитр обновился", /Сейчас: Легендар/i.test(body));
+  T("порог: tier в state", S.autoRollTier===3);
+  T("порог: одна кнопка ✓ порог", (body.match(/✓ порог/g)||[]).length===1);
+  UIS.close(); }
 T("миграция сумок", (function(){ const d={}; ensureBags(d); return d.bags===0 && d.autoRoll===false && d.autoRollTier===4; })());
 
 console.log("\n[28] Merge питомцев и старейшин (док §Питомцы, §Девушки)");
@@ -1009,7 +1042,7 @@ console.log("\n[37] Свежая установка: все поля доини�
 localStorage.removeItem("oredeep_v3"); load();
 T("у нового игрока есть fair с валидным коммитом", !!S.fair && S.fair.serverHash===SHA256(S.fair.server));
 T("у нового игрока есть science (выключен)", !!S.science && S.science.on===false);
-T("у нового игрока есть durab/bags/chestKeys", S.durab===MINE_DURAB.max && S.bags===0 && S.chestKeys===1);
+T("у нового игрока есть durab/bags/chestKeys", S.durab===MINE_DURAB.max && S.bags===(BALANCE.bags.starter|0) && S.chestKeys===1);
 { let ok=true; try{ openFairness(); }catch(e){ ok=false; } T("«Честность гачи» не падает у нового игрока", ok); }
 { let ok=true; try{ openGuild(); }catch(e){ ok=false; } T("«Гильдия» не падает у нового игрока", ok); }
 { let ok=true; try{ openPrestige(); }catch(e){ ok=false; } T("«Глубинный Зов» не падает у нового игрока", ok); }
@@ -1092,12 +1125,13 @@ S.stageIdx=300; S.lvls.atk=200; S.lvls.energy=500; S.lvls.luck=200; newRock(); d
 { let peak=0, lines=0; const _st=showToast; showToast=function(){ lines++; };
   for(let i=0;i<600;i++){ if(dead) closeOverlay(); frame(16); peak=Math.max(peak,S.bags); }
   showToast=_st;
-  T("очередь Auto Roll не растёт у переусиленного дворфа (пик ≤ потолка)", peak<=BALANCE.bags.maxPerTick && S.bags<50, "пик "+peak);
+  T("при ×100 сумки копятся быстрее авто (1/3 сек)", peak>10 && S.bags>0, "пик "+peak+" ост "+S.bags);
   T("лог свёрнут на ×100 (не спамит каждой продажей)", lines<250, lines+" строк"); }
 localStorage.removeItem("oredeep_v3"); load();
-S.bag=16; S.bags=495; S.autoRoll=true; S.autoRollTier=7; S.speed=1; dead=false; newRock();
-for(let i=0;i<400;i++) frame(50);
-T("накопленные 495 сумок разбираются", S.bags===0);
+S.bag=16; S.bags=30; S.autoRoll=true; S.autoRollTier=7; S.speed=1; dead=false; newRock();
+{ const b=BALANCE.bags; b.autoUnlockSlots=0; b.autoUnlockRares=0; }
+for(let i=0;i<600;i++) frame(50);
+T("авто открывает ~1 сумку / 3 сек", S.bags>=18 && S.bags<=23, "осталось "+S.bags);
 S.bags=100; S.autoRoll=true; render();
 T("при Auto ON ручная «Открыть» заблокирована", !canOpenBag());
 S.autoRoll=false; render();
@@ -1110,11 +1144,12 @@ S.stageIdx=1; S.lvls.atk=999; newRock();
 hitTimer=999;                    // симулируем «зависший» таймер
 load();                          // load обязан его обнулить
 T("load() сбрасывает hitTimer", hitTimer===0);
-{ S.bag=16; S.autoRoll=true; S.autoRollTier=7; S.speed=100; S.bags=0; S.lvls.atk=200; newRock(); dead=false;
+{ S.bag=16; S.autoRoll=true; S.autoRollTier=7; S.speed=1; S.bags=5; S.lvls.atk=1; newRock(); dead=false;
   const b=BALANCE.bags, s0=b.autoUnlockSlots, r0=b.autoUnlockRares;
   b.autoUnlockSlots=0; b.autoUnlockRares=0;
+  autoRollAcc=BALANCE.bags.autoSec;
   frame(16);
-  T("первый кадр не прокручивает бесконечные удары (предохранитель)", S.bags<=50, "сумок "+S.bags);
+  T("за интервал авто открывает ровно autoOpenPerTick", S.bags===5-((BALANCE.bags.autoOpenPerTick|0)||1), "сумок "+S.bags);
   b.autoUnlockSlots=s0; b.autoUnlockRares=r0; }
 
 console.log("\n[41] Ограниченный прогон: свод, ворота престижа, читаемость");
@@ -1173,6 +1208,9 @@ T("ростер из 5 ИИ-ботов", BALANCE.pvpBots && BALANCE.pvpBots.leng
 T("рождается 5 кандидатов", pvpSlate && pvpSlate.length===BALANCE.pvpCandidates);
 T("у кандидатов id/имя/сила бота", pvpSlate.every(o=>o.id && o.name && o.power>0 && o.bot));
 T("экран рисует 5 кнопок боя", (__ids.uiBody.innerHTML.match(/pvpFight\(/g)||[]).length===5);
+{ const b=pvpBrawlSim(500, 200, 0.4);
+  T("brawl-сим: сильнее побеждает чаще", b.meMax>b.oppMax && b.hits.length>0);
+  T("brawl-сим: HP в пределах", b.meLeft>=0 && b.oppLeft>=0 && b.meLeft<=b.meMax); }
 { const bid=pvpSlate[0].id; const old=JSON.stringify(pvpSlate); S.trophies=0; pvpFight(0);
   T("бой тратит попытку и обновляет форму", S.pvpFights===1 && JSON.stringify(pvpSlate)!==old);
   T("счёт против бота пишется", (S.pvpBotRec[bid].w+S.pvpBotRec[bid].l)===1); }
@@ -1475,9 +1513,18 @@ growthJoinWaitlist(false);
 T("вейтлист отмечен", S.growth.waitlist.joined);
 { const g0=S.gems; claimWaitlistBonus();
   T("бонус вейтлиста", S.growth.waitlist.claimed && S.gems>g0); }
-{ growthAdDayReset(); S.growth.ads.count=0;
-  let ok=0; for(let i=0;i<20;i++){ if(growthAdCapOk()){ growthTrackAd(); ok++; } }
+{ growthAdDayReset(); S.growth.ads.count=0; S.growth.ads.bySlot={};
+  let ok=0; for(let i=0;i<40;i++){ if(growthAdCapOk()){ growthTrackAd("test"); ok++; } }
   T("реклама с плоским CPA cap", ok===BALANCE.growth.ads.dailyCap); }
+{ growthAdDayReset(); S.growth.ads.count=0; S.growth.ads.bySlot={};
+  T("слот vein_double: 8/день", adSlotCap("vein_double")===8 && adSlotOk("vein_double"));
+  for(let i=0;i<8;i++) adSlotBump("vein_double");
+  T("vein_double исчерпан", !adSlotOk("vein_double")); }
+{ growthAdDayReset(); S.growth.ads.bySlot={};
+  T("daily_boost: 1/день", adSlotCap("daily_boost")===1);
+  T("mine_raid_ready: 5/день", adSlotCap("mine_raid_ready")===5);
+  T("auto_turbo: 2/день", adSlotCap("auto_turbo")===2); }
+{ T("ad hub открывается", (function(){ openAdHub(); const t=($("uiTitle")&&$("uiTitle").textContent)||($("metaTitle")&&$("metaTitle").textContent)||""; return /Бонусы за рекламу/.test(t); })()); }
 { const ue=growthUnitEcon();
   T("LTV/CAC после стартера", ue.ltvRatio>=1);
   T("выручка покрывает CAC", ue.totalCents>=BALANCE.growth.cacTargetCents); }

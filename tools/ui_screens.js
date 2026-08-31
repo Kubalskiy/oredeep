@@ -471,7 +471,11 @@ const UIS={
     } else {
       raidCta='<div class="uiMineRaid empty">'
         +'<div class="uiMineRaidTop"><span>⏱</span><div><b>До ступени '+(slot.step+1)+' · ×'+slot.fib+'</b>'
-        +'<div class="uiSub">осталось '+fmtClock(slot.leftMs)+' · награда ~'+raidAmt+' '+(raidDef&&raidDef.ic||"")+'</div></div></div></div>';
+        +'<div class="uiSub">осталось '+fmtClock(slot.leftMs)+' · награда ~'+raidAmt+' '+(raidDef&&raidDef.ic||"")+'</div></div></div>'
+        +(typeof mineRaidAdOk==="function"&&mineRaidAdOk(cur)
+          ? ('<button type="button" class="btn btn-soft" style="margin-top:8px" onclick="mineRaidReadyAd('+cur+');UIS.render(\'mines\')">📺 Ступень сразу · '+adSlotLeft("mine_raid_ready")+'</button>')
+          : "")
+        +'</div>';
     }
 
     const overview=
@@ -519,7 +523,10 @@ const UIS={
       } else if(unlocked && sl.ready && !raidOn){
         raidBtn='<button type="button" class="btn uiMineRaidBtn" onclick="event.stopPropagation();'+raidClick+'">Ступень '+(sl.step+1)+' · ×'+sl.fib+' → +'+amt+' '+(def&&def.ic||"")+'</button>';
       } else if(unlocked && !sl.done && !sl.ready){
-        raidBtn='<div class="uiSub">далее ×'+sl.fib+' через '+fmtClock(sl.leftMs)+'</div>';
+        raidBtn='<div class="uiSub">далее ×'+sl.fib+' через '+fmtClock(sl.leftMs)+'</div>'
+          +(typeof mineRaidAdOk==="function"&&mineRaidAdOk(m.id)
+            ? ('<button type="button" class="btn btn-soft uiMineRaidBtn" onclick="event.stopPropagation();mineRaidReadyAd('+m.id+');UIS.render(\'mines\')">📺 Сразу · '+adSlotLeft("mine_raid_ready")+'</button>')
+            : "");
       } else if(unlocked && sl.done){
         raidBtn='<div class="uiSub">ступени на сегодня закрыты</div>';
       }
@@ -565,7 +572,6 @@ const UIS={
     const tr=BALANCE.pvp.thresholds||[0];
     const curReq=tr[li]||0, nextReq=tr[nextLi]||tr[li]||100;
     const pct=li>=BALANCE.pvp.names.length-1?100:Math.min(100,Math.round(((S.trophies||0)-curReq)/Math.max(1,nextReq-curReq)*100));
-    const raceSec=BALANCE.pvp.raceSec||180;
     const winGold=typeof pvpWinGold==="function"?pvpWinGold(li):(BALANCE.pvp.rewards[li]||0)*100;
     const nextGold=typeof pvpWinGold==="function"?pvpWinGold(nextLi):(BALANCE.pvp.rewards[nextLi]||0)*100;
     const atMax=li>=BALANCE.pvp.names.length-1;
@@ -578,24 +584,29 @@ const UIS={
     const opps=pvpSlate.map((o,i)=>{
       const fav=me>=o.power;
       const rec=typeof pvpBotRec==="function"?pvpBotRec(o.id):{w:0,l:0};
+      const chance=typeof pvpWinChance==="function"?pvpWinChance(me,o.power):50;
       return '<div class="uiOpp '+(fav?"fav":"")+'"><div><b>'+(o.ic||"🤖")+' '+o.name+'</b>'
-        +'<div class="uiSub">'+esc(o.tag||"ИИ")+' · сила арены '+fmt(o.power)+' · ~'+fmt(pvpMineOrePerSec(o.power))+'/с</div>'
+        +'<div class="uiSub">'+esc(o.tag||"ИИ")+' · сила '+fmt(o.power)+' · шанс ~'+chance+'%</div>'
         +'<div class="uiSub">счёт '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div></div>'
-        +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⛏ '+raceSec+'с</button></div>';
+        +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⚔ Бой</button></div>';
     }).join("");
     this.$("uiBody").innerHTML=
-      '<div class="uiHero compact"><div class="uiHeroArt">🤖</div><b>'+esc(playerName())+'</b>'
-      +'<div class="uiSub">Пять соперников · гонка добычи '+raceSec+'с</div></div>'
+      '<div class="uiHero compact"><div class="uiHeroArt">⚔</div><b>'+esc(playerName())+'</b>'
+      +'<div class="uiSub">Быстрый бой кирками · анимация и результат</div></div>'
       +this.card("🏆","Лига: "+BALANCE.pvp.names[li], leagueSub,
         this.bar(pct,"var(--blue)")
         +'<div class="uiSub" style="margin-top:4px">'+(atMax
           ? ("вершина арены · "+fmt(S.trophies||0)+" 🏆")
           : ("до "+BALANCE.pvp.names[nextLi]+": "+fmt(Math.max(0,nextReq-(S.trophies||0)))+" 🏆"))+'</div>'
         +'<div class="uiSub" style="margin-top:4px">попыток '+left+"/"+BALANCE.pvpDayLimit
-          +" · твоя добыча ~"+fmt(pvpMineOrePerSec(me))+"/с</div>")
+          +" · твоя сила "+fmt(me)+"</div>")
       +'<div class="uiSec">Выбери соперника</div>'
       +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>')
-      +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Обновить форму дня</button>':'')
+      +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Обновить форму (бесплатно)</button>'
+        +(typeof adSlotOk==="function"&&adSlotOk("pvp_reroll")
+          ?'<button class="btn btn-hard btn-wide" style="margin-top:6px" onclick="pvpRerollAd();UIS.render(\'pvp\')">📺 Новые соперники · '
+            +(typeof adSlotLeft==="function"?adSlotLeft("pvp_reroll"):"")+'</button>':"")
+        :'')
       +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openPvpBoard()">⚔ Рейтинг PvP</button>'
       +'<button class="btn btn-wide" style="margin-top:6px" onclick="openWall()">🏔 Стена Горы</button>';
   },

@@ -162,8 +162,8 @@ S.durab = MINE_DURAB.max; dead = false;
 if (collapseRiskPerMin() !== 0) BUG("крепь", "при полной крепи риск обвала не нулевой");
 else OK("при 100% крепи риск обвала = 0");
 
-/* ---- 7. Auto Roll обязан УСПЕВАТЬ за приходом сумок ---- */
-console.log("\n[7] Auto Roll: очередь не растёт даже у переусиленного дворфа");
+/* ---- 7. Auto Roll: 1 сумка / autoSec ---- */
+console.log("\n[7] Auto Roll: темп 1 сумка / "+BALANCE.bags.autoSec+" сек");
 localStorage.removeItem("oredeep_v3"); load();
 S.bag = 16; S.autoRoll = true; S.autoRollTier = 7; S.speed = 100; S.bags = 0; S.gold = 0;
 BALANCE.bags.autoUnlockSlots = 0; BALANCE.bags.autoUnlockRares = 0;
@@ -173,19 +173,17 @@ S.stageIdx = 300; S.lvls.atk = 200; S.lvls.energy = 500; S.lvls.luck = 200; newR
   const _st = showToast; showToast = function () { lines++; };
   for (let i = 0; i < 600; i++) { if (dead) closeOverlay(); frame(16); peak = Math.max(peak, S.bags); }
   showToast = _st;
-  if (S.bags > 50) BUG("AutoRoll", `очередь не разбирается: осталось ${S.bags} сумок`);
-  else if (peak > BALANCE.bags.maxPerTick) BUG("AutoRoll", `очередь разрослась до ${peak} (потолок ${BALANCE.bags.maxPerTick})`);
-  else OK(`очередь удержана: пик ${peak}, осталось ${S.bags}, золото ${fmt(S.gold)}`);
+  if (peak < 5 || S.bags <= 0) BUG("AutoRoll", `×100: ожидали накопление сумок, пик ${peak}, ост ${S.bags}`);
+  else OK(`×100 копит сумки быстрее авто: пик ${peak}, ост ${S.bags}`);
   if (lines > 200) BUG("лог", `на ×100 за 10 секунд ${lines} строк — авто-продажи не свёрнуты`);
   else OK(`лог свёрнут: ${lines} строк за 600 кадров ×100`);
 }
-// накопленная очередь разбирается после включения Auto
 localStorage.removeItem("oredeep_v3"); load();
-S.bag = 16; S.bags = 495; S.autoRoll = true; S.autoRollTier = 7; S.speed = 1; dead = false; newRock();
+S.bag = 16; S.bags = 30; S.autoRoll = true; S.autoRollTier = 7; S.speed = 1; dead = false; newRock();
 BALANCE.bags.autoUnlockSlots = 0; BALANCE.bags.autoUnlockRares = 0;
-for (let i = 0; i < 400; i++) frame(50);
-if (S.bags !== 0) BUG("AutoRoll", `накопленные 495 сумок не разобраны за 20 сек: осталось ${S.bags}`);
-else OK("накопленные 495 сумок разобраны");
+for (let i = 0; i < 600; i++) frame(50);
+if (S.bags < 18 || S.bags > 23) BUG("AutoRoll", `за 30 сек ожидали ~8–12 открытий, осталось ${S.bags}`);
+else OK("авто ~1 сумка / 3 сек: осталось " + S.bags + " из 30");
 S.bags = 0; S.autoRoll = false;
 checkState("после Auto Roll");
 
