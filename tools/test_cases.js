@@ -816,20 +816,32 @@ T("перки стартуют пустыми", (S.perks||[]).length===0 && (S.p
   T("confirmPerkPick берёт перк", confirmPerkPick()===true && hasPerk("hth") && S.perkPicks===0);
   T("перк поднимает стат", stat("atk")>a0);
   closePerkPick(); closeCharSheet(); }
-{ S.traits=[]; const p0=specialPtsPerLevel();
+{ S.traits=[]; S.traitPicks=3; const p0=specialPtsPerLevel();
   pickTrait("gifted");
   T("черта Одарённый берётся", hasTrait("gifted") && specialAttr("s")>=6);
   T("Одарённый режет очки навыков", specialPtsPerLevel()<p0 || specialPtsPerLevel()<=Math.floor(p0*0.8)+1);
   closeCharSheet(); }
 T("черт КРАСАВА больше двух", TRAIT_DEFS.length>=10);
-{ S.traits=[]; const t0=stat("atk"), s0=stat("spd");
+{ S.traits=[]; S.traitPicks=5; const t0=stat("atk"), s0=stat("spd");
   pickTrait("bruiser");
   T("Силач качает ATK и режет темп", hasTrait("bruiser") && stat("atk")>t0 && stat("spd")<s0);
   pickTrait("small");
   T("вторая черта берётся", hasTrait("small") && (S.traits||[]).length===2);
   pickTrait("finesse");
   T("третья черта берётся (без лимита 2)", hasTrait("finesse") && (S.traits||[]).length===3);
-  T("черту можно снять", unpickTrait("bruiser")===true && !hasTrait("bruiser") && (S.traits||[]).length===2);
+  T("черту можно снять", unpickTrait("bruiser")===true && !hasTrait("bruiser") && (S.traits||[]).length===2 && (S.traitPicks||0)>=1);
+  closeCharSheet(); }
+{ S.perkPicks=0; S.perkBought=0; S.skillPts=100; S.gold=1e9; S.perks=[];
+  const cPts=perkPickCostPts(), p0=S.perkPicks, s0=S.skillPts;
+  T("покупка очка перка за опыт", buyPerkPick("pts")===true && S.perkPicks===p0+1 && S.skillPts===s0-cPts);
+  const cGold=perkPickCostGold(), g0=S.gold;
+  T("покупка очка перка за золото", buyPerkPick("gold")===true && S.perkPicks===p0+2 && S.gold===g0-cGold);
+  S.traitPicks=0; S.traitBought=0; S.traits=[];
+  const tp=traitPickCostPts(), t0=S.traitPicks, s1=S.skillPts;
+  T("покупка очка черты за опыт", buyTraitPick("pts")===true && S.traitPicks===t0+1 && S.skillPts===s1-tp);
+  const tg=traitPickCostGold(), g1=S.gold;
+  T("покупка очка черты за золото", buyTraitPick("gold")===true && S.traitPicks===t0+2 && S.gold===g1-tg);
+  T("черта без очка не берётся", (S.traitPicks=0, pickTrait("small")===false));
   closeCharSheet(); }
 { S.perkPicks=1; S.perks=["hth"];
   T("перк снимается с возвратом выбора", dropPerk("hth")===true && !hasPerk("hth") && S.perkPicks===2);
@@ -1520,6 +1532,14 @@ T("вейтлист отмечен", S.growth.waitlist.joined);
   T("слот vein_double: 8/день", adSlotCap("vein_double")===8 && adSlotOk("vein_double"));
   for(let i=0;i<8;i++) adSlotBump("vein_double");
   T("vein_double исчерпан", !adSlotOk("vein_double")); }
+{ growthAdDayReset(); S.growth.ads.count=0; S.growth.ads.bySlot={};
+  S.veinAd={n:0,coolAt:0}; S.noAds=true;
+  T("vein burst: 2 подряд ок", veinAdBurstOk());
+  showVeinAdOffer(100); showVeinAdOffer(100);
+  T("после 2 офферов — кулдаун", !veinAdBurstOk() && S.veinAd.coolAt>Date.now());
+  S.veinAd.coolAt=Date.now()-1;
+  T("после кулдауна снова можно", veinAdBurstOk());
+  S.veinAd={n:0,coolAt:0}; S.noAds=false; }
 { growthAdDayReset(); S.growth.ads.bySlot={};
   T("daily_boost: 1/день", adSlotCap("daily_boost")===1);
   T("mine_raid_ready: 5/день", adSlotCap("mine_raid_ready")===5);

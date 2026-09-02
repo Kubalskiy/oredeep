@@ -909,6 +909,10 @@ body > .modal{
 #adPlaque .adBarFill{height:100%;width:0;background:linear-gradient(90deg,#8a6d1d,#e0b35a);transition:width .05s linear;}
 #adPlaque .btnrow{display:flex;gap:8px;justify-content:center;}
 #adPlaque .btn{flex:1;min-height:44px;}
+.adSnooze{display:flex;gap:6px;margin-top:10px;}
+.adSnooze .btn{flex:1;min-height:36px;padding:8px 6px;font-size:12px;
+  background:linear-gradient(180deg,#2a2418,#1a1510);border:1px solid #5a4830;color:#c8b79b;}
+.adSnooze .btn:active{transform:translateY(1px);}
 #pvpOverlay{position:fixed;inset:0;z-index:260;background:#07090cee;display:none;align-items:center;justify-content:center;padding:12px;}
 .pvpArena{width:100%;max-width:380px;background:linear-gradient(180deg,#1a1510,#0e0c0a);border:2px solid var(--border);border-radius:12px;padding:12px;box-shadow:0 8px 32px #000a;}
 .pvpHud{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;}
@@ -1642,6 +1646,10 @@ window.addEventListener("unhandledrejection",function(ev){
       <button type="button" class="btn btn-soft" onclick="skipVeinAd()">Пропустить</button>
       <button type="button" class="btn btn-hard" onclick="claimVeinDouble()">📺 ×2 золото</button>
     </div>
+    <div class="adSnooze">
+      <button type="button" class="btn" onclick="snoozeVeinAd(5)">⏰ через 5 мин</button>
+      <button type="button" class="btn" onclick="snoozeVeinAd(10)">⏰ через 10 мин</button>
+    </div>
     <div class="sub" id="veinAdLeft" style="margin-top:8px"></div>
   </div>
 </div>
@@ -1800,9 +1808,11 @@ const BALANCE = {
     tagSlots:9, tagCost:1, untagCost:2, trainMult:0.5, trainCap:15
   },
 
-  perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:12 },
+  perks:{ everyLv:3, pct:2, pctCap:16, maxOwned:12,
+    buyGoldBase:8000, buyGoldG:1.55, buyPtsBase:10, buyPtsG:1.35 },
 
-  traits:{ maxOwned:99 },
+  traits:{ maxOwned:99,
+    buyGoldBase:5000, buyGoldG:1.5, buyPtsBase:6, buyPtsG:1.3 },
 
   gacha:{ eggDropPct:2, combDropPct:2, eggBossPct:6, combBossPct:6,
     eggDailyReward:2, combDailyReward:1 },
@@ -1910,6 +1920,8 @@ const BALANCE = {
     autoTurboMin:10,
     autoTurboSec:2,
     autoTurboPerTick:2,
+    veinBurst:2,
+    veinBurstCdSec:300,
     slots:{
       offline_x2:{cap:4}, bonus_x2:{cap:4}, loot2x:{cap:5}, bag_skip:{cap:6},
       daily_tok:{cap:3}, event_key:{cap:4}, speed:{cap:10}, shop_free:{cap:12},
@@ -1972,7 +1984,7 @@ function eventReward(spec, level){
   return Math.round(spec.first*Math.pow(r, level-1));
 }
 
-let _adPlaqueCb=null, _adPlaqueTimer=null, _adPlaqueT0=0;
+let _adPlaqueCb=null, _adPlaqueTimer=null, _adPlaqueT0=0, _adPlaqueSlot="", _adSnoozeTimer=null;
 const AD_PLAQUE_MS=1800;
 function finishAdPlaque(ok){
   const ov=$("adPlaque"); if(ov){ ov.style.display="none"; ov.setAttribute("aria-hidden","true"); }
@@ -1981,12 +1993,42 @@ function finishAdPlaque(ok){
   const okBtn=$("adPlaqueOk"); if(okBtn) okBtn.disabled=true;
   if(typeof cb==="function") try{ cb(!!ok); }catch(e){}
 }
+function snoozeAdPlaque(min){
+  min=Math.max(1, min|0);
+  const slot=_adPlaqueSlot||"";
+  const lab=(typeof AD_HUB_LABELS!=="undefined"&&AD_HUB_LABELS[typeof adSlotKey==="function"?adSlotKey(slot):slot])||slot||"бонус";
+  finishAdPlaque(false);
+  if(_adSnoozeTimer){ clearTimeout(_adSnoozeTimer); _adSnoozeTimer=null; }
+  showToast("⏰","Напомню через "+min+" мин","","«"+lab+"» · тап 📺 в шапке");
+  try{ Platform.logEvent("ad_snooze",{slot,min}); }catch(e){}
+  if(typeof __vclock!=="undefined") return;
+  _adSnoozeTimer=setTimeout(()=>{
+    _adSnoozeTimer=null;
+    showToast("📺","Реклама ждёт","","«"+lab+"» · открой бонусы",true);
+    try{ if(typeof openAdHub==="function") openAdHub(); }catch(e){}
+  }, min*60*1000);
+}
+function snoozeVeinAd(min){
+  min=Math.max(1, min|0);
+  skipVeinAd();
+  const st=typeof veinAdBurstState==="function"?veinAdBurstState():null;
+  if(st){ st.coolAt=Date.now()+min*60*1000; st.n=0; }
+  if(_adSnoozeTimer){ clearTimeout(_adSnoozeTimer); _adSnoozeTimer=null; }
+  showToast("⏰","Напомню через "+min+" мин","","×2 золото с жилы");
+  try{ Platform.logEvent("vein_ad_snooze",{min}); }catch(e){}
+  if(typeof __vclock!=="undefined") return;
+  _adSnoozeTimer=setTimeout(()=>{
+    _adSnoozeTimer=null;
+    showToast("📺","×2 жила ждёт","","Сломай жилу — снова предложим удвоение",true);
+  }, min*60*1000);
+}
 function showAdPlaque(slot, cb){
   if(typeof __vclock!=="undefined"){ cb(true); return; }
   if(_adPlaqueCb){ try{ _adPlaqueCb(false); }catch(e){} }
   _adPlaqueCb=cb;
+  _adPlaqueSlot=slot||"";
   const ov=$("adPlaque"); if(!ov){ cb(true); return; }
-  const lab=(typeof AD_HUB_LABELS!=="undefined"&&AD_HUB_LABELS[adSlotKey?adSlotKey(slot):slot])||slot||"";
+  const lab=(typeof AD_HUB_LABELS!=="undefined"&&AD_HUB_LABELS[typeof adSlotKey==="function"?adSlotKey(slot):slot])||slot||"";
   setTxt("adPlaqueSlot", lab?("слот · "+lab):"");
   const bar=$("adPlaqueBar"); if(bar) bar.style.width="0%";
   const okBtn=$("adPlaqueOk"); if(okBtn){ okBtn.disabled=true; okBtn.textContent="…"; }
@@ -2808,7 +2850,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 
 let S=null;
 function freshState(){
-  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:(BALANCE.bags&&BALANCE.bags.starter)|0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, eventRun:null, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:(BALANCE.bags&&BALANCE.bags.starter)|0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, eventRun:null, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], traitPicks:0, perkBought:0, traitBought:0, wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
     growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
       waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
       ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
@@ -3181,20 +3223,52 @@ function breakVein(){
   if(!wasRaid&&!wasEvent && S.stage>STAGES_PER_MINE){ S.stage=1; S.mine++; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; toastMine(); Platform.logEvent("mine_enter",{mine:S.mine}); }
   try{ notifyFeatUnlocks(); }catch(e){}
   newRock(); save();
-  if(veinGold>0 && adSlotOk("vein_double")){
+  if(veinGold>0 && adSlotOk("vein_double") && veinAdBurstOk()){
     _lastVeinGold=veinGold;
     if(typeof __vclock!=="undefined") showVeinAdOffer(veinGold);
     else setTimeout(()=>showVeinAdOffer(veinGold), FAST()?80:450);
   }
 }
+function veinAdBurstState(){
+  if(!S.veinAd||typeof S.veinAd!=="object") S.veinAd={n:0,coolAt:0};
+  if(S.veinAd.n==null) S.veinAd.n=0;
+  if(S.veinAd.coolAt==null) S.veinAd.coolAt=0;
+  return S.veinAd;
+}
+function veinAdBurstOk(){
+  const st=veinAdBurstState();
+  const now=Date.now();
+  if(st.coolAt && now<st.coolAt) return false;
+  if(st.coolAt && now>=st.coolAt){ st.coolAt=0; st.n=0; }
+  const burst=(BALANCE.ads&&BALANCE.ads.veinBurst)|0||2;
+  return (st.n|0)<burst;
+}
+function veinAdBurstMark(){
+  const st=veinAdBurstState();
+  const burst=(BALANCE.ads&&BALANCE.ads.veinBurst)|0||2;
+  const cd=((BALANCE.ads&&BALANCE.ads.veinBurstCdSec)|0||300)*1000;
+  st.n=(st.n|0)+1;
+  if(st.n>=burst){
+    st.coolAt=Date.now()+cd;
+    st.n=0;
+  }
+}
 function showVeinAdOffer(amt){
-  if(!amt||!adSlotOk("vein_double")) return;
-  const ov=$("veinAdOverlay"); if(!ov) return;
+  if(!amt||!adSlotOk("vein_double")||!veinAdBurstOk()) return;
+  veinAdBurstMark();
   _lastVeinGold=amt;
-  setTxt("veinAdGold","+"+fmt(amt)+" 🪙 → ×2");
+  const st=veinAdBurstState();
   const left=adSlotLeft("vein_double");
-  setTxt("veinAdLeft", left!=null?("осталось "+left+" ×2 за сегодня"):"");
-  ov.style.display="flex";
+  let hint=left!=null?("осталось "+left+" ×2 за сегодня"):"";
+  if(st.coolAt && st.coolAt>Date.now())
+    hint=(hint?hint+" · ":"")+"пауза "+fmtClock(st.coolAt-Date.now());
+  else {
+    const burst=(BALANCE.ads&&BALANCE.ads.veinBurst)|0||2;
+    hint=(hint?hint+" · ":"")+"серия "+(st.n|0)+"/"+burst;
+  }
+  setTxt("veinAdGold","+"+fmt(amt)+" 🪙 → ×2");
+  setTxt("veinAdLeft", hint);
+  const ov=$("veinAdOverlay"); if(ov) ov.style.display="flex";
 }
 function skipVeinAd(){ const ov=$("veinAdOverlay"); if(ov) ov.style.display="none"; }
 function claimVeinDouble(){
@@ -5002,7 +5076,10 @@ function ensureCards(d){ if(!d) return d;
     if(!d.trained) d.trained={};
     if(!Array.isArray(d.perks)) d.perks=[];
     if(d.perkPicks==null) d.perkPicks=0;
-    if(!Array.isArray(d.traits)) d.traits=[]; }
+    if(!Array.isArray(d.traits)) d.traits=[];
+    if(d.traitPicks==null) d.traitPicks=0;
+    if(d.perkBought==null) d.perkBought=0;
+    if(d.traitBought==null) d.traitBought=0; }
   if(!d.stickers||typeof d.stickers!=='object') d.stickers={};
   if(typeof d.gymXP!=='number'||!isFinite(d.gymXP)||d.gymXP<0) d.gymXP=0;
   if(d.chestKeys==null) d.chestKeys=1;
@@ -5468,6 +5545,9 @@ function ensureSpecial(){
   if(!Array.isArray(S.perks)) S.perks=[];
   if(S.perkPicks==null) S.perkPicks=0;
   if(!Array.isArray(S.traits)) S.traits=[];
+  if(S.traitPicks==null) S.traitPicks=0;
+  if(S.perkBought==null) S.perkBought=0;
+  if(S.traitBought==null) S.traitBought=0;
 }
 function specialAttr(id){ ensureSpecial(); return S.special[id]|0; }
 function specialPtsPerLevel(){
@@ -5694,20 +5774,76 @@ function traitMax(){
   const m=BALANCE.traits&&BALANCE.traits.maxOwned;
   return m!=null?m:TRAIT_DEFS.length;
 }
+function _pickBuyCost(kind, pay){
+  const B=kind==="perk"?(BALANCE.perks||{}):(BALANCE.traits||{});
+  const bought=kind==="perk"?(S.perkBought|0):(S.traitBought|0);
+  if(pay==="pts"){
+    const base=B.buyPtsBase!=null?B.buyPtsBase:(kind==="perk"?10:6);
+    const g=B.buyPtsG!=null?B.buyPtsG:1.3;
+    return Math.max(1, Math.round(base*Math.pow(g, bought)));
+  }
+  const base=B.buyGoldBase!=null?B.buyGoldBase:(kind==="perk"?8000:5000);
+  const g=B.buyGoldG!=null?B.buyGoldG:1.5;
+  const scaled=Math.round(base*Math.pow(g, bought));
+  const vein=typeof veinReward==="function"?veinReward():base;
+  return Math.max(scaled, Math.round(vein*4*Math.pow(1.15, Math.min(20, bought))));
+}
+function perkPickCostGold(){ ensureSpecial(); return _pickBuyCost("perk","gold"); }
+function perkPickCostPts(){ ensureSpecial(); return _pickBuyCost("perk","pts"); }
+function traitPickCostGold(){ ensureSpecial(); return _pickBuyCost("trait","gold"); }
+function traitPickCostPts(){ ensureSpecial(); return _pickBuyCost("trait","pts"); }
+function buyPerkPick(pay){
+  ensureSpecial();
+  if(!availablePerks().length){ showToast("📜","Пул пуст","","Все перки уже взяты"); return false; }
+  pay=pay==="pts"?"pts":"gold";
+  const cost=pay==="pts"?perkPickCostPts():perkPickCostGold();
+  if(pay==="pts"){
+    if((S.skillPts||0)<cost){ showToast("📈","Мало опыта","","Нужно "+cost+" очк., есть "+(S.skillPts||0)); return false; }
+    S.skillPts-=cost;
+  } else {
+    if((S.gold||0)<cost){ showToast("🪙","Мало золота","","Нужно "+fmt(cost)+" 🪙"); return false; }
+    S.gold-=cost;
+  }
+  S.perkBought=(S.perkBought||0)+1;
+  S.perkPicks=(S.perkPicks||0)+1;
+  Platform.logEvent("perk_buy",{pay,cost,left:S.perkPicks});
+  showToast("📜","Очко перка","","+"+(pay==="pts"?cost+" очк.":fmt(cost)+" 🪙"),"выборов: "+S.perkPicks);
+  save(); refreshSpecialUi(); return true;
+}
+function buyTraitPick(pay){
+  ensureSpecial();
+  if((S.traits||[]).length>=traitMax()){ showToast("🧬","Лимит черт","","Сними одну, чтобы взять другую"); return false; }
+  pay=pay==="pts"?"pts":"gold";
+  const cost=pay==="pts"?traitPickCostPts():traitPickCostGold();
+  if(pay==="pts"){
+    if((S.skillPts||0)<cost){ showToast("📈","Мало опыта","","Нужно "+cost+" очк., есть "+(S.skillPts||0)); return false; }
+    S.skillPts-=cost;
+  } else {
+    if((S.gold||0)<cost){ showToast("🪙","Мало золота","","Нужно "+fmt(cost)+" 🪙"); return false; }
+    S.gold-=cost;
+  }
+  S.traitBought=(S.traitBought||0)+1;
+  S.traitPicks=(S.traitPicks||0)+1;
+  Platform.logEvent("trait_buy",{pay,cost,left:S.traitPicks});
+  showToast("🧬","Очко черты","","+"+(pay==="pts"?cost+" очк.":fmt(cost)+" 🪙"),"выборов: "+S.traitPicks);
+  save(); refreshSpecialUi(); return true;
+}
 function canPickTrait(id){
   ensureSpecial();
   if(hasTrait(id)) return false;
   if((S.traits||[]).length>=traitMax()) return false;
+  if((S.traitPicks||0)<1) return false;
   return !!traitDef(id);
 }
 function pickTrait(id){
   ensureSpecial();
   const t=traitDef(id); if(!t||!canPickTrait(id)) return false;
+  S.traitPicks=(S.traitPicks||0)-1;
   S.traits.push(id);
   if(t.specialAdd){
     SPECIAL_DEFS.forEach(d=>{ S.special[d.id]=Math.min((BALANCE.special.attrMax||10), specialAttr(d.id)+t.specialAdd); });
   }
-  Platform.logEvent("trait_pick",{id}); save();
+  Platform.logEvent("trait_pick",{id,left:S.traitPicks}); save();
   showToast(t.ico||"✨","ЧЕРТА","",t.n);
   window._charTab="perks"; refreshSpecialUi();
   return true;
@@ -5718,14 +5854,15 @@ function unpickTrait(id){
   if(!hasTrait(id)) return false;
   const t=traitDef(id);
   S.traits=(S.traits||[]).filter(x=>x!==id);
+  S.traitPicks=(S.traitPicks||0)+1;
   if(t&&t.specialAdd){
     const floor=BALANCE.special.start||5;
     SPECIAL_DEFS.forEach(d=>{
       S.special[d.id]=Math.max(floor, specialAttr(d.id)-t.specialAdd);
     });
   }
-  Platform.logEvent("trait_drop",{id}); save();
-  showToast(t&&t.ico||"✨","Черта снята","",t?t.n:id,"можно взять другую");
+  Platform.logEvent("trait_drop",{id,left:S.traitPicks}); save();
+  showToast(t&&t.ico||"✨","Черта снята","",t?t.n:id,"очко возвращено");
   window._charTab="perks"; refreshSpecialUi();
   return true;
 }
@@ -5951,22 +6088,22 @@ function buildCharSheetHtml(inShell){
     :`<button type="button" class="btn btn-hard" onclick="closeCharSheet()">ГОТОВО</button>`;
 
   if(tab==="perks"){
-    const perkRows=(S.perks||[]).map(id=>{
+    const owned=(S.perks||[]).map(id=>{
       const p=perkDef(id); if(!p) return "";
       const on=focus.kind==="perk"&&focus.id===id?" on":"";
       return `<div class="row${on}" onclick="charFocus('perk','${id}')"><span class="ic">${p.ico}</span><span class="nm">${esc(p.n)}</span>
         <button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();dropPerk('${id}')">снять</button></div>`;
-    }).join("");
+    }).join("")||`<div class="empty">Пока пусто. Перк каждые ${((BALANCE.perks&&BALANCE.perks.everyLv)||3)} ур. шахтёра.</div>`;
     const traitRows=TRAIT_DEFS.map(t=>{
       const have=hasTrait(t.id), can=canPickTrait(t.id);
       return `<div class="row${have?" on":""}" onclick="charFocus('trait','${t.id}')">
         <span class="ic">${t.ico}</span><span class="nm">${esc(t.n)}${have?" · ✓":""}</span>
         ${have?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();unpickTrait('${t.id}')">снять</button>`:""}
         ${!have&&can?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();pickTrait('${t.id}')">взять</button>`:""}
+        ${!have&&!can&&(S.traitPicks||0)<1?`<span class="sub" style="font-size:10px">нужно очко</span>`:""}
       </div>`;
     }).join("");
-    const allRows=(perkRows+traitRows)||`<div class="empty">Пока пусто. Перк каждые ${((BALANCE.perks&&BALANCE.perks.everyLv)||3)} ур. шахтёра · черты ниже.</div>`;
-    let infoIco="📜", infoTtl="Перки", infoTxt="Перки с уровня шахтёра и черты характера — один список. Снять можно в любой момент.";
+    let infoIco="📜", infoTtl="Перки", infoTxt="Очки перков — с уровня шахтёра или купи за опыт/золото. Черты — только за очки (опыт или золото).";
     if(focus.kind==="perk"){
       const p=perkDef(focus.id);
       if(p){ infoIco=p.ico; infoTtl=p.n; infoTxt=p.desc+" Эффект: +"+((BALANCE.perks&&BALANCE.perks.pct)||2)+"% к "+(p.stats||[]).map(s=>s.toUpperCase()).join(", ")+"."; }
@@ -5975,13 +6112,22 @@ function buildCharSheetHtml(inShell){
       if(t){ infoIco=t.ico; infoTtl=t.n; infoTxt=t.desc; }
     }
     const perkMax=(BALANCE.perks&&BALANCE.perks.maxOwned)||PERK_DEFS.length;
+    const pg=perkPickCostGold(), pp=perkPickCostPts(), tg=traitPickCostGold(), tp=traitPickCostPts();
+    const perkBuy=`<div class="btnrow" style="margin-top:8px;flex-wrap:wrap;gap:6px">
+      <button type="button" class="btn btn-soft" ${(S.skillPts||0)<pp?"disabled":""} onclick="buyPerkPick('pts')">📈 очко · ${pp} очк.</button>
+      <button type="button" class="btn btn-hard" ${(S.gold||0)<pg?"disabled":""} onclick="buyPerkPick('gold')">🪙 очко · ${fmt(pg)}</button>
+    </div>`;
+    const traitBuy=`<div class="btnrow" style="margin-top:8px;flex-wrap:wrap;gap:6px">
+      <button type="button" class="btn btn-soft" ${(S.skillPts||0)<tp?"disabled":""} onclick="buyTraitPick('pts')">📈 очко · ${tp} очк.</button>
+      <button type="button" class="btn btn-hard" ${(S.gold||0)<tg?"disabled":""} onclick="buyTraitPick('gold')">🪙 очко · ${fmt(tg)}</button>
+    </div>`;
     return tabs+
       `<div class="foPin">
         <div class="foHead">
           <div class="foCell"><span class="k">Имя</span><span class="v">${esc(playerName())}</span></div>
-          <div class="foCell"><span class="k">Ур.</span><span class="v">${S.minerLv||0}</span></div>
-          <div class="foCell"><span class="k">Перки</span><span class="v">${(S.perks||[]).length}/${perkMax}</span></div>
-          <div class="foCell"><span class="k">Черты</span><span class="v">${(S.traits||[]).length}/${traitMax()}</span></div>
+          <div class="foCell"><span class="k">Опыт</span><span class="v">${S.skillPts||0}</span></div>
+          <div class="foCell"><span class="k">Перк</span><span class="v">${S.perkPicks||0}</span></div>
+          <div class="foCell"><span class="k">Черта</span><span class="v">${S.traitPicks||0}</span></div>
         </div>
         <div class="foInfo" style="margin-bottom:6px">
           <div class="ico">${infoIco}</div>
@@ -5990,10 +6136,16 @@ function buildCharSheetHtml(inShell){
       </div>
       <div class="foScroll">
         <div class="foPanel" style="margin-bottom:6px">
-          <h4>Перки и черты</h4>
-          <div class="foPerkOwned">${allRows}</div>
-          <div class="sub" style="margin-top:6px;color:#8a7a60">Перки — с уровня · черты — свободно · снять можно всегда. В колоде: ${PERK_DEFS.length} перков, ${TRAIT_DEFS.length} черт.</div>
+          <h4>Перки · ${(S.perks||[]).length}/${perkMax}</h4>
+          <div class="foPerkOwned">${owned}</div>
+          ${perkBuy}
           ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" style="width:100%;margin-top:8px" onclick="openPerkPick()">ВЫБРАТЬ ПЕРК · ${S.perkPicks}</button>`:""}
+        </div>
+        <div class="foPanel" style="margin-bottom:6px">
+          <h4>Черты · ${(S.traits||[]).length}/${traitMax()} · очки ${S.traitPicks||0}</h4>
+          <div class="foPerkOwned">${traitRows}</div>
+          ${traitBuy}
+          <div class="sub" style="margin-top:6px;color:#8a7a60">Купи очко за опыт или золото · снять возвращает очко. В колоде: ${TRAIT_DEFS.length}.</div>
         </div>
       </div>
       <div class="foFoot">
