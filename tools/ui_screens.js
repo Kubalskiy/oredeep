@@ -1142,7 +1142,7 @@ if(typeof metaOpen==="function"){
 }
 
 ["rollPet","mergePet","craftPetExotic","pvpFight","pvpRerollSlate","mergeGeo","ascendGeo","hireGeo","buyGems","buyPack","claimDaily",
- "chestOpenOne","chestUpgrade","chestSkip","upSkill","openSkillChest","spinWheel","playEvent","claimEventKey","buyEventKey","sciAnswer","sciSkip",
+ "chestOpenOne","chestUpgrade","chestSkip","bagSkipAdHour","upSkill","openSkillChest","spinWheel","playEvent","claimEventKey","buyEventKey","sciAnswer","sciSkip",
  "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout","startWorkout","drinkBeer","upgradeMug",
  "spendSpecial",
  "toggleFair","setFairClient","revealFair","setPlayerName","buyStickerPack","giftStickers","sipAle"].forEach(uiWrap);

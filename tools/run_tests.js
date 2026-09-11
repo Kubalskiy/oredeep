@@ -1,14 +1,16 @@
 "use strict";
 /* Функциональные тесты прототипа: node tools/run_tests.js
-   Собирает фейковый DOM + код игры из index.html + тест-кейсы
-   и исполняет их в одной области видимости. */
+   Фейковый DOM + js/{balance,platform,game} + ui_screens + test_cases. */
 const fs=require("fs"), path=require("path");
 const root=path.join(__dirname,"..");
 const html=fs.readFileSync(path.join(root,"index.html"),"utf8");
-const game=html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const stub=fs.readFileSync(path.join(__dirname,"test_stub.js"),"utf8");
-const cases=fs.readFileSync(path.join(__dirname,"test_cases.js"),"utf8");
-const ui=fs.readFileSync(path.join(__dirname,"ui_screens.js"),"utf8");
-const ids=[...html.replace(game,"").matchAll(/id="([A-Za-z_]+)"/g)].map(m=>m[1]);
-globalThis.__HTML_IDS=ids;
-eval(stub+game+ui+cases);
+const read=f=>fs.readFileSync(path.join(root,f),"utf8");
+const balance=read("js/balance.js");
+const platform=read("js/platform.js");
+const game=read("js/game.js");
+const stub=read("tools/test_stub.js");
+const cases=read("tools/test_cases.js");
+const ui=read("tools/ui_screens.js");
+const ids=[...html.matchAll(/id="([A-Za-z_]+)"/g)].map(m=>m[1]);
+globalThis.__HTML_IDS=[...new Set(ids)];
+eval(stub+balance+platform+game+ui+cases);
