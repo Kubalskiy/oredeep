@@ -2,35 +2,35 @@
 "use strict";
 
 const UI_MINES=[
-  {id:0,ic:"🎒",n:"Забой новичка",   sub:"особый камень → сумки",     theme:"t0", rock:"🪨", raidRes:"bags"},
-  {id:1,ic:"💎",n:"Эхо-Дум",         sub:"особый камень → самоцветы", theme:"t1", rock:"⛰️", raidRes:"gems"},
-  {id:2,ic:"🥚",n:"Подгорный Огонь", sub:"особый камень → яйца",      theme:"t2", rock:"🌋", raidRes:"eggs"},
-  {id:3,ic:"🪮",n:"Хрустальные",     sub:"особый камень → расчёски",  theme:"t3", rock:"🧊", raidRes:"combs"},
-  {id:4,ic:"🍺",n:"Бездна",          sub:"особый камень → пиво",      theme:"t4", rock:"🗿", raidRes:"protein"}
+  {id:0,ic:"🎒",n:"Greenhorn Dig",   sub:"special rock → bags",     theme:"t0", rock:"🪨", raidRes:"bags"},
+  {id:1,ic:"💎",n:"Doom Echo",         sub:"special rock → gems", theme:"t1", rock:"⛰️", raidRes:"gems"},
+  {id:2,ic:"🥚",n:"Undermountain Fire", sub:"special rock → eggs",      theme:"t2", rock:"🌋", raidRes:"eggs"},
+  {id:3,ic:"🪮",n:"Crystal Depths",     sub:"special rock → combs",  theme:"t3", rock:"🧊", raidRes:"combs"},
+  {id:4,ic:"🍺",n:"The Abyss",          sub:"special rock → beer",      theme:"t4", rock:"🗿", raidRes:"protein"}
 ];
 
 const UI_ART_COLS=[
-  {id:"mountain",n:"Гора",   ic:'<img class="uiColArt" src="art/ic_col_mountain.png" alt="">',c:"#e8b93c"},
-  {id:"deep",    n:"Глубины",ic:'<img class="uiColArt" src="art/ic_col_deep.png" alt="">',    c:"#5aa7e8"},
-  {id:"forge",   n:"Кузня",  ic:'<img class="uiColArt" src="art/ic_col_forge.png" alt="">',   c:"#ff8a4a"},
-  {id:"tavern",  n:"Таверна",ic:'<img class="uiColArt" src="art/ic_col_tavern.png" alt="">',  c:"#7ae8dc"}
+  {id:"mountain",n:"Mountain",   ic:'<img class="uiColArt" src="art/ic_col_mountain.png" alt="">',c:"#e8b93c"},
+  {id:"deep",    n:"Depths",ic:'<img class="uiColArt" src="art/ic_col_deep.png" alt="">',    c:"#5aa7e8"},
+  {id:"forge",   n:"Forge",  ic:'<img class="uiColArt" src="art/ic_col_forge.png" alt="">',   c:"#ff8a4a"},
+  {id:"tavern",  n:"Tavern",ic:'<img class="uiColArt" src="art/ic_col_tavern.png" alt="">',  c:"#7ae8dc"}
 ];
 const UI_MUG_IC='<img class="uiMugArt" src="art/ic_mug.png?v=2" alt="">';
 const UI_MUG_IC_SM='<img class="uiMugArt sm" src="art/ic_mug.png?v=2" alt="">';
 
 const UI_TAV_RANKS=[
-  {n:"Каменный Кубок",xp:1200},{n:"Медный Кубок",xp:980},{n:"Железный Кубок",xp:760},
-  {n:"Серебряный Кубок",xp:540},{n:"Золотой Кубок",xp:320},{n:"Платиновый Кубок",xp:110}
+  {n:"Stone Cup",xp:1200},{n:"Copper Cup",xp:980},{n:"Iron Cup",xp:760},
+  {n:"Silver Cup",xp:540},{n:"Gold Cup",xp:320},{n:"Platinum Cup",xp:110}
 ];
 
 const UI_PVP_BOARD=[
-  {n:"Дурин Глубинный", ic:"⛰", t:1180},
-  {n:"Мира Рунная",     ic:"✦", t:860},
-  {n:"Гром Железозуб",  ic:"🦷", t:640},
-  {n:"Борин-Счётчик",   ic:"📐", t:410},
-  {n:"Шлак Безбородый", ic:"🪓", t:180},
-  {n:"Баба Глыба",      ic:"🪨", t:95},
-  {n:"Нори Скупщик",    ic:"💰", t:55}
+  {n:"Durin Deep", ic:"⛰", t:1180},
+  {n:"Mira Rune",     ic:"✦", t:860},
+  {n:"Grom Irontooth",  ic:"🦷", t:640},
+  {n:"Borin the Counter",   ic:"📐", t:410},
+  {n:"Slag Beardless", ic:"🪓", t:180},
+  {n:"Granite Granny",      ic:"🪨", t:95},
+  {n:"Nori the Trader",    ic:"💰", t:55}
 ];
 
 const UIS={
@@ -159,104 +159,104 @@ const UIS={
       const ms=BALANCE.growth.referral.milestones;
       const msHtml=ms.map((m,i)=>{
         const done=S.growth.milestones.includes(i), ok=(S.growth.invites||0)>=m.n;
-        return this.row(m.n+" друзей",(done?"✓ +"+m.gems+" 💎":(ok?"готово!":"—")));
+        return this.row(m.n+" Friends",(done?"✓ +"+m.gems+" 💎":(ok?"Ready!":"—")));
       }).join("");
       const wl=S.growth.waitlist;
-      this.$("uiTitle").textContent="Друзья";
+      this.$("uiTitle").textContent="Friends";
       this.$("uiHeadAct").innerHTML="";
-      this.$("uiTabs").innerHTML=this.tabs(["main","growth"],["Профиль","Друзья"],"growth");
+      this.$("uiTabs").innerHTML=this.tabs(["main","growth"],["Profile","Friends"],"growth");
       this.$("uiBody").innerHTML=
-        '<div class="uiBanner">Органический рост: рефералы и вейтлист без рекламного бюджета</div>'
-        +this.row("Твой код",'<b>'+code+'</b>')
-        +this.row("Приглашено",'<b>'+(S.growth.invites||0)+'</b> / '+BALANCE.growth.referral.inviterCap)
-        +(S.growth.referredBy?this.row("Пригласил",'<b>'+esc(S.growth.referredBy)+'</b>'):"")
-        +(coop?this.row("Кооп-буст",'<b style="color:var(--green)">+'+BALANCE.growth.referral.coopBoostPct+'% доход</b>'):"")
+        '<div class="uiBanner">Organic growth: referrals and waitlist, no ad budget needed</div>'
+        +this.row("Your code",'<b>'+code+'</b>')
+        +this.row("Invited",'<b>'+(S.growth.invites||0)+'</b> / '+BALANCE.growth.referral.inviterCap)
+        +(S.growth.referredBy?this.row("Referred by",'<b>'+esc(S.growth.referredBy)+'</b>'):"")
+        +(coop?this.row("Co-op boost",'<b style="color:var(--green)">+'+BALANCE.growth.referral.coopBoostPct+'% income</b>'):"")
         +'<div class="uiBtnStack">'
-        +'<button class="btn btn-hard btn-wide" onclick="shareInvite()">Поделиться ссылкой</button>'
-        +'<button class="btn btn-soft btn-wide" onclick="claimInviteMilestones()">Забрать вехи рефералов</button></div>'
-        +'<div class="uiSec">Вехи</div>'+msHtml
-        +'<div class="uiSec">Вейтлист (ранний доступ)</div>'
+        +'<button class="btn btn-hard btn-wide" onclick="shareInvite()">Share invite link</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="claimInviteMilestones()">Claim referral milestones</button></div>'
+        +'<div class="uiSec">Milestones</div>'+msHtml
+        +'<div class="uiSec">Waitlist (early access)</div>'
         +(wl.joined
-          ?(wl.claimed?this.row("Статус","✓ бонус получен"):this.card("📋","Ранний доступ","бонус за раннюю запись",
-            '<button class="btn btn-hard btn-wide" onclick="claimWaitlistBonus()">Забрать бонус</button>'))
-          :this.card("📋","Вейтлист","бонус за органический спрос",
-            '<button class="btn btn-hard btn-wide" onclick="growthJoinWaitlist(false);UIS.render(\'profile\')">Вступить</button>'))
-        +'<div class="uiSec">Пришёл по коду?</div>'
-        +'<div class="uiRow"><span><input id="uiRefInp" class="uiInp wide" maxlength="8" placeholder="КОД"></span>'
+          ?(wl.claimed?this.row("Status","✓ bonus received"):this.card("📋","Early access","Early signup bonus",
+            '<button class="btn btn-hard btn-wide" onclick="claimWaitlistBonus()">Claim bonus</button>'))
+          :this.card("📋","Waitlist","A bonus for organic demand",
+            '<button class="btn btn-hard btn-wide" onclick="growthJoinWaitlist(false);UIS.render(\'profile\')">Join</button>'))
+        +'<div class="uiSec">Have an invite code?</div>'
+        +'<div class="uiRow"><span><input id="uiRefInp" class="uiInp wide" maxlength="8" placeholder="CODE"></span>'
         +'<button class="btn btn-soft btn-tiny" onclick="growthApplyReferral(document.getElementById(\'uiRefInp\').value);UIS.render(\'profile\')">✓</button></div>';
       try{ if(typeof updateGrowthDot==="function") updateGrowthDot(); }catch(e){}
       return;
     }
     const w=beardWisdom(), depth=(S.stageIdx||1)*3;
     const setName="var v=document.getElementById('uiProfName').value.trim().slice(0,18);if(v){S.playerName=v;save();UIS.render('profile');}";
-    this.$("uiTitle").textContent="Профиль";
+    this.$("uiTitle").textContent="Profile";
     this.$("uiHeadAct").innerHTML="";
-    this.$("uiTabs").innerHTML=this.tabs(["main","growth"],["Профиль","Друзья"],"main");
+    this.$("uiTabs").innerHTML=this.tabs(["main","growth"],["Profile","Friends"],"main");
     this.$("uiBody").innerHTML=
       '<div class="uiHero"><div class="uiHeroArt">🧔</div>'
       +'<b>'+esc(playerName())+'</b><div class="uiSub">'+w.title+((S.prestigeLv||0)?(" · ⛰ "+S.prestigeLv):"")+'</div></div>'
-      +this.row("Глубина прогона",'<b>'+Math.min(S.stageIdx||1,BALANCE.run.len)+'/'+BALANCE.run.len+'</b>')
-      +this.row("Рекорд",'<b>'+fmt(S.bestDepth||depth)+' м</b>')
-      +this.row("PvP · кубки",(S.pvpWins||0)+' побед · 🏆 '+fmt(S.trophies||0))
-      +this.row("Зал",'ур. '+gymLevel()+' · +'+gymPerkPct()+'%')
-      +'<div class="uiRow"><span>Имя таверны</span><span><input id="uiProfName" class="uiInp" maxlength="18" value="'+esc(playerName())+'">'
+      +this.row("Run depth",'<b>'+Math.min(S.stageIdx||1,BALANCE.run.len)+'/'+BALANCE.run.len+'</b>')
+      +this.row("Record",'<b>'+fmt(S.bestDepth||depth)+' m</b>')
+      +this.row("PvP · cups",(S.pvpWins||0)+' wins · 🏆 '+fmt(S.trophies||0))
+      +this.row("Hall",'Lv. '+gymLevel()+' · +'+gymPerkPct()+'%')
+      +'<div class="uiRow"><span>Tavern name</span><span><input id="uiProfName" class="uiInp" maxlength="18" value="'+esc(playerName())+'">'
       +'<button class="btn btn-soft btn-tiny" onclick="'+setName+'">✓</button></span></div>'
       +'<div class="uiBtnStack">'
-      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Лист · КРАСАВА</button>'
-      +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Бороды</button>'
-      +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Пригласи друзей</button>'
-      +'<button onclick="openWall()">🏔 Стена Горы</button></div>';
+      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Character Sheet · KRASAVA</button>'
+      +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Beards</button>'
+      +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Invite your friends.</button>'
+      +'<button onclick="openWall()">🏔 Mountain Wall</button></div>';
   },
 
   renderSettings(){
-    this.$("uiTitle").textContent="Настройки";
+    this.$("uiTitle").textContent="Settings";
     this.$("uiHeadAct").innerHTML="";
     this.$("uiTabs").innerHTML="";
     this.$("uiBody").innerHTML=
-      this.row("Музыка",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 вкл":"🔇 выкл")+'</button>')
-      +this.row("Всплывающие окна",'<button id="uiSetToasts" onclick="toggleToasts();UIS.render(\'settings\')">'+(typeof toastToggleLabel==="function"?toastToggleLabel():(toastsOn?"💬 вкл":"🚫 выкл"))+'</button>')
-      +this.row("Устав Горы",'<button onclick="showIntro()">📜 читать</button>')
-      +this.row("Честность гачи",'<button onclick="openFairness()">🔐 открыть</button>')
-      +this.row("Стена Горы",'<button onclick="openWall()">🏔 рейтинг</button>')
-      +this.row("Прогресс",'<span class="uiSub">сохраняется автоматически</span>')
-      +this.row("Версия",'<span class="uiSub">ORE DEEP</span>')
-      +'<button class="btn btn-danger" style="margin-top:14px;width:100%" onclick="UIS.close();resetProgress()">↺ Всё сначала</button>';
+      this.row("Music",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 on":"🔇 off")+'</button>')
+      +this.row("Pop-up messages",'<button id="uiSetToasts" onclick="toggleToasts();UIS.render(\'settings\')">'+(typeof toastToggleLabel==="function"?toastToggleLabel():(toastsOn?"💬 on":"🚫 off"))+'</button>')
+      +this.row("Mountain Charter",'<button onclick="showIntro()">📜 read</button>')
+      +this.row("Gacha fairness",'<button onclick="openFairness()">🔐 open</button>')
+      +this.row("Mountain Wall",'<button onclick="openWall()">🏔 leaderboard</button>')
+      +this.row("Progress",'<span class="uiSub">saved automatically</span>')
+      +this.row("Version",'<span class="uiSub">ORE DEEP</span>')
+      +'<button class="btn btn-danger" style="margin-top:14px;width:100%" onclick="UIS.close();resetProgress()">↺ Start over</button>';
   },
 
   renderPets(){
     const tab=this.tab||"gacha";
-    this.$("uiTitle").textContent="Питомцы";
+    this.$("uiTitle").textContent="Pets";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🥚 '+(S.eggs||0)+'</span>';
     this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","craft","bag"],
-      ["Гача","Слияние","Крафт","Клетка"],tab);
+      ["Gacha","Merge","Craft","Stable"],tab);
     let body="";
-    const cur=S.pet?('<div class="uiBanner r'+S.pet.r+'">В бою: '+petIcon(S.pet.t)+' '+PET_TYPES[S.pet.t].n
+    const cur=S.pet?('<div class="uiBanner r'+S.pet.r+'">In battle: '+petIcon(S.pet.t)+' '+PET_TYPES[S.pet.t].n
       +' · '+petSkinOf(S.pet).n
       +' · +'+PET_TYPES[S.pet.t].pct[S.pet.r]+'% '+PET_TYPES[S.pet.t].stat.toUpperCase()+'</div>'):"";
     if(tab==="gacha"){
       body=cur+'<div class="uiGachaStage"><div class="uiGachaEgg">🥚</div></div>'
-        +'<div class="uiSub" style="text-align:center;margin:8px 0">Роллов: '+(S.petRolls||0)+' · жалость Горы</div>'
-        +'<button class="btn btn-hard btn-wide" onclick="rollPet()" '+(S.eggs<1?"disabled":"")+'>Приручить · 🥚 1</button>';
+        +'<div class="uiSub" style="text-align:center;margin:8px 0">Rolls: '+(S.petRolls||0)+' · Mountain pity</div>'
+        +'<button class="btn btn-hard btn-wide" onclick="rollPet()" '+(S.eggs<1?"disabled":"")+'>Tame · 🥚 1</button>';
     } else if(tab==="merge"){
       const keys=Object.keys(S.petBox||{}).filter(k=>S.petBox[k]>0)
         .sort((a,b)=>Number(b.split("_")[1])-Number(a.split("_")[1]));
       body=cur+(keys.length?keys.map(k=>{
         const [t,r]=k.split("_").map(Number), c=S.petBox[k], ok=canMergePet(t,r);
         const maxed=r>=PET_MERGE_MAX;
-        return this.card(petIcon(t),PET_RAR[r]+" · "+PET_TYPES[t].n,"×"+c+' · нужно '+BALANCE.merge.petCost+' для слияния',
-          maxed?'<button class="btn btn-soft btn-wide" disabled style="opacity:.4">предел</button>'
-            :'<button class="btn btn-soft btn-wide" onclick="mergePet('+t+','+r+')" '+(ok?"":'disabled style="opacity:.45"')+'>Слить 3 → '+PET_RAR[r+1]+'</button>');
-      }).join(""):'<div class="uiEmpty">Коллекция пуста — крути яйца на вкладке Гача.</div>');
+        return this.card(petIcon(t),PET_RAR[r]+" · "+PET_TYPES[t].n,"×"+c+' · need '+BALANCE.merge.petCost+' to merge',
+          maxed?'<button class="btn btn-soft btn-wide" disabled style="opacity:.4">max</button>'
+            :'<button class="btn btn-soft btn-wide" onclick="mergePet('+t+','+r+')" '+(ok?"":'disabled style="opacity:.45"')+'>Merge 3 → '+PET_RAR[r+1]+'</button>');
+      }).join(""):'<div class="uiEmpty">Collection empty — hatch eggs on the Gacha tab.</div>');
     } else if(tab==="craft"){
       const unlocked=petCraftUnlocked();
       body=(unlocked
-        ? this.card("⚗","Крафт Exotic","По Legendary каждого семейства + "+BALANCE.petCraft.gems+" 💎",
-            '<button class="btn btn-hard btn-wide" onclick="craftPetExotic()" '+(petCraftReady()?"":"disabled")+'>Крафтнуть</button>')
-        : '<div class="uiEmpty">🔒 Крафт откроется после '+BALANCE.petCraft.needLegendaries+' легендарных (есть '+(S.petLegSeen||0)+').</div>');
+        ? this.card("⚗","Craft Exotic","One Legendary from each family + "+BALANCE.petCraft.gems+" 💎",
+            '<button class="btn btn-hard btn-wide" onclick="craftPetExotic()" '+(petCraftReady()?"":"disabled")+'>Craft</button>')
+        : '<div class="uiEmpty">🔒 Crafting unlocks after '+BALANCE.petCraft.needLegendaries+' Legendaries (owned: '+(S.petLegSeen||0)+').</div>');
     } else {
       const slots=PET_TYPES.map((p,i)=>{
         let bestR=-1; for(const k in S.petBox||{}){ const [t,r]=k.split("_").map(Number); if(t===i&&r>bestR) bestR=r; }
-        const ic=bestR>=0?petIcon(i):"❔", sub=bestR>=0?PET_RAR[bestR]:"нет";
+        const ic=bestR>=0?petIcon(i):"❔", sub=bestR>=0?PET_RAR[bestR]:"none";
         return this.slot(ic,p.n,sub,bestR>=0?"r"+bestR:"");
       });
       body=cur+this.grid(slots);
@@ -266,11 +266,11 @@ const UIS={
 
   renderBeards(){
     const tab=this.tab||"gacha";
-    const rarRU=["Обычная","Редкая","Эпическая","Легендарная"];
-    this.$("uiTitle").textContent="Бороды";
+    const rarRU=["Common","Rare","Epic","Legendary"];
+    this.$("uiTitle").textContent="Beards";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🪮 '+(S.combs||0)+'</span>';
     this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","ascend","rank","gallery"],
-      ["Гача","Слияние","Восхожд.","Ранг","Галерея"],tab);
+      ["Gacha","Merge","Ascension","Rank","Gallery"],tab);
 
     const w=(typeof beardWisdom==="function")?beardWisdom():{lv:0,goldPct:0,luckAdd:0,title:"—"};
     const enMax=(typeof stat==="function")?Math.max(1,stat("energy")|0):1;
@@ -292,23 +292,23 @@ const UIS={
 
     let body="";
     const healthLine='<div class="uiSub" style="margin-top:8px;color:var(--dim);line-height:1.35">' +
-      'Энергия убывает в забое (каждый «выстрел» породы её сжигает). ' +
-      'Чтобы борода росла без пауз — держи энергию в зелёной зоне: пей 🍺 и качай Реген/Защиту.</div>';
+      'Energy drains while mining whenever the rock strikes. ' +
+      'Keep energy in the green: drink 🍺 and upgrade Regen/Defense so your beard keeps growing.</div>';
 
     if(tab==="gacha"){
       body=cur
-        +this.card("🪮","Жалость Горы","Шансы на редкость растут по числу роллов",
-          '<div class="uiSub" style="margin-bottom:6px">Роллов: '+rolls+' · порог: '+pityX1+' → Leg ~'+geoOddsPct[3].toFixed(2)+'%</div>' +
+        +this.card("🪮","The Pity of the Mountain","Rarity odds improve with every roll",
+          '<div class="uiSub" style="margin-bottom:6px">Rolls: '+rolls+' · threshold: '+pityX1+' → Leg ~'+geoOddsPct[3].toFixed(2)+'%</div>' +
           this.bar(pityPct) +
           rarRU.map((nm,i)=>this.row(nm,'~'+geoOddsPct[i].toFixed(2)+'%')).join("")
         )
         +'<div class="uiGachaStage"><img class="uiGachaArt" src="art/ic_beard.png" alt=""></div>'
-        +'<button class="btn btn-hard btn-wide" onclick="hireGeo();UIS.render(\'beards\')" '+(S.combs<1?"disabled":"")+'>Нанять · 🪮 1</button>'
-        +'<div class="uiSub" style="text-align:center;margin:8px 0">Энергия: '+enCur+' / '+enMax+' ('+enPct+'%)</div>'
+        +'<button class="btn btn-hard btn-wide" onclick="hireGeo();UIS.render(\'beards\')" '+(S.combs<1?"disabled":"")+'>Hire · 🪮 1</button>'
+        +'<div class="uiSub" style="text-align:center;margin:8px 0">Energy: '+enCur+' / '+enMax+' ('+enPct+'%)</div>'
         +healthLine;
     } else if(tab==="merge"){
       if(!S.geo){
-        body='<div class="uiEmpty">Сначала найми бороду на вкладке Гача.</div>';
+        body='<div class="uiEmpty">Hire an elder on the Gacha tab first.</div>';
       } else {
         const total=geoMaterials();
         const counts=[0,0,0,0];
@@ -319,17 +319,17 @@ const UIS={
         }
         const newLv=(S.geo.lv||1)+total;
         body=cur
-          +this.card("👷",S.geo.n,"ур. "+(S.geo.lv||1)+" → после слияния ур. "+newLv+" · материал: "+total,
+          +this.card("👷",S.geo.n,"Lv. "+(S.geo.lv||1)+" → after merge Lv. "+newLv+" · material: "+total,
             rarRU.map((nm,r)=>this.row(nm, String(counts[r]||0))).join("")
-            +'<div class="uiSub" style="margin-top:6px">Кормятся материалы редкости ≤ '+rarRU[S.geo.r]+'.</div>'
-            +'<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(total<1?"disabled":"")+'>Поглотить дубликаты</button>'
+            +'<div class="uiSub" style="margin-top:6px">Consumes materials of rarity ≤ '+rarRU[S.geo.r]+'.</div>'
+            +'<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(total<1?"disabled":"")+'>Merge duplicates</button>'
           )
           +healthLine;
       }
     } else if(tab==="ascend"){
       const B=BALANCE.merge;
       if(!S.geo){
-        body='<div class="uiEmpty">Сначала найми бороду на вкладке Гача.</div>';
+        body='<div class="uiEmpty">Hire an elder on the Gacha tab first.</div>';
       } else {
         const isLeg=S.geo.r===GEO_RAR.length-1;
         const ascOk=canAscendGeo();
@@ -337,22 +337,22 @@ const UIS={
         const lvOk=lv>=B.ascendLv;
         const gemsHave=S.gems||0;
         const gemsOk=gemsHave>=B.ascendGems;
-        const why=!isLeg ? ("нужен "+GEO_RAR[GEO_RAR.length-1])
-          : (!lvOk ? ("нужен ур."+B.ascendLv+" (есть "+lv+")")
-          : (!gemsOk ? ("нужно "+B.ascendGems+" 💎 (есть "+fmt(gemsHave)+")") : ""));
+        const why=!isLeg ? ("need "+GEO_RAR[GEO_RAR.length-1])
+          : (!lvOk ? ("need Lv. "+B.ascendLv+" (have "+lv+")")
+          : (!gemsOk ? ("need "+B.ascendGems+" 💎 (have "+fmt(gemsHave)+")") : ""));
         const lvPct=isLeg?Math.min(100,Math.round(lv/B.ascendLv*100)):0;
         const gemsPct=isLeg?Math.min(100,Math.round(gemsHave/B.ascendGems*100)):0;
         const afterPct=geoPct({t:S.geo.t,r:S.geo.r,lv:1,asc:(S.geo.asc||0)+1});
         const ascStep=(S.geo.asc||0)+1;
-        body=cur+this.card("✦","Восхождение ✦"+ascStep,
-          "+"+B.ascendPct+"% к бонусу · уровень сбрасывается в 1 · "+B.ascendGems+" 💎",
+        body=cur+this.card("✦","Ascension ✦"+ascStep,
+          "+"+B.ascendPct+"% to bonus · drop to 1 · "+B.ascendGems+" 💎",
           (isLeg
-            ? '<div class="uiSub">Прогресс: уровень '+lv+'/'+B.ascendLv+'</div>' + this.bar(lvPct) +
-              '<div class="uiSub" style="margin-top:6px">Гемы: '+fmt(gemsHave)+' / '+fmt(B.ascendGems)+'</div>' + this.bar(gemsPct) +
-              '<div class="uiSub" style="margin-top:8px">После восхождения: ~'+afterPct.toFixed(0)+'% '+GEO_TYPES[S.geo.t].stat.toUpperCase()+'</div>' +
-              '<button class="btn btn-hard btn-wide" onclick="ascendGeo()" '+(ascOk?"":"disabled")+'>Восхождение · '+B.ascendGems+' 💎</button>'
+            ? '<div class="uiSub">Progress: level '+lv+'/'+B.ascendLv+'</div>' + this.bar(lvPct) +
+              '<div class="uiSub" style="margin-top:6px">Gems: '+fmt(gemsHave)+' / '+fmt(B.ascendGems)+'</div>' + this.bar(gemsPct) +
+              '<div class="uiSub" style="margin-top:8px">After ascension: ~'+afterPct.toFixed(0)+'% '+GEO_TYPES[S.geo.t].stat.toUpperCase()+'</div>' +
+              '<button class="btn btn-hard btn-wide" onclick="ascendGeo()" '+(ascOk?"":"disabled")+'>Ascension · '+B.ascendGems+' 💎</button>'
               +(why?'<div class="uiSub" style="margin-top:8px;color:#e8a24a">'+why+'</div>':"")
-            : '<div class="uiEmpty">🔒 Только для '+GEO_RAR[GEO_RAR.length-1]+'. Сливай дубликаты на вкладке Слияние до легендарки.</div>'));
+            : '<div class="uiEmpty">🔒 Only for '+GEO_RAR[GEO_RAR.length-1]+'. Merge duplicates on the Merge tab until Legendary.</div>'));
       }
     } else if(tab==="rank"){
       const need=beardNextXP(w.lv), have=S.beardXP||0;
@@ -364,38 +364,38 @@ const UIS={
       const nextRank=Math.min(maxLv,w.lv+1);
       const nextGold=nextRank*3, nextLuck=nextRank*0.4;
       body=cur+this.card("🧔",w.title,
-        "+"+w.goldPct+"% доход · +"+w.luckAdd.toFixed(1)+" удачи",
+        "+"+w.goldPct+"% income · +"+w.luckAdd.toFixed(1)+" luck",
         this.bar(pct) +
-        '<div class="uiSub" style="margin-top:6px">'+(w.lv>=maxLv?"МАКСИМУМ":fmt(have)+" / "+fmt(need)+" XP · осталось "+fmt(remXp)+" XP")+'</div>' +
-        '<div class="uiSub" style="margin-top:8px">Рост ранга: +2 XP за обычную жилу, +12 XP за босса.</div>' +
-        '<div class="uiSub" style="margin-top:6px;color:#e8a24a">До следующего ранга: ~'+untilVeins+' жил или ~'+untilBoss+' босса.</div>'
+        '<div class="uiSub" style="margin-top:6px">'+(w.lv>=maxLv?"MAX":fmt(have)+" / "+fmt(need)+" XP · remaining "+fmt(remXp)+" XP")+'</div>' +
+        '<div class="uiSub" style="margin-top:8px">Rank XP: +2 per normal vein, +12 per boss.</div>' +
+        '<div class="uiSub" style="margin-top:6px;color:#e8a24a">To next rank: ~'+untilVeins+' veins or ~'+untilBoss+' bosses.</div>'
       )
-      +this.card("⚙️","Сложность & токеномика",
-        "бороды = гем-сток + фарм частоты (энергия)",
-        '<div class="uiSub">Твой бонус к доходу растёт с рангом, а восхождение старейшины тратит гемы: '+BALANCE.merge.ascendGems+'💎 за ступень.</div>' +
-        '<div class="uiSub" style="margin-top:8px">Главное топливо прогресса — не гемы, а частота забоя: если энергия упадёт в ноль, ты остановишься.</div>' +
-        '<div class="uiSub" style="margin-top:8px">Держи Энергию: сейчас '+enCur+'/'+enMax+' ('+enPct+'%).</div>' +
+      +this.card("⚙️","Progression",
+        "Beards reward steady mining and consume gems",
+        '<div class="uiSub">Your income bonus grows with rank, and your climbing. elder Spends gem: '+BALANCE.merge.ascendGems+'💎 - I’m going to step up.</div>' +
+        '<div class="uiSub" style="margin-top:8px">Main fuel for progress — not gemand frequency dig: If the energy falls to zero, you stop.</div>' +
+        '<div class="uiSub" style="margin-top:8px">Here’s the energy: now. '+enCur+'/'+enMax+' ('+enPct+'%).</div>' +
         healthLine
       );
     } else {
       const totalGeoMats=Object.values(S.geoBox||{}).reduce((a,b)=>a+(b||0),0);
       const curT=S.geo?S.geo.t:null;
       const dealTxt=S.geo
-        ? (S.geo.n+" · "+rarRU[S.geo.r]+" · ур."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):""))
-        : "пока никого";
+        ? (S.geo.n+" · "+rarRU[S.geo.r]+" · Lv."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):""))
+        : "None yet.";
       const FAMILY_LORE={
-        atk:"Дворф учится бить точнее: атака растёт — и забой быстрее отдаёт жилу.",
-        energy:"Знахарки не «лечат» магией — они не дают энергии падать слишком быстро.",
-        stone:"Счёт камням ведут с уважением: больше жадности — жирнее награда."
+        atk:"Dvorfe learns to beat more precisely: attack is growing — and dig It’s faster. vein.",
+        energy:"The healers don’t “care“ with magic. — They keep the energy from falling too fast.",
+        stone:"The stone is counted with respect: more greed — A fatter reward."
       };
 
       body=cur
-        +this.card("📚","Галерея старейшин","Коллекция расчёсочных материалов · всего в запасе: "+totalGeoMats,
-          '<div class="uiSub">В деле: '+dealTxt+'</div>' +
-          '<div class="uiSub" style="margin-top:8px">Старейшины — это твоя артель. Один в работе, остальные копятся в запасе как дубликаты.</div>' +
-          '<div class="uiSub" style="margin-top:8px">Как читается дорога: роллы 🪮 дают либо нового старейшину в дело, либо материалы редкости ≤ твоей.</div>' +
-          '<div class="uiSub" style="margin-top:8px">Слияние превращает дубликаты в уровень и жирит бонус. Восхождение на Легендарной — гем-сток за «ступень ✦».</div>' +
-          '<div class="uiSub" style="margin-top:8px;color:#e8a24a">Лор-напоминание: энергия убывает в забое — держи её зелёной зоной, иначе рост встанет.</div>'
+        +this.card("📚","Elder Gallery","Comb collection · duplicates: "+totalGeoMats,
+          '<div class="uiSub">Equipped: '+dealTxt+'</div>' +
+          '<div class="uiSub" style="margin-top:8px">elder — One in the office, the rest of you are digging up like duplicate.</div>' +
+          '<div class="uiSub" style="margin-top:8px">As the road reads: roll 🪮 give either new elder in case or material rarity ≤ Yours.</div>' +
+          '<div class="uiSub" style="margin-top:8px">Merger turns duplicate To the level and fattens the bonus. — gem- the end for the step ✦».</div>' +
+          '<div class="uiSub" style="margin-top:8px;color:#e8a24a">Laure reminder: energy is losing in dig — Keep her green, or she’ll grow up.</div>'
         )
         +this.grid(GEO_TYPES.map((g,i)=>{
           let bestR=-1, cnt=0;
@@ -409,11 +409,11 @@ const UIS={
           const inDeal = !!S.geo && S.geo.t===i;
           if(inDeal) bestR=(S.geo.r||bestR);
           const sub=inDeal
-            ? ("в деле · "+(bestR>=0?rarRU[bestR]:"")+" · ур."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):"")+
+            ? ("in case · "+(bestR>=0?rarRU[bestR]:"")+" · Lv."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):"")+
               " · +"+Math.round(geoPct(S.geo))+"%")
             : (bestR>=0
-              ? ("в сундуке · "+rarRU[bestR]+" · +"+(GEO_TYPES[i].pct[bestR]||0)+"% (lv1) · дубликатов "+cnt)
-              : "пока пусто · нанять на «Гача»");
+              ? ("In the chest · "+rarRU[bestR]+" · +"+(GEO_TYPES[i].pct[bestR]||0)+"% (lv1) · duplicate "+cnt)
+              : "Empty · hire through Gacha");
           const cls=(bestR>=0||inDeal?"":"lock");
           return this.slot("💇",g.names[0],g.stat.toUpperCase(),
             sub+(bestR>=0?(" · "+FAMILY_LORE[g.stat]):""), cls);
@@ -423,7 +423,7 @@ const UIS={
   },
 
   renderMines(){
-    this.$("uiTitle").textContent="Штольни";
+    this.$("uiTitle").textContent="mine";
     if(typeof mineRaidReset==="function") mineRaidReset();
     const curAbs=S.mine||0;
     const cur=curAbs%MINES.length;
@@ -442,13 +442,13 @@ const UIS={
     const setsDone=UI_MINES.filter(m=>typeof setDone==="function"&&setDone(m.id)).length;
     const fibLine=fibArr.map((n,i)=>'<span class="'+(i<slot.step?"done":(i===slot.step?"on":""))+'">'+n+'</span>').join(" → ");
 
-    this.$("uiHeadAct").innerHTML='<span class="uiPill">круг '+cycle+'</span>';
+    this.$("uiHeadAct").innerHTML='<span class="uiPill">circle '+cycle+'</span>';
     this.$("uiTabs").innerHTML="";
 
     const how=
       '<div class="uiMineHow">'
-      +'<b>Как это работает</b>'
-      +'<div class="uiSub">Особый камень выдаётся <b>по нарастающей</b>: чем дальше ступень — тем дольше пауза и тем больше награда ('+fibArr.join(", ")+'). Единица таймера — '+(unitSec>=3600?(unitSec/3600)+"ч":(unitSec/60)+"м")+' на шаг ряда. У каждого чертога свой ряд ступеней на день.</div>'
+      +'<b>How it works</b>'
+      +'<div class="uiSub">Special stone is being released <b>by an increasing increase</b>: The height of the step — The longer the pause and the more reward ('+fibArr.join(", ")+'). Timer Unit — '+(unitSec>=3600?(unitSec/3600)+"h":(unitSec/60)+"m")+' One step in the row. hall I’m going to be in a row of steps for the day.</div>'
       +'<div class="uiMineFib">'+fibLine+'</div>'
       +'</div>';
 
@@ -456,24 +456,24 @@ const UIS={
     if(raidOn){
       const snap=S.mineRaid;
       raidCta='<div class="uiMineRaid on">'
-        +'<div class="uiMineRaidTop"><span>'+(snap.ic||"🔑")+'</span><div><b>Особый камень активен</b>'
-        +'<div class="uiSub">'+esc(snap.n||"награда")+' · +'+(snap.amt|0)+' '+(snap.label||snap.ic||"")+' · ×'+(snap.fib||1)
-        +' · вернись в шахту и разбей</div></div></div>'
-        +'<button type="button" class="btn btn-cta" onclick="UIS.close()">К камню</button></div>';
+        +'<div class="uiMineRaidTop"><span>'+(snap.ic||"🔑")+'</span><div><b>Special rock active</b>'
+        +'<div class="uiSub">'+esc(snap.n||"Award")+' · +'+(snap.amt|0)+' '+(snap.label||snap.ic||"")+' · ×'+(snap.fib||1)
+        +' · Go back to the mine and break it.</div></div></div>'
+        +'<button type="button" class="btn btn-cta" onclick="UIS.close()">To the stone</button></div>';
     } else if(slot.ready){
       raidCta='<div class="uiMineRaid">'
-        +'<div class="uiMineRaidTop"><span>'+(raidDef&&raidDef.ic||"🔑")+'</span><div><b>Ступень '+(slot.step+1)+'/'+slot.max+' · ×'+slot.fib+'</b>'
-        +'<div class="uiSub">награда: '+raidAmt+' '+(raidDef&&(raidDef.label||raidDef.n)||"")+'</div></div></div>'
-        +'<button type="button" class="btn btn-cta" onclick="startMineRaid('+cur+')">Разбить особый камень</button></div>';
+        +'<div class="uiMineRaidTop"><span>'+(raidDef&&raidDef.ic||"🔑")+'</span><div><b>Level '+(slot.step+1)+'/'+slot.max+' · ×'+slot.fib+'</b>'
+        +'<div class="uiSub">Award: '+raidAmt+' '+(raidDef&&(raidDef.label||raidDef.n)||"")+'</div></div></div>'
+        +'<button type="button" class="btn btn-cta" onclick="startMineRaid('+cur+')">Break a special stone</button></div>';
     } else if(slot.done){
       raidCta='<div class="uiMineRaid empty">'
-        +'<div class="uiSub">Все '+slot.max+' ступеней за сегодня пройдены. Завтра снова с ×1.</div></div>';
+        +'<div class="uiSub">All '+slot.max+' The steps are over today. ×1.</div></div>';
     } else {
       raidCta='<div class="uiMineRaid empty">'
-        +'<div class="uiMineRaidTop"><span>⏱</span><div><b>До ступени '+(slot.step+1)+' · ×'+slot.fib+'</b>'
-        +'<div class="uiSub">осталось '+fmtClock(slot.leftMs)+' · награда ~'+raidAmt+' '+(raidDef&&raidDef.ic||"")+'</div></div></div>'
+        +'<div class="uiMineRaidTop"><span>⏱</span><div><b>Up to stage '+(slot.step+1)+' · ×'+slot.fib+'</b>'
+        +'<div class="uiSub">remaining '+fmtClock(slot.leftMs)+' · Award ~'+raidAmt+' '+(raidDef&&raidDef.ic||"")+'</div></div></div>'
         +(typeof mineRaidAdOk==="function"&&mineRaidAdOk(cur)
-          ? ('<button type="button" class="btn btn-soft" style="margin-top:8px" onclick="mineRaidReadyAd('+cur+');UIS.render(\'mines\')">📺 Ступень сразу · '+adSlotLeft("mine_raid_ready")+'</button>')
+          ? ('<button type="button" class="btn btn-soft" style="margin-top:8px" onclick="mineRaidReadyAd('+cur+');UIS.render(\'mines\')">📺 Step at once · '+adSlotLeft("mine_raid_ready")+'</button>')
           : "")
         +'</div>';
     }
@@ -482,16 +482,16 @@ const UIS={
       '<div class="uiMineHero">'
       +'<div class="uiMineHeroTop">'
       +'<span class="uiMineHeroRock">'+(UI_MINES[cur]&&UI_MINES[cur].rock||"⛏")+'</span>'
-      +'<div><b>'+esc((UI_MINES[cur]&&UI_MINES[cur].n)||here.n||"Штольня")+'</b>'
-      +'<div class="uiSub">'+(here.n||"")+' · ты здесь</div></div>'
-      +'<span class="uiTag on">здесь</span></div>'
+      +'<div><b>'+esc((UI_MINES[cur]&&UI_MINES[cur].n)||here.n||"mine")+'</b>'
+      +'<div class="uiSub">'+(here.n||"")+' · You’re here.</div></div>'
+      +'<span class="uiTag on">Here.</span></div>'
       +'<div class="uiMineStats">'
-      +'<div><span class="k">Ступень</span><b>'+Math.min(slot.step+1,slot.max)+'/'+slot.max+'</b></div>'
-      +'<div><span class="k">Множитель</span><b>×'+slot.fib+'</b></div>'
-      +'<div><span class="k">Коллекция</span><b>'+hereGot+'/8</b></div>'
-      +'<div><span class="k">Круг</span><b>'+cycle+'</b></div>'
+      +'<div><span class="k">Level</span><b>'+Math.min(slot.step+1,slot.max)+'/'+slot.max+'</b></div>'
+      +'<div><span class="k">Multiplier</span><b>×'+slot.fib+'</b></div>'
+      +'<div><span class="k">Collection</span><b>'+hereGot+'/8</b></div>'
+      +'<div><span class="k">Circle</span><b>'+cycle+'</b></div>'
       +'</div>'
-      +(hereSet?('<div class="uiSub uiMineSetHint">'+(hereGot>=8?"✓ активен: ":"сет 8/8 → ")+esc(hereSet.label)+'</div>'):"")
+      +(hereSet?('<div class="uiSub uiMineSetHint">'+(hereGot>=8?"✓ active: ":"Seth 8/8 → ")+esc(hereSet.label)+'</div>'):"")
       +'</div>';
 
     const cards=UI_MINES.map(m=>{
@@ -505,38 +505,38 @@ const UIS={
       const amt=def&&typeof mineRaidRewardAmt==="function"?mineRaidRewardAmt(def, sl.step):0;
       const enterClick=unlocked
         ? ("switchMine("+m.id+");UIS.open(\"mines\");")
-        : ("showToast(\"⛏\",\"Закрыто\",\"\",\"Дойди до этого чертога\",\"сейчас "+(cur+1)+"/5 в круге\")");
+        : ("showToast(\"⛏\",\"Closed\",\"\",\"Go to that. hall\",\"Now. "+(cur+1)+"/5 In a circle\")");
       const raidClick=unlocked
         ? ("startMineRaid("+m.id+")")
-        : ("showToast(\"⛏\",\"Закрыто\",\"\",\"Дойди до этого чертога\",\"сейчас "+(cur+1)+"/5 в круге\")");
+        : ("showToast(\"⛏\",\"Closed\",\"\",\"Go to that. hall\",\"Now. "+(cur+1)+"/5 In a circle\")");
       const badge=hereNow
-        ? '<span class="uiTag on">здесь</span>'
-        : (unlocked?'<span class="uiTag go">войти</span>':'<span class="uiTag">🔒</span>');
+        ? '<span class="uiTag on">Here.</span>'
+        : (unlocked?'<span class="uiTag go">Come in.</span>':'<span class="uiTag">🔒</span>');
       const statusPill=sl.done
-        ? '<span class="uiPill">готово</span>'
+        ? '<span class="uiPill">Ready.</span>'
         : (sl.ready
-          ? '<span class="uiPill">×'+sl.fib+' гот.</span>'
+          ? '<span class="uiPill">×'+sl.fib+' Goth.</span>'
           : '<span class="uiPill">⏱ '+fmtClock(sl.leftMs)+'</span>');
       let raidBtn="";
       if(unlocked && raidOn && (S.mineRaid.mineId|0)===m.id){
-        raidBtn='<div class="uiSub">идёт особый камень · ×'+(S.mineRaid.fib||1)+'</div>';
+        raidBtn='<div class="uiSub">There’s a special stone coming. · ×'+(S.mineRaid.fib||1)+'</div>';
       } else if(unlocked && sl.ready && !raidOn){
-        raidBtn='<button type="button" class="btn uiMineRaidBtn" onclick="event.stopPropagation();'+raidClick+'">Ступень '+(sl.step+1)+' · ×'+sl.fib+' → +'+amt+' '+(def&&def.ic||"")+'</button>';
+        raidBtn='<button type="button" class="btn uiMineRaidBtn" onclick="event.stopPropagation();'+raidClick+'">Level '+(sl.step+1)+' · ×'+sl.fib+' → +'+amt+' '+(def&&def.ic||"")+'</button>';
       } else if(unlocked && !sl.done && !sl.ready){
-        raidBtn='<div class="uiSub">далее ×'+sl.fib+' через '+fmtClock(sl.leftMs)+'</div>'
+        raidBtn='<div class="uiSub">Further ×'+sl.fib+' Through '+fmtClock(sl.leftMs)+'</div>'
           +(typeof mineRaidAdOk==="function"&&mineRaidAdOk(m.id)
-            ? ('<button type="button" class="btn btn-soft uiMineRaidBtn" onclick="event.stopPropagation();mineRaidReadyAd('+m.id+');UIS.render(\'mines\')">📺 Сразу · '+adSlotLeft("mine_raid_ready")+'</button>')
+            ? ('<button type="button" class="btn btn-soft uiMineRaidBtn" onclick="event.stopPropagation();mineRaidReadyAd('+m.id+');UIS.render(\'mines\')">📺 Immediately. · '+adSlotLeft("mine_raid_ready")+'</button>')
             : "");
       } else if(unlocked && sl.done){
-        raidBtn='<div class="uiSub">ступени на сегодня закрыты</div>';
+        raidBtn='<div class="uiSub">Steps closed for the time being</div>';
       }
       return '<div class="uiMineCard '+m.theme+(hereNow?" sel":"")+(unlocked?"":" locked")+'">'
-        +'<button type="button" class="btn btn-mine uiMineEnter" onclick="'+enterClick+'">'
+        +'<button type="button" class="btn btn-mine uiMineJoin" onclick="'+enterClick+'">'
         +'<span class="uiMineIc">'+(m.ic||"⛏")+'</span>'
         +'<div class="uiMineMain">'
         +'<div class="uiMineTop"><b>'+esc(m.n)+'</b>'+badge+'</div>'
         +'<div class="uiSub">'+esc(m.sub)+'</div>'
-        +'<div class="uiMineColRow"><span>камни '+got+'/8'+(doneSet?" ✓":"")+'</span>'+statusPill+'</div>'
+        +'<div class="uiMineColRow"><span>stones '+got+'/8'+(doneSet?" ✓":"")+'</span>'+statusPill+'</div>'
         +(bonus?'<div class="uiMineBonusShort">'+(doneSet?"✓ ":"")+esc((bonus.label||"").split("—")[0].trim())+'</div>':"")
         +'</div></button>'
         +raidBtn
@@ -554,12 +554,12 @@ const UIS={
       +'</div>';
 
     const foot=
-      '<div class="uiSec">Ступени по чертогам</div>'
+      '<div class="uiSec">Level hallm</div>'
       +setStrip
-      +'<div class="uiSub" style="margin-top:8px">Камней коллекции '+totalCol+'/40. Обычная добыча отдельно; особый камень — лестница ступеней.</div>';
+      +'<div class="uiSub" style="margin-top:8px">Collection Stones '+totalCol+'/40. Normal loot Separate; Special Stone — The stairs of the steps.</div>';
 
     this.$("uiBody").innerHTML=how+overview+raidCta
-      +'<div class="uiSec">Пять чертогов</div>'
+      +'<div class="uiSec">Five. hall</div>'
       +'<div class="uiMineList">'+cards+'</div>'
       +foot;
   },
@@ -576,9 +576,9 @@ const UIS={
     const nextGold=typeof pvpWinGold==="function"?pvpWinGold(nextLi):(BALANCE.pvp.rewards[nextLi]||0)*100;
     const atMax=li>=BALANCE.pvp.names.length-1;
     const leagueSub=atMax
-      ? ("макс · победа +" + fmt(winGold) + " 🪙")
-      : ("победа +" + fmt(winGold) + " 🪙 · в " + BALANCE.pvp.names[nextLi] + " уже +" + fmt(nextGold) + " 🪙");
-    this.$("uiTitle").textContent="PvP · Арена";
+      ? ("max · win +" + fmt(winGold) + " 🪙")
+      : ("win +" + fmt(winGold) + " 🪙 · in " + BALANCE.pvp.names[nextLi] + " already. +" + fmt(nextGold) + " 🪙");
+    this.$("uiTitle").textContent="PvP · Arena";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🏆 '+fmt(S.trophies||0)+'</span>';
     this.$("uiTabs").innerHTML="";
     const opps=pvpSlate.map((o,i)=>{
@@ -586,29 +586,29 @@ const UIS={
       const rec=typeof pvpBotRec==="function"?pvpBotRec(o.id):{w:0,l:0};
       const chance=typeof pvpWinChance==="function"?pvpWinChance(me,o.power):50;
       return '<div class="uiOpp '+(fav?"fav":"")+'"><div><b>'+(o.ic||"🤖")+' '+o.name+'</b>'
-        +'<div class="uiSub">'+esc(o.tag||"ИИ")+' · сила '+fmt(o.power)+' · шанс ~'+chance+'%</div>'
-        +'<div class="uiSub">счёт '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div></div>'
-        +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⚔ Бой</button></div>';
+        +'<div class="uiSub">'+esc(o.tag||"AND")+' · force '+fmt(o.power)+' · A chance. ~'+chance+'%</div>'
+        +'<div class="uiSub">Account '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div></div>'
+        +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⚔ Fight.</button></div>';
     }).join("");
     this.$("uiBody").innerHTML=
       '<div class="uiHero compact"><div class="uiHeroArt">⚔</div><b>'+esc(playerName())+'</b>'
-      +'<div class="uiSub">Быстрый бой кирками · анимация и результат</div></div>'
-      +this.card("🏆","Лига: "+BALANCE.pvp.names[li], leagueSub,
+      +'<div class="uiSub">Quick fight. pickaxeMee. · Aimation and result</div></div>'
+      +this.card("🏆","League: "+BALANCE.pvp.names[li], leagueSub,
         this.bar(pct,"var(--blue)")
         +'<div class="uiSub" style="margin-top:4px">'+(atMax
-          ? ("вершина арены · "+fmt(S.trophies||0)+" 🏆")
-          : ("до "+BALANCE.pvp.names[nextLi]+": "+fmt(Math.max(0,nextReq-(S.trophies||0)))+" 🏆"))+'</div>'
-        +'<div class="uiSub" style="margin-top:4px">попыток '+left+"/"+BALANCE.pvpDayLimit
-          +" · твоя сила "+fmt(me)+"</div>")
-      +'<div class="uiSec">Выбери соперника</div>'
-      +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">Бои на сегодня кончились. Возвращайся завтра.</div>')
-      +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Обновить форму (бесплатно)</button>'
+          ? ("top of the arena · "+fmt(S.trophies||0)+" 🏆")
+          : ("up to "+BALANCE.pvp.names[nextLi]+": "+fmt(Math.max(0,nextReq-(S.trophies||0)))+" 🏆"))+'</div>'
+        +'<div class="uiSub" style="margin-top:4px">attempts '+left+"/"+BALANCE.pvpDayLimit
+          +" · Your power "+fmt(me)+"</div>")
+      +'<div class="uiSec">Choose your opponent.</div>'
+      +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">Fights are finished for today.</div>')
+      +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Update Form (free)</button>'
         +(typeof adSlotOk==="function"&&adSlotOk("pvp_reroll")
-          ?'<button class="btn btn-hard btn-wide" style="margin-top:6px" onclick="pvpRerollAd();UIS.render(\'pvp\')">📺 Новые соперники · '
+          ?'<button class="btn btn-hard btn-wide" style="margin-top:6px" onclick="pvpRerollAd();UIS.render(\'pvp\')">📺 New Opponents · '
             +(typeof adSlotLeft==="function"?adSlotLeft("pvp_reroll"):"")+'</button>':"")
         :'')
-      +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openPvpBoard()">⚔ Рейтинг PvP</button>'
-      +'<button class="btn btn-wide" style="margin-top:6px" onclick="openWall()">🏔 Стена Горы</button>';
+      +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openPvpBoard()">⚔ PvP Leaderboard</button>'
+      +'<button class="btn btn-wide" style="margin-top:6px" onclick="openWall()">🏔 Mountain Wall</button>';
   },
 
   renderTavern(){
@@ -624,7 +624,7 @@ const UIS={
     const names=(typeof WK_PATH_NAME==="object"&&WK_PATH_NAME)||{};
     const talk=(typeof borinBarTalk==="function")
       ? borinBarTalk()
-      : {tag:"Борин у стойки.", text:"Пиво не для красоты. Пей — копи очки — качай застолье."};
+      : {tag:"Borin At the counter.", text:"beer Not for beauty. — Save your glasses. — Kick it. feast."};
     
     const TAV_COLS=["#f0a028","#4a8ce0","#f4cc42","#58c04c","#e0503c","#9a62d8","#46c8c8","#f07830"];
     let tavBtls="";
@@ -705,21 +705,21 @@ const UIS={
       +'</svg>'
       +'</div>';
     const meters='<div class="uiTavMeters">'
-      +'<div class="uiTavMeter"><span class="k">ПИВО</span><span class="v">🍺 '+beer+'</span><span class="s">+'+((W.proteinPerHour)|5)+'/ч</span></div>'
-      +'<div class="uiTavMeter"><span class="k">ОЧКИ</span><span class="v">💪 '+pts+'</span><span class="s">из глотков</span></div>'
-      +'<div class="uiTavMeter"><span class="k">ЗАЛ</span><span class="v">'+lv+'</span><span class="s">+'+gymPerkPct()+'% статы</span></div>'
+      +'<div class="uiTavMeter"><span class="k">BEER</span><span class="v">🍺 '+beer+'</span><span class="s">+'+((W.proteinPerHour)|5)+'/h</span></div>'
+      +'<div class="uiTavMeter"><span class="k">GLASSES</span><span class="v">💪 '+pts+'</span><span class="s">From the throats</span></div>'
+      +'<div class="uiTavMeter"><span class="k">ROOM</span><span class="v">'+lv+'</span><span class="s">+'+gymPerkPct()+'% Statistics</span></div>'
       +'</div>';
-    const gymCard=this.card("🏋","Уважение · зал ур."+lv,
-      fmt(xp)+(nextAt!=null?(" / "+fmt(nextAt)+" XP"):" · макс"),
+    const gymCard=this.card("🏋","Respect · Room"+lv,
+      fmt(xp)+(nextAt!=null?(" / "+fmt(nextAt)+" XP"):" · max"),
       this.bar(gymPct)
-      +'<div class="uiSub" style="margin-top:4px">Тренировки, PvP, дейлики, дарение артефактов</div>',
+      +'<div class="uiSub" style="margin-top:4px">Training, PvP, Deylics, Artifact giving</div>',
       "tav");
 
-    this.$("uiTitle").textContent="Таверна";
-    this.$("uiHeadAct").innerHTML='<span class="uiPill">Зал '+lv+' · +'+gymPerkPct()+'%</span>';
+    this.$("uiTitle").textContent="Tavern";
+    this.$("uiHeadAct").innerHTML='<span class="uiPill">Hall '+lv+' · +'+gymPerkPct()+'%</span>';
     this.$("uiTabs").innerHTML=this.tabs(
       ["ale","feast","mates","friends","rank"],
-      ["Стойка","Застолья","Стол","Друзья","Кубки"],
+      ["Stop","Feasts","Table","Friends","Cups"],
       tab);
 
     let body="";
@@ -731,33 +731,33 @@ const UIS={
       const up=mug.next
         ? ('<button type="button" class="btn btn-soft btn-wide uiTavMugUp" onclick="upgradeMug()" '
           +((S.gems||0)>=(mug.next.gems|0)?"":"disabled")+'>'
-          +'Ап кружки → ×'+mug.next.mul+' · 💎'+(mug.next.gems|0)+'</button>')
-        : '<div class="uiSub" style="margin-top:8px;text-align:center">Кружка макс · ×'+mug.mul+' за тап</div>';
+          +'Ap mug → ×'+mug.next.mul+' · 💎'+(mug.next.gems|0)+'</button>')
+        : '<div class="uiSub" style="margin-top:8px;text-align:center">mug max · ×'+mug.mul+' For the slip.</div>';
       const drinkBody=
         '<div class="uiTavDeal">'
-        +'<span class="uiTavChip cost">−'+drinkCost+' пива</span>'
-        +'<span class="uiTavChip gain">+'+drinkPts+' очков</span>'
-        +'<span class="uiTavChip soft">×'+mug.mul+' глоток'+(mug.mul>1?"а":"")+'</span>'
+        +'<span class="uiTavChip cost">−'+drinkCost+' Beer</span>'
+        +'<span class="uiTavChip gain">+'+drinkPts+' glasses</span>'
+        +'<span class="uiTavChip soft">×'+mug.mul+' Sip'+(mug.mul>1?"a":"")+'</span>'
         +'</div>'
         +'<button type="button" class="uiTavDrinkBtn" onclick="drinkBeer()" '+(canDrink?"":"disabled")+'>'
-        +'<span>Выпить '+(mug.mul>1?("×"+mug.mul):"кружку")+'</span>'
+        +'<span>Drink '+(mug.mul>1?("×"+mug.mul):"mug")+'</span>'
         +'<span class="cost">'+UI_MUG_IC_SM+' '+drinkCost+'</span>'
         +'</button>'
         +up
         +'<div class="uiTavEnergy">'
-        +'<div class="row"><span>Энергия</span><b>'+eCur+' / '+eMax+'</b></div>'
+        +'<div class="row"><span>Energy</span><b>'+eCur+' / '+eMax+'</b></div>'
         +'<div class="uiBar"><div class="uiBarFill" style="width:'+ePct+'%"></div></div>'
-        +'<div class="uiSub" style="margin-top:6px">Авто-глоток в забое · '+UI_MUG_IC_SM+' кружка ур.'+(mug.i+1)+'</div>'
+        +'<div class="uiSub" style="margin-top:6px">Auto-sip in dig · '+UI_MUG_IC_SM+' mug Ur.'+(mug.i+1)+'</div>'
         +'</div>';
       body=facade+meters
         +'<div class="uiTavTip"><b>'+esc(talk.tag)+'</b> '+esc(talk.text)+'</div>'
-        +'<div class="uiTavDrink">'+this.card(UI_MUG_IC,"Кружка ×"+mug.mul,
-          canDrink?("В запасе "+beer+" · хватит на "+sips+" тап"+(sips===1?"":"а"))
-            :("Мало пива · нужно "+drinkCost+", есть "+beer),
+        +'<div class="uiTavDrink">'+this.card(UI_MUG_IC,"mug ×"+mug.mul,
+          canDrink?("Reserved "+beer+" · enough for "+sips+" slip"+(sips===1?"":"a"))
+            :("Not enough beer. · I need to. "+drinkCost+", have "+beer),
           drinkBody,"tav")+'</div>'
         +'<div class="uiBtnStack">'
-        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">К застольям</button>'
-        +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">Лист · навыки</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">K feastm</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">List · skill</button>'
         +'</div>';
     } else if(tab==="feast"){
       const active=S.wkActive;
@@ -765,10 +765,10 @@ const UIS={
       if(active){
         const left=Math.max(0,Math.ceil((active.end-Date.now())/1000));
         const nm=names[active.path]||active.path;
-        activeHtml=this.card("⏱","Идёт: "+nm, left>0?("осталось "+left+"с"):"готово — забери!",
+        activeHtml=this.card("⏱","Done: "+nm, left>0?("remaining "+left+"c"):"Ready. — Take it!",
           left>0
-            ?('<button class="btn btn-soft btn-wide" onclick="skipWorkout()">Пропуск 💎'+(W.skipGems||5)+'</button>')
-            :('<button class="btn btn-hard btn-wide" onclick="claimWorkout()">Забрать награду</button>'),
+            ?('<button class="btn btn-soft btn-wide" onclick="skipWorkout()">Pass 💎'+(W.skipGems||5)+'</button>')
+            :('<button class="btn btn-hard btn-wide" onclick="claimWorkout()">Take the award</button>'),
           "tav");
       }
       const paths=(BALANCE.workoutPaths||[]).slice(0,4).map((p,i)=>{
@@ -779,53 +779,53 @@ const UIS={
         const busy=!!S.wkActive;
         const maxed=lvP>=(W.maxLv||W.step||50);
         const btn=maxed
-          ?'<button class="btn btn-soft" disabled>МАКС</button>'
+          ?'<button class="btn btn-soft" disabled>MAX</button>'
           :(busy
-            ?'<button class="btn btn-soft" disabled>занято</button>'
+            ?'<button class="btn btn-soft" disabled>occupied</button>'
             :'<button class="btn btn-soft" onclick="startWorkout(\''+p+'\')" '+(pts<cost?"disabled":"")+'>💪'+cost+'</button>');
-        return '<div class="uiTavPath"><div><b>'+esc(nm)+'</b><div class="uiSub">ур.'+lvP+' · +'+pct+'%/ур · сейчас +'+(typeof workoutBonus==="function"?workoutBonus(p):0)+'%</div></div>'+btn+'</div>';
+        return '<div class="uiTavPath"><div><b>'+esc(nm)+'</b><div class="uiSub">Lv.'+lvP+' · +'+pct+'%/Ur · Now. +'+(typeof workoutBonus==="function"?workoutBonus(p):0)+'%</div></div>'+btn+'</div>';
       }).join("");
       body=meters
         +activeHtml
-        +this.card("💪","Застолье",
-          "Пиво → очки → путь. Полный список из "+(BALANCE.workoutPaths||[]).length+" путей.",
-          '<button class="btn btn-soft btn-wide" onclick="drinkBeer()">Выпить '+UI_MUG_IC_SM+drinkCost+' → +'+drinkPts+' очк.</button>'
-          +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWorkouts()">Все тренировки</button>',
+        +this.card("💪","feast",
+          "beer → glasses → The complete list of the "+(BALANCE.workoutPaths||[]).length+" The way.",
+          '<button class="btn btn-soft btn-wide" onclick="drinkBeer()">Drink '+UI_MUG_IC_SM+drinkCost+' → +'+drinkPts+' - Okay.</button>'
+          +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWorkouts()">All training</button>',
           "tav")
-        +'<div class="uiSec tav">Быстрые пути</div>'
+        +'<div class="uiSec tav">Faster Paths</div>'
         +'<div class="uiCard tav" style="display:block;padding:4px 8px">'+paths+'</div>'
         +gymCard;
     } else if(tab==="mates"){
       const geoSlot=S.geo
         ? this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r,"UIS.push('beards','merge')")
-        : this.slot("❔","Борода","найми старейшину","","UIS.push('beards','gacha')");
+        : this.slot("❔","beard","hire me. elder","","UIS.push('beards','gacha')");
       const petSlot=S.pet
         ? this.slot(petIcon(S.pet.t),PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.push('pets','gacha')")
-        : this.slot("❔","Питомец","яйца ждут","","UIS.push('pets','gacha')");
+        : this.slot("❔","pet","egg Waiting","","UIS.push('pets','gacha')");
       body=facade
-        +'<div class="uiTavTip"><b>Стол компании.</b> Наставник, борода, зверь и будущий клан — кто сидит рядом в забое.</div>'
-        +'<div class="uiSec tav">Кто за столом</div>'
+        +'<div class="uiTavTip"><b>The company desk.</b> A mentor, beardthe beast and the future clan — Who sits next to you in the dig.</div>'
+        +'<div class="uiSec tav">Who’s at the table?</div>'
         +'<div class="uiGrid tav">'
-        +this.slot("🧔","Борин","наставник","","openBorinMentor()")
+        +this.slot("🧔","Borin","mentor","","openBorinMentor()")
         +geoSlot+petSlot
-        +this.slot("👥","Клан","скоро","","openClanSoon()")
+        +this.slot("👥","Clan","Soon.","","openClanSoon()")
         +'</div>';
     } else if(tab==="friends"){
       const code=(typeof growthInviteCode==="function")?growthInviteCode():"ORE-????";
-      const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Код принят','',c,'друг добавится в сетевой версии');}";
+      const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Code accepted','',c,'A friend will be added to the online version');}";
       body=facade
-        +'<div class="uiTavTip"><b>Собутыльники.</b> Пока сеть варится — зови по коду. Рефералы и вехи живут в профиле.</div>'
-        +this.card("🤝","Код друга","введи чужой — или отдай свой",
+        +'<div class="uiTavTip"><b>The watermelons.</b> As long as the network boils — The files and the milestones live in a profile.</div>'
+        +this.card("🤝","Friend code","Inject someone else. — Or give me yours.",
           '<div class="uiRow" style="border:0;padding:6px 0"><input id="uiFriendCode" class="uiInp wide" placeholder="ORE-XXXX" maxlength="12" style="max-width:100%">'
           +'<button class="btn btn-soft btn-tiny" onclick="'+addFn+'">+</button></div>'
-          +'<div class="uiSub">Твой код роста: <b style="color:var(--gold)">'+esc(code)+'</b></div>',
+          +'<div class="uiSub">Your height code: <b style="color:var(--gold)">'+esc(code)+'</b></div>',
           "tav")
         +'<div class="uiBtnStack">'
-        +'<button class="btn btn-hard btn-wide" onclick="UIS.open(\'profile\',\'growth\')">👥 Рефералы и вехи</button>'
+        +'<button class="btn btn-hard btn-wide" onclick="UIS.open(\'profile\',\'growth\')">👥 Reference and milestones</button>'
         +(typeof shareInvite==="function"
-          ?'<button class="btn btn-soft btn-wide" onclick="shareInvite()">Поделиться ссылкой</button>':"")
+          ?'<button class="btn btn-soft btn-wide" onclick="shareInvite()">Share invite link</button>':"")
         +'</div>'
-        +'<div class="uiEmpty" style="padding:16px 8px">Список собутыльников онлайн — в сетевой версии.</div>';
+        +'<div class="uiEmpty" style="padding:16px 8px">List of online drinking agents — online version.</div>';
     } else {
       
       const mine={n:playerName(), xp:xp, me:true};
@@ -833,16 +833,16 @@ const UIS={
         .sort((a,b)=>b.xp-a.xp);
       const rows=board.map((t,i)=>
         '<div class="uiRankRow'+(t.me?" me":"")+'"><span class="uiRankN">'+(i+1)+'</span><b>'
-        +esc(t.n)+(t.me?" · ты":"")+'</b><span class="uiSub">'+fmt(t.xp)+' XP</span></div>'
+        +esc(t.n)+(t.me?" · You.":"")+'</b><span class="uiSub">'+fmt(t.xp)+' XP</span></div>'
       ).join("");
       const nextPerk=GYM_PERKS.find(pk=>lv<pk.lv);
       body=facade+gymCard
-        +'<div class="uiSec tav">Рейтинг таверн</div>'
+        +'<div class="uiSec tav">Tavern rating</div>'
         +rows
         +'<div class="uiSub" style="margin-top:8px;text-align:center">'
         +(nextPerk
-          ?('Следующий перк зала: «'+nextPerk.n+'» (+'+nextPerk.pct+'%) с ур.'+nextPerk.lv)
-          :'Перки зала на максимуме')
+          ?('Next perk Room: «'+nextPerk.n+'» (+'+nextPerk.pct+'%) cc.'+nextPerk.lv)
+          :'perk maximum room')
         +'</div>';
     }
     this.$("uiBody").innerHTML=body;
@@ -850,11 +850,11 @@ const UIS={
 
   renderArtifacts(){
     const tab=this.tab||"pick";
-    this.$("uiTitle").textContent="Артефакты";
+    this.$("uiTitle").textContent="Artifacts";
     this.$("uiHeadAct").innerHTML="";
     if(tab==="pick"){
       this.$("uiTabs").innerHTML="";
-      this.$("uiBody").innerHTML='<div class="uiSub" style="margin-bottom:8px">Выбери коллекцию</div>'
+      this.$("uiBody").innerHTML='<div class="uiSub" style="margin-bottom:8px">Choose a collection</div>'
         +this.grid(UI_ART_COLS.map(c=>{
           const p=typeof stickerColProgress==="function"?stickerColProgress(c.id):{have:0,total:0};
           return '<button class="uiColPick" style="--acc:'+c.c+'" onclick="UIS.tab=\''+c.id+'\';UIS.render(\'artifacts\')">'
@@ -864,7 +864,7 @@ const UIS={
       return;
     }
     const col=UI_ART_COLS.find(c=>c.id===tab)||UI_ART_COLS[0];
-    this.$("uiTabs").innerHTML='<button class="btn btn-tab" onclick="UIS.tab=\'pick\';UIS.render(\'artifacts\')">‹ Коллекции</button>';
+    this.$("uiTabs").innerHTML='<button class="btn btn-tab" onclick="UIS.tab=\'pick\';UIS.render(\'artifacts\')">‹ Collections</button>';
     const owned=S.stickers||{};
     const list=typeof stickersInCol==="function"?stickersInCol(col.id):STICKERS.filter(s=>s.col===col.id);
     const slots=list.map(s=>{
@@ -875,20 +875,20 @@ const UIS={
     this.$("uiBody").innerHTML=
       '<div class="uiColHead" style="--acc:'+col.c+'"><span>'+col.ic+'</span><b>'+col.n+'</b>'
       +'<span class="uiSub" style="margin-left:8px">'+prog.have+'/'+prog.total+'</span></div>'
-      +(slots.length?this.grid(slots):'<div class="uiEmpty">В этой коллекции пока пусто</div>')
-      +'<div class="uiBtnStack"><button class="btn btn-hard" onclick="buyStickerPack()">Пак · '+STICKER_PACK_GEMS+' 💎</button>'
-      +'<button onclick="giftStickers()">Подарить дубликаты</button></div>';
+      +(slots.length?this.grid(slots):'<div class="uiEmpty">This collection is empty.</div>')
+      +'<div class="uiBtnStack"><button class="btn btn-hard" onclick="buyStickerPack()">Park · '+STICKER_PACK_GEMS+' 💎</button>'
+      +'<button onclick="giftStickers()">Give duplicate</button></div>';
   },
 
   renderShop(){
     
     const tab=this.tab||"offers";
-    this.$("uiTitle").textContent="Рынок";
+    this.$("uiTitle").textContent="Market";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">💎 '+fmt(S.gems||0)+'</span>';
     const mark=(id,label)=> (typeof shopDailyAnyLeft==="function"&&shopDailyAnyLeft(id)?("🎁 "+label):label);
     this.$("uiTabs").innerHTML=this.tabs(["offers","art","barrels","gems","free"],
-      [mark("offers","Офферы"), mark("art","Артеф."), mark("barrels","Бочки"),
-       mark("gems","Самоцв."), (typeof shopDailyAnyLeft==="function"&&(shopDailyAnyLeft("a")||shopDailyAnyLeft("b")||shopDailyAnyLeft("offers")||shopDailyAnyLeft("art")||shopDailyAnyLeft("barrels")||shopDailyAnyLeft("gems"))?"🎁 Беспл.":"Беспл.")],
+      [mark("offers","Divisions"), mark("art","Artef."), mark("barrels","Batteries"),
+       mark("gems","Same-ass."), (typeof shopDailyAnyLeft==="function"&&(shopDailyAnyLeft("a")||shopDailyAnyLeft("b")||shopDailyAnyLeft("offers")||shopDailyAnyLeft("art")||shopDailyAnyLeft("barrels")||shopDailyAnyLeft("gems"))?"🎁 No need.":"No need.")],
       tab);
     const daily=(id)=> (typeof shopDailyCardHtml==="function"?shopDailyCardHtml(id):"");
     let body="";
@@ -896,27 +896,27 @@ const UIS={
       const sp=BALANCE.growth.starterPack;
       body=daily("offers")
       +(S.growth&&S.growth.starterBought
-        ? this.card("✓","Стартовый пак","куплен · D1 payback","")
-        : this.card("⚡","Стартовый пак","💎"+sp.gems+" + 🪙"+fmt(sp.gold)+" + 🎒"+sp.bags+" · 2× "+sp.loot2xMin+" мин",
-          '<div class="uiSub" style="margin-bottom:6px">разовый стартовый набор</div>'
+        ? this.card("✓","Start pack","purchased · D1 payback","")
+        : this.card("⚡","Start pack","💎"+sp.gems+" + 🪙"+fmt(sp.gold)+" + 🎒"+sp.bags+" · 2× "+sp.loot2xMin+" min",
+          '<div class="uiSub" style="margin-bottom:6px">One-off start-up kit</div>'
           +'<button class="btn btn-hard btn-wide" onclick="buyStarterPack()">$'+sp.price+'</button>'))
-      +BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>this.card("🎁","Пак "+(i+1)+" · скидка","💎"+g+" + 🪙"+fmt(gold),
+      +BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>this.card("🎁","Park "+(i+1)+" · discount","💎"+g+" + 🪙"+fmt(gold),
         '<button class="btn btn-hard btn-wide" onclick="buyPack('+i+')">$'+[6.99,16.99,24.99][i]+'</button>')).join("")
         +(S.noAds
-          ? this.card("✓","Реклама отключена","спокойно копай","")
-          : this.card("🚫","Отключить рекламу","навсегда",
+          ? this.card("✓","The ad’s offline.","Slowly dig.","")
+          : this.card("🚫","Disable advertising","Forever",
             '<button class="btn btn-hard btn-wide" onclick="buyNoAds()">$'+BALANCE.noAdsPrice+'</button>'));
     } else if(tab==="art"){
       body=daily("art")
-        +this.card("💎","Пак артефактов","5 случайных · "+STICKER_PACK_GEMS+" 💎",
-        '<button class="btn btn-hard btn-wide" onclick="buyStickerPack()">Купить пак ×5</button>'
-        +'<button class="btn btn-wide" style="margin-top:6px" onclick="UIS.open(\'artifacts\')">К коллекциям</button>');
+        +this.card("💎","Park Artifacts","5 accidental · "+STICKER_PACK_GEMS+" 💎",
+        '<button class="btn btn-hard btn-wide" onclick="buyStickerPack()">Buy a pack. ×5</button>'
+        +'<button class="btn btn-wide" style="margin-top:6px" onclick="UIS.open(\'artifacts\')">Collections</button>');
     } else if(tab==="barrels"){
       body=daily("barrels")
         +BALANCE.skillChests.map(ch=>{
         const ok=ch.keyCost?(S.chestKeys||0)>=ch.keyCost:(S.gems||0)>=ch.gemCost;
         const price=ch.keyCost?(ch.keyCost+" 🗝"):(ch.gemCost+" 💎");
-        return this.card("🛢",ch.n,ch.cards+" карт · гарантия "+SKILL_RAR[ch.minR]+"+",
+        return this.card("🛢",ch.n,ch.cards+" Maps · guarantee "+SKILL_RAR[ch.minR]+"+",
           '<button class="btn '+(ch.keyCost?"btn-soft":"btn-hard")+' btn-wide" onclick="openSkillChest(\''+ch.id+'\');UIS.render(\'shop\')" '
           +(ok?"":"disabled")+'>'+price+'</button>');
       }).join("");
@@ -930,17 +930,17 @@ const UIS={
         const bonus=Math.max(0,g-fair);
         const pct=i===0?0:(i===1?15:30);
         const sub=i===0
-          ? ("базовый пак · "+g+" 💎")
-          : ("выгода +"+pct+"% · +"+fmt(bonus)+" 💎 к честной цене");
-        return this.card("💎",fmt(g)+" самоцветов",sub,
-          '<div class="uiSub" style="margin-bottom:6px">'+(bonus>0?("абсолютная выгода: +"+fmt(bonus)+" 💎"):"без надбавки")+'</div>'
+          ? ("Basic pack · "+g+" 💎")
+          : ("Benefits +"+pct+"% · +"+fmt(bonus)+" 💎 fair price");
+        return this.card("💎",fmt(g)+" gems",sub,
+          '<div class="uiSub" style="margin-bottom:6px">'+(bonus>0?("Absolute benefit: +"+fmt(bonus)+" 💎"):"No allowance")+'</div>'
           +'<button class="btn btn-hard btn-wide" onclick="buyGems('+i+')">$'+prices[i]+'</button>');
       }).join("");
     } else {
       if(typeof shopFreeReset==="function") shopFreeReset();
       const left=typeof shopDailyKeys==="function"?shopDailyKeys().filter(k=>shopDailyAnyLeft(k)).length:0;
-      body='<div class="uiSub" style="margin-bottom:8px">Обход разделов: в каждом — бесплатно и за рекламу · осталось '
-        +left+' · сброс ежедневно</div>'
+      body='<div class="uiSub" style="margin-bottom:8px">Scattering: each — free and for advertising · remaining '
+        +left+' · Daily discharge</div>'
         +(typeof shopDailyCardHtml==="function"
           ? ["offers","art","barrels","gems","a","b"].map(shopDailyCardHtml).join("")
           : "");
@@ -1069,7 +1069,7 @@ function uiWire(){
     try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
   };
   const ml=$("mineLabel");
-  if(ml){ ml.style.cursor="pointer"; ml.title="Штольни"; ml.onclick=(e)=>{
+  if(ml){ ml.style.cursor="pointer"; ml.title="mine"; ml.onclick=(e)=>{
     if(e&&e.stopPropagation) e.stopPropagation();
     if(typeof requireFeat==="function"&&!requireFeat("mines")) return;
     UIS.open("mines");
@@ -1082,7 +1082,7 @@ function uiWire(){
   const rank=$("statMinerCell")||$("statMiner");
   if(rank){
     rank.style.cursor="pointer";
-    rank.title="Бороды · звание";
+    rank.title="Beards · rank";
     rank.onclick=()=>{
       if(typeof requireFeat==="function"&&!requireFeat("beards")) return;
       UIS.open("beards","rank");
@@ -1121,20 +1121,20 @@ openGeoGuild=function(){ UIS.open("beards", S.geo && S.geo.r===GEO_RAR.length-1 
 
 function openBorinMentor(){
   const w=typeof beardWisdom==="function"?beardWisdom():{title:"—",goldPct:0,luckAdd:0};
-  UIS.openPanel("Борин · наставник",
-    "Старый дворф у стойки. Учит рангу бороды и следит, чтобы ты не забыл, зачем спустился в Гору.",
+  UIS.openPanel("Borin · mentor",
+    "Old courtman at the bar. beard And make sure you don’t forget why you came down to Mount.",
     '<div class="uiCard"><div class="uiCardIc">🧔</div><div class="uiCardBody"><b>'+esc(w.title)+'</b>'
-    +'<div class="uiSub">+'+w.goldPct+'% доход · +'+Number(w.luckAdd||0).toFixed(1)+' удачи</div></div></div>'
+    +'<div class="uiSub">+'+w.goldPct+'% income · +'+Number(w.luckAdd||0).toFixed(1)+' luck</div></div></div>'
     +'<div class="uiBtnStack" style="margin-top:10px">'
-    +'<button class="btn btn-hard btn-wide" onclick="UIS.push(\'beards\',\'rank\')">Мудрость Бороды</button>'
+    +'<button class="btn btn-hard btn-wide" onclick="UIS.push(\'beards\',\'rank\')">Wisdom beard</button>'
     +'</div>');
 }
 
 function openClanSoon(){
-  UIS.openPanel("Клан",
-    "Артель дворфов: общий забой, чат и войны кланов.",
-    '<div class="uiEmpty">👥 Скоро — в сетевой версии</div>'
-    +'<div class="uiSub" style="margin-top:8px;text-align:center">Пока зови друзей по коду во вкладке «Друзья» таверны.</div>');
+  UIS.openPanel("Clan",
+    "Garbage Archer: Total dig, chat rooms and clan wars.",
+    '<div class="uiEmpty">👥 Soon. — online version</div>'
+    +'<div class="uiSub" style="margin-top:8px;text-align:center">While you’re at it, call your friends by code in the Tavern Friends tab.</div>');
 }
 
 if(typeof metaOpen==="function"){
