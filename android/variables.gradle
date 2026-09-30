@@ -1,9 +1,8 @@
 ext {
-    minSdkVersion = 23
-    /* Play: сейчас нужен target ≥35; с 31.08.2026 для новых/апдейтов — 36.
-       Capacitor 6 ок с 35; перед августом подними оба до 36. */
-    compileSdkVersion = 35
-    targetSdkVersion = 35
+    minSdkVersion = 24
+    /* Play отклоняет target 35: для этого приложения нужен минимум 36. */
+    compileSdkVersion = 36
+    targetSdkVersion = 36
     androidxActivityVersion = '1.8.0'
     androidxAppCompatVersion = '1.6.1'
     androidxCoordinatorLayoutVersion = '1.2.0'

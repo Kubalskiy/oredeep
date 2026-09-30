@@ -1,19 +1,34 @@
-# Google Play: сборка AAB для ORE DEEP
+# Google Play: сборка AAB для Mountain King
 
-Capacitor Android. Package: `com.oredeep.game`. Версия в `android/app/build.gradle`
-(`versionCode` / `versionName`) — держи вровень с `package.json`.
+Capacitor Android. Витрина Play: **Mountain King**, пакет **`com.diggy.dwarf`**
+(консоль уже Registered). Сайт разработчика в карточке: `https://loveplaygames.com/`.
+
+`applicationId` в `android/app/build.gradle` и `appId` в `capacitor.config.json` должны
+остаться `com.diggy.dwarf`. Java-namespace `com.oredeep.game` не равен пакету стора
+и после релиза его можно не трогать. Версия (`versionCode` / `versionName`) — вровень
+с `package.json`.
+
+Ключи партнёров лежат в `android/app/src/main/res/values/sdk_keys.xml`
+(Facebook, AppMetrica, GameAnalytics, AppsFlyer, AppLovin, AdMob, Amazon).
+В манифесте — AdMob app id, Facebook app id/client token и AppLovin SDK key.
+Нативные SDK (AppsFlyer, AppMetrica, GameAnalytics, Facebook, UMP, MAX и сетки, Billing)
+подключены в `android/app`. Игра зовёт их через `DiggyNative`.
 
 ## Что уже сделано в репо
 
 - [x] `npx cap add android` → папка `android/`
-- [x] `versionCode 12` / `versionName 0.12.0`
-- [x] `targetSdkVersion 35` (до **31.08.2026** для новых/апдейтов нужен **36**)
+- [x] `versionCode 17` / `versionName 0.12.0`
+- [x] `targetSdkVersion 36`
 - [x] release-подпись через `android/keystore.properties` (пример рядом)
 - [ ] Android Studio / SDK на машине
 - [ ] release keystore создан и забэкаплен
 - [ ] иконка/сплеш из `resources/` залиты в mipmap
-- [ ] privacy policy URL + контентный рейтинг в Play Console
-- [ ] AAB загружен в internal testing
+- [x] privacy policy: `https://loveplaygames.com/games/android/privacy/en/`
+- [x] store listing en-US: Mountain King short/full + icon + feature + **8/8** phone screenshots
+- [x] category Role Playing · tags Adventure / Casual / Idle role-playing / Incremental / Role-playing
+- [x] App content «Need attention» empty (declarations filled; pending review bundle)
+- [x] AAB versionCode **18** / 0.12.1 (store-ready EN package · Sep 30, 2026)
+- [ ] production: страны soft-launch → confirm release → Send for review
 
 ## 0. Один раз: тулчейн
 
@@ -24,6 +39,13 @@ Capacitor Android. Package: `com.oredeep.game`. Версия в `android/app/bui
 Без Studio CLI-сборка не взлетит — сейчас на машине SDK не найден.
 
 ## 1. Keystore (один на жизнь приложения)
+
+В Console → Android developer verification для `com.diggy.dwarf` уже Verified три
+сертификата. Локальный `android/oredeep-release.keystore` (alias `oredeep`,
+SHA-256 `54:C3:A0:EB:…:6B:43`) **в этот список не входит**. AAB, подписанный им,
+Play для этого пакета не примет. Нужен keystore, чей SHA-256 совпадает с одним
+из Verified в консоли (или upload key, который выдаст владелец аккаунта).
+Новый keystore не генерировать.
 
 ```bash
 chmod +x scripts/make_release_keystore.sh
@@ -74,20 +96,18 @@ npx capacitor-assets generate --android
 
 ## 4. Play Console (чеклист заливки)
 
-Тексты, feature graphic и план скринов — [`STORE_LISTING_RU.md`](./STORE_LISTING_RU.md).
-Файлы: `assets/store/icon-512.png`, `assets/store/feature-graphic-1024x500.png`.
+Тексты и ассеты витрины — [`STORE_LISTING_RU.md`](./STORE_LISTING_RU.md) (снимок live en-US).
+Файлы: `assets/store/icon-512.png`, `feature-graphic-en-1024x500.png`, `screenshots/01`…`08`.
 
-1. [play.google.com/console](https://play.google.com/console) → создать приложение **ORE DEEP**.
-2. Пакет: **`com.oredeep.game`** (уже в `capacitor.config.json` — не меняй после релиза).
-3. **Internal testing** → создать релиз → загрузить `.aab`.
-4. Обязательные формы:
-   - Privacy policy (URL)
-   - Data safety
-   - Content rating (IARC)
-   - Target audience
-   - Store listing: short/full description, screenshots (телефон), feature graphic 1024×500, иконка 512×512
-5. Страны / цена (бесплатно + IAP позже через Billing).
-6. Когда ок на internal → closed/open production.
+1. Приложение в Console: **Mountain King** / **`com.diggy.dwarf`** (listing **Ready to send for review**).
+2. Пакет не менять. Сайт: `https://loveplaygames.com/` · контакт витрины: `privacy@loveplaygames.com`.
+3. AAB: `versionCode 17` / `0.12.0` → Internal / Production по чеклисту релиза.
+4. Обязательные формы (заполнены, в pending change bundle до Send):
+   - Privacy policy URL
+   - Data safety · Content rating · Target audience · Ads · Health
+   - Store listing: short/full EN, 8 phone shots, feature 1024×500, icon 512×512
+5. Страны soft-launch (KZ/PH) / цена free (+ IAP через Billing).
+6. Send for review — только когда dashboard green (не раньше).
 
 ## 5. Что ещё не подключено (не блокер soft-launch)
 

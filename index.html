@@ -4,7 +4,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ORE DEEP</title>
+<title>Mountain King</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
@@ -471,11 +471,16 @@ button:disabled{opacity:.45;cursor:default;}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 #statStrip .u .lv{font-size:11px;color:var(--textMuted);opacity:.95;line-height:1.1;}
 #statStrip .u .v{font-size:17px;color:var(--textPrimary);line-height:1.1;margin:1px 0;}
-#statStrip .u .c{font-size:12px;color:var(--goldMuted);line-height:1.1;}
+#statStrip .u .c{
+  font-size:11px;color:var(--goldMuted);line-height:1.1;
+  max-width:100%;padding:0 26px 0 2px;box-sizing:border-box;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 #statStrip .u button{
   position:absolute;right:3px;bottom:3px;width:24px;height:24px;padding:0;margin:0;
   min-height:0;border-radius:5px;background:var(--bgPanelAlt);border:1px solid var(--borderLight);
   color:var(--gold);font-family:var(--font-display);font-size:15px;line-height:1;pointer-events:none;
+  z-index:1;
 }
 #statStrip .u.can button{background:linear-gradient(180deg,#2f6b39,#25522d);border-color:#3a8a45;color:#fff;}
 #statStrip .pw{display:none;}
@@ -499,7 +504,7 @@ button:disabled{opacity:.45;cursor:default;}
 #powerUp{
   position:relative;min-height:72px;border-radius:var(--r-md);background:var(--bgPanel);
   border:2px solid var(--border);padding:8px;text-align:left;
-  font-family:var(--font-display);
+  font-family:var(--font-display);overflow:hidden;
 }
 #powerUp b{display:block;font-size:15px;color:var(--gold);}
 #powerUp span{font-size:13px;color:var(--goldMuted);}
@@ -507,10 +512,13 @@ button:disabled{opacity:.45;cursor:default;}
 #powerUp.skipOffer b{color:#ffe09a;}
 #powerUp.skipOffer #bagAreaTimer{color:#ffe09a;}
 #bagUpDot{
-  position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;
-  background:var(--income);color:#fff;font-size:12px;line-height:18px;text-align:center;
-  display:none;font-family:var(--font-display);pointer-events:none;
+  position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;
+  background:var(--income);color:#fff;font-size:10px;line-height:1;
+  display:none;align-items:center;justify-content:center;
+  font-family:var(--font-display);pointer-events:none;overflow:hidden;
+  box-sizing:border-box;
 }
+#powerUp.busyBag #bagUpDot{background:var(--goldMuted);color:#1a1208;}
 #powerUp.busyBag{border-color:var(--goldMuted);}
 #powerUp.busyBag b{color:#ffe09a;}
 #autoGroup{
@@ -924,19 +932,19 @@ body > .modal{
 .pvpVs{font-size:22px;line-height:1;padding-top:2px;color:var(--goldMuted);flex:none;}
 .pvpStage{position:relative;height:168px;background:radial-gradient(ellipse 80% 60% at 50% 100%,#2a2218,#120f0c);border:1px solid #2a2418;border-radius:8px;overflow:hidden;margin-bottom:8px;}
 .pvpDwarf{position:absolute;bottom:8px;width:88px;height:102px;transform-origin:70% 90%;}
-.pvpDwarf.me{left:14%;transform:scaleX(-1);}
-.pvpDwarf.opp{right:14%;}
+.pvpDwarf.me{left:14%;}
+.pvpDwarf.opp{right:14%;transform:scaleX(-1);}
 .pvpDwarf .pvpBody{width:88px;height:102px;image-rendering:pixelated;display:block;}
 .pvpDwarf .pvpPick{position:absolute;left:48px;top:-4px;width:46px;image-rendering:pixelated;transform-origin:8% 88%;z-index:2;}
-.pvpDwarf.me .pvpPick{left:42px;}
+.pvpDwarf.opp .pvpPick{left:42px;}
 .pvpDwarf.swing .pvpPick{animation:pvpChop .34s cubic-bezier(.3,.05,.4,1);}
 .pvpDwarf.swing .pvpBody{animation:pvpBobHit .34s cubic-bezier(.3,.05,.4,1);}
 .pvpDwarf.me.swing{animation:pvpLungeMe .34s cubic-bezier(.3,.05,.4,1);}
 .pvpDwarf.opp.swing{animation:pvpLungeOpp .34s cubic-bezier(.3,.05,.4,1);}
 @keyframes pvpChop{0%{transform:rotate(0deg)}40%{transform:rotate(-32deg)}70%{transform:rotate(24deg)}100%{transform:rotate(0deg)}}
 @keyframes pvpBobHit{0%,100%{transform:translateY(0)}45%{transform:translateY(-3px)}}
-@keyframes pvpLungeMe{0%,100%{transform:scaleX(-1) translateX(0)}50%{transform:scaleX(-1) translateX(10px)}}
-@keyframes pvpLungeOpp{0%,100%{transform:translateX(0)}50%{transform:translateX(-10px)}}
+@keyframes pvpLungeMe{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
+@keyframes pvpLungeOpp{0%,100%{transform:scaleX(-1) translateX(0)}50%{transform:scaleX(-1) translateX(-10px)}}
 .pvpDmgPop{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.6);font-family:var(--font-display);font-size:28px;color:#ff6a4a;text-shadow:0 2px 0 #000;opacity:0;pointer-events:none;z-index:5;transition:opacity .12s, transform .28s;}
 .pvpDmgPop.show{opacity:1;transform:translate(-50%,-70%) scale(1);}
 .pvpDmgPop.me{color:#7ecf6a;}
@@ -1545,7 +1553,7 @@ window.addEventListener("unhandledrejection",function(ev){
       <div class="metarow"><span>Mountain Charter</span><button onclick="showIntro()">📜 read</button></div>
       <div class="metarow"><span>Gacha fairness</span><button onclick="openFairness()">🔐 open</button></div>
       <div class="metarow"><span>Mountain Wall</span><button onclick="openWall()">🏔 leaderboard</button></div>
-      <div class="sub" style="margin-top:12px">Version ORE DEEP · dig deeper. then deeper.</div>
+      <div class="sub" style="margin-top:12px">Mountain King · dig deeper. then deeper.</div>
       <button class="btn btn-danger" style="margin-top:10px" onclick="document.getElementById('setModal2').style.display='none';resetProgress()">↺ Start over</button>
       <button style="margin-top:8px" onclick="document.getElementById('setModal2').style.display='none'">Close</button>
     </div>

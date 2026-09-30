@@ -1,118 +1,119 @@
-# Google Play — черновик store listing (RU)
+# Google Play — Mountain King store listing
 
-Package: `com.oredeep.game` · App name: **ORE DEEP** · Soft launch / internal testing.
+**Live on Console (en-US)** · Package: `com.diggy.dwarf` · App name: **Mountain King**  
+Developer: Karate Gorilla · Site: `https://loveplaygames.com/`  
+Privacy: `https://loveplaygames.com/games/android/privacy/en/`  
+Contact: `privacy@loveplaygames.com`
 
-Готовые файлы в `assets/store/`:
-- `icon-512.png` — иконка для Console (512×512)
-- `feature-graphic-1024x500.png` — баннер витрины
+Assets in `assets/store/`:
+- `icon-512.png` — 512×512
+- `feature-graphic-en-1024x500.png` — feature graphic (live combat crop)
+- `screenshots/01-mine.png` … `08-hero.png` — phone 1080×1920 (9∶16), **8/8 on listing**
 
-Скриншоты телефона пока снимай сам (портрет): `npm run android` → эмулятор/девайс → 2–8 кадров.
+Reshoot: `node tools/capture_store_shots.js` → `python3 tools/polish_store_shots.py`.
+
+Listing status (Sep 30, 2026): **Ready to send for review** (graphics + copy saved).
 
 ---
 
-## Short description (≤80 символов)
+## Short description (en-US, live)
+
+```
+Idle dwarf miner. Dig veins, upgrade your pick, and drink ale.
+```
+(62 / 80)
+
+---
+
+## Full description (en-US, live)
+
+```
+Mountain King is an idle mining RPG. Send your dwarf into the deep: crack ore veins, haul gold and chests, and upgrade your pickaxe, gear, pets, and beards.
+
+Open the tavern for ale and skills, visit the market for packs, and dig deeper every day. Offline progress keeps the haul coming while you are away.
+
+Simple to tap, deep to master. Grab your pick and dig.
+```
+
+---
+
+## Category & tags (live)
+
+| Field | Value |
+|------|----------|
+| Category | Game → **Role Playing** |
+| Tags | Adventure, Casual, Idle role-playing, Incremental, Role-playing |
+| Target age | 18 and older (Console) |
+| Content rating | Questionnaire submitted (pending review bundle) |
+
+---
+
+## Phone screenshots (live · 8/8)
+
+| # | File | Caption / beat |
+|---|------|----------------|
+| 1 | `01-mine.png` | DIG THE VEIN — boss vein, myth gear |
+| 2 | `02-combat.png` | MYTHIC LOADOUT — combat frame |
+| 3 | `03-mines.png` | SPECIAL MINES — mines list |
+| 4 | `04-skills.png` | FOREVER SKILLS — skills |
+| 5 | `05-tavern.png` | THE TAVERN — Borin |
+| 6 | `06-pvp.png` | ARENA DIG — PvP (opp faces player) |
+| 7 | `07-market.png` | DAILY MARKET — shop |
+| 8 | `08-hero.png` | YOUR DWARF — hero |
+
+Feature graphic: `feature-graphic-en-1024x500.png` (1024×500).  
+Promo video: none yet (optional CVR lift).
+
+---
+
+## RU draft (optional locale later)
+
+### Short (≤80)
 
 ```
 Idle RPG: дворф копает жилы, качает кирку и пьёт эль у Борина.
 ```
-(78 символов)
 
-Альтернативы:
-```
-Копай глубже: idle-добыча, сумки, питомцы и таверна гномов.
-```
-```
-Бей породу, крути гачу, качай застолья. Баланс Idle Boxer 1:1.
-```
-
----
-
-## Full description
+### Full
 
 ```
-ORE DEEP — idle / incremental RPG про дворфа-рудокопа в гномьих чертогах.
+Mountain King — idle / incremental RPG про дворфа-рудокопа.
 
-Ты бьёшь жилу, собираешь золото и сумки, качаешь статы и спускаешься глубже. Оффлайн-доход копит добычу, пока тебя нет. В таверне Борин наливает эль — очки идут в застолья и уважение зала. Артель старейшин, питомцы, навыки, дейлики и арена ждут в мета-слое.
+Бей жилу, собирай золото и сундуки, качай кирку, шмот, питомцев и бороды. Оффлайн копит добычу, пока тебя нет. В таверне — эль и навыки, на рынке — паки, в штольнях — особые забеги.
 
-ЧТО ВНУТРИ
-• Core loop: авто-бой с породой → лут → прокачка → следующая штольня
-• Сумка находок, 8 слотов экипировки, Auto Roll
-• Питомцы и старейшины (слияние, восхождение)
-• Навыки, эль, тренировки, дейлики с жетонами
-• Таверна Борина, рынок, престиж «Глубинный Зов»
-• PvP-заготовка и гильдейские зачатки
-
-ИГРАЙ КОРОТКО ИЛИ ДОЛГО
-Зашёл на минуту — глотнул эля, забрал оффлайн, качнул сумку.
-Засел на вечер — добил свод прогона и готовишь престиж.
-
-БАЛАНС
-Формулы и кривые — 1:1 из реверса Idle Boxer v1.18. Числа читаемые: ограниченный прогон, дальше сила в уровне престижа, не в e92.
-
-Прогресс хранится на устройстве. Реклама и покупки — опционально (по мере подключения).
-
-Копай глубже. Гора помнит.
+Просто тапнуть — глубоко освоить. Бери кирку и копай.
 ```
 
 ---
 
-## Категория и теги
+## Data safety (when Ads / Billing live)
 
-| Поле | Значение |
-|------|----------|
-| Category | Game → Role Playing / Idle |
-| Tags | idle, incremental, rpg, dwarf, mining, clicker |
-| Content rating | Everyone / PEGI 3 (без крови; юмор PG-13 про «бывших» в таверне — при сомнении Teen) |
-| Target age | 13+ на всякий (таверна, эль как тема) |
+| Question | Answer |
+|----------|--------|
+| Collects data? | Yes if AdMob / Analytics / Billing on — declare Ads ID, purchases, diagnostics |
+| Shared with third parties? | Ad / attribution SDKs as wired in `sdk_keys.xml` |
+| Encryption in transit | Yes (HTTPS) |
+| Deletion | Uninstall / clear app data; contact privacy@ for account-linked asks |
 
----
-
-## Скриншоты — что снять (портрет, телефон)
-
-Минимум **2**, лучше **6–8**. Без системных баров уведомлений по возможности.
-
-1. **Забой** — дворф бьёт жилу, HP-бар, энергия (главный хук)
-2. **Сумка / дроп** — редкий предмет или очередь Auto Roll
-3. **Таверна** — пиксель-арт Борина + «Выпить кружку»
-4. **Дейлики** — список заданий с прогрессом
-5. **Экипировка / статы** — сетка слотов или лист персонажа
-6. **Бороды / геолог** или **питомцы** — коллекционный слой
-7. (опц.) **Рынок** или **PvP**
-8. (опц.) **Престиж** — «Глубинный Зов»
-
-Feature graphic: уже в `assets/store/feature-graphic-1024x500.png` (можно заменить на более «вау» кадр из игры).
+Stub-only local progress: still declare accurately once MAX/AdMob ships in the store build.
 
 ---
 
-## Data safety (черновик без рекламы/аккаунта)
+## Privacy policy
 
-| Вопрос | Ответ |
-|--------|--------|
-| Собирает ли данные? | Нет (пока только localStorage на устройстве) |
-| Шарит с третьими лицами? | Нет |
-| Шифрование в transit? | N/A / не применимо без бэка |
-| Можно удалить? | Удаление приложения / очистка данных |
-
-Когда подключишь AdMob / Analytics / Billing — обнови форму (рекламный ID, покупки).
+Public URL (live): `https://loveplaygames.com/games/android/privacy/en/`  
+Contact: `privacy@loveplaygames.com`
 
 ---
 
-## Privacy policy (минимум)
-
-Нужен **публичный URL**. Черновик текста:
-
-> ORE DEEP хранит прогресс локально на устройстве. Мы не требуем аккаунт и не собираем персональные данные в текущей версии. При появлении рекламы или аналитики политика будет обновлена. Контакт: [твой email].
-
-Залей на GitHub Pages / Notion public / свой сайт.
-
----
-
-## Release notes (v0.12.0 / internal)
+## Release notes (v0.12.4 / versionCode 21)
 
 ```
-Первый internal-билд ORE DEEP.
-• Забой, сумки, прокачка, оффлайн
-• Таверна Борина, кружка ×N, дейлики
-• Старейшины, питомцы, навыки
-Ждём фидбек с Internal testing.
+Mountain King 0.12.4
+• Brand rename to Mountain King
+• Magma-fist icon + mining screenshots
+• Analytics after UMP consent; rewarded + banner only
+• Slim AAB ~14MB
 ```
+
+Internal testing: **0.12.4 (21)** available to testers (published Sep 30, 2026).

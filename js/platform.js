@@ -61,12 +61,74 @@ function showAdPlaque(slot, cb){
     }
   }, 40);
 }
+const PRIVACY_POLICY_URL="https://loveplaygames.com/games/android/privacy/en/";
+function openPrivacyPolicy(){
+  const native=diggyNative();
+  if(native && typeof native.openPrivacy==="function"){
+    try{ native.openPrivacy(); return; }catch(e){}
+  }
+  try{ window.open(PRIVACY_POLICY_URL, "_blank", "noopener"); }catch(e){}
+}
+function openPrivacySettings(){
+  const native=diggyNative();
+  if(native && typeof native.showPrivacyOptions==="function"){
+    try{ native.showPrivacyOptions(); return; }catch(e){}
+  }
+  openPrivacyPolicy();
+}
+function diggyNative(){
+  try{ return (typeof DiggyNative!=="undefined" && DiggyNative) ? DiggyNative : null; }catch(e){ return null; }
+}
+try{
+  window.__diggyNativeCb=function(id, ok){
+    const bag=Platform._cbs&&Platform._cbs[id];
+    if(!bag) return;
+    delete Platform._cbs[id];
+    try{ bag(!!ok); }catch(e){}
+  };
+  window.__diggyGrant=function(productId){
+    try{ if(typeof applyShopPurchase==="function") applyShopPurchase(productId,{quiet:true}); }catch(e){}
+  };
+}catch(e){}
 const Platform={
-  logEvent:(name,params)=>{ try{ console.log("[analytics]",name,params||{}); }catch(e){} },
+  logEvent:(name,params)=>{
+    try{ console.log("[analytics]",name,params||{}); }catch(e){}
+    try{
+      const native=diggyNative();
+      if(native && typeof native.logEvent==="function") native.logEvent(String(name||""), JSON.stringify(params||{}));
+    }catch(e){}
+  },
   trackRevenue(cents,source,meta){ this.logEvent("revenue",{cents,source,...meta}); },
   trackAttribution(channel,meta){ this.logEvent("attribution",{channel,...meta}); },
   unitEcon(){ return (typeof growthUnitEcon==="function")?growthUnitEcon():{}; },
-  showRewarded:(cb, slot)=>{ showAdPlaque(slot, cb); },
+  showRewarded:(cb, slot)=>{
+    const native=diggyNative();
+    if(native && typeof native.showRewarded==="function"){
+      const id="ad"+((Platform._n=(Platform._n||0)+1));
+      Platform._cbs=Platform._cbs||{};
+      Platform._cbs[id]=cb;
+      try{ native.showRewarded(String(slot||""), id); }catch(e){ delete Platform._cbs[id]; showAdPlaque(slot, cb); }
+      return;
+    }
+    showAdPlaque(slot, cb);
+  },
+  showInterstitial:(cb)=>{
+    const native=diggyNative();
+    if(native && typeof native.showInterstitial==="function"){
+      const id="int"+((Platform._n=(Platform._n||0)+1));
+      Platform._cbs=Platform._cbs||{};
+      Platform._cbs[id]=cb||function(){};
+      try{ native.showInterstitial(id); }catch(e){ delete Platform._cbs[id]; if(cb) cb(false); }
+      return;
+    }
+    if(cb) cb(false);
+  },
+  syncAds(){
+    try{
+      const native=diggyNative();
+      if(native && typeof native.setNoAds==="function" && typeof S!=="undefined" && S) native.setNoAds(!!S.noAds);
+    }catch(e){}
+  },
   buy:(productId)=>Promise.resolve({ok:false,stub:true}),
 
   LB_KEY:"oredeep_lb",

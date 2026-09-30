@@ -250,6 +250,18 @@ T("пиво не превышает максимум", S.energy<=stat("energy"))
   UIS.back();
   T("назад из тренировок → Застолья", UIS.id==="tavern" && UIS.tab==="feast");
   UIS.close(); }
+{ ["dropModal","chestModal","metaModal","charModal","perkModal","setModal","setModal2","colModal","profModal","pickModal","overlay","offOverlay","pvpOverlay","veinAdOverlay","adPlaque"].forEach(id=>{
+    const m=$(id); if(m&&m.style) m.style.display="none"; });
+  if(typeof UIS!=="undefined") UIS.close();
+  UIS.open("settings");
+  T("hardware back закрывает экран", typeof handleHardwareBack==="function" && handleHardwareBack()===true && !UIS.id);
+  UIS.open("tavern","mates"); openBorinMentor();
+  T("hardware back по стеку UIS", handleHardwareBack()===true && UIS.id==="tavern" && UIS.tab==="mates");
+  UIS.close();
+  const mm=$("metaModal"); if(mm){ metaOpen("t","s","<div>x</div>");
+    T("hardware back закрывает metaModal", handleHardwareBack()===true && mm.style.display!=="flex"); }
+  T("hardware back на главном не глотает", handleHardwareBack()===false);
+}
 { openSkills("cards");
   const cardsHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("навыки: табы ведут в openSkills", /openSkills\('train'\)/.test(cardsHtml) && /openSkills\('sheet'\)/.test(cardsHtml) && /openSkills\('list'\)/.test(cardsHtml));
@@ -1146,7 +1158,8 @@ S.stageIdx=300; S.lvls.atk=200; S.lvls.energy=500; S.lvls.luck=200; newRock(); d
 localStorage.removeItem("oredeep_v3"); load();
 S.bag=16; S.bags=30; S.autoRoll=true; S.autoRollTier=7; S.speed=1; dead=false; newRock();
 { const b=BALANCE.bags; b.autoUnlockSlots=0; b.autoUnlockRares=0; }
-for(let i=0;i<600;i++) frame(50);
+S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; autoRollAcc=0;
+for(let i=0;i<600;i++){ if(dead) closeOverlay(); frame(50); }
 T("авто открывает ~1 сумку / 3 сек", S.bags>=18 && S.bags<=23, "осталось "+S.bags);
 S.bags=100; S.autoRoll=true; render();
 T("при Auto ON ручная «Открыть» заблокирована", !canOpenBag());
@@ -1193,6 +1206,40 @@ T("Зов сбрасывает свод и глубину", S.stageIdx===1 && S.
   T("доход не растёт за сводом", Math.abs(i1-i2)<1e-6); }
 // равновесие треадмилла не тронуто ретюном
 T("esc всё ещё = ATK_COMPOUND^LPB", Math.abs(escPerBlock()-Math.pow(ATK_COMPOUND,atkLevelsPerBlock()))<1e-9);
+
+console.log("\n[41b] События жилы: свод и рейд");
+{
+  const ev=[];
+  const orig=Platform.logEvent;
+  Platform.logEvent=function(n,p){ ev.push(n); return orig.call(Platform,n,p); };
+  const names=()=>ev.slice();
+  localStorage.removeItem("oredeep_v3"); load(); fpResetLevelTrack(); dead=false;
+  S.stageIdx=4; S.mine=0; S.mineRaid=null; S.eventRun=null; newRock();
+  ev.length=0; caveIn();
+  T("обвал жилы шлёт game_level_failed", names().includes("game_level_failed"));
+  dead=false; S.mineRaid={mineId:S.mine%MINES.length, n:"Award", ic:"*"};
+  fpResetLevelTrack(); newRock();
+  ev.length=0; caveIn();
+  T("обвал рейда не шлёт game_level_failed", !names().includes("game_level_failed") && !!(rock&&rock.isRaid));
+  dead=false; S.mineRaid=null; S.eventRun={id:"t", n:"Yvent", ic:"◎", wave:0, waves:2};
+  fpResetLevelTrack(); newRock();
+  ev.length=0; caveIn();
+  T("обвал ивента не шлёт game_level_failed", !names().includes("game_level_failed") && !!(rock&&rock.isEvent));
+  dead=false; S.eventRun=null; S.runDone=false; S._wallShown=false;
+  fpResetLevelTrack(); S.stageIdx=BALANCE.run.len; S.lvls.atk=1e6; newRock();
+  ev.length=0; S.rockHP=1; breakVein();
+  T("свод шлёт game_level_complete и не двигает этап",
+    names().filter(n=>n==="game_level_complete").length===1 && S.stageIdx===BALANCE.run.len && S.runDone===true);
+  ev.length=0; S.rockHP=1; breakVein();
+  T("повтор свода не шлёт complete снова",
+    !names().includes("game_level_complete") && S.stageIdx===BALANCE.run.len);
+  ev.length=0; caveIn();
+  T("обвал после свода не шлёт game_level_failed", !names().includes("game_level_failed") && S.stageIdx===BALANCE.run.len);
+  dead=false; fpResetLevelTrack(); S.stageIdx=BALANCE.run.len; S.runDone=false; S._wallShown=false; newRock();
+  ev.length=0; exhausted();
+  T("нулевая энергия на своде до завершения шлёт game_level_failed", names().includes("game_level_failed"));
+  Platform.logEvent=orig;
+}
 
 console.log("\n[42] Боевые параметры по доку: Stamina, Regen, офлайн-сумки");
 localStorage.removeItem("oredeep_v3"); load();
@@ -1430,7 +1477,7 @@ closeChest();
 { buildUpgrades(); render();
   T("карточки апгрейдов показывают Ур. N", /Lv\.\s*\d+/.test((__ids.u_atk&&__ids.u_atk.innerHTML)||"")); }
 { S.bag=1; S.gold=bagCost()*2; S.bagActive=null; bagSkipArmed=false; render();
-  T("индикатор апгрейда сумки при ресурсах", __ids.bagUpDot && __ids.bagUpDot.style.display==="block");
+  T("индикатор апгрейда сумки при ресурсах", __ids.bagUpDot && __ids.bagUpDot.style.display==="flex");
   T("лейбл СУМКА УР на action bar", /BAG LV/.test((__ids.bagAreaLvl&&__ids.bagAreaLvl.textContent)||"")); }
 { showToast("🧪","ТОСТ","r3","проверка","видно",true);
   T("showToast показывает #toast", __ids.toast.style.display==="block" && /проверка/.test(__ids.toast.innerHTML||""));

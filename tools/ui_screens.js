@@ -120,6 +120,7 @@ const UIS={
     }
     this.id=id; this.tab=tab||null;
     this.render(id); this.show();
+    if(id==="shop" && typeof fpStoreOpened==="function") fpStoreOpened("market");
     if(typeof S!=="undefined"&&S&&S.ftue){
       if(id==="tavern"&&!S.ftue.t){ S.ftue.t=1; save(); }
       if(id==="profile"&&this.tab==="growth"&&!S.ftue.g){ S.ftue.g=1; save(); }
@@ -218,8 +219,10 @@ const UIS={
       +this.row("Mountain Charter",'<button onclick="showIntro()">📜 read</button>')
       +this.row("Gacha fairness",'<button onclick="openFairness()">🔐 open</button>')
       +this.row("Mountain Wall",'<button onclick="openWall()">🏔 leaderboard</button>')
+      +this.row("Privacy policy",'<button onclick="openPrivacyPolicy()">open</button>')
+      +this.row("Privacy Settings",'<button onclick="openPrivacySettings()">open</button>')
       +this.row("Progress",'<span class="uiSub">saved automatically</span>')
-      +this.row("Version",'<span class="uiSub">ORE DEEP</span>')
+      +this.row("Version",'<span class="uiSub">Mountain King · 0.12.4</span>')
       +'<button class="btn btn-danger" style="margin-top:14px;width:100%" onclick="UIS.close();resetProgress()">↺ Start over</button>';
   },
 
@@ -384,9 +387,9 @@ const UIS={
         ? (S.geo.n+" · "+rarRU[S.geo.r]+" · Lv."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):""))
         : "None yet.";
       const FAMILY_LORE={
-        atk:"Dvorfe learns to beat more precisely: attack is growing — and dig It’s faster. vein.",
-        energy:"The healers don’t “care“ with magic. — They keep the energy from falling too fast.",
-        stone:"The stone is counted with respect: more greed — A fatter reward."
+        atk:"The fighter dwarf hits cleaner: attack climbs — and veins crack faster.",
+        energy:"Healers don’t cast magic fluff. They keep your energy from falling too fast.",
+        stone:"Stone is counted with respect: more greed — fatter haul."
       };
 
       body=cur
@@ -719,7 +722,7 @@ const UIS={
     this.$("uiHeadAct").innerHTML='<span class="uiPill">Hall '+lv+' · +'+gymPerkPct()+'%</span>';
     this.$("uiTabs").innerHTML=this.tabs(
       ["ale","feast","mates","friends","rank"],
-      ["Stop","Feasts","Table","Friends","Cups"],
+      ["Stop","Пир","Table","Friends","Cups"],
       tab);
 
     let body="";
@@ -756,7 +759,7 @@ const UIS={
             :("Not enough beer. · I need to. "+drinkCost+", have "+beer),
           drinkBody,"tav")+'</div>'
         +'<div class="uiBtnStack">'
-        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">K feastm</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">Пир!</button>'
         +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">List · skill</button>'
         +'</div>';
     } else if(tab==="feast"){
@@ -1146,3 +1149,51 @@ if(typeof metaOpen==="function"){
  "sciConsent","fuseBoxes","openOneBox","openAllBoxes","upgradeBoxWithStones","skipWorkout","claimWorkout","startWorkout","drinkBeer","upgradeMug",
  "spendSpecial",
  "toggleFair","setFairClient","revealFair","setPlayerName","buyStickerPack","giftStickers","sipAle"].forEach(uiWrap);
+
+/** Android/hardware Back: close top overlay / previous menu. true = consumed. */
+function handleHardwareBack(){
+  try{
+    const vis=id=>{
+      const el=typeof $==="function"?$(id):document.getElementById(id);
+      if(!el) return false;
+      if(id==="introOv") return !!(el.classList&&el.classList.contains("on"));
+      const d=el.style&&el.style.display;
+      return d==="flex"||d==="block";
+    };
+    if(vis("adPlaque")){
+      if(typeof finishAdPlaque==="function") finishAdPlaque(false);
+      return true;
+    }
+    if(vis("introOv")){ if(typeof closeIntro==="function") closeIntro(); return true; }
+    if(vis("pvpOverlay")){
+      if(typeof pvpCloseBrawl==="function") pvpCloseBrawl();
+      else { const ov=document.getElementById("pvpOverlay"); if(ov) ov.style.display="none"; }
+      return true;
+    }
+    if(typeof perkPickOpen==="function"&&perkPickOpen()){
+      if(typeof closePerkPick==="function") closePerkPick();
+      return true;
+    }
+    if(vis("dropModal")){
+      if(typeof chestPending!=="undefined"&&chestPending){
+        if(typeof showToast==="function") showToast("🎒","First decide.","","Put on or sell the find.");
+        return true;
+      }
+      if(typeof closeDropDecide==="function") closeDropDecide();
+      return true;
+    }
+    if(vis("charModal")){ if(typeof closeCharSheet==="function") closeCharSheet(); return true; }
+    if(vis("veinAdOverlay")){ if(typeof skipVeinAd==="function") skipVeinAd(); return true; }
+    if(vis("pickModal")){ const m=document.getElementById("pickModal"); if(m) m.style.display="none"; return true; }
+    if(vis("setModal")){ const m=document.getElementById("setModal"); if(m) m.style.display="none"; return true; }
+    if(vis("setModal2")){ const m=document.getElementById("setModal2"); if(m) m.style.display="none"; return true; }
+    if(vis("colModal")){ const m=document.getElementById("colModal"); if(m) m.style.display="none"; return true; }
+    if(vis("profModal")){ const m=document.getElementById("profModal"); if(m) m.style.display="none"; return true; }
+    if(vis("chestModal")){ if(typeof closeChest==="function") closeChest(); return true; }
+    if(vis("metaModal")){ const m=document.getElementById("metaModal"); if(m) m.style.display="none"; return true; }
+    if(vis("offOverlay")){ if(typeof claimOffline==="function") claimOffline(1); return true; }
+    if(vis("overlay")){ if(typeof closeOverlay==="function") closeOverlay(); return true; }
+    if(typeof UIS!=="undefined"&&UIS&&UIS.id){ UIS.back(); return true; }
+  }catch(e){}
+  return false;
+}

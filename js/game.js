@@ -171,7 +171,7 @@ const SLOT_FLUFF={
     ]
   },
   glove:{
-    effect:"Crete — A chance to get in the way of weakness. vein: A strike is stronger, a reward is thicker, a stone is broken by resentment.",
+    effect:"Crit — chance to hit a weak spot in the vein: stronger strike, richer reward, stone cracks easier.",
     lore:[
       "Work mittens, smells like resin and a promise to hit again.",
       "Nori’s Gloves, He counted the blows, not the gold. — up tovein before gray beard.",
@@ -197,11 +197,11 @@ const SLOT_FLUFF={
     ]
   },
   lamp:{
-    effect:"A little. — A chance to double-beat. — You get a reply less often. rock And you find rare stones more often.",
+    effect:"Sense — chance of a double hit, rock hits back less often, and rare stones turn up more often.",
     lore:[
       "The oil light is new, coptitis if you lie about the depths. — I don’t even know if it was an accident.",
       "The lamp of the scout, the glass is in the cracks, but the beam still finds the path.",
-      "The light of the Rudoznatz Guild, it’s burning just as long as the report is honest.",
+      "The Ore-Sage Guild lamp burns only while the report stays honest.",
       "Balin’s legendary lamp, which has a thousand-year-old resin oil.",
       "Exotic crystal-flag, looking where luck has already decided for you.",
       "The Mythical Fire of Podgoria, double strike — It’s like two courthouses in the same shadow.",
@@ -210,7 +210,7 @@ const SLOT_FLUFF={
     ]
   },
   pants:{
-    effect:"Protection — less energy from impact rockand supports They’re holding tight.",
+    effect:"Defense — less energy lost when the rock hits back; props hold longer.",
     lore:[
       "Hosepants shift, pay more than embroidery.",
       "“Needs don’t take.“ Sciel Grur One-Hand. — I swore I wouldn’t have to do it again.",
@@ -223,16 +223,16 @@ const SLOT_FLUFF={
     ]
   },
   boots:{
-    effect:"Speed — Hurry up and get your legs. — More often pickaxe and the stone, vein It ends early.",
+    effect:"Speed — legs set the shift pace; the pick hits more often and the vein ends sooner.",
     lore:[
-      "The student’s nail boots. — I’m sorry to keep you from work.",
-      "Boots BorinAnd at the pillar: “Nor stood a pillar, Mountain “Sure, she’s calling.“",
-      "The choppers are an artifact, and the soles smell of tar, stubbornness and night shift.",
-      "The Legendary Shoots of the Hontz — carrying the message of the vein In three. hall.",
-      "Exotic lava ash bots — You walk softly, you hit more often.",
-      "The mythical boots of Ritma, the leg knows when the next blow will be.",
-      "The raised boots of the Tropes, they went where the cards ended.",
-      "Pulse space boots. — It’s the breath of the mountain, adjusted to suit you."
+      "Student hobnails — ugly, honest, built to keep you at work.",
+      "Borin’s boots by the prop: “He who stands, the Mountain calls.”",
+      "Artel dig boots: soles smell of tar, stubbornness, and night shift.",
+      "Legendary Hontz shoes — they carried vein news across three halls.",
+      "Exotic lava-ash boots — walk soft, strike more often.",
+      "Mythic Rhythm boots: the foot knows when the next blow lands.",
+      "Ascended Path boots — they went where maps ended.",
+      "Cosmic Pulse boots — tuned to the Mountain’s breath."
     ]
   },
   pack:{
@@ -249,7 +249,7 @@ const SLOT_FLUFF={
     ]
   },
   robe:{
-    effect:"Protection — rock Eating energy is weaker; the yard is longer than it is. vein No smoking.",
+    effect:"Defense — rock hits drain less energy; your props hold longer through the vein.",
     lore:[
       "Ore stained working robe, rarely washed — “for luck.“",
       "The robot’s shift, “The Fire of the Fire.“ The magma’s stain on his back is wearing the order.",
@@ -337,7 +337,7 @@ const PICK_ICONS=[0,1,2,3,4,5,6,7].map(i=>ART+"pick"+i+".png");
 
 const ORE_SPRITES=[0,1,2,3,4,5].map(p=>[0,1,2,3].map(v=>ART+"ore_p"+p+"_s"+v+".png"));
 
-const MINER_BASES=[0,1,2,3,4,5,6,7].map(i=>ART+"dwarf"+i+".png"+((i===4||i===6)?"?v=2":""));
+const MINER_BASES=[0,1,2,3,4,5,6,7].map(i=>ART+"dwarf"+i+".png");
 const SLOT_ART={helm:"art/eq_helm.png",glove:"art/eq_glove.png",lamp:"art/eq_lamp.png",pick:"art/eq_pick.png",
   pants:"art/eq_pants.png",boots:"art/eq_boots.png",pack:"art/eq_pack.png",robe:"art/eq_robe.png"};
 function gearArtSrc(slotId, rarity){
@@ -519,48 +519,48 @@ function rollVeinExtras(isBoss){
 }
 
 const MINES=[
-  {n:"mine «beard “Newcomer“", rock:"🪨", stones:["Orphan Corner","Copper on buttons","Quarz “almost diamond“","Dvorfier gold (real)","Topaz from beard Grandpa","Sapphire snob","Tan Diamond","Tears of the Mountain"]},
-  {n:"hall Echo-Doum",          rock:"⛰️", stones:["The Gravity of Echo-Quality","Axe iron","Introvert amethyst","Emerald is jealous.","Rubin “Dracon Eyes (No)“","Mifril!","Black Diamond","The Shard of the First Song"]},
-  {n:"The Cousin of the Fire",    rock:"🌋", stones:["Obsidian burned","Sera “a geek“","Grandma’s Granny’s Granny’s Granate","Fire bust","The cable plate is fixed.","Lava sapphire","Adamant is a grasshopper.","The Heart of the Horn"]},
-  {n:"Crystal hall",      rock:"🧊", stones:["Kalcit-somazite","Fluorite, luminous","Creature, piercing","Emerald giant","Tanzanite is a rare guest.","Moonstone (not from the Moon)","Star Diamond","Crystal Glubin"]},
-  {n:"The Blade “Do Not Wake Him“",     rock:"🗿", stones:["“Why are you here“ sled","Nickel is a little anxious.","Silver canteen","The naturalo of “Mama, I’M NASHAL“","Iridium whispery","Myfriel is true.","Adamantius of the Indium","His scales."]}
+  {n:"Adit «Newbie Beard»", rock:"🪨", stones:["Orphan Coal","Button Copper","Quartz «almost diamond»","Dwarf Gold (real)","Great-Grandpa Beard Topaz","Snob Sapphire","Thane Diamond","Tear of the Mountain"]},
+  {n:"Halls of Echo-Doom", rock:"⛰️", stones:["Echo-Grade Gravel","Axe Iron","Introvert Amethyst","Envious Emerald","Ruby «dragon eye (not)»","Mithril (shh!)","Black Diamond","Shard of the First Song"]},
+  {n:"Forge of Underhill Fire", rock:"🌋", stones:["Singed Obsidian","Sulfur «what a stink»","Granny’s Garnet","Fire Opal","Tempered Platinum","Lava Sapphire","Smithy Adamant","Heart of the Hearth"]},
+  {n:"Crystal Halls", rock:"🧊", stones:["Impostor Calcite","Glowing Fluorite","Feast Crystal","Giant Emerald","Tanzanite Rare Guest","Moonstone (not from the Moon)","Star Diamond","Crystal of the Depths"]},
+  {n:"Abyss «Do Not Wake Him»", rock:"🗿", stones:["Shale «why are you here»","Anxious Nickel","Table Silver","Nugget «MOM, I FOUND IT»","Whisper Iridium","True Mithril","Abyss Adamantium","HIS Scale"]}
 ];
 
 const ROCK_POOLS=[
-  ["The rock-pest","Plast stubborn","The normal boulder","Rock with a characteristic"],
-  ["Echo-float","Float","vein- Aw, you’re so mean.","Resonant boulder"],
-  ["Burned plastic","Flip-flop","vein with pepper","The Lava Struggle"],
-  ["Druze-Imagining","Crystal","The Thunder Blush","vein- Untouchable"],
-  ["Silent Monolith","Dark Seam","vein “Don’t look“","Smooth-as-as-as-as-as-as-as-as-as-as-you-can-you-can-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do-do"]
+  ["Enduring Cobble","Stubborn Seam","Ordinary Boulder","Rock with Character"],
+  ["Echo Slab","Rumbling Seam","Greedy Vein","Resonant Boulder"],
+  ["Scorched Seam","Slag Slab","Vein with a Kick","Lava Stubborn"],
+  ["Show-off Druse","Crystal Seam","Faceted Slab","Untouchable Vein"],
+  ["Silent Monolith","Dark Seam","Vein «don’t look»","Dream Boulder"]
 ];
 const BOSS_POOLS=[
-  ["Grandpa Valun","The Dreadless","Senior Rocket"],
-  ["Echo-Golem","Floating Monolite","Glee Club cave-in"],
-  ["Magma-Ded","Tang of hose","The Uncooked Golem"],
-  ["Crystal Snob","Count Druza","Mirror Verzilla"],
-  ["NO (Junior)","Whispering in the Wall","His pinkie."]
+  ["Grandpa Boulder","Clumsy Cartilage","Senior Cobble"],
+  ["Echo Golem","Rumbling Monolith","Cave-In Choir"],
+  ["Magma Grandpa","Slag Tan","Undercooked Golem"],
+  ["Crystal Snob","Count Druse","Mirror Hulk"],
+  ["IT (junior)","Whisper-in-the-Wall","HIS Pinkie"]
 ];
 const STAGES_PER_MINE=BALANCE.venueStride;
-const RANKS=["BEARDLESS","ALMOST A GNOME.","ORECOOP","DIG:: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .","TAN DIG","BEARD- LEGEND",
-  "THE STORM OF DEPTH","SUBSOIL MAGNET","KING OF THE UNDERGROUND","THE LEGEND OF THE MOUNTAIN"];
+const RANKS=["BEARDLESS","ALMOST A GNOME","ORE DIGGER","FACE WORKER","THANE OF THE FACE","BEARD LEGEND",
+  "TERROR OF THE DEPTHS","MAGNATE OF THE DEEPS","UNDERHILL KING","LEGEND OF THE MOUNTAIN"];
 
 const BASE={atk:10, spd:BALANCE.combat.baseAPS, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0, regen:0, stamina:0};
 
 const STAT_LBL={
-  atk:"Attack", energy:"Energy", spd:"Speed", tough:"Protection",
-  crit:"Crete", luck:"Luck", mining:"A little.", stone:"Greed",
-  regen:"Regen", stamina:"Breath"
+  atk:"Attack", energy:"Energy", spd:"Pace", tough:"Defense",
+  crit:"Crit", luck:"Luck", mining:"Sense", stone:"Greed",
+  regen:"Regen", stamina:"Wind"
 };
 function statLbl(id){ return STAT_LBL[id]||id; }
 const UPGRADES=[
-  {id:"atk",   k:"Attack",    step:3,  base:25, g:1.35, fmt:v=>fmt(v)},
-  {id:"energy",k:"Energy",  step:20, base:20, g:1.32, fmt:v=>fmt(v)},
-  {id:"spd",   k:"Speed",     step:0.12,base:40, g:1.35, fmt:v=>v.toFixed(2)},
-  {id:"tough", k:"Protection",   step:2,  base:35, g:1.45, fmt:v=>fmt(v)},
-  {id:"crit",  k:"Crete",     step:1,  base:50, g:1.6,  fmt:v=>Math.round(v)+"%"},
-  {id:"luck",  k:"Luck",    step:1,  base:50, g:1.55, fmt:v=>Math.round(v)+"%"},
-  {id:"mining",k:"A little.",    step:2,  base:45, g:1.5,  fmt:v=>Math.round(v)},
-  {id:"stone", k:"Greed", step:10, base:30, g:1.4,  fmt:v=>(v>=1000?fmt(v):Math.round(v))+"%"}
+  {id:"atk",   k:"Attack",  step:3,   base:25, g:1.35, fmt:v=>fmt(v)},
+  {id:"energy",k:"Energy",  step:20,  base:20, g:1.32, fmt:v=>fmt(v)},
+  {id:"spd",   k:"Pace",    step:0.12,base:40, g:1.35, fmt:v=>v.toFixed(2)},
+  {id:"tough", k:"Defense", step:2,   base:35, g:1.45, fmt:v=>fmt(v)},
+  {id:"crit",  k:"Crit",    step:1,   base:50, g:1.6,  fmt:v=>Math.round(v)+"%"},
+  {id:"luck",  k:"Luck",    step:1,   base:50, g:1.55, fmt:v=>Math.round(v)+"%"},
+  {id:"mining",k:"Sense",   step:2,   base:45, g:1.5,  fmt:v=>Math.round(v)},
+  {id:"stone", k:"Greed",   step:10,  base:30, g:1.4,  fmt:v=>(v>=1000?fmt(v):Math.round(v))+"%"}
 ];
 const upCost=u=>Math.round(u.base*Math.pow(u.g,S.lvls[u.id]));
 
@@ -682,6 +682,7 @@ function doPrestige(){
   S.gold=0; S.gear={}; S.stageIdx=1; S.stage=1; S.mine=0; S.bag=1;
   S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0};
   S.loadoutTier=0; S.cartFill=0; S.durab=MINE_DURAB.max; S.runDone=false; S._wallShown=false; resetTimers();
+  fpResetLevelTrack();
 
   dead=false; if($("overlay")) $("overlay").style.display="none";
   Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
@@ -776,7 +777,7 @@ const DEPTH_MARKS=[
   [15000,"♪ He can hear you ♪","We’re digging a t-i-haw."],
   [150000,"The bottom of peace","Let’s just go upstairs, just kidding, we’re going to go."]
 ];
-function playerName(){ return S.playerName || ("Dvorf-"+(S.look!=null?S.look:0)); }
+function playerName(){ return S.playerName || ("King-"+(S.look!=null?S.look:0)); }
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
 function submitMyScore(){
   const depth=S.stageIdx*3;
@@ -874,6 +875,48 @@ function resetTimers(){
   autoSoldN=0; autoSoldGold=0; dupN=0; dupGold=0; dupShards=0; sellN=0; sellGold=0; equipN=0;
   lastDurabWarn=MINE_DURAB.max;
 }
+function fpLevelNumber(){ return Math.max(1, (S&&S.stageIdx)|0); }
+function fpBalance(){ return { gold: Math.round((S&&S.gold)||0), gems: (S&&S.gems)|0 }; }
+let _fpLevelKey=null, _fpLevelDone=null, _fpLevelT0=0;
+function fpLevelKey(){ return (S.mine|0)+":"+(S.stageIdx|0); }
+function fpResetLevelTrack(){ _fpLevelKey=null; _fpLevelDone=null; _fpLevelT0=0; }
+function fpNoteLevelStart(){
+  if(!S) return;
+  const key=fpLevelKey();
+  if(_fpLevelKey===key) return;
+  _fpLevelKey=key;
+  _fpLevelT0=Date.now();
+  const n=fpLevelNumber();
+  try{ Platform.logEvent("game_level_start", { level_number:n, level_id:String(n) }); }catch(e){}
+}
+function fpLevelTime(){ return Math.max(1, Math.round((Date.now()-(_fpLevelT0||Date.now()))/1000)); }
+function fpCompleteLevel(){
+  if(!S) return;
+  const key=fpLevelKey();
+  if(_fpLevelDone===key) return;
+  _fpLevelDone=key;
+  const n=fpLevelNumber();
+  try{
+    Platform.logEvent("game_level_complete", {
+      level_number:n, level_id:String(n), balance:fpBalance(), time:fpLevelTime()
+    });
+    Platform.logEvent("af_level_achieved", { af_level:n });
+    if(n===5||n===10||n===15||n===20) Platform.logEvent("af_level_achieved"+n, { af_level:n });
+  }catch(e){}
+}
+function fpFailLevel(){
+  if(rock && (rock.isRaid || rock.isEvent)) return;
+  if(S && _fpLevelDone===fpLevelKey()) return;
+  const n=fpLevelNumber();
+  let progress=0;
+  if(rock && rock.hp) progress=Math.round(100*(1-Math.max(0, S.rockHP||0)/rock.hp));
+  try{
+    Platform.logEvent("game_level_failed", {
+      level_number:n, level_id:String(n), balance:fpBalance(),
+      time:fpLevelTime(), progress:Math.max(0, Math.min(100, progress))
+    });
+  }catch(e){}
+}
 function newRock(){
   const isBoss=(S.stageIdx % BALANCE.combat.bossEvery)===0;
   rock=rockStatsAt(S.stageIdx,isBoss);
@@ -896,6 +939,7 @@ function newRock(){
   }
   S.rockHP=rock.hp;
   S.energy=stat("energy");
+  try{ snapRockHpBars(100); }catch(e){}
   const mk=S.mine%MINES.length, cycle=Math.floor(S.mine/MINES.length);
   { const _p=ORE_SPRITES[rock.isBoss?5:mk]||ORE_SPRITES[0]; const _si=Number(S.stageIdx)||0; $("rockImg").src=_p[((_si*7+mk)%4+4)%4]||_p[0]; }
   if(rock.isEvent && S.eventRun){
@@ -916,6 +960,7 @@ function newRock(){
   $("rock").classList.toggle("raid",!!rock.isRaid);
   $("scene").className="scene t"+(S.mine%MINES.length);
   prepBuried();
+  if(!rock.isRaid && !rock.isEvent) fpNoteLevelStart();
 }
 
 function prepBuried(){
@@ -1060,6 +1105,7 @@ function caveIn(){
   dead=true;
   failEventRun("cave-in Codes");
   Platform.logEvent("collapse",{stage:S.stageIdx});
+  fpFailLevel();
   const lost=Math.floor((S.gold||0)*MINE_DURAB.penaltyGoldPct);
   _collapseLost=lost;
   S.gold-=lost; S.cartFill=0; S.energy=0;
@@ -1116,12 +1162,12 @@ function breakVein(){
   if(rock.buried && rock.buried.stoneR>=0) onFind(rock.buried.stoneR);
   if(rock.buried && rock.buried.item) dropGearItem(rock.buried.item);
   if(S.stageIdx>=BALANCE.run.len){
-
+    if(!wasRaid&&!wasEvent) fpCompleteLevel();
     S.runDone=true;
     if(!S._wallShown){ S._wallShown=true;
       showToast("⛰️",BALANCE.run.wallMsg+"!","","Next — Only Deep Call","Phase "+BALANCE.run.len+" · Push it. ⛰️",true);
       sayQuip("Next. Mountain It’s time to call again.",6); }
-  } else if(!wasRaid&&!wasEvent){ S.stageIdx++; S.stage++; }
+  } else if(!wasRaid&&!wasEvent){ fpCompleteLevel(); S.stageIdx++; S.stage++; }
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
   S.veinsBroken=(S.veinsBroken||0)+1;
@@ -1194,6 +1240,7 @@ function exhausted(){
   failEventRun("Zero energy");
   jingleKO();
   Platform.logEvent("exhaust",{stage:S.stageIdx});
+  fpFailLevel();
   const ko=KO_SCREENS[Math.floor(Math.random()*KO_SCREENS.length)];
   showExhaustOverlay(ko[0], ko[1]);
 }
@@ -1730,6 +1777,34 @@ function setWidth(elOrId, pct){
   const s=(typeof pct==="number"?pct:parseFloat(pct))+"%";
   if(e.style.width!==s) e.style.width=s;
 }
+/** Snap rock HP bars without CSS transition (avoids ghost lag doubling on new vein / OnePlus WebView). */
+let _hpBarPct=100;
+function snapRockHpBars(pct){
+  const fill=$("hpFill"), ghost=$("hpGhost");
+  const s=(Math.max(0,Math.min(100,pct)))+"%";
+  [fill,ghost].forEach(el=>{
+    if(!el||!el.style) return;
+    const prev=el.style.transition;
+    el.style.transition="none";
+    el.style.width=s;
+    void el.offsetWidth;
+    el.style.transition=prev||"";
+  });
+  _hpBarPct=pct;
+}
+function updateRockHpBars(){
+  if(!rock||!rock.hp) return;
+  const hpPct=Math.max(0,Math.min(100, S.rockHP/rock.hp*100));
+  const hb=$("hpBar"); if(hb&&hb.classList) hb.classList.toggle("low",hpPct<28);
+  // New vein / HP rose → snap (no ghost lag). Damage → fill + delayed ghost.
+  if(hpPct>_hpBarPct+0.05){
+    snapRockHpBars(hpPct);
+  } else if(hpPct<_hpBarPct-0.05){
+    setWidth("hpFill",hpPct+"%");
+    setWidth("hpGhost",hpPct+"%");
+    _hpBarPct=hpPct;
+  }
+}
 function setHtml(elOrId, html){
   const e=typeof elOrId==="string"?$(elOrId):elOrId;
   if(!e) return;
@@ -1927,7 +2002,7 @@ function buildUpgrades(){
     const val=d.querySelector(".v"); if(u.id==="atk"&&val) val.id="pAtk";
     const doBuy=e=>{ if(e&&e.stopPropagation) e.stopPropagation(); buyUpgrade(u.id); };
     d.onclick=doBuy;
-    d.title="Tap. — upgrade";
+    d.title="Tap to upgrade";
     const btn=d.querySelector("button"); if(btn) btn.onclick=doBuy;
     box.appendChild(d);
   });
@@ -2189,7 +2264,7 @@ function renderGear(){
       d.title=canUp?"pickaxe · ↑ bag Maybe it’s better.":"pickaxe";
       d.onclick=openPickGallery;
     } else {
-      d.title=canUp?"Tap. — Information · ↑ Can be improved bag":"Info on the slot";
+      d.title=canUp?"Tap for info · ↑ bag can be upgraded":"Slot info";
       d.onclick=function(){ openGearSlot(sl.id); };
     }
     g.appendChild(d);
@@ -2224,10 +2299,7 @@ function render(){
     const hp=$("hudPrestige"); if(hp) setTxt(hp,(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""); }
 
   { const hp=$("hudPrestige"); if(hp) setTxt(hp,(S.prestigeLv||0)?("⛰️"+S.prestigeLv):""); }
-  { const hpPct=Math.max(0,S.rockHP/rock.hp*100);
-    setWidth("hpFill",hpPct+"%");
-    setWidth("hpGhost",hpPct+"%");
-    const hb=$("hpBar"); if(hb&&hb.classList) hb.classList.toggle("low",hpPct<28); }
+  { updateRockHpBars(); }
   setOp("cracks",(1-Math.max(0,S.rockHP)/rock.hp).toFixed(2));
   setTxt("hpTxt",fmt(Math.max(0,S.rockHP))+" / "+fmt(rock.hp));
   setWidth("enFill",Math.max(0,S.energy/stat("energy")*100)+"%");
@@ -2248,7 +2320,7 @@ function render(){
     if(eb&&eb.classList){
       eb.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt);
       eb.classList.toggle("crit",d<MINE_DURAB.critAt);
-      eb.title=d>=MINE_DURAB.max-1e-6?"supports whole":("Tap. — ysupportsYou · "+fmt(reinforceCost())+" 🪙 · supports "+Math.round(d)+"%");
+      eb.title=d>=MINE_DURAB.max-1e-6?"supports whole":("Tap to reinforce · "+fmt(reinforceCost())+" 🪙 · supports "+Math.round(d)+"%");
     }
   }
   setTxt("sAtk",fmt(stat("atk")));
@@ -2266,7 +2338,7 @@ function render(){
     const can=!capped && (S.gold||0)>=c;
     if(lv) setTxt(lv,"Lv. "+(S.lvls[u.id]|0));
     setTxt(val,statFmtDisplay(u));
-    setTxt(cost,capped?"MAX":(fmt(c)+" 🪙"));
+    setTxt(cost,capped?"MAX":("🪙"+fmt(c)));
     if(d.classList){ d.classList.toggle("can", !!can); d.classList.toggle("maxed", !!capped); }
     if(btn){
       const wantDisabled=!can;
@@ -2297,11 +2369,11 @@ function render(){
   setTxt("findChance",Math.round(findChance()));
   { const mn=$("refMinerName"); if(mn) setTxt(mn,playerName().toUpperCase()); }
   { const df=$("refDifficulty"), sl=$("statLoot");
-    const dtxt=((rock&&rock.isBoss)?"BOSS.":"GROSS");
+    const dtxt=((rock&&rock.isBoss)?"BOSS":"BRUTAL");
     if(df){ setTxt(df,dtxt); if(df.classList) df.classList.toggle("tag", true); }
     if(sl) setTxt(sl,dtxt);
   }
-  setTxt("speedBtn","×"+(S.speed||1)+" SPEED");
+  setTxt("speedBtn","×"+(S.speed||1)+" PACE");
   setTxt("bagLvl",S.bag);
   setTxt("dropCh",DROP_CHANCE);
   setTxt("bagTier",bagName(S.bag));
@@ -2352,12 +2424,12 @@ function render(){
         setTxt(dot,"");
         dot.title="";
       } else if(busy){
-        dot.style.display="block";
+        dot.style.display="flex";
         setTxt(dot,"⏩");
-        dot.title="Tap. — price of pass";
+        dot.title="Tap for pass price";
       } else {
         setTxt(dot,"↑");
-        dot.style.display=can?"block":"none";
+        dot.style.display=can?"flex":"none";
         dot.title="";
       }
     }
@@ -2417,7 +2489,7 @@ function render(){
         ? (bagSkipArmed
           ? ("Pass for 💎"+bagSkipGems()+" — Tup again.")
           : ("Upside down. · slip — price of pass"))
-        : (maxed?"Maximum":"Tap. — The chances of a dart and an upgrade"
+        : (maxed?"Maximum":"Tap for drop odds and upgrade"
           +(poor?(" · need "+fmt(bagCost())+" 🪙"):(" · "+fmt(bagCost())+" 🪙")));
     }
   }
@@ -3126,11 +3198,13 @@ function load(){
         try{ save(); }catch(e){}
         try{ showToast("💾","Progress restored","","from a backup",""); }catch(e){}
       }
+      try{ Platform.syncAds(); }catch(e){}
       return;
     }
   }catch(e){}
   S=ensureAll(freshState());
   resetTimers();
+  try{ Platform.syncAds(); }catch(e){}
 }
 function wipeSave(){
   try{ localStorage.removeItem(SAVE_KEY); localStorage.removeItem(SAVE_BAK); }catch(e){}
@@ -3327,7 +3401,7 @@ async function buildShareCard(){
   try{ await document.fonts.load("22px 'Press Start 2P'"); }catch(e){}
   const F=s=>s+"px 'Press Start 2P', monospace";
   x.fillStyle="#e8b93c"; x.font=F(26); x.textAlign="center";
-  x.fillText("ORE DEEP",280,64);
+  x.fillText("MOUNTAIN KING",280,64);
   x.fillStyle="#8a93a3"; x.font=F(11);
   x.fillText("dig deeper. then deeper.",280,92);
 
@@ -3353,7 +3427,7 @@ async function buildShareCard(){
   x.fillText("DEPTH: "+fmt(S.stageIdx*3)+" m",190,572);
   if(S.streak&&S.streak.n>0){
     x.fillStyle="#ff9d5c";
-    x.fillText("LINE: "+S.streak.n+" d 🔥",190,600);
+    x.fillText("STREAK: "+S.streak.n+" d",190,600);
   }
   x.fillStyle="#8a93a3"; x.font=F(10); x.textAlign="center";
   x.fillText("🧔 "+beardWisdom().title,280,660);
@@ -3365,12 +3439,12 @@ async function shareCard(){
   if(!c) return;
   c.toBlob(b=>{
     if(!b) return;
-    const f=new File([b],"oredeep.png",{type:"image/png"});
+    const f=new File([b],"diggy-dwarf.png",{type:"image/png"});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[f]})){
-      navigator.share({files:[f],title:"ORE DEEP",text:"My patribe has been dug up. "+fmt(S.stageIdx*3)+" - Yes!"}).catch(()=>{});
+      navigator.share({files:[f],title:"Mountain King",text:"My dwarf dug "+fmt(S.stageIdx*3)+" m deep. Mountain King!"}).catch(()=>{});
     } else {
       const a=document.createElement("a");
-      a.href=URL.createObjectURL(b); a.download="oredeep.png"; a.click();
+      a.href=URL.createObjectURL(b); a.download="diggy-dwarf.png"; a.click();
     }
   },"image/png");
 }
@@ -3387,10 +3461,10 @@ function checkStreak(){
   const mult=STREAK_MARKS[S.streak.n]||1;
   const reward=Math.round(veinReward()*25*mult);
   S.gold+=reward;
-  showToast("🔥","Page: day "+S.streak.n,"",
-    (mult>1?"- Ah, the award. ×"+mult:"Mountain Good to see you."),
+  showToast("🔥","Day "+S.streak.n+" streak","",
+    (mult>1?"Reward ×"+mult:"Good to see you back."),
     "+"+fmt(reward)+" 🪙", true);
-  sayQuip(S.streak.n>=7?"Line "+S.streak.n+" Days! beard I’m happy.":"Back in digIt’s a burglar.",4);
+  sayQuip(S.streak.n>=7?"Streak "+S.streak.n+" days! The beard approves.":"Back to the dig.",4);
   Platform.logEvent("streak",{n:S.streak.n}); addBeardXP(25);
   save();
 }
@@ -3503,7 +3577,7 @@ function specialBonusPct(statId){
 }
 
 const PERK_DEFS=[
-  {id:"aware",    n:"A little. rock",     ico:"🔭", stats:["mining"],
+  {id:"aware",    n:"Rock Sense",     ico:"🔭", stats:["mining"],
     desc:"You see weaknesses in veinIt’s a little bit of a bandage. — Less blind blows."},
   {id:"hth",      n:"A Rough Shot",     ico:"💪", stats:["atk"],
     desc:"pickaxe It’s harder to get down. Every swing chewing more. rock."},
@@ -3519,7 +3593,7 @@ const PERK_DEFS=[
     desc:"Even the stone listens to you, more gold on each one. vein."},
   {id:"lifegiver",n:"Living",          ico:"🫀", stats:["energy"],
     desc:"You’re standing by more than you can. digwhile the others are already in the tavern."},
-  {id:"crits",    n:"A Mark Critic",    ico:"🎯", stats:["crit"],
+  {id:"crits",    n:"Crit Mark",    ico:"🎯", stats:["crit"],
     desc:"You’re in a crack, the chance of a critical blow is growing."},
   {id:"fortune",  n:"The lucky seeker.",   ico:"🍀", stats:["luck"],
     desc:"Mountain Sometimes smiles, you run into fatters more often. vein And a rare lute."},
@@ -3916,8 +3990,8 @@ const FO_SKILL_INFO={
   luck_up:"Smell on the rocks, nose knows before eyes, luck is growing.",
   stone_up:"Greed. trader She cries, you nod, greed grows. — Gold for vein.",
   energy_up:"Second breath. When the lungs say “all“, the porch answers “one more blow.“ The energy grows.",
-  mining_up:"You hear the stone lying, it’s growing. — A chance to double-beat.",
-  tough_up:"Oak protection, the vaults are holding because you’re an oak, too, and the defense is growing.",
+  mining_up:"Seam Sense. You hear where the stone lies — Sense grows, chance of a double hit.",
+  tough_up:"Oak Defense. The vaults hold because you’re oak too — Defense grows.",
   regen_up:"Second heart, first one knocks on veinsecond — It’s a tavern, it’s growing regen.",
   stam_up:"The Combo doesn’t stop sneeze, the breathing grows."
 };
@@ -4131,7 +4205,7 @@ function buildCharSheetHtml(inShell){
     ["Prestige", String(S.prestigeLv||0)]
   ].map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("");
 
-  let infoIco="🧔", infoTtl="Dvorf", infoTxt="Pick a line for the CRASACA — There’s a clue upstairs.";
+  let infoIco="🧔", infoTtl="Dwarf", infoTxt="Pick a skill line — tips appear upstairs.";
   if(focus.kind==="special"){
     const d=SPECIAL_DEFS.find(x=>x.id===focus.id), info=FO_SPECIAL_INFO[focus.id]||{};
     if(d){ infoIco=info.ico||"🧬"; infoTtl=d.letter+". "+d.n+" · "+specialAttr(d.id);
@@ -4188,7 +4262,7 @@ const SKILL_DEFS=[
   {id:"luck_up",  n:"Smell on the rocks.",   stat:"luck",  per:1.2, r:2},
   {id:"stone_up", n:"Greed",       stat:"stone", per:12,  r:0},
   {id:"energy_up",n:"Second breath", stat:"energy",per:15,  r:1},
-  {id:"mining_up",n:"A little bandage.",   stat:"mining",per:2,   r:2},
+  {id:"mining_up",n:"Seam Sense",   stat:"mining",per:2,   r:2},
   {id:"tough_up", n:"Dubber protection", stat:"tough", per:6,   r:3},
   {id:"regen_up", n:"Second heart",  stat:"regen", per:3,   r:2},
   {id:"stam_up",  n:"Breath",        stat:"stamina",per:6,  r:3}
@@ -5593,7 +5667,41 @@ function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.cl
     showToast("🪮","Award","","+"+(G.combDailyReward||2)+" comb · +"+fmt(veinReward()*50)+" 🪙"); }
   Platform.logEvent("daily_claim",{i}); save(); render(); openDaily(); }
 
+function fpStoreOpened(){
+  try{ Platform.logEvent("iap_open_store", {}); }catch(e){}
+  try{
+    if(!(S.growth&&S.growth.starterBought))
+      Platform.logEvent("iap_offer", { type_offer:"starter", product:"starter_pack", offer_name:"starter" });
+  }catch(e){}
+}
+function iapCatalog(productId){
+  const gems=BALANCE.shop.gemPacks||[];
+  const packs=BALANCE.shop.comeback||[];
+  const table={
+    gems_1999:{ amt:"19.99", product:"gems", name:"gems", rewards:{gems:gems[0]||0} },
+    gems_5999:{ amt:"59.99", product:"gems", name:"gems", rewards:{gems:gems[1]||0} },
+    gems_19999:{ amt:"199.99", product:"gems", name:"gems", rewards:{gems:gems[2]||0} },
+    pack_699:{ amt:"6.99", product:"pack", name:"pack", rewards:{gems:packs[0]?packs[0][0]:0, gold:packs[0]?packs[0][1]:0} },
+    pack_1699:{ amt:"16.99", product:"pack", name:"pack", rewards:{gems:packs[1]?packs[1][0]:0, gold:packs[1]?packs[1][1]:0} },
+    pack_2499:{ amt:"24.99", product:"pack", name:"pack", rewards:{gems:packs[2]?packs[2][0]:0, gold:packs[2]?packs[2][1]:0} },
+    noads_4999:{ amt:String(BALANCE.noAdsPrice), product:"no_ads", name:"no_ads", rewards:{} },
+    starter_pack_499:{ amt:"4.99", product:"starter_pack", name:"starter", rewards:{
+      gems:BALANCE.growth.starterPack.gems, gold:BALANCE.growth.starterPack.gold, bags:BALANCE.growth.starterPack.bags
+    } }
+  };
+  return table[productId]||{ amt:"0", product:productId, name:productId, rewards:{} };
+}
+function iapParams(productId, extra){
+  const m=iapCatalog(productId);
+  return Object.assign({
+    sku:productId, product:m.product, iap_name:m.name, iap_category:"shop",
+    iap_rewards:m.rewards, iap_store:"google_play", iap_show_trigger:"manual",
+    iap_show_type:"manual", placement:"shop", cur:"USD",
+    amt_cur:m.amt, amt_usd:m.amt, is_subscription:0
+  }, extra||{});
+}
 function openShop(){
+  fpStoreOpened();
   const gems=BALANCE.shop.gemPacks.map((g,i)=>`<div class="metarow"><span>💎 ${g} crystals</span><button class="btn btn-hard" onclick="buyGems(${i})">$${[19.99,59.99,199.99][i]}</button></div>`).join("");
   const cb=BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>`<div class="metarow"><span>Pack: 💎${g} + 🪙${fmt(gold)}</span><button class="btn btn-hard" onclick="buyPack(${i})">$${[6.99,16.99,24.99][i]}</button></div>`).join("");
   const na=S.noAds?"<div class='metarow'><span>✓ The ad’s offline.</span></div>":`<div class="metarow"><span>Disable advertising</span><button class="btn btn-hard" onclick="buyNoAds()">$${BALANCE.noAdsPrice}</button></div>`;
@@ -5702,19 +5810,73 @@ function shopDailyCardHtml(id){
     +(adDone?"✓ Publicity":("× Publicity · "+adPrev))+'</button>'
     +'</div></div></div>';
 }
-function buyGems(i){ Platform.buy("gems_"+i); growthTrackPurchase([1999,5999,19999][i],"gems_"+i); S.gems+=BALANCE.shop.gemPacks[i]; showToast("💎","Purchase","",BALANCE.shop.gemPacks[i]+" crystals","Thank you!"); save(); render(); openShop(); }
-function buyPack(i){ Platform.buy("pack_"+i); growthTrackPurchase([699,1699,2499][i],"pack_"+i); const [g,gold]=BALANCE.shop.comeback[i]; S.gems+=g; S.gold+=gold; showToast("🎁","Pack bought","","+"+g+"💎 +"+fmt(gold)+"🪙","Thank you!"); save(); render(); openShop(); }
-function buyNoAds(){ Platform.buy("noads"); growthTrackPurchase(Math.round(parseFloat(BALANCE.noAdsPrice)*100),"noads"); S.noAds=true; showToast("🚫","No advertising","","Advertisement disabled","Thank you!"); save(); render(); openShop(); }
+function requestPurchase(productId, grant){
+  const native=(typeof diggyNative==="function")?diggyNative():null;
+  if(native && typeof native.purchase==="function"){
+    const id="iap"+((Platform._n=(Platform._n||0)+1));
+    Platform._cbs=Platform._cbs||{};
+    Platform._cbs[id]=function(ok){
+      if(ok) grant();
+      else try{ Platform.logEvent("iap_buy_error", iapParams(productId, { error_text:"declined" })); }catch(e){}
+    };
+    try{ native.purchase(productId, id); }catch(e){ delete Platform._cbs[id]; }
+    return;
+  }
+  Platform.buy(productId);
+  grant();
+}
+function applyShopPurchase(productId, opts){
+  opts=opts||{};
+  try{
+    const p=iapParams(productId);
+    Platform.logEvent("iap_buy", { placement:p.placement, sku:p.sku, cur:p.cur, amt_cur:p.amt_cur, product:p.product, amt_usd:p.amt_usd });
+    Platform.logEvent("iap_buy_ok", p);
+  }catch(e){}
+  if(productId==="gems_1999"||productId==="gems_5999"||productId==="gems_19999"){
+    const i={gems_1999:0,gems_5999:1,gems_19999:2}[productId];
+    growthTrackPurchase([1999,5999,19999][i], productId);
+    S.gems+=BALANCE.shop.gemPacks[i];
+    showToast("💎","Purchase","",BALANCE.shop.gemPacks[i]+" crystals","Thank you!");
+    save(); render(); if(!opts.quiet) openShop();
+    return;
+  }
+  if(productId==="pack_699"||productId==="pack_1699"||productId==="pack_2499"){
+    const i={pack_699:0,pack_1699:1,pack_2499:2}[productId];
+    growthTrackPurchase([699,1699,2499][i], productId);
+    const [g,gold]=BALANCE.shop.comeback[i];
+    S.gems+=g; S.gold+=gold;
+    showToast("🎁","Pack bought","","+"+g+"💎 +"+fmt(gold)+"🪙","Thank you!");
+    save(); render(); if(!opts.quiet) openShop();
+    return;
+  }
+  if(productId==="noads_4999"){
+    growthTrackPurchase(Math.round(parseFloat(BALANCE.noAdsPrice)*100), productId);
+    S.noAds=true;
+    try{ Platform.syncAds(); }catch(e){}
+    showToast("🚫","No advertising","","Advertisement disabled","Thank you!");
+    save(); render(); if(!opts.quiet) openShop();
+    return;
+  }
+  if(productId==="starter_pack_499"){
+    ensureGrowth(S);
+    if(S.growth.starterBought) return;
+    const p=BALANCE.growth.starterPack;
+    growthTrackPurchase(p.cents, productId);
+    S.gems=(S.gems||0)+p.gems; S.gold=(S.gold||0)+p.gold; S.bags=(S.bags||0)+p.bags;
+    S.loot2xUntil=Date.now()+p.loot2xMin*60000; S.growth.starterBought=true;
+    showToast("🎁","Start pack","","+"+p.gems+" 💎 · Repayment rate D1");
+    Platform.logEvent("starter_pack",{}); save(); render();
+    if(!opts.quiet && typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
+  }
+}
+function buyGems(i){ const id="gems_"+[1999,5999,19999][i]; try{ Platform.logEvent("iap_buy_click", iapParams(id)); }catch(e){} requestPurchase(id, function(){ applyShopPurchase(id); }); }
+function buyPack(i){ const id="pack_"+[699,1699,2499][i]; try{ Platform.logEvent("iap_buy_click", iapParams(id)); }catch(e){} requestPurchase(id, function(){ applyShopPurchase(id); }); }
+function buyNoAds(){ try{ Platform.logEvent("iap_buy_click", iapParams("noads_4999")); }catch(e){} requestPurchase("noads_4999", function(){ applyShopPurchase("noads_4999"); }); }
 function buyStarterPack(){
   ensureGrowth(S);
   if(S.growth.starterBought){ showToast("🎁","Already bought.","","Start pack — one-time"); return; }
-  const p=BALANCE.growth.starterPack;
-  Platform.buy("starter_pack"); growthTrackPurchase(p.cents,"starter_pack");
-  S.gems=(S.gems||0)+p.gems; S.gold=(S.gold||0)+p.gold; S.bags=(S.bags||0)+p.bags;
-  S.loot2xUntil=Date.now()+p.loot2xMin*60000; S.growth.starterBought=true;
-  showToast("🎁","Start pack","","+"+p.gems+" 💎 · Repayment rate D1");
-  Platform.logEvent("starter_pack",{}); save(); render();
-  if(typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
+  try{ Platform.logEvent("iap_buy_click", iapParams("starter_pack_499")); }catch(e){}
+  requestPurchase("starter_pack_499", function(){ applyShopPurchase("starter_pack_499"); });
 }
 
 let aleNext=25+Math.random()*20, aleAnim=0;
@@ -6162,20 +6324,20 @@ function sciConsent(){
 function openGuild(){
   const sc=S.science;
   if(!sc.on){
-    metaOpen("🔬 Rudoznatz Guild",
-      "It’s not a job for people with eyesight.",
+    metaOpen("🔬 Ore-Sage Guild",
+      "Not a job for people who only trust eyesight.",
       `<div class="sub" style="line-height:1.9">
-         Dvorfs know things no car can do: <b>See and understand</b>.
-         You’re marking samples in the Guild. rock — You answer simple questions about,
-         The answers of many of the court members are in the same way: it’s called consensus.
+         Dwarves see what no camera can: <b>shape and meaning</b>.
+         In the Guild you mark rock samples — simple questions —
+         and many dwarves’ answers become a consensus.
          <br><br>
-         Sometimes you get a sample of <b>already known</b> I’m going to say that. Mountain
-         Checks your eyeball and decides how much your voice weighs.
+         Sometimes you get a sample the Mountain <b>already knows</b>.
+         It checks your eye and decides how much your voice weighs.
          <br><br>
-         <b style="color:var(--gold)">Nothing counts in the background.</b> Your phone.
-         It’s your eye that works, and only when you’ve opened that screen.
+         <b style="color:var(--gold)">Nothing runs in the background.</b>
+         Your phone works only when this screen is open — your eye, not a silent drain.
          <br><br>
-         <span style="color:#8a93a3">The samples are giving out the mountain’s archive. New batches appear when Rudoznatz bring fresh flips.</span>
+         <span style="color:#8a93a3">Samples come from the Mountain archive. New batches arrive when Ore-Sages bring fresh finds.</span>
        </div>
        <div style="text-align:center;padding:14px 0">
          <button class="btn btn-hard" onclick="sciConsent()" style="max-width:280px">I agree, join</button>
@@ -6188,46 +6350,46 @@ function openGuild(){
   const relPct=Math.round(rel*100);
   const weak=sciWeight()===0;
   if(!t){
-    metaOpen("🔬 Rudoznatz Guild","Reliability: "+relPct+"%",
-      '<div class="sub">All samples marked. Mountain Thanks.</div>');
+    metaOpen("🔬 Ore-Sage Guild","Reliability: "+relPct+"%",
+      '<div class="sub">All samples marked. The Mountain thanks you.</div>');
     return;
   }
   const img=SPECIMENS[t.id];
   const opts=t.opts.map((o,i)=>
     `<button class="btn btn-soft" onclick="sciAnswer(${i})" style="margin:3px 0">${o}</button>`).join("");
 
-  metaOpen("🔬 Rudoznatz Guild",
-    "Look at the sample and tell me what you see. — It’s how science comes to be.",
+  metaOpen("🔬 Ore-Sage Guild",
+    "Look at the sample and say what you see — that is how science starts.",
     `<div class="specWrap">
-       ${img?`<img class="specImg" src="${img}" alt="Model rock">`:""}
-       <div class="specCap">SAMPLE №${(sc.done||0)+1} · INCREASE ×40</div>
+       ${img?`<img class="specImg" src="${img}" alt="Rock sample">`:""}
+       <div class="specCap">SAMPLE №${(sc.done||0)+1} · MAG ×40</div>
      </div>
      <div class="specQ">${t.q}</div>
      <div class="specHint">${t.hint||""}</div>
      <div style="display:flex;flex-direction:column;gap:2px">${opts}</div>
-     <button onclick="sciSkip()" style="margin-top:6px;font-size:12px">I can’t tell. · Miss</button>
-     ${weak?'<div class="sub" style="color:#e8a24a;margin-top:10px">Your answers have not yet affected the overall outcome: you’re too often out of touch with tested samples. — “I can’t tell.“</div>':''}
+     <button onclick="sciSkip()" style="margin-top:6px;font-size:12px">I can’t tell · Skip</button>
+     ${weak?'<div class="sub" style="color:#e8a24a;margin-top:10px">Your answers are not counting yet — too often off the tested samples. Use “I can’t tell” when unsure.</div>':''}
      <div class="relBar"><div style="width:${relPct}%"></div></div>
      <div class="sciStat"><span>Labeled: <b style="color:var(--txt)">${sc.done||0}</b></span>
        <span>Reliability: <b style="color:var(--txt)">${relPct}%</b></span></div>
      <div class="sub" style="margin-top:8px;line-height:1.7">
-       The confidence grows when your answer matches the samples already tested.
-       The higher it is, the bigger your voice and the more reward it is.
+       Confidence grows when your answer matches already-tested samples.
+       Higher confidence means a louder voice and better rewards.
      </div>`);
   Platform.logEvent("guild_view",{});
 }
 
 const CODEX=[
-  ["About supports","supportsI’m not gonna do it because it’s beautiful, but because it’s a candy. — The first one in the mine is not the weakest, the first one to die is the one who said, “Come on, I’ll dig for five more minutes.“"],
-  ["About beard","In the Underground Kingdom beard — It’s not vegetation. It’s a workbook. beard to the belt — That’s the older one. digHe’s a handyman. — The Patriarch of the Mountain and he’s the first to say hello. beard No, they call him “Flyfly“ and they don’t let him on the floor."],
-  ["About ale.","Dvorf drinks ale for fun, Dvorf drinks ale to get back to digEverything that happens after the third mug — The ex, the elf and the “he’s ears are getting cold“ — It is not a Charter that is negotiated and not negotiable."],
-  ["Auto","The paddle used to look at every iron, weigh it, think it, now there’s a tick of “sale-in-the-sale“ -- 30 years of craft, dynasty, grandpa bequest. — And all of this is reduced to one creep, progress, citizen, keep your mouth shut."],
-  ["The prestige.","The “Dreathing Zow“ mechanics are simple. You’ve been down 7,000 floors, you’ve been grafting myfry equipment, you know every stone by name. You press the button. — And you’re back on the ground floor, in a hole bag, with pickaxe “Camber.“ But with multipliers. Mountain Doesn’t take away what’s coming. Mountain converts it into experience."],
-  ["About the wagon.","The wagon is filled with a roller coaster, then it goes away and comes empty. — Don’t ask. — There are questions in the mine that only ask once."],
-  ["About loot box","You need to improve the lair. duplicate Rocks. — duplicateThe first copy of each stone cannot be touched, it is in the collection, it brings 2 percent to the lootHere we go, citizen, and live with one hand digging, the other one making sure the first one doesn’t eat the museum fund."],
-  ["About elder","Employment elder — You’re a good luck, you’re a big boy, you’re a big boy. — falling beerThe weak are not expelled: the weak are taken into the artery with material. elder He takes the material and grows. — The question is closed."],
-  ["Offline income","You’re sleeping, you’re at work, you live your life, the yard is digging, the Dvorf is digging for exactly two hours, then he stops and waits for you to look in the dark, not because he’s tired. — The Charter of the Mountain says: two hours without you, next. — I’m not going to be here until we’re together."],
-  ["Meaning","rock It’s getting stronger as you’re holding it together. — six seconds per veinIt’s called “unending complexity.“ In the mine, it’s called work."]
+  ["About props","Props go up not for beauty — for not dying. The first dwarf to fall in a mine is never the weakest. It’s the one who said “five more minutes.”"],
+  ["About beards","Underground, a beard is not hair — it is a workbook. Belt-length means elder. Dig-hard means handyman. The Mountain Patriarch greets you first. No beard? They call you “Fly” and keep you off the floor."],
+  ["About ale","A dwarf drinks ale for joy. A dwarf also drinks ale to stand up at the face again. Everything after the third mug — the ex, the elf, “his ears are freezing” — is not in the Charter and not up for debate."],
+  ["About Auto","Once a dwarf weighed every scrap, thought, sorted. Now a tick says “auto-sell below rare.” Thirty years of craft, a dynasty, granddad’s will — reduced to one slider. Progress, citizen. Dig quiet."],
+  ["About prestige","Deep Call is simple. You dug seven thousand floors, wore cosmic gear, knew every stone by name. You press the button — and you are back on floor one, empty bag, starter pick. But with multipliers. The Mountain does not erase what you earned. It converts it to power."],
+  ["About the cart","The cart fills, rolls out, comes back empty. Don’t ask. Some mine questions are asked only once."],
+  ["About loot boxes","Upgrade boxes with duplicate stones. The first of each stone stays in the collection — it pays a quiet loot bonus. Dig with one hand; with the other, guard the museum fund."],
+  ["About elders","Hiring an elder is luck. You roll Hilda the Healer. You roll again — Bodri the Brewer, weaker. The weak are not fired: they join the artel as material. The target elder takes the material and grows. What really happens — closed question."],
+  ["Offline income","You sleep. You work. You live. The dwarf digs — exactly two hours — then stops and waits in the dark. Not tired. The Charter says: two hours alone, then only together."],
+  ["Meaning","Rock grows harder the deeper you go. Six seconds a vein is called “endless complexity.” In the mine it is just called work."]
 ];
 function showIntro(){
   const list=$("introList");
@@ -6568,9 +6730,9 @@ function growthApplyReferral(code, silent){
   ensureGrowth(S);
   code=(code||"").trim().toUpperCase();
   if(!code||code.length<4){ if(!silent) showToast("👥","Code","","Enter friend code"); return false; }
-  if(code===growthInviteCode()){ if(!silent) showToast("👥","It’s your code.","","Invite someone else."); return false; }
+  if(code===growthInviteCode()){ if(!silent) showToast("👥","That's your code","","Invite someone else."); return false; }
   if(S.growth.referredBy){
-    if(!silent) showToast("👥","Already there is.","","from "+S.growth.referredBy);
+    if(!silent) showToast("👥","Already referred","","From "+S.growth.referredBy);
     return false;
   }
   const r=BALANCE.growth.referral;
@@ -6580,7 +6742,7 @@ function growthApplyReferral(code, silent){
   growthBumpInviter(code);
   Platform.trackAttribution("referral",{code,organic:true});
   Platform.logEvent("referral_accept",{code});
-  if(!silent) showToast("👥","Coop-vein","","+"+r.welcomeGems+" 💎 · Boost "+r.coopBoostMin+" min");
+  if(!silent) showToast("👥","Co-op vein","","+"+r.welcomeGems+" 💎 · boost "+r.coopBoostMin+" min");
   save(); render(); return true;
 }
 function growthJoinWaitlist(silent){
@@ -6589,14 +6751,14 @@ function growthJoinWaitlist(silent){
   S.growth.waitlist.joined=true; S.growth.waitlist.at=Date.now(); S.growth.organic=true;
   Platform.trackAttribution("waitlist",{organic:true});
   Platform.logEvent("waitlist_join",{});
-  if(!silent) showToast("📋","Wyattlist","","A bonus waiting on the Friends section.");
+  if(!silent) showToast("📋","Waitlist","","Bonus waiting in Friends.");
   save(); updateGrowthDot();
 }
 function claimWaitlistBonus(){
   ensureGrowth(S);
   const w=BALANCE.growth.waitlist;
-  if(!S.growth.waitlist.joined){ showToast("📋","Wyattlist","","Come in first."); return; }
-  if(S.growth.waitlist.claimed){ showToast("📋","Already taken.","","Thanks for the early access."); return; }
+  if(!S.growth.waitlist.joined){ showToast("📋","Waitlist","","Join first."); return; }
+  if(S.growth.waitlist.claimed){ showToast("📋","Already claimed","","Thanks for early access."); return; }
   S.gems=(S.gems||0)+w.bonusGems; S.eggs=(S.eggs||0)+w.eggs; S.combs=(S.combs||0)+w.combs;
   S.loot2xUntil=Date.now()+w.loot2xMin*60000;
   S.growth.waitlist.claimed=true;
@@ -6614,8 +6776,8 @@ function claimInviteMilestones(){
       S.growth.milestones.push(i); S.gems=(S.gems||0)+ms[i].gems; gems+=ms[i].gems;
     }
   }
-  if(gems){ showToast("👥",":: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: ::: :: :: :: :: :: :: ::: :","","+"+gems+" 💎"); Platform.logEvent("referral_milestone",{gems}); save(); render(); }
-  else showToast("👥","Varies","","Invite some more friends.");
+  if(gems){ showToast("👥","Invite milestone","","+"+gems+" 💎"); Platform.logEvent("referral_milestone",{gems}); save(); render(); }
+  else showToast("👥","Milestones","","Invite more friends.");
   updateGrowthDot();
   if(typeof UIS!=="undefined"&&UIS.id==="profile") UIS.render("profile");
 }
@@ -6632,9 +6794,9 @@ function growthSyncInvites(){
 }
 function shareInvite(){
   const url=growthInviteLink(), code=growthInviteCode();
-  const text="Go with me to the ORE DEEP! Code: "+code;
-  if(navigator.share){ navigator.share({title:"ORE DEEP",text,url}).catch(()=>{}); }
-  else { try{ navigator.clipboard.writeText(url); showToast("👥","Reference","","Copyed"); }catch(e){ showToast("👥","Code",code,url); } }
+  const text="Dig with me in Mountain King! Code: "+code;
+  if(navigator.share){ navigator.share({title:"Mountain King",text,url}).catch(()=>{}); }
+  else { try{ navigator.clipboard.writeText(url); showToast("👥","Invite link","","Copied"); }catch(e){ showToast("👥","Code",code,url); } }
   Platform.logEvent("invite_share",{code});
 }
 function growthCaptureUrl(){
@@ -6690,28 +6852,43 @@ function growthOnBoot(){
 (function(){
   const base=Platform.showRewarded;
   Platform.showRewarded=function(cb, slot){
-    slot=slot||"unknown";
-    try{ Platform.logEvent("ad_offer",{slot}); }catch(e){}
+    slot=slot||"rewarded";
+    const placement=adSlotKey(slot);
+    const place=placement&&placement!=="unknown"?placement:"rewarded";
+    const adBase={ med:"applovin", placement:place };
+    try{ Platform.logEvent("ad_offer",{slot:place}); }catch(e){}
+    try{ Platform.logEvent("ad_reward_needed", adBase); }catch(e){}
     if(S.noAds){
-      try{ Platform.logEvent("ad_complete",{slot,noads:true}); }catch(e){}
+      try{ Platform.logEvent("ad_complete",{slot:place,noads:true}); }catch(e){}
       cb(true);
       return;
     }
     if(!adSlotOk(slot)){
-      try{ Platform.logEvent("ad_blocked",{slot,reason:"cap"}); }catch(e){}
+      try{ Platform.logEvent("ad_blocked",{slot:place,reason:"cap"}); }catch(e){}
       showToast("📺","Advertisement Limited","","Slot or day · "+adViewsToday()+"/"+adsDailyCap());
       cb(false); return;
     }
     if(!growthAdCapOk()){
-      try{ Platform.logEvent("ad_blocked",{slot,reason:"cap"}); }catch(e){}
+      try{ Platform.logEvent("ad_blocked",{slot:place,reason:"cap"}); }catch(e){}
       showToast("📺","Advertisement Limited","","tomorrow again. — CPA under control"); cb(false); return;
     }
+    try{ Platform.logEvent("ad_reward_try_show", adBase); }catch(e){}
     base(ok=>{
       if(ok){
         growthTrackAd(slot);
-        try{ Platform.logEvent("ad_complete",{slot}); }catch(e){}
+        const n=(S.growth&&S.growth.adViewsLifetime)|0;
+        try{
+          Platform.logEvent("ad_complete",{slot:place});
+          Platform.logEvent("ad_reward_show", adBase);
+          Platform.logEvent("ad_reward_close", adBase);
+          Platform.logEvent("af_ad_reward", { af_rewarded_count:n });
+          if(n===5||n===10) Platform.logEvent("af_ad_reward"+n, { af_rewarded_count:n });
+        }catch(e){}
       } else {
-        try{ Platform.logEvent("ad_fail",{slot}); }catch(e){}
+        try{
+          Platform.logEvent("ad_fail",{slot:place});
+          Platform.logEvent("ad_reward_show_error", Object.assign({ errtext:"not_shown" }, adBase));
+        }catch(e){}
       }
       cb(ok);
     }, slot);
