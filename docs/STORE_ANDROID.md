@@ -135,6 +135,28 @@ Soft launch без рекламы/IAP ок. Перед монетизацией 
 - «Incomplete store listing»
 - подписан debug-ключом (нет `keystore.properties` → unsigned/debug)
 
+## 8. Level Up / Play Games (Console, руками)
+
+Код готов: `DiggyPlayGames`, `PLAY_*` в `js/balance.js`, cloud conflict UI, local notify.
+
+1. Play Console → Play Games Services → создать игру, поставить реальный `play_games_project_id` в `sdk_keys.xml`.
+2. Создать 12 achievements + 6 events + 2 single-use rewards + 1 weekly — IDs = значения `PLAY_*.id`.
+3. Sidekick → Enable for app bundle.
+4. Pre-launch report на latest Internal AAB.
+5. **Production Send for review — только после явного «ок».** Не жать Send вслепую.
+
+## 9. Gacha odds (store + in-game)
+
+In-game: Bag / Chest modal → **Drop odds** (current vs next bag level).
+Store listing (Data safety / About): bag drops use rarity curves by bag level; Auto-sell never spends paid currency; upgrades spend gold only. Full curves live in `BALANCE` / bag level tables.
+
+## 10. Crash / Vitals checklist
+
+- Native debug symbols: `debugSymbolLevel 'FULL'` in release.
+- Keep ANR under control: no blocking JS on WebView thread for cloud I/O (callbacks async).
+- After each Internal: Android Vitals → crash-free ≥ 99%, ANR rate green.
+- Log `[analytics]` + `Platform.logEvent` for ad/billing failures (`ad_fail`, `not_ready`).
+
 ## Быстрый TL;DR
 
 ```bash
@@ -150,4 +172,5 @@ npm test && npm run sync && npm run aab
 # 4) файл
 open android/app/build/outputs/bundle/release/
 # → app-release.aab в Play Console → Internal testing
+# Production Send — только после ок
 ```

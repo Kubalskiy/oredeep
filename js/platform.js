@@ -86,8 +86,20 @@ try{
     delete Platform._cbs[id];
     try{ bag(!!ok, reason||""); }catch(e){}
   };
+  window.__diggyNativeCbJson=function(id, ok, payload, reason){
+    const bag=Platform._cbs&&Platform._cbs[id];
+    if(!bag) return;
+    delete Platform._cbs[id];
+    try{ bag(!!ok, payload||"", reason||""); }catch(e){}
+  };
   window.__diggyGrant=function(productId){
     try{ if(typeof applyShopPurchase==="function") applyShopPurchase(productId,{quiet:true}); }catch(e){}
+  };
+  window.__diggyPlayReward=function(rewardId){
+    try{ if(typeof grantPlayReward==="function") grantPlayReward(rewardId); }catch(e){}
+  };
+  window.__diggyPgs=function(event, ok, reason){
+    try{ if(typeof onPlayGamesAuth==="function") onPlayGamesAuth(!!ok, reason||""); }catch(e){}
   };
 }catch(e){}
 const Platform={
@@ -101,6 +113,46 @@ const Platform={
   trackRevenue(cents,source,meta){ this.logEvent("revenue",{cents,source,...meta}); },
   trackAttribution(channel,meta){ this.logEvent("attribution",{channel,...meta}); },
   unitEcon(){ return (typeof growthUnitEcon==="function")?growthUnitEcon():{}; },
+  unlockAchievement(id){
+    try{
+      const native=diggyNative();
+      if(native && typeof native.unlockAchievement==="function") native.unlockAchievement(String(id||""));
+    }catch(e){}
+  },
+  incrementEvent(id, amount){
+    try{
+      const native=diggyNative();
+      if(native && typeof native.incrementEvent==="function") native.incrementEvent(String(id||""), amount|0);
+    }catch(e){}
+  },
+  cloudSave(json, cb){
+    const native=diggyNative();
+    if(native && typeof native.cloudSave==="function"){
+      const id="cs"+((Platform._n=(Platform._n||0)+1));
+      Platform._cbs=Platform._cbs||{};
+      Platform._cbs[id]=function(ok, reason){ if(cb) cb(!!ok, reason||""); };
+      try{ native.cloudSave(String(json||""), id); return; }catch(e){ delete Platform._cbs[id]; }
+    }
+    if(cb) cb(false, "unavailable");
+  },
+  cloudLoad(cb){
+    const native=diggyNative();
+    if(native && typeof native.cloudLoad==="function"){
+      const id="cl"+((Platform._n=(Platform._n||0)+1));
+      Platform._cbs=Platform._cbs||{};
+      Platform._cbs[id]=function(ok, payload, reason){ if(cb) cb(!!ok, payload||"", reason||""); };
+      try{ native.cloudLoad(id); return; }catch(e){ delete Platform._cbs[id]; }
+    }
+    if(cb) cb(false, "", "unavailable");
+  },
+  scheduleNotify(title, body, whenMs){
+    try{
+      const native=diggyNative();
+      if(native && typeof native.scheduleNotify==="function"){
+        native.scheduleNotify(String(title||""), String(body||""), whenMs|0);
+      }
+    }catch(e){}
+  },
   showRewarded:(cb, slot)=>{
     const native=diggyNative();
     if(native && typeof native.showRewarded==="function"){

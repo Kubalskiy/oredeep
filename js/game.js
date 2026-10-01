@@ -446,6 +446,7 @@ function finishBagUpgrade(){
   const oldName=bagName(S.bag);
   S.bag++;
   Platform.logEvent("bag_upgrade",{level:S.bag});
+  try{ checkPlayAchievements(); }catch(e){}
   if(bagName(S.bag)!==oldName){
     showToast("🧰","New loot bag!","",bagName(S.bag),"Rarity odds improved.");
     sayQuip("Whoa, «"+bagName(S.bag)+"»! Grandpa would approve.",4);
@@ -466,6 +467,7 @@ function startBagUpgrade(){
   const sec=bagUpgradeSec();
   S.bagActive={ end:Date.now()+sec*1000, dur:sec, from:S.bag };
   Platform.logEvent("bag_upgrade_start",{next:S.bag+1, sec, skip:bagSkipGems()});
+  try{ scheduleBagReadyNotify(); }catch(e){}
   save(); render();
   if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
   return true;
@@ -686,6 +688,7 @@ function doPrestige(){
 
   dead=false; if($("overlay")) $("overlay").style.display="none";
   Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
+  try{ unlockPlayAchievement("prestige_1"); }catch(e){}
   showToast("⛰️","DEEP CALL!","","Prestige "+S.prestigeLv,"+"+gain+" Lv. · attack ×"+fmt(prestigeMult()),true);
   sayQuip("Mountain She’s calling again. beard I remember everything.",5);
   try{ jingleSet(); }catch(e){}
@@ -785,6 +788,7 @@ function submitMyScore(){
   S.bestDepth=Math.max(S.bestDepth||0,depth);
   S.bestPrestige=Math.max(S.bestPrestige||0,S.prestigeLv||0);
   try{ Platform.submitScore({name:playerName(),depth:S.bestDepth,prestige:S.bestPrestige}); }catch(e){}
+  try{ trackPlayEvent("depth_best", Math.max(1, S.bestDepth|0)); checkPlayAchievements(); }catch(e){}
 }
 function checkDepthMark(prevIdx){
   const d0=prevIdx*3, d1=S.stageIdx*3;
@@ -955,6 +959,12 @@ function newRock(){
   if(rock.isEvent) sayQuip("The key only goes down if you finish all the waves.",4);
   else if(rock.isRaid) sayQuip("A special stone! — hall He’ll give it to you.",4);
   else if(rock.isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
+  try{
+    if(isDailySharedVein()){
+      $("rockName").textContent="🌐 Shared vein #"+dailyVeinSeed()+" · "+($("rockName").textContent||"Rock");
+      rock.isDailyShared=true;
+    }
+  }catch(e){}
   $("rockName").classList.toggle("bosslabel",!!rock.isBoss);
   $("rock").classList.toggle("boss",!!rock.isBoss);
   $("rock").classList.toggle("raid",!!rock.isRaid);
@@ -1171,6 +1181,9 @@ function breakVein(){
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
   S.veinsBroken=(S.veinsBroken||0)+1;
+  try{ trackPlayEvent("veins_broken",1); }catch(e){}
+  if(veinGold>0) try{ trackPlayEvent("gold_earned", Math.max(1, Math.round(veinGold))); }catch(e){}
+  try{ checkPlayAchievements(); }catch(e){}
   try{ checkMinerLevelUp(true); }catch(e){}
   if(!wasRaid&&!wasEvent) rollVeinExtras(rock.isBoss);
   checkDepthMark(prevIdx); submitMyScore();
@@ -1472,6 +1485,9 @@ function openBag(){
   if(S.autoRoll){ showToast("🎒","Auto on.","","Turn off the Auto to open manually"); return false; }
   if((S.bags||0)<1){ showToast("🎒","No bags","","Bags drop from veins"); return false; }
   S.bags--; dailyProgress("bag",1);
+  S.bagsOpened=(S.bagsOpened||0)+1;
+  try{ trackPlayEvent("bags_opened",1); }catch(e){}
+  try{ checkPlayAchievements(); }catch(e){}
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1; { const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }; }
   dropGearItem(makeItem(rollGearSlot().id));
   Platform.logEvent("bag_open",{}); save(); render();
@@ -1508,6 +1524,8 @@ function flushSales(){
 function autoOpenBag(quiet){
   if((S.bags||0)<1) return false;
   S.bags--; dailyProgress("bag",1);
+  S.bagsOpened=(S.bagsOpened||0)+1;
+  try{ trackPlayEvent("bags_opened",1); }catch(e){}
   const it=makeItem(rollGearSlot().id);
   if(it.r < (S.autoRollTier||0)){
     const p=sellPrice(it); S.gold+=p;
@@ -1615,6 +1633,7 @@ function dropGearItem(it, quiet){
     if(quiet || FAST()) equipN++;
     sfxGear();
     renderGear();
+    try{ if((it.r|0)>=7) unlockPlayAchievement("cosmic_slot"); }catch(e){}
   } else {
     const p=sellPrice(it);
     S.gold+=p;
@@ -1644,6 +1663,7 @@ function hireGeo(){
     boxAdd(S.geoBox,t,r,1);
     showToast("👷",GEO_RAR[r],"r"+r,name,"to the artefact · Merger material");
   }
+  try{ unlockPlayAchievement("first_beard"); }catch(e){}
   save(); render();
   return true;
 }
@@ -1990,6 +2010,7 @@ function buyUpgrade(id){
   if(S.ftue&&!S.ftue.u){ S.ftue.u=1; const el=$("u_"+u.id); if(el&&el.classList) el.classList.remove("pulse"); }
   Platform.logEvent("upgrade",{id:u.id,lv:S.lvls[u.id]});
   pushFeed("Upgrade", (statLbl(u.id)||u.k)+" → Lv."+(S.lvls[u.id]|0)+" · −"+fmt(c)+" 🪙", "up");
+  try{ checkPlayAchievements(); }catch(e){}
   save(); render();
   return true;
 }
@@ -3000,6 +3021,212 @@ function resetProgress(){
   }
 }
 
+/* —— Play Games Level Up (achievements / rewards / cloud / notify) —— */
+let _pgsAuthed=false, _cloudBusy=false, _cloudPend=null, _lastCloudPush=0;
+function ensurePlay(d){
+  if(!d) return d;
+  if(!d.playClaimed||typeof d.playClaimed!=="object") d.playClaimed={};
+  if(!d.playCosmetics||typeof d.playCosmetics!=="object") d.playCosmetics={};
+  if(!d.playUnlocked||typeof d.playUnlocked!=="object") d.playUnlocked={};
+  if(d.bagsOpened==null) d.bagsOpened=0;
+  return d;
+}
+function playAchId(key){
+  try{ return (PLAY_ACHIEVEMENTS&&PLAY_ACHIEVEMENTS[key]&&PLAY_ACHIEVEMENTS[key].id)||key; }catch(e){ return key; }
+}
+function playEvId(key){
+  try{ return (PLAY_EVENTS&&PLAY_EVENTS[key]&&PLAY_EVENTS[key].id)||key; }catch(e){ return key; }
+}
+function unlockPlayAchievement(key){
+  if(!S) return;
+  ensurePlay(S);
+  if(S.playUnlocked[key]) return;
+  S.playUnlocked[key]=1;
+  try{ Platform.unlockAchievement(playAchId(key)); }catch(e){}
+  try{ Platform.logEvent("play_achievement",{key}); }catch(e){}
+}
+function trackPlayEvent(key, amount){
+  const n=Math.max(1, amount|0);
+  try{ Platform.incrementEvent(playEvId(key), n); }catch(e){}
+}
+function checkPlayAchievements(){
+  if(!S) return;
+  ensurePlay(S);
+  if((S.veinsBroken||0)>=1) unlockPlayAchievement("first_vein");
+  if((S.bagsOpened||0)>=10) unlockPlayAchievement("bags_10");
+  if((S.stageIdx||0)>=10) unlockPlayAchievement("depth_30");
+  if((S.bag||0)>=5) unlockPlayAchievement("bag_lv5");
+  if((S.lvls&&S.lvls.atk|0)>=1) unlockPlayAchievement("upgrade_atk");
+  if((S.stageIdx||0)>=34) unlockPlayAchievement("depth_100");
+  if(S.pet || (S.petRolls|0)>0) unlockPlayAchievement("first_pet");
+  if(S.geo || (S.geoRolls|0)>0 || (S.beard|0)>0) unlockPlayAchievement("first_beard");
+  if((S.prestigeRuns||0)>=1) unlockPlayAchievement("prestige_1");
+  if((S.pvpWins||0)>=1) unlockPlayAchievement("pvp_win");
+  if(S.streak&&(S.streak.n|0)>=7) unlockPlayAchievement("streak_7");
+  try{
+    for(const k in (S.gear||{})){
+      const it=S.gear[k];
+      if(it && (it.r|0)>=7){ unlockPlayAchievement("cosmic_slot"); break; }
+    }
+  }catch(e){}
+}
+function grantPlayReward(rewardId){
+  if(!S || !rewardId) return false;
+  ensurePlay(S);
+  let def=null, key=null;
+  try{
+    for(const k in PLAY_REWARDS){
+      if(PLAY_REWARDS[k].id===rewardId || k===rewardId){ def=PLAY_REWARDS[k]; key=k; break; }
+    }
+  }catch(e){}
+  if(!def){ try{ showToast("🎮","Play reward","","Unknown offer"); }catch(e){} return false; }
+  if(def.kind==="single" && S.playClaimed[key]){
+    showToast("🎮","Already claimed","",def.n||key); return false;
+  }
+  const g=def.grant||"";
+  if(g==="pick_skin_magma"){
+    S.playCosmetics.pick="magma";
+    showToast("⛏️","Magma Pick Skin","","Equipped vanity · Play Games",true);
+  } else if(g==="beard_style_royal"){
+    S.playCosmetics.beard="royal";
+    showToast("🧔","Royal Beard Style","","Equipped vanity · Play Games",true);
+  } else if(g==="gold_weekly"){
+    const mul=def.goldMul||80;
+    const amt=Math.max(100, Math.round(veinReward()*mul));
+    S.gold=(S.gold||0)+amt;
+    showToast("🪙","Weekly Gold Cache","","+"+fmt(amt)+" 🪙 · Play Games",true);
+  } else {
+    showToast("🎮","Play reward","",def.n||key);
+  }
+  if(def.kind==="single") S.playClaimed[key]=Date.now();
+  try{ Platform.logEvent("play_reward",{id:rewardId,key,grant:g}); }catch(e){}
+  save(); try{ render(); }catch(e){}
+  return true;
+}
+function playProgressScore(d){
+  if(!d) return 0;
+  return ((d.prestigeLv|0)*1e9)+((d.bestDepth|0)*1e3)+((d.stageIdx|0)*10)+((d.veinsBroken|0));
+}
+function applyCloudSave(raw){
+  try{
+    const parsed=JSON.parse(raw);
+    if(!parsed||typeof parsed!=="object"||Array.isArray(parsed)) return false;
+    S=Object.assign(freshState(), migrate(parsed));
+    sanitizeState(S); ensureAll(S); ensurePlay(S); S.eventRun=null; resetTimers();
+    try{ Platform.syncAds(); }catch(e){}
+    try{ newRock(); render(); }catch(e){}
+    save();
+    showToast("☁️","Cloud save loaded","","Progress from Play Games",true);
+    return true;
+  }catch(e){ return false; }
+}
+function showCloudConflict(cloudRaw){
+  let cloud=null;
+  try{ cloud=JSON.parse(cloudRaw); }catch(e){ return; }
+  if(!cloud||typeof cloud!=="object") return;
+  const localScore=playProgressScore(S);
+  const cloudScore=playProgressScore(cloud);
+  if(cloudScore<=localScore){
+    try{ pushCloudSave(true); }catch(e){}
+    return;
+  }
+  _cloudPend=cloudRaw;
+  const cDepth=fmt((cloud.bestDepth||cloud.stageIdx*3)||0);
+  const lDepth=fmt((S.bestDepth||S.stageIdx*3)||0);
+  metaOpen("Cloud save conflict",
+    "Play Games has newer progress",
+    '<div class="metarow"><span>This device</span><span>⛰'+(S.prestigeLv||0)+' · '+lDepth+' m</span></div>'
+    +'<div class="metarow"><span>Cloud</span><span>⛰'+(cloud.prestigeLv||0)+' · '+cDepth+' m</span></div>'
+    +'<div class="btnrow" style="margin-top:12px">'
+    +'<button type="button" class="btn btn-soft" onclick="resolveCloudConflict(false)">Keep this device</button>'
+    +'<button type="button" class="btn btn-hard" onclick="resolveCloudConflict(true)">Use cloud</button>'
+    +'</div>');
+}
+function resolveCloudConflict(useCloud){
+  const raw=_cloudPend; _cloudPend=null;
+  try{ if($("metaModal")) $("metaModal").style.display="none"; }catch(e){}
+  if(useCloud && raw) applyCloudSave(raw);
+  else pushCloudSave(true);
+}
+function pushCloudSave(force){
+  if(!S || !_pgsAuthed || _cloudBusy) return;
+  const now=Date.now();
+  if(!force && now-_lastCloudPush<25000) return;
+  _lastCloudPush=now;
+  try{
+    S.lastSeen=now;
+    const raw=JSON.stringify(S);
+    _cloudBusy=true;
+    Platform.cloudSave(raw, function(){ _cloudBusy=false; });
+  }catch(e){ _cloudBusy=false; }
+}
+function onPlayGamesAuth(ok){
+  _pgsAuthed=!!ok;
+  try{ Platform.logEvent("pgs_auth",{ok:_pgsAuthed}); }catch(e){}
+  if(!_pgsAuthed || !S) return;
+  checkPlayAchievements();
+  Platform.cloudLoad(function(okLoad, payload){
+    if(okLoad && payload) showCloudConflict(payload);
+    else pushCloudSave(true);
+  });
+}
+function scheduleGameNotify(title, body, whenMs){
+  try{ Platform.scheduleNotify(title, body, whenMs); }catch(e){}
+}
+function scheduleBagReadyNotify(){
+  if(!S||!S.bagActive||!S.bagActive.end) return;
+  scheduleGameNotify("Bag ready","Your loot bag upgrade finished.", S.bagActive.end);
+}
+function scheduleBonusNotify(){
+  if(!S||!S.bonusReadyAt||S.bonusReadyAt<=Date.now()) return;
+  scheduleGameNotify("Bonus chest","A bonus chest is ready in the mine.", S.bonusReadyAt);
+}
+function dailyVeinSeed(){
+  const t=todayStr();
+  let h=0; for(let i=0;i<t.length;i++) h=((h<<5)-h)+t.charCodeAt(i)|0;
+  return Math.abs(h)%9973;
+}
+function isDailySharedVein(){
+  if(!rock||rock.isRaid||rock.isEvent||rock.isBoss) return false;
+  return ((S.stageIdx|0)+dailyVeinSeed())%17===0;
+}
+function shareDailyVein(){
+  const seed=dailyVeinSeed();
+  const depth=fmt((S.stageIdx||1)*3);
+  const text="Today's shared vein #"+seed+" · I'm at "+depth+" m in Mountain King. Dig with me!";
+  try{ Platform.logEvent("daily_vein_share",{seed}); }catch(e){}
+  if(navigator.share){
+    navigator.share({title:"Mountain King", text:text}).catch(()=>{});
+  } else {
+    try{ navigator.clipboard.writeText(text); showToast("📤","Copied","","Daily vein link text"); }catch(e){
+      showToast("📤","Share","","Vein #"+seed);
+    }
+  }
+}
+function bindPlayKeyboard(){
+  if(window.__mkKeysBound) return;
+  window.__mkKeysBound=true;
+  document.addEventListener("keydown", function(e){
+    if(!e||e.metaKey||e.ctrlKey||e.altKey) return;
+    const tag=(e.target&&e.target.tagName||"").toLowerCase();
+    if(tag==="input"||tag==="textarea"||(e.target&&e.target.isContentEditable)) return;
+    const k=e.key;
+    if(k===" "||k==="Enter"){
+      e.preventDefault();
+      try{ if(typeof minerHit==="function") minerHit(); }catch(err){}
+      return;
+    }
+    if(k==="b"||k==="B"){ e.preventDefault(); try{ openBag(); }catch(err){} return; }
+    if(k==="s"||k==="S"){ e.preventDefault(); try{ shareCard(); }catch(err){} return; }
+    if(k==="d"||k==="D"){ e.preventDefault(); try{ shareDailyVein(); }catch(err){} return; }
+    if(k>="1"&&k<="5"){
+      const tabs=["Mine","Market","Skills","Tavern","PvP"];
+      const t=tabs[(k|0)-1];
+      if(t){ e.preventDefault(); try{ switchTab(t); }catch(err){} }
+    }
+  }, true);
+}
+
 const SAVE_KEY="oredeep_v3";
 const SAVE_BAK="oredeep_v3_bak";
 let _saveFailAt=0;
@@ -3010,6 +3237,7 @@ function save(){
     const raw=JSON.stringify(S);
     localStorage.setItem(SAVE_KEY, raw);
     try{ localStorage.setItem(SAVE_BAK, raw); }catch(e2){}
+    try{ pushCloudSave(false); }catch(e3){}
     return true;
   }catch(e){
     if(Date.now()-_saveFailAt>60000){
@@ -3143,7 +3371,7 @@ function ensureWorkouts(d){ if(!d) return d;
 function ensureAll(d){
   ensureDurab(d); ensurePrestige(d); ensureBags(d); ensureMerge(d);
   ensureCards(d); ensureFair(d); ensureScience(d); ensureGacha(d); ensureBonus(d); ensureGrowth(d);
-  ensureWorkouts(d); ensureFeat(d); ensureMineRaid(d); ensureEventRun(d);
+  ensureWorkouts(d); ensureFeat(d); ensureMineRaid(d); ensureEventRun(d); ensurePlay(d);
   return d;
 }
 function ensureGacha(d){ if(!d) return d;
@@ -3435,6 +3663,7 @@ async function buildShareCard(){
 }
 async function shareCard(){
   Platform.logEvent("share_card",{best:S.best?S.best.r:-1});
+  try{ if(rock&&rock.isDailyShared) shareDailyVein(); }catch(e){}
   const c=await buildShareCard();
   if(!c) return;
   c.toBlob(b=>{
@@ -3466,6 +3695,7 @@ function checkStreak(){
     "+"+fmt(reward)+" 🪙", true);
   sayQuip(S.streak.n>=7?"Streak "+S.streak.n+" days! The beard approves.":"Back to the dig.",4);
   Platform.logEvent("streak",{n:S.streak.n}); addBeardXP(25);
+  try{ if((S.streak.n|0)>=7) unlockPlayAchievement("streak_7"); }catch(e){}
   save();
 }
 
@@ -4629,6 +4859,7 @@ function pvpFightApply(cand, brawl){
   if(win){
     S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1); addGymXP(GYM_XP.perPvpWin);
     const li=pvpLeagueIdx(); S.gold+=pvpWinGold(li);
+    try{ trackPlayEvent("pvp_fights",1); unlockPlayAchievement("pvp_win"); }catch(e){}
     showToast("⚔","VICTORY!","",
       (cand.ic||"")+" "+(cand.name||"The competition"),
       "+30 🏆 · HP "+brawl.meLeft+" vs "+brawl.oppLeft+" · "+brawl.rounds+" Ed.", true); }
@@ -5212,6 +5443,7 @@ function renderChestCard(){
       +'<div class="chCols"><div class="chCol"><div class="chColT">current</div>'+chestChanceRows(lvl)+'</div>'
       +'<div class="chCol"><div class="chColT">next</div>'+chestChanceRows(lvl+1)+'</div></div>'
       +(nb?('<div class="sub" style="margin-top:6px;text-align:center">up to «'+nb[1]+'»: '+(nb[0]-lvl)+' Lv.</div>'):'')
+      +'<div class="sub" style="margin-top:4px;text-align:center;opacity:.75">Odds by bag level · gold upgrades only · no paid gacha</div>'
       +'<div class="chTimer"><div class="chTimerBar"><div class="chTimerFill" style="width:'+timerPct.toFixed(1)+'%"></div></div>'
       +'<span class="sub" id="chTimerLbl">'+timerLbl+'</span></div>'
       +'<div class="btnrow" style="margin-top:8px">'
@@ -5398,6 +5630,7 @@ function rollPet(){
     wasBetter?("I’m a little bit of a girl, but I’m a little bit of a girl. +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase())
              :("to collection · Copys: "+boxCountAt(S.petBox,t,r)));
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
+  try{ unlockPlayAchievement("first_pet"); }catch(e){}
 }
 
 const WK_PATH_NAME=STAT_LBL;
@@ -6763,6 +6996,7 @@ function growthTrackAd(slot){
   S.growth.ads.count=(S.growth.ads.count||0)+1;
   if(slot) adSlotBump(slot);
   S.growth.adViewsLifetime=(S.growth.adViewsLifetime||0)+1;
+  try{ trackPlayEvent("ads_watched",1); }catch(e){}
   Platform.trackRevenue(BALANCE.growth.ads.revCents,"rewarded_ad",{ad:true,slot:slot||""});
   save();
 }
@@ -6964,6 +7198,10 @@ try{ renderCart(); }catch(e){}
 try{ checkOffline(); }catch(e){}
 try{ growthOnBoot(); }catch(e){}
 try{ checkStreak(); }catch(e){}
+try{ checkPlayAchievements(); }catch(e){}
+try{ bindPlayKeyboard(); }catch(e){}
+try{ scheduleBonusNotify(); }catch(e){}
+try{ scheduleBagReadyNotify(); }catch(e){}
 { const sm=$("setMusic"); if(sm) sm.textContent=musicOn?"🔊 on":"🔇 off"; }
 { if(typeof syncToastToggleBtns==="function") syncToastToggleBtns(); }
 const SPEEDS=[1,2,3,10,100];

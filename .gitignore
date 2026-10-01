@@ -17,3 +17,9 @@ android/.gradle/
 android/local.properties
 android/captures/
 google-services.json
+
+# One-off Play Console upload helpers / injected blobs
+assets/store/_*.js
+assets/store/_verify/
+dist/*.aab
+dist/*-mapping.txt

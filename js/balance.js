@@ -282,3 +282,32 @@ const BALANCE = {
 
     combPacks:[[5,60],[20,200],[80,700]] },
 };
+
+/* Play Games Level Up catalogs — map IDs in Play Console to these keys. */
+const PLAY_ACHIEVEMENTS={
+  first_vein:{ id:"achievement_first_vein", n:"First Crack", desc:"Break your first vein.", hour1:true },
+  bags_10:{ id:"achievement_bags_10", n:"Pack Rat", desc:"Open 10 bags.", hour1:true },
+  depth_30:{ id:"achievement_depth_30", n:"Thirty Metres", desc:"Reach stage 10 (~30 m).", hour1:true },
+  bag_lv5:{ id:"achievement_bag_lv5", n:"Better Sack", desc:"Upgrade the bag to Lv.5.", hour1:true },
+  upgrade_atk:{ id:"achievement_upgrade_atk", n:"Sharper Pick", desc:"Buy an ATK upgrade.", hour1:true },
+  depth_100:{ id:"achievement_depth_100", n:"Hundred Metres", desc:"Reach stage 34." },
+  first_pet:{ id:"achievement_first_pet", n:"Companions", desc:"Equip or hatch a pet." },
+  first_beard:{ id:"achievement_first_beard", n:"Whiskers", desc:"Roll or grow a beard." },
+  prestige_1:{ id:"achievement_prestige_1", n:"Deep Call", desc:"Complete a prestige." },
+  pvp_win:{ id:"achievement_pvp_win", n:"Arena Dust", desc:"Win a PvP dig." },
+  streak_7:{ id:"achievement_streak_7", n:"Week in the Dark", desc:"7-day login streak." },
+  cosmic_slot:{ id:"achievement_cosmic_slot", n:"Cosmic Fit", desc:"Equip a cosmic item." }
+};
+const PLAY_EVENTS={
+  veins_broken:{ id:"event_veins_broken", n:"Veins broken" },
+  bags_opened:{ id:"event_bags_opened", n:"Bags opened" },
+  gold_earned:{ id:"event_gold_earned", n:"Gold earned" },
+  ads_watched:{ id:"event_ads_watched", n:"Rewarded ads" },
+  pvp_fights:{ id:"event_pvp_fights", n:"PvP fights" },
+  depth_best:{ id:"event_depth_best", n:"Best depth", progression:true }
+};
+const PLAY_REWARDS={
+  pick_magma:{ id:"reward_pick_magma", kind:"single", n:"Magma Pick Skin", grant:"pick_skin_magma" },
+  beard_royal:{ id:"reward_beard_royal", kind:"single", n:"Royal Beard Style", grant:"beard_style_royal" },
+  weekly_gold:{ id:"reward_weekly_gold", kind:"repeatable", n:"Weekly Gold Cache", grant:"gold_weekly", goldMul:80 }
+};

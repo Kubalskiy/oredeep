@@ -14,8 +14,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         /* Синхронизируй с package.json: versionName = semver, versionCode только ↑ */
-        versionCode 23
-        versionName "0.12.6"
+        versionCode 24
+        versionName "0.12.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -46,7 +46,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             ndk {
-                debugSymbolLevel 'SYMBOL_TABLE'
+                debugSymbolLevel 'FULL'
             }
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
@@ -96,6 +96,10 @@ dependencies {
 
     implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
     implementation 'com.android.billingclient:billing:8.3.0'
+    implementation 'androidx.core:core:1.13.1'
+
+    // Play Games Services v2 — achievements, events, cloud snapshots (Level Up).
+    implementation 'com.google.android.gms:play-services-games-v2:20.1.2'
 
     // AppLovin MAX + Google (основной fill). Остальные адаптеры — слишком тяжёлые для лимита.
     implementation 'com.applovin:applovin-sdk:13.6.4'

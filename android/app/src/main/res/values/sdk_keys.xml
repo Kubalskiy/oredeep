@@ -15,6 +15,9 @@
 
     <string name="privacy_policy_url" translatable="false">https://loveplaygames.com/games/android/privacy/en/</string>
 
+    <!-- Replace with Play Console → Play Games Services → Project ID (numeric). -->
+    <string name="play_games_project_id" translatable="false">00000000000</string>
+
     <!-- true пока билд только на Internal testing. Перед Production выставить false. -->
     <bool name="appsflyer_purchase_sandbox">false</bool>
 </resources>

@@ -10,6 +10,7 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     DiggyAds ads;
     DiggyBilling billing;
+    DiggyPlayGames playGames;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -19,8 +20,10 @@ public class MainActivity extends BridgeActivity {
         webView.addJavascriptInterface(new DiggyBridge(this), "DiggyNative");
         billing = new DiggyBilling(this, webView);
         ads = new DiggyAds(this, webView);
+        playGames = new DiggyPlayGames(this, webView);
         billing.start();
         ads.startConsent();
+        playGames.start();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
