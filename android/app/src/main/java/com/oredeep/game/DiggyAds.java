@@ -97,7 +97,7 @@ public class DiggyAds {
 
     void showRewarded(String slot, String callbackId) {
         if (noAds || rewarded == null || !rewarded.isReady()) {
-            DiggyBridge.callback(webView, callbackId, false);
+            DiggyBridge.callback(webView, callbackId, false, "not_ready");
             if (!noAds) loadRewarded();
             return;
         }

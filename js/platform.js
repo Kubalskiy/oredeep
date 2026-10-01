@@ -80,11 +80,11 @@ function diggyNative(){
   try{ return (typeof DiggyNative!=="undefined" && DiggyNative) ? DiggyNative : null; }catch(e){ return null; }
 }
 try{
-  window.__diggyNativeCb=function(id, ok){
+  window.__diggyNativeCb=function(id, ok, reason){
     const bag=Platform._cbs&&Platform._cbs[id];
     if(!bag) return;
     delete Platform._cbs[id];
-    try{ bag(!!ok); }catch(e){}
+    try{ bag(!!ok, reason||""); }catch(e){}
   };
   window.__diggyGrant=function(productId){
     try{ if(typeof applyShopPurchase==="function") applyShopPurchase(productId,{quiet:true}); }catch(e){}

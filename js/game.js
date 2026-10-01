@@ -2310,7 +2310,7 @@ function render(){
   { const ac=$("statAds");
     if(ac) setTxt(ac, S.noAds?"VIP":(adViewsToday()+"/"+adsDailyCap()));
     const adCell=$("statAdCell");
-    if(adCell&&adCell.classList) adCell.classList.toggle("pulse", !S.noAds && growthAdCapOk() && adViewsToday()<adsDailyCap()/2); }
+    if(adCell&&adCell.classList) adCell.classList.toggle("pulse", !!adPulseWanted()); }
   { const d=S.durab==null?MINE_DURAB.max:S.durab;
     setWidth("duFill",Math.max(0,d)+"%");
     const bar=$("duBar"); if(bar&&bar.classList){ bar.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt); bar.classList.toggle("crit",d<MINE_DURAB.critAt); }
@@ -5230,17 +5230,52 @@ function renderChestCard(){
   const tit=$("chestTitle"); if(tit) tit.textContent="🧰 "+bagName(lvl);
   const act=$("chestHeadAct"); if(act) act.innerHTML='<span class="uiPill">Lv.'+lvl+'</span>';
 }
+function bagItemNeedsDecide(it){
+  if(!it || it.s==="pet") return false;
+  const old=S.gear[it.s];
+  if(!old) return true;
+  return itemPower(it)>itemPower(old);
+}
+function openNextBagDecide(opts){
+  opts=opts||{};
+  if(S.autoRoll){
+    if(!opts.quiet) showToast("🎒","Auto on.","","Turn off the Auto to open manually");
+    return false;
+  }
+  if(chestPending){
+    if(!opts.quiet){ showToast("🎒","First decide.","","Put on or sell the find."); showDropDecide(); }
+    return false;
+  }
+  if((S.bags||0)<1){
+    if(!opts.quiet && !opts.chain) showToast("🎒","No bags","","Bags drop from veins");
+    return false;
+  }
+  let opened=0;
+  while((S.bags||0)>=1){
+    S.bags--; dailyProgress("bag",1); opened++;
+    if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
+    const it=makeItem(rollGearSlot().id);
+    if(bagItemNeedsDecide(it)){
+      chestPending=it;
+      Platform.logEvent("chest_open",{r:it.r,quick:opts.quick?1:0,chain:!!opts.chain});
+      save(); render();
+      if(opts.inChest){ renderChestCard(); }
+      else showDropDecide();
+      if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
+      return true;
+    }
+    dropGearItem(it, true);
+  }
+  if(opened){
+    flushSales();
+    Platform.logEvent("chest_open_batch",{n:opened,auto:1});
+    save(); render();
+    if(opts.inChest || ($("chestModal")&&$("chestModal").style.display==="flex")) renderChestCard();
+  }
+  return opened>0;
+}
 function quickOpenBag(){
-  if(S.autoRoll){ showToast("🎒","Auto on.","","Turn off the Auto to open manually"); return false; }
-  if(chestPending){ showToast("🎒","First decide.","","Put on or sell the find."); showDropDecide(); return false; }
-  if((S.bags||0)<1){ showToast("🎒","No bags","","Bags drop from veins"); return false; }
-  S.bags--; dailyProgress("bag",1);
-  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
-  chestPending=makeItem(rollGearSlot().id);
-  Platform.logEvent("chest_open",{r:chestPending.r,quick:1});
-  save(); render();
-  showDropDecide();
-  return true;
+  return openNextBagDecide({quick:true});
 }
 function openChest(forceModal){
   if(S.ftue&&!S.ftue.c){ S.ftue.c=1;
@@ -5262,12 +5297,17 @@ function closeChest(){
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
 }
 function chestOpenOne(){
-  if(chestPending){ showToast("🎒","First decide.","","Put on or sell the find."); return; }
-  if((S.bags||0)<1){ showToast("🎒","No bags","","Bags drop from veins"); return; }
-  S.bags--; dailyProgress("bag",1);
-  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
-  chestPending=makeItem(rollGearSlot().id);
-  Platform.logEvent("chest_open",{r:chestPending.r}); save(); render(); renderChestCard();
+  openNextBagDecide({inChest:true});
+}
+function finishChestDecide(){
+  chestPending=null;
+  closeDropDecide();
+  save(); render();
+  const inChest=$("chestModal")&&$("chestModal").style.display==="flex";
+  if(inChest) renderChestCard();
+  if((S.bags||0)>0 && !S.autoRoll){
+    openNextBagDecide({quiet:true, chain:true, quick:!inChest, inChest:!!inChest});
+  }
 }
 function equipChestItem(){
   if(!chestPending) return;
@@ -5276,14 +5316,12 @@ function equipChestItem(){
   if(it.s==="pick"&&it.n){ S.pickLog=S.pickLog||{}; S.pickLog[it.n]=true; }
   S.gear[it.s]=it;
   if(old){ S.gold+=sellPrice(old); }
-  chestPending=null; closeDropDecide(); save(); render();
-  if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
+  finishChestDecide();
 }
 function sellChestItem(){
   if(!chestPending) return;
   const it=chestPending, p=sellPrice(it); S.gold+=p;
-  chestPending=null; closeDropDecide(); save(); render();
-  if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
+  finishChestDecide();
 }
 function chestUpgrade(){
   if(bagUpgrading()){ renderChestCard(); return; }
@@ -6686,7 +6724,19 @@ const AD_HUB_LABELS={
   speed:"Acceleration ×2+", shop_free:"Market · Allowances",
   auto_turbo:"Turbo bag removal", mine_raid_ready:"Level mine Right."
 };
+let adHubSeen=false;
+function adPulseWanted(){
+  if(S.noAds || adHubSeen) return false;
+  if(!growthAdCapOk()) return false;
+  if(adViewsToday()>=adsDailyCap()/2) return false;
+  try{
+    const slots=BALANCE.ads&&BALANCE.ads.slots||{};
+    for(const k in slots){ if(adSlotLeft(k)>0) return true; }
+  }catch(e){}
+  return false;
+}
 function openAdHub(){
+  adHubSeen=true;
   growthAdDayReset();
   const cap=adsDailyCap(), used=adViewsToday();
   const slots=BALANCE.ads&&BALANCE.ads.slots||{};
@@ -6699,6 +6749,10 @@ function openAdHub(){
     (S.noAds?"The ad’s offline. (VIP) · Non-roller bonuses":"Today "+used+"/"+cap+" View · Tap the slots in the game."),
     (S.noAds?'<div class="sub">Thanks for the support. — All 📺-The buttons give the award at once.</div>'
       :rows+'<div class="sub" style="margin-top:10px">After each vein, under cave-insmoke, lack of resources — Look for the button. 📺.</div>'));
+  try{
+    const adCell=$("statAdCell");
+    if(adCell&&adCell.classList) adCell.classList.remove("pulse");
+  }catch(e){}
 }
 function growthAdCapOk(){
   growthAdDayReset();
@@ -6873,7 +6927,7 @@ function growthOnBoot(){
       showToast("📺","Advertisement Limited","","tomorrow again. — CPA under control"); cb(false); return;
     }
     try{ Platform.logEvent("ad_reward_try_show", adBase); }catch(e){}
-    base(ok=>{
+    base(function(ok, reason){
       if(ok){
         growthTrackAd(slot);
         const n=(S.growth&&S.growth.adViewsLifetime)|0;
@@ -6886,9 +6940,12 @@ function growthOnBoot(){
         }catch(e){}
       } else {
         try{
-          Platform.logEvent("ad_fail",{slot:place});
-          Platform.logEvent("ad_reward_show_error", Object.assign({ errtext:"not_shown" }, adBase));
+          Platform.logEvent("ad_fail",{slot:place, reason:reason||"not_shown"});
+          Platform.logEvent("ad_reward_show_error", Object.assign({ errtext:reason||"not_shown" }, adBase));
         }catch(e){}
+        if(reason==="not_ready" || reason==="unavailable"){
+          showToast("📺","Ad not ready","","Try again in a moment");
+        }
       }
       cb(ok);
     }, slot);

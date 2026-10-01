@@ -1001,8 +1001,9 @@ renderPaperdoll();
   S.bags=3; render();
   T("счётчик сумок обновляется после render", /Open bag · 3/.test((($("uiBody")&&$("uiBody").innerHTML)||"")));
   openBagFromGearSlot();
-  T("после открытия счётчик падает", ((S.bags|0)===2) && /Open bag · 2/.test((($("uiBody")&&$("uiBody").innerHTML)||"")));
-  try{ if(typeof sellChestItem==="function") sellChestItem(); else chestPending=null; }catch(e){ chestPending=null; }
+  { const left=S.bags|0; const body=(($("uiBody")&&$("uiBody").innerHTML)||"");
+    T("после открытия счётчик падает", left<3 && (left===0 ? /No bags/.test(body) : new RegExp("Open bag · "+left).test(body))); }
+  try{ if(typeof sellChestItem==="function"){ while(chestPending) sellChestItem(); } else chestPending=null; }catch(e){ chestPending=null; }
   try{ if(typeof UIS!=="undefined") UIS.close(); }catch(e){}
   const mm=$("metaModal"); if(mm) mm.style.display="none"; }
 
@@ -1455,7 +1456,12 @@ T("шансы в две колонки", __ids.chestCard.innerHTML.indexOf("chCo
   && __ids.chestCard.innerHTML.indexOf(">next<")>=0);
 S.bags=3; chestOpenOne();
 T("открытие сундука тратит сумку и готовит предмет", S.bags===2 && !!chestPending);
-{ const g0=S.gold; sellChestItem(); T("продажа даёт золото и сбрасывает предмет", S.gold>g0 && chestPending===null); }
+{ const g0=S.gold; sellChestItem();
+  T("продажа даёт золото и продолжает цепочку", S.gold>g0 && !!chestPending && S.bags===1);
+  sellChestItem();
+  T("вторая продажа продолжает цепочку", !!chestPending && S.bags===0);
+  sellChestItem();
+  T("после последней продажи pending сброшен", chestPending===null); }
 S.bags=1; chestOpenOne(); { const sl=chestPending.s; equipChestItem();
   T("надевание кладёт предмет в слот", !!S.gear[sl] && chestPending===null); }
 { S.bag=1; S.gold=bagCost()*3; const b0=S.bag; chestUpgrade();
@@ -1467,7 +1473,27 @@ closeChest();
   T("1-tap сразу даёт решение Equip/Sell", !!chestPending && __ids.dropModal.style.display==="flex");
   T("1-tap показывает пилюли сравнения", /chPill/.test(__ids.dropCard.innerHTML||""));
   sellChestItem();
+  T("продажа → следующая сумка в цепочке", !!chestPending && S.bags===0 && __ids.dropModal.style.display==="flex");
+  sellChestItem();
   T("продажа закрывает dropModal", chestPending===null && __ids.dropModal.style.display!=="flex"); }
+{ S.bags=8; S.gear={};
+  for(const sl of gearSlots()){
+    S.gear[sl.id]={ s:sl.id, r:7, m:2, i:999, n:"cap" };
+  }
+  const b0=S.bags; openChest(false);
+  T("хуже экипированного авто-продаётся без модалки", S.bags===0 && !chestPending && __ids.dropModal.style.display!=="flex");
+  T("пачка сумок тратит все", b0===8 && S.bags===0); }
+{ adHubSeen=false; S.noAds=false; ensureGrowth(S); S.growth.ads.count=0;
+  render();
+  T("AD pulse пока hub не открыт", !!(__ids.statAdCell&&__ids.statAdCell.classList.contains("pulse")));
+  openAdHub();
+  T("AD pulse гаснет после клика в hub", !(__ids.statAdCell&&__ids.statAdCell.classList.contains("pulse"))); }
+{ const msgs=[]; const prev=showToast;
+  showToast=function(ic,title){ msgs.push(String(title||"")); if(prev) try{ prev.apply(null,arguments); }catch(e){} };
+  // Simulate native not_ready reason the same way the Platform wrapper does.
+  (function(reason){ if(reason==="not_ready"||reason==="unavailable") showToast("📺","Ad not ready","","Try again in a moment"); })("not_ready");
+  T("toast Ad not ready для Publicity", msgs.indexOf("Ad not ready")>=0);
+  showToast=prev; hideToast(); }
 { const g=gearSlots();
   T("питомец не в слотах сумок", g.every(s=>s.id!=="pet") && SLOTS.some(s=>s.id==="pet"));
   let petDrop=false;

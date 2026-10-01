@@ -67,9 +67,14 @@ public class DiggyBridge {
     }
 
     static void callback(android.webkit.WebView webView, String callbackId, boolean ok) {
+        callback(webView, callbackId, ok, null);
+    }
+
+    static void callback(android.webkit.WebView webView, String callbackId, boolean ok, String reason) {
         if (webView == null || callbackId == null || callbackId.isEmpty()) return;
         String js = "window.__diggyNativeCb&&window.__diggyNativeCb("
-                + JSONObject.quote(callbackId) + "," + (ok ? "true" : "false") + ")";
+                + JSONObject.quote(callbackId) + "," + (ok ? "true" : "false")
+                + "," + JSONObject.quote(reason == null ? "" : reason) + ")";
         webView.post(() -> webView.evaluateJavascript(js, null));
     }
 
