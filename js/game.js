@@ -59,8 +59,8 @@ function rockStatsAt(idx, isBoss){
 }
 const DMG_HARD_K=0.5, DRAIN_K=0.08, CRIT_MULT=BALANCE.combat.critMul;
 
-const RAR_NAMES=["Common","Rare","Epic","Legendary","Exotic","Mythical","Raised","Space"];
-const RAR_SHORT=["Conventional","Redk","Epic","Legend","Exot","Myth","Reson","Cosm"];
+const RAR_NAMES=["Common","Rare","Epic","Legendary","Exotic","Mythic","Ascended","Cosmic"];
+const RAR_SHORT=["Com","Rare","Epic","Legend","Exo","Myth","Asc","Cos"];
 const RAR_POW  =BALANCE.gearRarityMul;
 const RAR_MULT =[1,3,9,27,80,220,600,1500];
 
@@ -145,7 +145,7 @@ function rollRarity(w){
 const SLOTS=[
   {id:"helm",  n:"Helmet",    ic:"⛑️", st:{energy:30,tough:2}},
   {id:"glove", n:"Gloves", ic:"🧤", st:{crit:1.6}},
-  {id:"pick",  n:"Pickaxe",    ic:"⛏️", st:{atk:8},           extra:"Find"},
+  {id:"pick",  n:"Pickaxe",    ic:"⛏️", st:{atk:8},           extra:"find"},
   {id:"lamp",  n:"Lantern",   ic:"🏮", st:{mining:2,luck:1}},
   {id:"pants", n:"Pants",    ic:"👖", st:{tough:2}},
   {id:"boots", n:"Boots",   ic:"🥾", st:{spd:0.35}},
@@ -158,107 +158,107 @@ function rollGearSlot(){ const g=gearSlots(); return g[Math.floor(Math.random()*
 
 const SLOT_FLUFF={
   helm:{
-    effect:"Energy — How much of a courtman can hold a man’s dig - I’m going to smoke. — rock And bites less, supports mine He’s been living longer.",
+    effect:"Energy — how long a dwarf lasts at the dig before a smoke break. Defense — rock bites softer, mine props last longer.",
     lore:[
-      "Simple shift helmet, chalk lining: “Don’t be a hero. — Come back.“",
-      "The scout casca of Nori’s scout. — He said “one more time“ and he found out vein.",
-      "The helmet of the Echo Doum Brigade, the visor remembers the names of those who went deep and never came back.",
-      "Cascu’s been giving Doreen a ride for the senior shift. — You’ll hear the echo of the vows.",
-      "You take runes you don’t teach in Guilds.",
-      "The myth of the helmet that’s going to go away. cave-in:: Superstitious — I’m not sure how long they live.",
-      "The raised crown of Podgoria, said it was worn by the first person to hear the Zov.",
-      "The Indible Space helmet, inside. — Silence of stars; outside — A bang. pickaxe."
+      "A plain shift helmet. Chalked on the lining: “don’t play hero — come back.”",
+      "Scout Nori’s helmet. The dent is from a stone — he said “again” and finished the vein.",
+      "Helmet of the Echo-Doom crew. The visor remembers those who went deeper and never came back.",
+      "Durin forged this helmet for a shift boss. Knock on it — you’ll hear the echo of an oath.",
+      "A stranger’s helm from beyond the lava sea. Runes on the visor no Guild teaches.",
+      "Myth of a helmet that stops cave-ins itself: the superstitious wear it — and somehow live longer.",
+      "Ascended crown of Underhill. They say the first to hear the Call wore it.",
+      "Cosmic helm of the Abyss. Inside — the silence of stars; outside — the clang of the pickaxe."
     ]
   },
   glove:{
-    effect:"Crit — chance to hit a weak spot in the vein: stronger strike, richer reward, stone cracks easier.",
+    effect:"Crit — chance to hit a weak spot in the vein: stronger strike, richer reward, and the stone cracks out of spite.",
     lore:[
-      "Work mittens, smells like resin and a promise to hit again.",
-      "Nori’s Gloves, He counted the blows, not the gold. — up tovein before gray beard.",
-      "The theft of a fighter digOn the left. — I’m gonna take a short cut for every critical blow to the boss.",
-      "Master Girum’s gloves, he broke “fractureless“ vein I’m gonna bet you.",
-      "Exotic from the firefly cave: the fabric itself is searching for a crack in the stone.",
-      "The mythical crags of the Gala Mountain, the stone is supposed to be a weakness.",
-      "The raised gloves of the Ring, everyone yells — It’s like a bell in the depths.",
-      "Space gloves of the Void. — He “finds“ where the ore has already given up."
+      "Work mittens. They smell of sweat, resin and the promise of “one more swing.”",
+      "Nori the Counter’s gloves. He counted swings, not gold — and lived to a gray beard.",
+      "Gauntlets of a dig brawler. A notch on the left one for every crit on a boss.",
+      "Master Girum’s gloves. He broke “unbreakable” veins with them on a bet.",
+      "Exotic from the firefly caves: the fabric seeks out cracks in the stone by itself.",
+      "Mythic gauntlets of the Mountain’s Sting. They say the stone shows its weak spot on its own.",
+      "Ascended gloves of the Chime. Every crit rings like a bell in the deep.",
+      "Cosmic gloves of the Void. The blow doesn’t strike — it “finds” where the ore has already given up."
     ]
   },
   pick:{
-    effect:"Attack — force of each impact on rockII. Special: pickaxe He’s got a sense of find. — Things and stones in vein.",
+    effect:"Attack — the force of every blow on rock. Special: the pickaxe senses finds — items and stones in the vein.",
     lore:[
-      "Student pickaxe. Heavy, honest, nameless — I’m not gonna let you get away with it until you deserve it.",
-      "pickaxe On the shoe, the day off.",
-      "Combat pickaxe She was being chased. veinwhen the vaults were already singing cave-in.",
-      "The legend of Thorin’s blacksmith: “good pickaxe “Remembers the hand of the master.“",
-      "Blade-pickaxe It’s like a starship. rocklike a dog’s nose.",
-      "Myth of pickaxe- Sings, while it rings. — vein It won’t end in vain.",
-      "Raised pickaxe She was on her way to the first Zow.",
-      "Space pickaxe The deep, it’s not a rock. — In a world where the ore is hidden."
+      "An apprentice’s pickaxe. Heavy, honest, nameless — until you earn one.",
+      "A day laborer’s pickaxe. The butt is notched with days without rest.",
+      "The Artel’s battle pickaxe. It drove the vein on while the vaults were already singing of a cave-in.",
+      "A legend of Thorin’s forge: “a good pickaxe remembers its master’s hand.”",
+      "A blade-pickaxe from a starfall. It smells metal through rock like a hound’s nose.",
+      "Myth of the Pickaxe-That-Sings. While it rings, no vein ends in vain.",
+      "Ascended pickaxe of the Covenant. It dug the way to the first Call.",
+      "Cosmic pickaxe of the Abyss. It strikes not the stone, but the layer of the world where ore hides."
     ]
   },
   lamp:{
-    effect:"Sense — chance of a double hit, rock hits back less often, and rare stones turn up more often.",
+    effect:"Sense — chance of a double hit. Luck — rock hits back less often and rare stones turn up more often.",
     lore:[
-      "The oil light is new, coptitis if you lie about the depths. — I don’t even know if it was an accident.",
-      "The lamp of the scout, the glass is in the cracks, but the beam still finds the path.",
+      "A rookie’s oil lamp. It smokes if you lie about the depth — even by accident.",
+      "A scout’s lantern. The glass is cracked, but the beam still finds the trail.",
       "The Ore-Sage Guild lamp burns only while the report stays honest.",
-      "Balin’s legendary lamp, which has a thousand-year-old resin oil.",
-      "Exotic crystal-flag, looking where luck has already decided for you.",
-      "The Mythical Fire of Podgoria, double strike — It’s like two courthouses in the same shadow.",
-      "The raised light of Zova, they were lit mineWhere the leg wasn’t.",
-      "The Space Lighthouse of the Void. — It’s not an accident, it’s a route."
+      "Balin’s legendary lamp: its oil is pressed from the resin of a thousand-year-old spruce.",
+      "Exotic crystal lantern. It shines where luck has already decided for you.",
+      "Mythic fire of Underhill. A double strike — like two dwarves in one shadow.",
+      "Ascended torch of the Call. It lit mines no foot had ever trod.",
+      "Cosmic beacon of the Void. Here luck isn’t chance — it’s a route."
     ]
   },
   pants:{
     effect:"Defense — less energy lost when the rock hits back; props hold longer.",
     lore:[
-      "Hosepants shift, pay more than embroidery.",
-      "“Needs don’t take.“ Sciel Grur One-Hand. — I swore I wouldn’t have to do it again.",
-      "Bridges. digIn his pocket, a piece of quartz is stuck for good luck.",
-      "The legendary Doorin’s legs: they were fought with them. cave-instanding on their knees supports.",
-      "The Exotic of the Skin of the Deep Beast — He scratches the stone, and the courtman saves the stone.",
-      "Mythical Stoke pants, while you’re standing. — supports He’s keeping you with him.",
-      "The guards of the Cathedrals, who were the last to close the exit, wore them.",
-      "Nedra space pants. — A truce agreement with Mount."
+      "Canvas shift pants. Patches matter more than embroidery.",
+      "“The depths won’t take me” pants. Sewn by Grur One-Hand — he swore he never needed the other.",
+      "Digger’s breeches. A lucky chunk of quartz is stuck in the pocket for good.",
+      "Durin’s legendary greaves: worn while holding off a cave-in, kneeling by the props.",
+      "Exotic, from the hide of a deep beast — it scratches stone but keeps the dwarf safe.",
+      "Mythic pants of the Stand. While you stand, the props hold with you.",
+      "Ascended greaves of the Vault Warden. Worn by those who were last to seal the exit.",
+      "Cosmic pants of the Depths. Defense isn’t “armor” — it’s a truce with the Mountain."
     ]
   },
   boots:{
     effect:"Speed — legs set the shift pace; the pick hits more often and the vein ends sooner.",
     lore:[
-      "Student hobnails — ugly, honest, built to keep you at work.",
-      "Borin’s boots by the prop: “He who stands, the Mountain calls.”",
-      "Artel dig boots: soles smell of tar, stubbornness, and night shift.",
-      "Legendary Hontz shoes — they carried vein news across three halls.",
+      "Apprentice hobnails — heavy, so you won’t run from work.",
+      "Borin’s boots by the Bar: “No standing like a post when the Mountain calls.”",
+      "Artel striders: soles smell of tar, stubbornness, and the night shift.",
+      "Legendary boots of the Courier — they carried vein news across three halls.",
       "Exotic lava-ash boots — walk soft, strike more often.",
       "Mythic Rhythm boots: the foot knows when the next blow lands.",
-      "Ascended Path boots — they went where maps ended.",
+      "Ascended Trail boots — they walked where the maps end.",
       "Cosmic Pulse boots — tuned to the Mountain’s breath."
     ]
   },
   pack:{
-    effect:"Greed — more gold for each veinThe belt is drawn to income, not to the beauty of the outfit.",
+    effect:"Greed — more gold from every vein. The belt pulls toward income, not a pretty outfit.",
     lore:[
-      "Belt with bag It’s hard to save from the little things and the habit of saving.",
-      "Belt trader Silka BeaubeardOn the buckle, “the weight first, then the conscience.“",
-      "The belt of the arming treasurer, the buckle clicks when vein I’m not doing anything.",
-      "The Legendary Belt of Gold veinThey’ve been measured. loot until the first lie is reported.",
-      "The Dragon Cheshua Exotic Belt — Gold sticks itself, conscience. — No, no.",
-      "The deeper the meth of the Greed of Mountain, the more the coins in the ears.",
-      "Dani’s raised belt, paid by Zov. — And still, they were filling up their pockets.",
-      "The Space Belt of Excess. — The law of physics, not vice."
+      "A belt with a bag on nails. Heavy with small change and the habit of hoarding.",
+      "Belt of Slag the Beardless, the buyer. On the buckle: “weight first, conscience later.”",
+      "The Artel treasurer’s belt. The buckle clicks when a vein gives extra.",
+      "Legendary belt of the Golden Vein. Used to measure the haul until the first lie in a report.",
+      "Exotic belt of Dragon Scale — gold sticks to it, conscience doesn’t.",
+      "Mythic belt of the Mountain’s Greed. The deeper you go, the louder the coins ring in your ears.",
+      "Ascended belt of Tribute. It paid for the Call — and still filled pockets.",
+      "Cosmic belt of Plenty. Here greed is a law of physics, not a vice."
     ]
   },
   robe:{
     effect:"Defense — rock hits drain less energy; your props hold longer through the vein.",
     lore:[
-      "Ore stained working robe, rarely washed — “for luck.“",
-      "The robot’s shift, “The Fire of the Fire.“ The magma’s stain on his back is wearing the order.",
-      "The Guardian’s Cloak mineThe lining is soaked with smoke and orders.",
-      "The legendary robe of Kusni: it was used to extinguish sparks when they were licked. pickaxe For heroes.",
-      "Exotic silk cape — Light and hot. rock.",
-      "Mythical Shield Rob, yet on my shoulders. — The energy is going slower than anger.",
-      "The elevated Guardian’s robe, she was put on the watch outside the entrance to the Besdna.",
-      "Silence’s Space Rob. — Like Mountain I forgot you were here for a moment."
+      "A work smock with ore stains. Rarely washed — “for luck.”",
+      "Robe of the “Underhill Fire” shift. The magma stain on the back is worn like a medal.",
+      "A mine warden’s cloak. The lining is soaked in smoke and orders.",
+      "The Forge’s legendary robe: it smothered sparks while pickaxes for heroes were cast.",
+      "Exotic cloak of deep silk — light, yet it holds back the rock’s heat.",
+      "Mythic robe of the Shield. While it’s on your shoulders, energy drains slower than anger.",
+      "Ascended mantle of the Warden. Worn on watch at the gate to the Abyss.",
+      "Cosmic robe of Silence. Defense — as if the Mountain forgot for a moment that you’re here."
     ]
   }
 };
@@ -266,7 +266,7 @@ function gearSlotLoreText(sl, it){
   const f=SLOT_FLUFF[sl&&sl.id]; if(!f) return "";
   const list=f.lore;
   if(Array.isArray(list)){
-    if(!it) return "The Slot is empty, history is written by ore and blows — Put on your tiring.";
+    if(!it) return "Empty slot. History is written in ore and blows — equip an item of your tier.";
     const r=Math.max(0, Math.min(7, it.r|0));
     return list[r]||list[0]||"";
   }
@@ -289,7 +289,7 @@ function gearSlotFluffHtml(sl, it){
   let lore=gearSlotLoreText(sl, it);
   if(sl.id==="pick"&&it&&it.n) lore="«"+it.n+"» · "+lore;
   return '<div class="uiCard" style="margin-top:10px;flex-direction:column;align-items:stretch;gap:8px">'
-    +'<div><div class="uiSub" style="color:var(--gold);margin:0 0 4px;font-family:var(--font-display);letter-spacing:.5px">WHAT DOES IT AFFECT?</div>'
+    +'<div><div class="uiSub" style="color:var(--gold);margin:0 0 4px;font-family:var(--font-display);letter-spacing:.5px">WHAT IT AFFECTS</div>'
     +'<div class="uiSub" style="margin:0;line-height:1.55;color:var(--textBody)">'+esc(f.effect)+'</div></div>'
     +'<div><div class="uiSub" style="color:var(--gold);margin:0 0 4px;font-family:var(--font-display);letter-spacing:.5px">HISTORY</div>'
     +'<div class="uiSub" style="margin:0;line-height:1.55;color:var(--textBody)">'+esc(lore)+'</div></div>'
@@ -351,15 +351,15 @@ function gearArtSrc(slotId, rarity){
   return "art/eq_"+slotId+"_r"+r+".png";
 }
 const BEARD_STYLES=[0,1,2,3,4].map(()=>"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");
-const BEARD_NAMES=["Goatee","Braids","Forked","Wild","Patriarch"];
-const GEO_NAMES_POOL=["Groor One Hand","Balin the mason.","TrollI-in-law","Durin. dig:: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .",
-  "Gimley Tedir.","Farin Mold","Naked Ruddop.","Oin Worcchus","Beafour Kuwald","Dory Scoot",
-  "Nadeen Deep","Frr. Beerna","Thorin Hwaston","Kids Fast","Bombour Heavy"];
+const BEARD_NAMES=["Full","Braids","Forked","Goatee","Patriarch"];
+const GEO_NAMES_POOL=["Grur One-Hand","Balin the Mason","Troll-in-Law","Durin the Digger",
+  "Gimli the Brawler","Farin Hammer","Nali the Miner","Oin the Grump","Bifur Sledge","Dori the Stingy",
+  "Nain the Deep","Frar the Beery","Thorin the Braggart","Kili the Quick","Bombur the Heavy"];
 
 const BEARD_LEN_ORDER=[3,2,0,1,4];
 const BEARD_RANKS=[
-  "Peach Fuzz","Stubble","Bearded Recruit","Proud Beard",
-  "Seasoned Veteran","Graybeard","Silverbeard","MOUNTAIN PATRIARCH"];
+  "Peach Fuzz","Stubble","Recruit’s Beard","Full Pride",
+  "Shaggy Veteran","Graying Master","Silverbeard","PATRIARCH OF THE MOUNTAIN"];
 
 function beardLevel(){ const xp=S.beardXP||0; return Math.min(BEARD_RANKS.length-1, Math.floor(Math.log((xp/140)+1)/Math.log(1.85))); }
 function beardWisdom(){
@@ -371,13 +371,13 @@ function beardWisdom(){
 function beardNextXP(lv){ return Math.round(140*(Math.pow(1.85,lv+1)-1)); }
 function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
   if(beardLevel()>before){ const w=beardWisdom();
-    showToast("🧔","BEARD I’M GROWING UP!","",w.title,"+"+(w.goldPct)+"% Income · +"+w.luckAdd.toFixed(1)+" Good luck.",true);
-    sayQuip("beard The clan bows.",4);
+    showToast("🧔","BEARD GREW!","",w.title,"+"+(w.goldPct)+"% income · +"+w.luckAdd.toFixed(1)+" luck",true);
+    sayQuip("Your beard grew thicker and grayer. The clan bows.",4);
     Platform.logEvent("beard_rank",{lv:w.lv});
 
     ensureSpecial();
     if((S.specialPool||0)<99){ S.specialPool=(S.specialPool||0)+1;
-      showToast("🧬","Damn the gnome.","","+1 QUESTION OF CRASACH","distributions in skillx",true); }
+      showToast("🧬","Dwarf trait","","+1 K.R.A.S.A.V.A. point","spend it in Skills",true); }
   } }
 const MUG_ICON="art/ic_mug.png?v=2";
 const EQ=(()=>{const o={};for(const k of ["helm","robe","boots","glove","pack"])o[k]=[0,1,2,3,4,5,6,7].map(()=>"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");return o;})();
@@ -389,12 +389,12 @@ const PICK_NAMES=[
   ["Mithril","Adamantite"],
   ["Orichalcum","Titanium"],
   ["Dragon Claw","Flame"],
-  ["Frost","Glacial"],
-  ["Godforged","Starforged"]
+  ["Frost","Storm"],
+  ["Divine","Starforged"]
 ];
 
-const BAG_NAMES=[[1,"Holey Sack"],[5,"Trader’s Bag"],[10,"Miner’s Bag"],
-  [15,"Dwarven Chest"],[20,"Reinforced Chest"],[25,"Secret Chest"],[30,"Dwarven Safe"],
+const BAG_NAMES=[[1,"Holey Sack"],[5,"Patched Sack"],[10,"Prospector’s Bag"],
+  [15,"Dwarven Chest"],[20,"Ironbound Chest"],[25,"Thane’s Chest"],[30,"Dwarven Safe"],
   [35,"Small Treasury"],[40,"Royal Treasury"],[45,"Mountain Vault"],[50,"CHEST OF CHESTS"]];
 function bagName(l){ let n=BAG_NAMES[0][1]; for(const p of BAG_NAMES) if(l>=p[0]) n=p[1]; return n; }
 function nextBagName(l){ for(const p of BAG_NAMES) if(p[0]>l) return p; return null; }
@@ -411,9 +411,9 @@ function geoWeights(rolls){
 }
 
 const GEO_TYPES=[
-  {stat:"atk",   names:["Grandpa Dubaust","Tan Crushibor","Master Couwald.","Gram Granny"],      pct:[12,36,108,324]},
-  {stat:"energy",names:["The Knuckle of Hild.","beerWarrior Bodri","Aunt Otwar","Mhov’s cure"], pct:[15,45,135,405]},
-  {stat:"stone", names:["Glady’s accountant","trader Nori","The Vorgue","Treasury, Silence"],pct:[10,30,90,270]}
+  {stat:"atk",   names:["Grandpa Oakenshield","Thane Crushbore","Master Sledge","Granny Thunder"],      pct:[12,36,108,324]},
+  {stat:"energy",names:["Hilda the Healer","Bodri the Brewer","Auntie Brew","Mossy the Medic"], pct:[15,45,135,405]},
+  {stat:"stone", names:["Glodi the Bookkeeper","Nori the Buyer","Vtori the Fence","Quiet the Treasurer"],pct:[10,30,90,270]}
 ];
 const GEO_RAR=["Common","Rare","Epic","Legendary"];
 const geoCost=()=> 1;
@@ -483,7 +483,7 @@ function skipBagUpgrade(){
   S.bagActive.end=Date.now();
   bagSkipArmed=false;
   Platform.logEvent("bag_skip",{gems, paid:true});
-  showToast("⏩","Skipped!","","−"+gems+" 💎","bag → lv."+(S.bag+1));
+  showToast("⏩","Skipped!","","−"+gems+" 💎","bag → Lv."+(S.bag+1));
   finishBagUpgrade();
   return true;
 }
@@ -496,7 +496,7 @@ function bagSkipAdHour(){
     bagSkipArmed=false;
     Platform.logEvent("bag_skip_hour",{sec:cut, ad:true});
     if(Date.now()>=S.bagActive.end){
-      showToast("⏩","Timer done","","−"+fmtClock(cut*1000),"bag → lv."+(S.bag+1));
+      showToast("⏩","Timer done","","−"+fmtClock(cut*1000),"bag → Lv."+(S.bag+1));
       finishBagUpgrade();
     } else {
       showToast("⏩","−1 hour","","left "+fmtClock(bagUpgradeLeft()*1000));
@@ -510,40 +510,40 @@ function rollVeinExtras(isBoss){
   const G=BALANCE.gacha||{};
   if(featUnlocked("beards") && Math.random()*100<(isBoss?G.combBossPct:G.combDropPct||0)){
     S.combs=(S.combs||0)+1;
-    if(!FAST()) showToast("🪮","comb!","","+1 · for gacha elder");
+    if(!FAST()) showToast("🪮","Comb!","","+1 · for elder gacha");
     Platform.logEvent("comb_drop",{boss:!!isBoss});
   }
   if(featUnlocked("pets") && Math.random()*100<(isBoss?G.eggBossPct:G.eggDropPct||0)){
     S.eggs=(S.eggs||0)+1;
-    if(!FAST()) showToast("🥚","egg!","","+1 · for gacha pet");
+    if(!FAST()) showToast("🥚","Egg!","","+1 · for pet gacha");
     Platform.logEvent("egg_drop",{boss:!!isBoss});
   }
 }
 
 const MINES=[
-  {n:"Adit «Newbie Beard»", rock:"🪨", stones:["Orphan Coal","Button Copper","Quartz «almost diamond»","Dwarf Gold (real)","Great-Grandpa Beard Topaz","Snob Sapphire","Thane Diamond","Tear of the Mountain"]},
-  {n:"Halls of Echo-Doom", rock:"⛰️", stones:["Echo-Grade Gravel","Axe Iron","Introvert Amethyst","Envious Emerald","Ruby «dragon eye (not)»","Mithril (shh!)","Black Diamond","Shard of the First Song"]},
+  {n:"Mine «Newbie’s Beard»", rock:"🪨", stones:["Orphan Coal","Button Copper","Quartz «almost diamond»","Dwarf Gold (real)","Topaz from Great-Grandpa’s Beard","Snob Sapphire","Thane’s Diamond","Tear of the Mountain"]},
+  {n:"Halls of Echo-Doom", rock:"⛰️", stones:["Echo-Grade Gravel","Iron for Axes","Introvert Amethyst","Envious Emerald","Ruby «dragon eye (not)»","Mithril (shh!)","Black Diamond","Shard of the First Song"]},
   {n:"Forge of Underhill Fire", rock:"🌋", stones:["Singed Obsidian","Sulfur «what a stink»","Granny’s Garnet","Fire Opal","Tempered Platinum","Lava Sapphire","Smithy Adamant","Heart of the Hearth"]},
-  {n:"Crystal Halls", rock:"🧊", stones:["Impostor Calcite","Glowing Fluorite","Feast Crystal","Giant Emerald","Tanzanite Rare Guest","Moonstone (not from the Moon)","Star Diamond","Crystal of the Depths"]},
+  {n:"Crystal Halls", rock:"🧊", stones:["Impostor Calcite","Glowing Fluorite","Feast Crystal","Giant Emerald","Tanzanite, a Rare Guest","Moonstone (not from the Moon)","Star Diamond","Crystal of the Depths"]},
   {n:"Abyss «Do Not Wake Him»", rock:"🗿", stones:["Shale «why are you here»","Anxious Nickel","Table Silver","Nugget «MOM, I FOUND IT»","Whisper Iridium","True Mithril","Abyss Adamantium","HIS Scale"]}
 ];
 
 const ROCK_POOLS=[
-  ["Enduring Cobble","Stubborn Seam","Ordinary Boulder","Rock with Character"],
+  ["Long-Suffering Cobble","Stubborn Seam","Ordinary Boulder","Rock with Character"],
   ["Echo Slab","Rumbling Seam","Greedy Vein","Resonant Boulder"],
-  ["Scorched Seam","Slag Slab","Vein with a Kick","Lava Stubborn"],
+  ["Scorched Seam","Slag Slab","Vein with a Kick","Stubborn Lava Rock"],
   ["Show-off Druse","Crystal Seam","Faceted Slab","Untouchable Vein"],
   ["Silent Monolith","Dark Seam","Vein «don’t look»","Dream Boulder"]
 ];
 const BOSS_POOLS=[
-  ["Grandpa Boulder","Clumsy Cartilage","Senior Cobble"],
+  ["Grandpa Boulder","Clumsy Gristle","Senior Cobble"],
   ["Echo Golem","Rumbling Monolith","Cave-In Choir"],
-  ["Magma Grandpa","Slag Tan","Undercooked Golem"],
+  ["Magma Grandpa","Slag Thane","Undercooked Golem"],
   ["Crystal Snob","Count Druse","Mirror Hulk"],
   ["IT (junior)","Whisper-in-the-Wall","HIS Pinkie"]
 ];
 const STAGES_PER_MINE=BALANCE.venueStride;
-const RANKS=["BEARDLESS","ALMOST A GNOME","ORE DIGGER","FACE WORKER","THANE OF THE FACE","BEARD LEGEND",
+const RANKS=["BEARDLESS","ALMOST A DWARF","ORE DIGGER","HEWER","THANE OF THE DIG","BEARD LEGEND",
   "TERROR OF THE DEPTHS","MAGNATE OF THE DEEPS","UNDERHILL KING","LEGEND OF THE MOUNTAIN"];
 
 const BASE={atk:10, spd:BALANCE.combat.baseAPS, mining:10, crit:5, luck:10, stone:120, energy:70, tough:0, regen:0, stamina:0};
@@ -673,7 +673,7 @@ function echoFromGear(){
 }
 function doPrestige(){
   if(!canPrestige()){
-    showToast("⛰️","Early","","Deep Call is not heard","I need a phase. "+BALANCE.prestige.minStage+"+ And at least 1 level");
+    showToast("⛰️","Too early","","The Deep Call is silent","need stage "+BALANCE.prestige.minStage+"+ and at least 1 level");
     return false;
   }
   const gain=prestigeGain(), addEcho=echoFromGear();
@@ -689,8 +689,8 @@ function doPrestige(){
   dead=false; if($("overlay")) $("overlay").style.display="none";
   Platform.logEvent("prestige",{lv:S.prestigeLv,gain});
   try{ unlockPlayAchievement("prestige_1"); }catch(e){}
-  showToast("⛰️","DEEP CALL!","","Prestige "+S.prestigeLv,"+"+gain+" Lv. · attack ×"+fmt(prestigeMult()),true);
-  sayQuip("Mountain She’s calling again. beard I remember everything.",5);
+  showToast("⛰️","THE DEEP CALL!","","Prestige "+S.prestigeLv,"+"+gain+" Lv. · Attack ×"+fmt(prestigeMult()),true);
+  sayQuip("The Mountain calls anew. The beard remembers everything.",5);
   try{ jingleSet(); }catch(e){}
   newRock(); save(); render();
   return true;
@@ -739,24 +739,24 @@ function onFind(forceR){
     if(sh) S.shards=(S.shards||0)+sh;
     if(FAST()){ dupN++; dupGold+=val; dupShards+=sh; return; }
     extra = sh ? ("duplicate → +"+fmt(val)+" 🪙 · +"+sh+" 💠")
-               : ("duplicate → trader +"+fmt(val)+" 🪙"); }
+               : ("duplicate → to the buyer +"+fmt(val)+" 🪙"); }
   else if(setDone(mineKey)){
-    extra="SETH IS ASSEMBLED! FOREVER: "+SET_BONUS[mineKey].label;
+    extra="SET COMPLETE! FOREVER: "+SET_BONUS[mineKey].label;
     Platform.logEvent("set_complete",{mine:mineKey});
-    sayQuip("- The whole set! Mountain I’m singing!",5);
+    sayQuip("FULL SET! Hear that? The Mountain sings!",5);
     jingleSet();
   }
-  else { extra="Into the collection! +2% Greed Forever"; jingleFind(); }
+  else { extra="added to collection! +2% greed forever"; jingleFind(); }
   sayQuip(FIND_QUIPS[Math.floor(Math.random()*FIND_QUIPS.length)]);
   showToast(`<img src="${ORE_ICONS[ri]}" class="oreimg big">`,RAR_NAMES[ri],"r"+ri,name,extra);
 }
 
 const SET_BONUS=[
-  {stat:"atk",   pct:100, label:"×2 Attack — “The Anger of the Mountain“"},
-  {stat:"energy",pct:100, label:"×2 Energy — “Glubin Breath“"},
-  {stat:"stone", pct:150, label:"×2.5 Greed — “Gorn’s Heat“"},
-  {stat:"luck",  flat:15, label:"+15% Good luck. — “The Light of Crusal“"},
-  {stat:"atk",   pct:200, label:"×3 Attack — “His blessing“"}
+  {stat:"atk",   pct:100, label:"×2 Attack — “Wrath of the Mountain”"},
+  {stat:"energy",pct:100, label:"×2 Energy — “Breath of the Deep”"},
+  {stat:"stone", pct:150, label:"×2.5 greed — “Forge Heat”"},
+  {stat:"luck",  flat:15, label:"+15% luck — “Crystal Light”"},
+  {stat:"atk",   pct:200, label:"×3 Attack — “HIS blessing”"}
 ];
 function uniqueStones(){ let n=0; for(const k in S.col) n+=Object.keys(S.col[k]).length; return n; }
 function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
@@ -772,13 +772,13 @@ function freshState(){
 }
 
 const DEPTH_MARKS=[
-  [30,"First gems","It’s already shining."],
-  [90,"Band-Aids","Echo’s not answering immediately."],
-  [300,"Old works","Someone dug up our asses."],
-  [900,"Warm stones","The stones are warm."],
-  [3000,"The Heart of the Mountain is Near","It’s not mine. pickaxe."],
-  [15000,"♪ He can hear you ♪","We’re digging a t-i-haw."],
-  [150000,"The bottom of peace","Let’s just go upstairs, just kidding, we’re going to go."]
+  [30,"First gems","Something’s glittering. Good sign."],
+  [90,"Echoing seams","The echo takes its time. Deep."],
+  [300,"Old workings","Someone dug here before us. Didn’t finish."],
+  [900,"Warm stones","The stones are warm. Is that normal?.. It’s normal."],
+  [3000,"The Mountain’s Heart is near","Knocking. That’s not my pickaxe."],
+  [15000,"IT hears you","Dig qui-i-ietly."],
+  [150000,"Bottom of the world","Only up from here. Kidding. Dig."]
 ];
 function playerName(){ return S.playerName || ("King-"+(S.look!=null?S.look:0)); }
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
@@ -794,7 +794,7 @@ function checkDepthMark(prevIdx){
   const d0=prevIdx*3, d1=S.stageIdx*3;
   for(const [m,title,quip] of DEPTH_MARKS){
     if(d0<m && d1>=m){
-      showToast("⛏️","♪ The ♪ "+fmt(m)+" m","",title,"Mountain Marks your path");
+      showToast("⛏️","Milestone: "+fmt(m)+" m","",title,"The Mountain marks your path");
       sayQuip(quip,4);
       Platform.logEvent("depth_mark",{m}); addBeardXP(60);
       break;
@@ -803,25 +803,25 @@ function checkDepthMark(prevIdx){
 }
 
 const IDLE_QUIPS=[
-  "It’s not even a tax one that gets that far.",
-  "beard In dust — It’s been a good day.",
-  "My father was digging, and I’m a redhead.",
-  "The Elves wouldn’t be here.veinAnd no offense.",
-  "You hear the knock?",
-  "The main rule of the mine is don’t wake up.",
-  "Who drank my ale?! vein.",
-  "Cardio?",
-  "Don’t look in the abyss.",
-  "Mifriel won’t find himself.",
-  "- Do you know what I mean? — Who is it? — Rich!",
-  "The helmet is pinning, so it’s getting a little bit head-growing."
+  "Even the taxman won’t dig this deep.",
+  "Dusty beard — good day.",
+  "Grandpa dug. Dad dug. Am I special?.. Fine. Not special. Digging.",
+  "Elves wouldn’t survive down here. No offense.",
+  "Hear that knocking? It’s me. Don’t panic.",
+  "First rule of the mine: don’t wake IT.",
+  "Who drank my ale?! Fine. Vein first.",
+  "Cardio? Dwarves call it “Tuesday.”",
+  "Don’t stare into the Abyss. Dig it.",
+  "Mithril won’t find itself.",
+  "Knock-knock. — Who’s there? — Riches!",
+  "Helmet’s tight. Means my head’s growing. Getting wiser."
 ];
-const FIND_QUIPS=["I swear to God, it’s brilliant. beard!","In the chest, quickly, shut up.","Grandpa would cry.","It’s not a stone."];
-const BOSS_QUIPS=["Shh... he can hear pickaxe.","Big Stone — A great glory.","For beard Grandpa!"];
+const FIND_QUIPS=["It sparkles! By my beard!","Into the chest. Quick. Quiet.","Grandpa would shed a tear.","That’s not a stone. That’s a pension."];
+const BOSS_QUIPS=["Shh… IT hears the pickaxe.","Big stone — big glory.","For Grandpa’s beard!"];
 const KO_SCREENS=[
   ["BREAK IN THE HALLS","🍺 You earned this beer 🍺"],
-  ["YOU’RE NOT GONNA DIG IT!","🍺 vein - You’re standing there. — And again in dig 🍺"],
-  ["BEARD I’M DUSTY.","🍺 The power’s out early. rock 🍺"]
+  ["YOU SHALL NOT DIG!","🍺 The vein stands like a wall. Have a drink — and back to the dig 🍺"],
+  ["BEARD GOT DUSTY","🍺 Energy ran out before the rock did 🍺"]
 ];
 
 const FEED_CAP=3;
@@ -948,16 +948,16 @@ function newRock(){
   { const _p=ORE_SPRITES[rock.isBoss?5:mk]||ORE_SPRITES[0]; const _si=Number(S.stageIdx)||0; $("rockImg").src=_p[((_si*7+mk)%4+4)%4]||_p[0]; }
   if(rock.isEvent && S.eventRun){
     const er=S.eventRun;
-    $("rockName").textContent=(er.ic||"◎")+" "+(er.n||"Yvent")+" · "+((er.wave|0)+1)+"/"+(er.waves||1);
+    $("rockName").textContent=(er.ic||"◎")+" "+(er.n||"Event")+" · "+((er.wave|0)+1)+"/"+(er.waves||1);
   } else if(rock.isRaid && S.mineRaid){
-    $("rockName").textContent="SPECIAL STONE · "+(S.mineRaid.n||"Award")+" "+(S.mineRaid.ic||"");
+    $("rockName").textContent="SPECIAL STONE · "+(S.mineRaid.n||"reward")+" "+(S.mineRaid.ic||"");
   } else {
     $("rockName").textContent=rock.isBoss
-      ? BOSS_POOLS[mk][cycle%BOSS_POOLS[mk].length]+" (Boss)"
+      ? BOSS_POOLS[mk][cycle%BOSS_POOLS[mk].length]+" (boss)"
       : ROCK_POOLS[mk][S.stageIdx%ROCK_POOLS[mk].length];
   }
-  if(rock.isEvent) sayQuip("The key only goes down if you finish all the waves.",4);
-  else if(rock.isRaid) sayQuip("A special stone! — hall He’ll give it to you.",4);
+  if(rock.isEvent) sayQuip("Run! The key is spent only if you clear every wave.",4);
+  else if(rock.isRaid) sayQuip("Special stone! Break it — the Hall gives up its due.",4);
   else if(rock.isBoss) sayQuip(BOSS_QUIPS[Math.floor(Math.random()*BOSS_QUIPS.length)],4);
   try{
     if(isDailySharedVein()){
@@ -1081,12 +1081,12 @@ function departCart(){
 }
 function reinforceMine(){
   if(dead) return;
-  if((S.durab||0)>=MINE_DURAB.max-1e-6){ showToast("🪵","supports whole","","There’s nothing to strengthen yet."); return; }
+  if((S.durab||0)>=MINE_DURAB.max-1e-6){ showToast("🪵","Props intact","","Nothing to reinforce yet"); return; }
   const c=reinforceCost();
   if((S.gold||0)>=c){
     S.gold-=c; S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max;
     Platform.logEvent("reinforce",{cost:c}); sfxGear();
-    showToast("🪵","supports strengthened","","The vaults hold","−"+fmt(c)+" 🪙 · 100%");
+    showToast("🪵","Props reinforced","","The vaults hold","−"+fmt(c)+" 🪙 · 100%");
     save(); render();
     return;
   }
@@ -1094,26 +1094,26 @@ function reinforceMine(){
     offerAdReward("durab_free", ()=>{
       S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max;
       Platform.logEvent("reinforce",{cost:0,ad:true});
-      showToast("📺","supports for advertising","","100% · The vaults hold");
+      showToast("📺","Props for an ad","","100% · the vaults hold");
       save(); render();
-    }, {limitMsg:"Promotion for today"});
+    }, {limitMsg:"Ad reinforcement for today"});
     return;
   }
-  showToast("🪙","Few gold","","At supports I need to. "+fmt(c)+" 🪙","or 📺 tomorrow");
+  showToast("🪙","Not enough gold","","Props need "+fmt(c)+" 🪙","or 📺 tomorrow");
 }
 function reinforceMineAd(){
   if(dead||(S.durab||0)>=MINE_DURAB.max-1e-6) return;
   offerAdReward("durab_free", ()=>{
     S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max;
     Platform.logEvent("reinforce",{cost:0,ad:true});
-    showToast("📺","supports for advertising","","100%");
+    showToast("📺","Props for an ad","","100%");
     save(); render();
   });
 }
 function caveIn(){
   if(dead) return;
   dead=true;
-  failEventRun("cave-in Codes");
+  failEventRun("cave-in of the vaults");
   Platform.logEvent("collapse",{stage:S.stageIdx});
   fpFailLevel();
   const lost=Math.floor((S.gold||0)*MINE_DURAB.penaltyGoldPct);
@@ -1121,10 +1121,10 @@ function caveIn(){
   S.gold-=lost; S.cartFill=0; S.energy=0;
   try{ jingleKO(); }catch(e){}
   $("ovTitle").textContent="⛰️ CAVE-IN!";
-  $("ovText").textContent="supports I couldn’t take it. — The vaults are gone. "+fmt(lost)+" 🪙. 📺 We can dig out and get some gold back.";
+  $("ovText").textContent="The props gave way — the vaults came down. Lost "+fmt(lost)+" 🪙. 📺 You can dig out and recover some gold.";
   _overlayKind="collapse"; resetOverlayUi(); syncOverlayAdBtn();
   $("overlay").style.display="flex";
-  showToast("⛰️","CAVE-IN!","","The checker’s down.","−"+fmt(lost)+" 🪙",true);
+  showToast("⛰️","CAVE-IN!","","The mine caved in","−"+fmt(lost)+" 🪙",true);
 }
 function breakVein(){
   const prevIdx=S.stageIdx;
@@ -1175,8 +1175,8 @@ function breakVein(){
     if(!wasRaid&&!wasEvent) fpCompleteLevel();
     S.runDone=true;
     if(!S._wallShown){ S._wallShown=true;
-      showToast("⛰️",BALANCE.run.wallMsg+"!","","Next — Only Deep Call","Phase "+BALANCE.run.len+" · Push it. ⛰️",true);
-      sayQuip("Next. Mountain It’s time to call again.",6); }
+      showToast("⛰️",BALANCE.run.wallMsg+"!","","Beyond — only the Deep Call","stage "+BALANCE.run.len+" · tap ⛰️",true);
+      sayQuip("The Vault. The Mountain lets you no further. Time to answer the Call again.",6); }
   } else if(!wasRaid&&!wasEvent){ fpCompleteLevel(); S.stageIdx++; S.stage++; }
   dailyProgress("break",1);
   addBeardXP(rock.isBoss?12:2);
@@ -1227,12 +1227,12 @@ function showVeinAdOffer(amt){
   _lastVeinGold=amt;
   const st=veinAdBurstState();
   const left=adSlotLeft("vein_double");
-  let hint=left!=null?("still "+left+" ×2 for today"):"";
+  let hint=left!=null?("left "+left+" ×2 for today"):"";
   if(st.coolAt && st.coolAt>Date.now())
-    hint=(hint?hint+" · ":"")+"Pause "+fmtClock(st.coolAt-Date.now());
+    hint=(hint?hint+" · ":"")+"pause "+fmtClock(st.coolAt-Date.now());
   else {
     const burst=(BALANCE.ads&&BALANCE.ads.veinBurst)|0||2;
-    hint=(hint?hint+" · ":"")+"Series "+(st.n|0)+"/"+burst;
+    hint=(hint?hint+" · ":"")+"streak "+(st.n|0)+"/"+burst;
   }
   setTxt("veinAdGold","+"+fmt(amt)+" 🪙 → ×2");
   setTxt("veinAdLeft", hint);
@@ -1243,14 +1243,14 @@ function claimVeinDouble(){
   offerAdReward("vein_double", ()=>{
     S.gold+=_lastVeinGold|0;
     skipVeinAd();
-    showToast("📺","×2 vein!","","+"+fmt(_lastVeinGold)+" 🪙","Double gold",true);
+    showToast("📺","×2 vein!","","+"+fmt(_lastVeinGold)+" 🪙","gold doubling",true);
     Platform.logEvent("vein_double",{gold:_lastVeinGold});
     save(); render();
   });
 }
 function exhausted(){
   dead=true;
-  failEventRun("Zero energy");
+  failEventRun("energy at zero");
   jingleKO();
   Platform.logEvent("exhaust",{stage:S.stageIdx});
   fpFailLevel();
@@ -1268,11 +1268,11 @@ function syncOverlayAdBtn(){
   if(S.noAds) return;
   if(_overlayKind==="exhaust" && adSlotOk("exhaust_refill")){
     btn.style.display="block";
-    btn.textContent="📺 Second breath (+"+Math.round((BALANCE.ads.exhaustEnergyPct||0.48)*100)+"% ⚡)";
+    btn.textContent="📺 Second wind (+"+Math.round((BALANCE.ads.exhaustEnergyPct||0.48)*100)+"% ⚡)";
     btn.onclick=overlayExhaustAd;
   } else if(_overlayKind==="collapse" && adSlotOk("collapse_recover")){
     btn.style.display="block";
-    btn.textContent="📺 Unload (turn) ~"+Math.round((BALANCE.ads.collapseRecoverPct||0.72)*100)+"% 🪙)";
+    btn.textContent="📺 Dig out (recover ~"+Math.round((BALANCE.ads.collapseRecoverPct||0.72)*100)+"% 🪙)";
     btn.onclick=overlayCollapseRecover;
   }
 }
@@ -1283,7 +1283,7 @@ function overlayExhaustAd(){
     _overlaySipped=true;
     const cont=$("ovContinue"); if(cont) cont.style.display="block";
     syncOverlayAdBtn();
-    showToast("📺","Second breath!","","⚡ "+fmt(Math.floor(S.energy))+" · same vein",true);
+    showToast("📺","Second wind!","","⚡ "+fmt(Math.floor(S.energy))+" · same vein",true);
     Platform.logEvent("exhaust_ad",{energy:S.energy});
     save(); render();
   });
@@ -1295,7 +1295,7 @@ function overlayCollapseRecover(){
     S.durab=MINE_DURAB.max; lastDurabWarn=MINE_DURAB.max; S.energy=Math.min(stat("energy"), Math.round(stat("energy")*0.35));
     $("overlay").style.display="none"; dead=false; _overlayKind=null; resetOverlayUi();
     newRock();
-    showToast("📺","We’re out!","","+"+fmt(back)+" 🪙 · supports restored",true);
+    showToast("📺","Dug out!","","+"+fmt(back)+" 🪙 · props restored",true);
     Platform.logEvent("collapse_ad",{gold:back});
     save(); render();
   });
@@ -1304,13 +1304,13 @@ function showExhaustOverlay(title,text){
   _overlayKind="exhaust";
   resetOverlayUi();
   $("ovTitle").textContent=title;
-  $("ovText").textContent=text+(adSlotOk("exhaust_refill")?" · or 📺 Second breath":"");
+  $("ovText").textContent=text+(adSlotOk("exhaust_refill")?" · or 📺 second wind":"");
   $("overlay").style.display="flex";
 }
 function closeOverlay(){
   $("overlay").style.display="none"; dead=false;
   _overlayKind=null; resetOverlayUi();
-  if((S.speed||1)>3){ S.speed=1; sayQuip("Down to ×1 — We’ll get a spirit.",3); }
+  if((S.speed||1)>3){ S.speed=1; sayQuip("Eased back to ×1 — catch your breath.",3); }
   S.durab=MINE_DURAB.max; durabTimer=0; lastDurabWarn=MINE_DURAB.max; newRock(); save();
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
 }
@@ -1320,7 +1320,7 @@ function resumeFromExhaust(){
   _overlayKind=null; resetOverlayUi();
   save();
   try{ if(typeof updateFtueHint==="function") updateFtueHint(); }catch(e){}
-  showToast("🍺","B dig!","","Same vein · Energy "+fmt(Math.floor(S.energy)));
+  showToast("🍺","Back to the dig!","","Same vein · energy "+fmt(Math.floor(S.energy)));
 }
 function overlayAle(){
   sipAle();
@@ -1348,7 +1348,7 @@ function openUpgradesModal(){
       : `<button class="btn btn-soft" onclick="buyStat('${u.id}')" ${(S.gold||0)<c?"disabled":""}>+ ${fmt(c)}🪙</button>`;
     return `<div class="metarow"><span>${u.k} · <b>${cur}</b></span>${btn}</div>`;
   }).join("");
-  metaOpen("Upgrades dig","Gold "+fmt(S.gold)+" 🪙 · ♪ rock the statues to beat ♪ rock.",rows);
+  metaOpen("Dig upgrades","Gold "+fmt(S.gold)+" 🪙 · level up stats to beat the rock.",rows);
 }
 
 function itemPower(it){
@@ -1368,15 +1368,15 @@ function grantBags(n){ S.bags=Math.min(BALANCE.bags.cap,(S.bags||0)+n); }
 
 const FEAT_ORDER=["auto","pets","beards","daily","mines","skills","artifacts","pvp","social"];
 const FEAT_INFO={
-  auto:{ic:"⚙️",n:"Autos and bonuses",hint:"AVTA bag, bonus chest, offline and 2× loot"},
-  pets:{ic:"🐾",n:"Pets",hint:"egg c vein · ♪ roll the gurney in the slot ♪ pet"},
-  beards:{ic:"🧔",n:"Beards",hint:"comb c vein · rank and gacha elder"},
-  daily:{ic:"📕",n:"Tasks",hint:"Daily quests and shares on the left on stage"},
-  mines:{ic:"⛏",n:"mine",hint:"Change hall in the bottom panel"},
-  skills:{ic:"📜",n:"skill",hint:"Map Laure, CRASAWA and training"},
-  artifacts:{ic:"💎",n:"Trophies",hint:"Achievements and artifacts on the left on stage"},
+  auto:{ic:"⚙️",n:"Auto & bonuses",hint:"AUTO bags, bonus chest, offline and 2× loot"},
+  pets:{ic:"🐾",n:"Pets",hint:"Eggs from veins · roll the gacha in the pet slot"},
+  beards:{ic:"🧔",n:"Beards",hint:"Combs from veins · rank and elder gacha"},
+  daily:{ic:"📕",n:"Tasks",hint:"Daily quests and offers on the left of the scene"},
+  mines:{ic:"⛏",n:"Mines",hint:"Switch Halls in the bottom panel"},
+  skills:{ic:"📜",n:"Skills",hint:"Card chest, K.R.A.S.A.V.A. and training"},
+  artifacts:{ic:"💎",n:"Trophies",hint:"Achievements and artifacts on the left of the scene"},
   pvp:{ic:"⚔",n:"Arena",hint:"PvP in the bottom panel"},
-  social:{ic:"🍺",n:"Tavern and friends",hint:"Tavern downstairs. · Friends on the left"}
+  social:{ic:"🍺",n:"Tavern & friends",hint:"Tavern below · friends on the left"}
 };
 const FEAT_CHROME={
   auto:["bonusChest","boost2x"],
@@ -1399,11 +1399,11 @@ function featUnlocked(id){
   return (S.stageIdx||1)>=need;
 }
 function featLockToast(id){
-  const meta=FEAT_INFO[id]||{ic:"🔒",n:"Mechanics"};
+  const meta=FEAT_INFO[id]||{ic:"🔒",n:"Mechanic"};
   const need=featNeedStage(id);
   const left=Math.max(0,need-(S.stageIdx||1));
-  showToast("🔒",meta.n+" still closed","",
-    "Opens at stage "+need+(left?" · More. ~"+left:""));
+  showToast("🔒",meta.n+" still locked","",
+    "Unlocks at stage "+need+(left?" · ~"+left:""));
 }
 function requireFeat(id){
   if(featUnlocked(id)) return true;
@@ -1432,7 +1432,7 @@ function applyFeatureChrome(){
       if(isNav){
         el.classList.remove("featOff");
         el.classList.toggle("featLocked", !on);
-        el.title=!on?("Opens at stage "+featNeedStage(id)):"";
+        el.title=!on?("Unlocks at stage "+featNeedStage(id)):"";
       } else {
         el.classList.remove("featLocked");
         el.classList.toggle("featOff", !on);
@@ -1452,7 +1452,7 @@ function applyFeatureChrome(){
   if(rank){
     const on=featUnlocked("beards");
     rank.style.cursor=on?"pointer":"default";
-    rank.title=on?"Beards · rank":"Rang (beard (to be opened later)";
+    rank.title=on?"Beards · title":"Rank (beards unlock later)";
     rank.classList&&rank.classList.toggle("featMuted", !on);
   }
   const smine=$("statMine");
@@ -1461,7 +1461,7 @@ function applyFeatureChrome(){
     const cell=smine.closest?smine.closest(".cell"):null;
     const target=cell||smine;
     target.style.cursor=on?"pointer":"default";
-    target.title=on?"mine":"mine (map opens later)";
+    target.title=on?"Mines":"Mine (map unlocks later)";
   }
 }
 function notifyFeatUnlocks(){
@@ -1474,7 +1474,7 @@ function notifyFeatUnlocks(){
     if(id==="pets"&&(S.eggs||0)<1) S.eggs=1;
     if(id==="beards"&&(S.combs||0)<1) S.combs=1;
     const m=FEAT_INFO[id]||{ic:"✨",n:id,hint:""};
-    showToast(m.ic, m.n+" Open!","", m.hint, "Phase "+(S.stageIdx||1), true);
+    showToast(m.ic, m.n+" unlocked!","", m.hint, "stage "+(S.stageIdx||1), true);
     try{ Platform.logEvent("feat_unlock",{id,stage:S.stageIdx}); }catch(e){}
   }
   if(changed){ applyFeatureChrome(); save(); }
@@ -1482,7 +1482,7 @@ function notifyFeatUnlocks(){
 
 function canOpenBag(){ return (S.bags||0)>=1 && !S.autoRoll; }
 function openBag(){
-  if(S.autoRoll){ showToast("🎒","Auto on.","","Turn off the Auto to open manually"); return false; }
+  if(S.autoRoll){ showToast("🎒","Auto is on","","Turn off Auto to open manually"); return false; }
   if((S.bags||0)<1){ showToast("🎒","No bags","","Bags drop from veins"); return false; }
   S.bags--; dailyProgress("bag",1);
   S.bagsOpened=(S.bagsOpened||0)+1;
@@ -1509,13 +1509,13 @@ function flushMineExtras(){
     if(v>0) parts.push("+"+fmt(v)+" "+(k==="wheelSpins"?"◎":k==="chestKeys"?"🗝":k==="protein"?"🍺":"💠"));
   }
   if(parts.length){
-    showToast("⛏️","mine","",parts.length+"× bonus",parts.join(" · "));
+    showToast("⛏️","Mines","",parts.length+"× bonus",parts.join(" · "));
   }
   mineExtraAgg=null;
 }
 function flushSales(){
 
-  if(dupN){ showToast("💎","duplicate","",dupN+"× Stones",
+  if(dupN){ showToast("💎","Duplicates","",dupN+"× stones",
     "+"+fmt(dupGold)+" 🪙"+(dupShards?(" · +"+fmt(dupShards)+" 💠"):"")); dupN=0;dupGold=0;dupShards=0; }
   sellN=0; sellGold=0; equipN=0;
   flushMineExtras();
@@ -1557,13 +1557,13 @@ function autoRollUnlocked(){
 function autoLockHint(){
   const b=BALANCE.bags||{};
   const n=b.autoUnlockRares!=null?b.autoUnlockRares:3;
-  return "Fill all slots or put them on. "+n+" things rarity Rare and higher";
+  return "Fill every slot or equip "+n+" items of Rare rarity or higher";
 }
 function toggleAutoRoll(){
   if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
     if(S.autoRoll){ S.autoRoll=false; autoRollAcc=0; save(); render(); }
-    showToast("🔒","Auto closed","",autoLockHint(),"Open up. bag And wear the best.");
+    showToast("🔒","Auto locked","",autoLockHint(),"open bags and equip the best");
     return;
   }
   S.autoRoll=!S.autoRoll; autoRollAcc=0;
@@ -1573,7 +1573,7 @@ function toggleAutoRoll(){
 function cycleAutoTier(){
   if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
-    showToast("🔒","Auto closed","",autoLockHint());
+    showToast("🔒","Auto locked","",autoLockHint());
     return;
   }
   S.autoRollTier=((S.autoRollTier||0)+1)%8;
@@ -1587,9 +1587,9 @@ function autoTierPanelRows(){
   const cur=S.autoRollTier|0;
   return RAR_NAMES.map(function(n,r){
     const on=r===cur;
-    return '<div class="metarow"><span class="r'+r+'">'+n+' and above</span>'
+    return '<div class="metarow"><span class="r'+r+'">'+n+' and up</span>'
       +'<button type="button" class="btn '+(on?"btn-hard":"btn-soft")+'" onclick="setAutoTier('+r+')">'
-      +(on?"✓ threshold":"Keep")+'</button></div>';
+      +(on?"✓ threshold":"keep")+'</button></div>';
   }).join("");
 }
 function refreshAutoTierPanel(){
@@ -1601,7 +1601,7 @@ function refreshAutoTierPanel(){
 function setAutoTier(r){
   if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
-    showToast("🔒","Auto closed","",autoLockHint());
+    showToast("🔒","Auto locked","",autoLockHint());
     return;
   }
   S.autoRollTier=Math.max(0,Math.min(7,r|0));
@@ -1613,7 +1613,7 @@ function setAutoTier(r){
 function openAutoTierModal(){
   if(!featUnlocked("auto")){ featLockToast("auto"); return; }
   if(!autoRollUnlocked()){
-    showToast("🔒","Auto closed","",autoLockHint(),"Open up. bag And wear the best.");
+    showToast("🔒","Auto locked","",autoLockHint(),"open bags and equip the best");
     return;
   }
   metaOpen("Auto-sell threshold", autoTierPanelSub(), autoTierPanelRows());
@@ -1645,10 +1645,10 @@ function hireGeo(){
   if(!requireFeat("beards")) return;
   if((S.combs||0)<1){
     if(adSlotOk("beard_roll")){
-      offerAdReward("beard_roll", ()=>{ S.combs=(S.combs||0)+1; hireGeo(); }, {limitMsg:"comb for today’s ads."});
+      offerAdReward("beard_roll", ()=>{ S.combs=(S.combs||0)+1; hireGeo(); }, {limitMsg:"Ad comb for today"});
       return false;
     }
-    showToast("🪮","No combs.","","C vein · or 📺 for roll"); return false;
+    showToast("🪮","No combs","","From veins · or 📺 per roll"); return false;
   }
   S.combs--;
   const r=rollRarity(geoWeights(S.geoRolls));
@@ -1658,10 +1658,10 @@ function hireGeo(){
   if(!S.geo || (r>S.geo.r) || (r===S.geo.r && GEO_TYPES[t].pct[r]>GEO_TYPES[S.geo.t].pct[S.geo.r])){
     if(S.geo) boxAdd(S.geoBox,S.geo.t,S.geo.r,1);
     S.geo={t,r,n:name,lv:1,asc:0};
-    showToast("👷",GEO_RAR[r],"r"+r,name,"- Yes, you are! +"+GEO_TYPES[t].pct[r]+"% "+GEO_TYPES[t].stat.toUpperCase());
+    showToast("👷",GEO_RAR[r],"r"+r,name,"hired! +"+GEO_TYPES[t].pct[r]+"% "+GEO_TYPES[t].stat.toUpperCase());
   } else {
     boxAdd(S.geoBox,t,r,1);
-    showToast("👷",GEO_RAR[r],"r"+r,name,"to the artefact · Merger material");
+    showToast("👷",GEO_RAR[r],"r"+r,name,"to the Artel · merge material");
   }
   try{ unlockPlayAchievement("first_beard"); }catch(e){}
   save(); render();
@@ -1712,9 +1712,9 @@ function loop(now){
     S.durab=Math.max(0,S.durab-MINE_DURAB.decayPerSec*durabDecayMult()*dt);
 
     if(S.durab<=MINE_DURAB.critAt && lastDurabWarn>MINE_DURAB.critAt){
-      showToast("⚠️","SUPPORTS ARE CRACKING!","","The vault is about to collapse.","Tap ⚡ to reinforce",true); lastDurabWarn=S.durab; }
+      showToast("⚠️","PROPS ARE CRACKING!","","The vaults are about to cave in.","Tap ⚡ to reinforce",true); lastDurabWarn=S.durab; }
     else if(S.durab<=MINE_DURAB.warnAt && lastDurabWarn>MINE_DURAB.warnAt){
-      showToast("🪵","SUPPORTS ARE WEAK","","Tap the ⚡ bar to reinforce"); lastDurabWarn=S.durab; }
+      showToast("🪵","Props are weak","","Tap the ⚡ bar to reinforce"); lastDurabWarn=S.durab; }
     else if(S.durab>lastDurabWarn) lastDurabWarn=S.durab;
 
     if(S.bagActive && Date.now()>=S.bagActive.end) finishBagUpgrade();
@@ -1911,7 +1911,7 @@ function toggleLoot2x(){
   if(!requireFeat("auto")) return;
   const now=Date.now();
   if(S.loot2xUntil&&S.loot2xUntil>now){
-    showToast("🎬","×2 loot","","Active yet. "+fmtClock(S.loot2xUntil-now));
+    showToast("🎬","×2 loot","","Active for "+fmtClock(S.loot2xUntil-now));
     return;
   }
   const apply=()=>{
@@ -1940,11 +1940,11 @@ function claimBonusChest(){
   if(!requireFeat("auto")) return;
   const slot=bonusSlot();
   if(slot.done){
-    showToast("🧰","Bonuses for today","","All stages today · tomorrow with ×1");
+    showToast("🧰","Today’s bonuses","","All tiers done today · tomorrow back to ×1");
     return;
   }
   if(!slot.ready){
-    showToast("🧰","Bonus · step "+(slot.step+1),"","×"+slot.fib+" Through "+fmtClock(slot.leftMs));
+    showToast("🧰","Bonus · tier "+(slot.step+1),"","×"+slot.fib+" in "+fmtClock(slot.leftMs));
     return;
   }
   openBonusClaim();
@@ -1953,17 +1953,17 @@ function claimBonusChest(){
 function openBonusClaim(){
   const slot=bonusSlot();
   const g=bonusRewardGold(slot.step), bags=bonusRewardBags(slot.step);
-  metaOpen("🧰 Bonus · step "+(slot.step+1)+"/"+slot.max+" · ×"+slot.fib,
-    "The longer you wait for the next step. — The more the reward.",
-    '<div class="sub" style="margin-bottom:4px">Basic Award (×'+slot.fib+')</div>'
+  metaOpen("🧰 Bonus · tier "+(slot.step+1)+"/"+slot.max+" · ×"+slot.fib,
+    "The longer you wait for the next tier, the bigger the reward.",
+    '<div class="sub" style="margin-bottom:4px">Base reward (×'+slot.fib+')</div>'
     +'<div class="metarow"><span>Gold</span><span><b>+'+fmt(g)+' 🪙</b></span></div>'
     +'<div class="metarow"><span>Bag</span><span><b>+'+bags+' 🎒</b></span></div>'
-    +'<div class="sub" style="margin:12px 0 4px">With advertising ×2</div>'
+    +'<div class="sub" style="margin:12px 0 4px">With an ad ×2</div>'
     +'<div class="metarow"><span>Gold</span><span><b>+'+fmt(g*2)+' 🪙</b></span></div>'
     +'<div class="metarow"><span>Bag</span><span><b>+'+(bags*2)+' 🎒</b></span></div>'
     +'<div class="btnrow" style="margin-top:14px">'
     +'<button type="button" class="btn btn-soft" onclick="grantBonusChest(1)">Claim<br><small>+'+fmt(g)+' · +'+bags+'🎒</small></button>'
-    +'<button type="button" class="btn btn-hard" onclick="grantBonusChest(2)">×2 with ad<br><small>+'+fmt(g*2)+' · +'+(bags*2)+'🎒</small></button>'
+    +'<button type="button" class="btn btn-hard" onclick="grantBonusChest(2)">×2 for an ad<br><small>+'+fmt(g*2)+' · +'+(bags*2)+'🎒</small></button>'
     +'</div>');
 }
 function grantBonusChest(mult){
@@ -1981,8 +1981,8 @@ function grantBonusChest(mult){
     Platform.logEvent("bonus_chest",{mult:m,step,fib});
     const next=bonusSlot();
     const nextHint=next.done
-      ? "That’s it for today."
-      : ("Further ×"+next.fib+" Through "+fmtClock(next.leftMs));
+      ? "done for today"
+      : ("next ×"+next.fib+" in "+fmtClock(next.leftMs));
     showToast("🧰", m>1?"Bonus ×2 · ×"+fib:"Bonus · ×"+fib,"","+"+fmt(g)+" 🪙 · +"+bags+" 🎒", nextHint);
     save(); render();
   };
@@ -2002,7 +2002,7 @@ function buyUpgrade(id){
   if(statCapped(u.id)) return false;
   const c=upCost(u);
   if((S.gold||0)<c){
-    showToast("🪙","Few gold","",fmt(c)+" need");
+    showToast("🪙","Not enough gold","",fmt(c)+" needed");
     return false;
   }
   S.gold-=c; S.lvls[u.id]++;
@@ -2036,38 +2036,38 @@ function shadeHex(h,t){ const n=parseInt(h.slice(1),16);
 function setFill(id,c){ const el=document.getElementById(id); if(el&&el.setAttribute) el.setAttribute("fill",c); }
 
 const PET_MOODS=[
-  {id:"gaze",  title:"Looking into your eyes."},
-  {id:"purr",  title:"Smooth when you’re around."},
-  {id:"follow",title:"Follows you."},
-  {id:"twitch",title:"Raises and pulls up the tail"},
-  {id:"sleep", title:"Sleeping on you."},
-  {id:"belly", title:"Shows the belly"}
+  {id:"gaze",  title:"Looks you in the eye"},
+  {id:"purr",  title:"Purrs when you’re near"},
+  {id:"follow",title:"Follows you around"},
+  {id:"twitch",title:"Raises and twitches its tail"},
+  {id:"sleep", title:"Sleeps on you"},
+  {id:"belly", title:"Shows its belly"}
 ];
 
 const PET_SKIN_POOL=[
   [
-    {id:"snow", n:"Snow", pat:"none", fur:"#f5f6f8", dark:"#c8ced6", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#e08a3c"},
-    {id:"beige",n:"Run", pat:"none", fur:"#e8d2b0", dark:"#c4a078", sock:"#f5ebe0", eye:"#5a8a6a", nose:"#8a5040", patch:"#c4a078"},
-    {id:"miner",n:"The checker", pat:"none", fur:"#2c3038", dark:"#1a1c22", sock:"#4a4e58", eye:"#f0c84a", nose:"#1a1010", patch:"#e08a3c"}
+    {id:"snow", n:"Snowy", pat:"none", fur:"#f5f6f8", dark:"#c8ced6", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#e08a3c"},
+    {id:"beige",n:"Beige", pat:"none", fur:"#e8d2b0", dark:"#c4a078", sock:"#f5ebe0", eye:"#5a8a6a", nose:"#8a5040", patch:"#c4a078"},
+    {id:"miner",n:"Miner", pat:"none", fur:"#2c3038", dark:"#1a1c22", sock:"#4a4e58", eye:"#f0c84a", nose:"#1a1010", patch:"#e08a3c"}
   ],
   [
     {id:"rust", n:"Rusty", pat:"tabby", fur:"#e08a3c", dark:"#b05620", sock:"#f0c090", eye:"#3a8a4a", nose:"#5a3020", patch:"#b05620"},
-    {id:"sea",  n:"Sea cats", pat:"none", fur:"#7a8494", dark:"#5a6474", sock:"#eef0f3", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
-    {id:"dust", n:"Dust", pat:"tabby", fur:"#6a6870", dark:"#3a3840", sock:"#c8c6c0", eye:"#f0c84a", nose:"#2a2218", patch:"#3a3840"}
+    {id:"sea",  n:"Sea kitty", pat:"none", fur:"#7a8494", dark:"#5a6474", sock:"#eef0f3", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
+    {id:"dust", n:"Dusty", pat:"tabby", fur:"#6a6870", dark:"#3a3840", sock:"#c8c6c0", eye:"#f0c84a", nose:"#2a2218", patch:"#3a3840"}
   ],
   [
-    {id:"calico",n:"Snow-sprout miner", pat:"calico", fur:"#f0f2f4", dark:"#2a2e34", sock:"#ffffff", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
-    {id:"fluffy",n:"Snow wool", pat:"fluffy", fur:"#f8f9fb", dark:"#d0d4dc", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#d0d4dc"},
-    {id:"tuxedo",n:"Snow-dust", pat:"tuxedo", fur:"#4a5060", dark:"#2a3038", sock:"#f4f6f8", eye:"#f0c84a", nose:"#3a2c1c", patch:"#f4f6f8"}
+    {id:"calico",n:"Snowy-rusty miner", pat:"calico", fur:"#f0f2f4", dark:"#2a2e34", sock:"#ffffff", eye:"#f0c84a", nose:"#3a2c1c", patch:"#e08a3c"},
+    {id:"fluffy",n:"Snowy-furred", pat:"fluffy", fur:"#f8f9fb", dark:"#d0d4dc", sock:"#ffffff", eye:"#6bb8e8", nose:"#e8a0a8", patch:"#d0d4dc"},
+    {id:"tuxedo",n:"Snowy-dusty", pat:"tuxedo", fur:"#4a5060", dark:"#2a3038", sock:"#f4f6f8", eye:"#f0c84a", nose:"#3a2c1c", patch:"#f4f6f8"}
   ],
   [
-    {id:"egypt",n:"Egyptians", pat:"sphynx", fur:"#d4b090", dark:"#b89070", sock:"#e8c8b0", eye:"#6bb8e8", nose:"#c07070", patch:"#b89070"},
-    {id:"tortie",n:"Dust-red", pat:"calico", fur:"#3a3838", dark:"#1a1818", sock:"#e08a3c", eye:"#f0c84a", nose:"#2a1810", patch:"#e08a3c"},
-    {id:"sand", n:"Mm-hmm.", pat:"none", fur:"#c9a070", dark:"#9a7040", sock:"#e8d0b0", eye:"#5a8a4a", nose:"#6a4030", patch:"#9a7040"}
+    {id:"egypt",n:"Egyptian", pat:"sphynx", fur:"#d4b090", dark:"#b89070", sock:"#e8c8b0", eye:"#6bb8e8", nose:"#c07070", patch:"#b89070"},
+    {id:"tortie",n:"Dusty-rusty", pat:"calico", fur:"#3a3838", dark:"#1a1818", sock:"#e08a3c", eye:"#f0c84a", nose:"#2a1810", patch:"#e08a3c"},
+    {id:"sand", n:"Meme rusty", pat:"none", fur:"#c9a070", dark:"#9a7040", sock:"#e8d0b0", eye:"#5a8a4a", nose:"#6a4030", patch:"#9a7040"}
   ],
   [
-    {id:"leo", n:"The rustmer", pat:"rosette", fur:"#d4a060", dark:"#6a4020", sock:"#e8c898", eye:"#c8a020", nose:"#3a2c1c", patch:"#6a4020"},
-    {id:"polka",n:"Annoyed at peas", pat:"polka", fur:"#8a9098", dark:"#2a2e34", sock:"#d0d4da", eye:"#e05040", nose:"#3a2c1c", patch:"#2a2e34"},
+    {id:"leo", n:"Rustometer", pat:"rosette", fur:"#d4a060", dark:"#6a4020", sock:"#e8c898", eye:"#c8a020", nose:"#3a2c1c", patch:"#6a4020"},
+    {id:"polka",n:"Indignant polka-dot", pat:"polka", fur:"#8a9098", dark:"#2a2e34", sock:"#d0d4da", eye:"#e05040", nose:"#3a2c1c", patch:"#2a2e34"},
     {id:"bandaid",n:"With a band-aid", pat:"bandaid", fur:"#6a9aaa", dark:"#3a6a7a", sock:"#c8e0e8", eye:"#f0c84a", nose:"#3a2c1c", patch:"#f0a0b0"}
   ]
 ];
@@ -2091,8 +2091,8 @@ function syncPetBoxClass(){
   if(box.className!==next) box.className=next;
   const fam=(pet&&PET_TYPES[pet.t|0])?PET_TYPES[pet.t|0]:PET_TYPES[0];
   box.title=petting
-    ? "You’re ironing. · Smurling"
-    : ((fam&&fam.n)?fam.n+" · ":"")+(mood.title+" · "+skin.n+" · slip — To iron");
+    ? "Petting · purring"
+    : ((fam&&fam.n)?fam.n+" · ":"")+(mood.title+" · "+skin.n+" · tap to pet");
   box.style.setProperty("--pet-fur", skin.fur);
   box.style.setProperty("--pet-dark", skin.dark);
   box.style.setProperty("--pet-sock", skin.sock);
@@ -2122,7 +2122,7 @@ function petCat(){
     box.classList.remove("petting");
     void box.offsetWidth;
     box.classList.add("petting");
-    box.title="You’re ironing. · Smurling";
+    box.title="Petting · purring";
     clearTimeout(petPetLock);
     petPetLock=setTimeout(function(){
       box.classList.remove("petting");
@@ -2177,9 +2177,9 @@ function gearLoadoutHint(){
   if(minR===maxR && filled===total)
     return "Set · "+(RAR_NAMES[minR]||"")+" in all slots";
   if(minR===maxR)
-    return (RAR_NAMES[minR]||"")+" · Slots "+filled+"/"+total+" · species of hero = this rarity";
+    return (RAR_NAMES[minR]||"")+" · slots "+filled+"/"+total+" · hero look = this rarity";
   return "Mix "+(RAR_SHORT[minR]||minR)+"…"+(RAR_SHORT[maxR]||maxR)
-    +" · hero look = weakest slot ("+(RAR_SHORT[minR]||minR)+") · pickaxe separate";
+    +" · hero look = weakest ("+(RAR_SHORT[minR]||minR)+") · pickaxe separate";
 }
 function updateMiner(){
   const g=S.gear;
@@ -2190,7 +2190,7 @@ function updateMiner(){
   $("aleMug").src=MUG_ICON;
   const mug=$("aleMug");
   if(mug&&!mug._drinkWired){
-    mug._drinkWired=1; mug.style.cursor="pointer"; mug.title="Drink beer → Training glasses";
+    mug._drinkWired=1; mug.style.cursor="pointer"; mug.title="Drink beer → training points";
     mug.onclick=function(e){ if(e&&e.stopPropagation) e.stopPropagation(); drinkBeer(); };
   }
   const L={pack:"mlPack",robe:"mlRobe",boots:"mlBoots",glove:"mlGlove",helm:"mlHelm"};
@@ -2216,7 +2216,7 @@ function openPickGallery(){
     return `<div style="border:2px solid ${owned?RAR_HEX[r]:"#2e3745"};border-radius:6px;padding:8px 6px;text-align:center;${owned?"":"opacity:.38;filter:grayscale(.6);"}">
       <img src="${PICK_ICONS[r]}" class="oreimg" style="width:34px;height:34px;margin:0 0 4px">
       <div style="font-size:12px;line-height:1.5">${owned?n:"???"}</div>
-      <div class="r${r}" style="font-size:11px;margin-top:3px">${RAR_NAMES[r]}${now?" · IN THE HANDS":""}</div>
+      <div class="r${r}" style="font-size:11px;margin-top:3px">${RAR_NAMES[r]}${now?" · IN HAND":""}</div>
     </div>`;}).join("")).join("");
   $("pickModal").style.display="flex";
   Platform.logEvent("pick_gallery",{});
@@ -2229,7 +2229,7 @@ function checkLoadout(){
     const got=minR-(S.loadoutTier||0);
     for(let t=(S.loadoutTier||0)+1; t<=minR; t++) S.boxes.push(t);
     S.loadoutTier=minR;
-    showToast("📦","SET!","r"+minR,RAR_NAMES[minR]+" in all slots","loot box ×"+got+" · :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+minR,true);
+    showToast("📦","FULL SET!","r"+minR,RAR_NAMES[minR]+" in all slots","loot box ×"+got+" · :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+minR,true);
     Platform.logEvent("lootbox_drop",{tier:minR}); sfxGear();
   }
 }
@@ -2261,8 +2261,8 @@ function renderGear(){
       d.innerHTML='<span class="up">↑</span><div class="ic">'+icon+'</div><div class="sn">'
         +(pet&&PET_TYPES[pet.t]?PET_TYPES[pet.t].n:sl.n)+'</div><div class="sv">'+sv+'</div>';
       d.title=pet
-        ? (PET_TYPES[pet.t].n+" · "+(PET_RAR[pet.r|0]||"")+(hintUp?" · Yes egg/merger":""))
-        : (hintUp?"pet · Yes egg or merger":"Pets");
+        ? (PET_TYPES[pet.t].n+" · "+(PET_RAR[pet.r|0]||"")+(hintUp?" · egg/merge ready":""))
+        : (hintUp?"Pets · egg or merge ready":"Pets");
       d.onclick=function(){ if(typeof UIS!=="undefined"&&UIS.open) UIS.open("pets","gacha"); else if(typeof openPets==="function") openPets(); };
       g.appendChild(d);
       return;
@@ -2282,7 +2282,7 @@ function renderGear(){
       :sl.ic;
     d.innerHTML=`<span class="up">↑</span><div class="ic">${icon}</div><div class="sn">${sl.n}</div><div class="sv">${sv}</div>`;
     if(sl.id==="pick"){
-      d.title=canUp?"pickaxe · ↑ bag Maybe it’s better.":"pickaxe";
+      d.title=canUp?"Pickaxes · ↑ a bag may give better":"Pickaxes";
       d.onclick=openPickGallery;
     } else {
       d.title=canUp?"Tap for info · ↑ bag can be upgraded":"Slot info";
@@ -2306,7 +2306,7 @@ function render(){
   renderBadges(); renderSetFx(); renderPaperdoll();
   setTxt("mineLabel",(S.mine+1)+"-"+S.stage);
   setTxt("stageLabel", S.runDone
-    ? "⛰ TOTAL"
+    ? "⛰ VAULT"
     : Math.min(S.stageIdx,BALANCE.run.len)+" / "+BALANCE.run.len);
 
   setTxt("minerRank",beardWisdom().title+((S.prestigeLv||0)?(" ⛰️"+S.prestigeLv):""));
@@ -2341,7 +2341,7 @@ function render(){
     if(eb&&eb.classList){
       eb.classList.toggle("warn",d<MINE_DURAB.warnAt&&d>=MINE_DURAB.critAt);
       eb.classList.toggle("crit",d<MINE_DURAB.critAt);
-      eb.title=d>=MINE_DURAB.max-1e-6?"supports whole":("Tap to reinforce · "+fmt(reinforceCost())+" 🪙 · supports "+Math.round(d)+"%");
+      eb.title=d>=MINE_DURAB.max-1e-6?"Props intact":("Tap to reinforce · "+fmt(reinforceCost())+" 🪙 · props "+Math.round(d)+"%");
     }
   }
   setTxt("sAtk",fmt(stat("atk")));
@@ -2379,7 +2379,7 @@ function render(){
     if(bc&&bc.classList) bc.classList.toggle("ready",ready);
     if(bt){
       if(slot.done) setTxt(bt,"tomorrow");
-      else if(ready) setTxt(bt,"×"+slot.fib+" SLIP");
+      else if(ready) setTxt(bt,"×"+slot.fib+" TAP");
       else setTxt(bt,"×"+slot.fib+" "+fmtClock(slot.leftMs));
     } }
   { const lb=$("loot2xBtn"), b2=$("boost2x"), ll=$("loot2xLbl");
@@ -2399,7 +2399,7 @@ function render(){
   setTxt("dropCh",DROP_CHANCE);
   setTxt("bagTier",bagName(S.bag));
   const nb=nextBagName(S.bag);
-  setTxt("bagNext",nb?("up to «"+nb[1]+"»: "+(nb[0]-S.bag)+" Lv."):"The limit of greed is reached");
+  setTxt("bagNext",nb?("to “"+nb[1]+"»: "+(nb[0]-S.bag)+" Lv."):"greed limit reached");
 
   { const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
     UPGRADES.forEach(u=>{
@@ -2421,8 +2421,8 @@ function render(){
 
   if($("bagBadge2")){ const n=S.bags||0; setTxt("bagBadge2",n>99?"99+":n); $("bagBadge2").style.display=n>0?"flex":"none"; }
   if($("bagAreaLvl")){
-    if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","PASS");
-    else if(bagUpgrading()) setTxt("bagAreaLvl","BAG… "+bagUpgradeLeft()+"c");
+    if(bagUpgrading() && bagSkipArmed) setTxt("bagAreaLvl","SKIP");
+    else if(bagUpgrading()) setTxt("bagAreaLvl","BAG… "+bagUpgradeLeft()+"s");
     else if(S.bag>=50) setTxt("bagAreaLvl","BAG MAX");
     else setTxt("bagAreaLvl","BAG LV "+S.bag);
   }
@@ -2430,10 +2430,10 @@ function render(){
     const bt=$("bagAreaTimer");
     if(bagUpgrading()){
       setTxt(bt, bagSkipArmed
-        ? ("Tup again. → −"+bagSkipGems()+" 💎")
-        : ("slip — pass · 💎"+bagSkipGems()));
-    }     else if(S.bag>=50) setTxt(bt,"max");
-    else setTxt(bt, fmt(bagCost())+" 🪙 · "+bagUpgradeSec()+"c");
+        ? ("tap again → −"+bagSkipGems()+" 💎")
+        : ("tap — skip · 💎"+bagSkipGems()));
+    }     else if(S.bag>=50) setTxt(bt,"limit");
+    else setTxt(bt, fmt(bagCost())+" 🪙 · "+bagUpgradeSec()+"s");
   }
   { const dot=$("bagUpDot");
     if(dot){
@@ -2463,12 +2463,12 @@ function render(){
       ab.classList.remove("featOff");
       setOp(ab, unlocked?"1":"0.55");
       const l=$("autoLbl2");
-      if(l) setTxt(l, !featOn ? "🔒" : (!autoRollUnlocked() ? "🔒" : (S.autoRoll ? "INCLUDING" : "OFF")));
+      if(l) setTxt(l, !featOn ? "🔒" : (!autoRollUnlocked() ? "🔒" : (S.autoRoll ? "ON" : "OFF")));
       ab.title=!featOn
-        ? ("Opens at stage "+featNeedStage("auto"))
+        ? ("Unlocks at stage "+featNeedStage("auto"))
         : (!autoRollUnlocked()
           ? autoLockHint()
-          : ("Auto bag removal · Now. "+(S.autoRoll?"INCLUDING":"OFF")));
+          : ("Auto-salvage bags · now "+(S.autoRoll?"ON":"OFF")));
     }
     const at=$("autoTier"); if(at&&at.classList){
       const featOn=featUnlocked("auto");
@@ -2482,10 +2482,10 @@ function render(){
       const tl=$("autoTierLbl");
       if(tl) setTxt(tl, !featOn ? "🔒" : (!autoRollUnlocked() ? "🔒" : tierTxt));
       at.title=!featOn
-        ? ("Opens at stage "+featNeedStage("auto"))
+        ? ("Unlocks at stage "+featNeedStage("auto"))
         : (!autoRollUnlocked()
           ? autoLockHint()
-          : ("Threshold: below — trader, s "+tierTxt+" — Keep"));
+          : ("Threshold: below — to the trader, from "+tierTxt+" — keep"));
     }
     const ag=$("autoGroup"); if(ag&&ag.classList) ag.classList.remove("featOff");
   }
@@ -2508,8 +2508,8 @@ function render(){
       }
       pu.title=busy
         ? (bagSkipArmed
-          ? ("Pass for 💎"+bagSkipGems()+" — Tup again.")
-          : ("Upside down. · slip — price of pass"))
+          ? ("Skip for 💎"+bagSkipGems()+" — tap again")
+          : ("Upgrading · tap — skip price"))
         : (maxed?"Maximum":"Tap for drop odds and upgrade"
           +(poor?(" · need "+fmt(bagCost())+" 🪙"):(" · "+fmt(bagCost())+" 🪙")));
     }
@@ -2519,12 +2519,12 @@ function render(){
     const asc=(S.geo.asc||0)?(" ✦"+S.geo.asc):"";
     setHtml("geoName",`<span class="r${S.geo.r}">${S.geo.n||g.names[0]}${asc}</span>`);
     setHtml("geoDesc",GEO_RAR[S.geo.r]+" Lv."+(S.geo.lv||1)+" · +"+Math.round(geoPct(S.geo))+"% "+statLbl(g.stat)
-      +'<br><span style="color:var(--dim);font-size:11px">Artel: '+geoMaterials()+' merger</span>');
+      +'<br><span style="color:var(--dim);font-size:11px">Artel: '+geoMaterials()+' to merge</span>');
   }
   { const gr=$("geoRolls"); if(gr) setTxt(gr,S.geoRolls); }
   const mineKey=S.mine%MINES.length;
   { const got=Object.keys(S.col[mineKey]||{}).length;
-  setTxt("colCount",got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · Another one!":""))); }
+  setTxt("colCount",got+"/8"+(setDone(mineKey)?" ✓":(got===7?" · one more!":""))); }
   applyFeatureChrome();
   updateFtueHint();
   try{ refreshGearSlotIfOpen(); }catch(e){}
@@ -2595,15 +2595,15 @@ function updateFtueHint(){
   let el=null, msg="", step=null;
   const cheapest=UPGRADES.reduce((a,u)=>upCost(u)<upCost(a)?u:a,UPGRADES[0]);
   if(!S.ftue.u && S.gold>=upCost(cheapest)){
-    el=$("u_"+cheapest.id); step="u"; msg="<b>CLUE</b>Pump the attack. — vein ♪ it breaks faster ♪";
+    el=$("u_"+cheapest.id); step="u"; msg="<b>TIP</b>Level up Attack — the vein breaks faster";
   } else if(!S.ftue.c && (S.bags||0)>0){
-    el=$("lootChest"); step="c"; msg="<b>CHEST</b>Open the chest. — Put it on or sell it.";
+    el=$("lootChest"); step="c"; msg="<b>CHEST</b>Open a chest — equip or sell";
   } else if(!S.ftue.b && !bagUpgrading() && S.bag<50 && S.gold>=bagCost()){
-    el=$("powerUp"); step="b"; msg="<b>FORCE</b>Improve the chest. — The chance is rarer.";
+    el=$("powerUp"); step="b"; msg="<b>POWER</b>Upgrade the chest — better odds of rares";
   } else if(!S.ftue.t && S.ftue.b && featUnlocked("social")){
-    el=$("navTavBtn"); step="t"; msg="<b>TAVERN</b>feast, beer and the artefact";
+    el=$("navTavBtn"); step="t"; msg="<b>TAVERN</b>Feasts, beer and the Artel";
   } else if(!S.ftue.g && S.ftue.t && featUnlocked("social")){
-    step="g"; msg="<b>FRIENDS</b>Tap Friends → Come on, cop-blast without advertising.";
+    step="g"; msg="<b>FRIENDS</b>Tap “Friends” → invite, co-op boost with no ads";
     el=$("friendsBtn");
   }
   if(!el||!step||!ftueAnchorVisible(el)){ hideFtueTip(tip); return; }
@@ -2614,7 +2614,7 @@ function updateFtueHint(){
   const contentChanged=tip._ftueStep!==step || tip._ftueMsg!==msg;
   if(contentChanged){
     tip._ftueStep=step; tip._ftueMsg=msg;
-    tip.innerHTML=msg+'<span class="ftueSkip">slip — Hide</span>';
+    tip.innerHTML=msg+'<span class="ftueSkip">tap to hide</span>';
     tip._ftueArr=null;
   } else {
     tip._ftueStep=step;
@@ -2638,7 +2638,7 @@ function updateFtueHint(){
   const arrNeed=sideRight?"sideL":(below?"top":"bot");
   const arrChar=sideRight?"◀":(below?"▲":"▼");
   if(tip._ftueArr!==arrNeed){
-    const bodyHtml=msg+'<span class="ftueSkip">slip — Hide</span>';
+    const bodyHtml=msg+'<span class="ftueSkip">tap to hide</span>';
     const arrHtml='<div class="ftueArr '+arrNeed+'">'+arrChar+'</div>';
     tip.innerHTML=sideRight || below ? (arrHtml+bodyHtml) : (bodyHtml+arrHtml);
     tip._ftueArr=arrNeed;
@@ -2703,7 +2703,7 @@ function fxSwing(){
 function fxDamage(dmg,crit){
   const d=document.createElement("div");
   d.className="dmgnum"+(crit?" crit":"");
-  d.textContent=(crit?"CREEK ":"")+fmt(dmg);
+  d.textContent=(crit?"CRIT ":"")+fmt(dmg);
   d.style.right=(8+Math.random()*14)+"%"; d.style.bottom=(86+Math.random()*30)+"px";
   $("scene").appendChild(d); setTimeout(()=>d.remove(),800);
 }
@@ -2787,11 +2787,11 @@ if($("toast")){
 }
 function toastMine(){
   const m=MINES[S.mine%MINES.length];
-  const lines=["Deeper, what could go wrong?","New hall — New stones.","Echo’s become bass..."];
-  showToast("⛏️","Deeper in the mountain!","",m.n,lines[Math.floor(Math.random()*lines.length)]);
+  const lines=["Deeper! What could go wrong?","New Halls — new stones.","The echo got deeper…"];
+  showToast("⛏️","Deeper into the Mountain!","",m.n,lines[Math.floor(Math.random()*lines.length)]);
   if(S.ftue&&!S.ftue.m && S.mine>=1){
     S.ftue.m=1; save();
-    sayQuip("Second hallWho came here? — It’s usually the same as Grandpa.",5);
+    sayQuip("The second Hall! Whoever gets this far usually stays. Grandpa said so.",5);
   }
 }
 
@@ -2847,11 +2847,11 @@ function mineRaidReadyAd(mineId){
     if(!m) return;
     m.readyAt=0;
     m.adSkip=true;
-    showToast("📺","Step ready","","×"+slot.fib+" · You can hit a rock.");
+    showToast("📺","Tier ready","","×"+slot.fib+" · you can break the stone");
     Platform.logEvent("mine_raid_ready",{mine:mineId,step:slot.step});
     save(); render();
     if(typeof UIS!=="undefined"&&UIS.id==="mines") UIS.render("mines");
-  }, {limitMsg:"Speeding up the advertising step for today"});
+  }, {limitMsg:"Ad tier speed-ups for today"});
 }
 function mineRaidDef(id){
   const list=(BALANCE.mineRaid&&BALANCE.mineRaid.raids)||[];
@@ -2895,12 +2895,12 @@ function mineRaidAdvance(mineId){
   }
 }
 function grantMineRaidReward(snap){
-  const res=snap.res, amt=Math.max(1, snap.amt|0), ic=snap.ic||"⛏", n=snap.n||"Award";
+  const res=snap.res, amt=Math.max(1, snap.amt|0), ic=snap.ic||"⛏", n=snap.n||"reward";
   if(res==="bags") grantBags(amt);
   else S[res]=(S[res]||0)+amt;
   const fib=snap.fib||1;
-  showToast(ic,"A special stone!","", n+" · ×"+fib, "+"+amt+" "+(snap.label||ic), true);
-  sayQuip("hall I gave it to him. — The mountain timer.",4);
+  showToast(ic,"Special stone!","", n+" · ×"+fib, "+"+amt+" "+(snap.label||ic), true);
+  sayQuip("The Hall gave up its due. Next tier — on the Mountain’s timer.",4);
   Platform.logEvent("mine_raid",{mineId:snap.mineId,res,amt,fib,step:snap.step});
 }
 function startMineRaid(mineId){
@@ -2909,24 +2909,24 @@ function startMineRaid(mineId){
   if(typeof requireFeat==="function" && !requireFeat("mines")) return false;
   const curAbs=S.mine||0, cur=curAbs%MINES.length;
   if(mineId>cur){
-    showToast("⛏","hall closed","","First, come here as usual. loot","Now. "+(cur+1)+"/5");
+    showToast("⛏","Hall locked","","Reach it first by normal mining","now "+(cur+1)+"/5");
     return false;
   }
   const slot=mineRaidSlot(mineId);
   if(slot.done){
-    showToast("🔑","Level for today","","All stages today · tomorrow with ×1");
+    showToast("🔑","Tiers for today","","All tiers done today · tomorrow back to ×1");
     return false;
   }
   if(!slot.ready){
-    showToast("⏱","Not yet.","","Next step ×"+slot.fib, fmtClock(slot.leftMs));
+    showToast("⏱","Too early","","Next tier ×"+slot.fib, fmtClock(slot.leftMs));
     return false;
   }
   if(S.mineRaid){
-    showToast("⛏","On it.","","First, break the current special stone.");
+    showToast("⛏","Already running","","Break the current special stone first");
     return false;
   }
   if(S.eventRun){
-    showToast("◎","Runs","","First, finish the wave of the iventa.","Or lose. — key retained");
+    showToast("◎","Run in progress","","Finish the event waves first","or lose — the key is kept");
     return false;
   }
   const def=mineRaidDef(mineId);
@@ -2946,10 +2946,10 @@ function startMineRaid(mineId){
   newRock(); save(); render();
   const next=mineRaidSlot(mineId);
   const nextHint=next.done
-    ? "That’s it for today."
-    : ("Further ×"+next.fib+" Through "+fmtClock(next.leftMs));
-  showToast(def.ic||"🔑","Special Stone · step "+(step+1),"",
-    "Break it. — "+amt+" "+(def.label||def.n)+" (×"+fib+")", nextHint);
+    ? "done for today"
+    : ("next ×"+next.fib+" in "+fmtClock(next.leftMs));
+  showToast(def.ic||"🔑","Special stone · tier "+(step+1),"",
+    "Break it — "+amt+" "+(def.label||def.n)+" (×"+fib+")", nextHint);
   Platform.logEvent("mine_raid_start",{mineId,amt,step,fib});
   return true;
 }
@@ -2957,13 +2957,13 @@ function startMineRaid(mineId){
 function switchMine(id){
   if(!(id>=0 && id<MINES.length)) return false;
   const curAbs=S.mine||0, cur=curAbs%MINES.length, cycle=Math.floor(curAbs/MINES.length);
-  if(id>cur){ showToast("⛏","Closed","","Go to that. hall In a circle","Now. "+(cur+1)+"/5"); return false; }
+  if(id>cur){ showToast("⛏","Locked","","Reach this Hall in the loop","now "+(cur+1)+"/5"); return false; }
   if(S.eventRun){
-    showToast("◎","Runs","","First, finish the wave of the iventa.");
+    showToast("◎","Run in progress","","Finish the event waves first");
     return false;
   }
   if(S.mineRaid){
-    showToast("⛏","First, a special stone","","The step has already been taken. — finish it. vein");
+    showToast("⛏","Special stone first","","Step already taken — finish the vein");
     return false;
   }
   const nextAbs=cycle*MINES.length + id;
@@ -2999,8 +2999,8 @@ function openCollection(){
   const mineKey=S.mine%MINES.length, m=MINES[mineKey], col=S.col[mineKey]||{};
   $("colTitle").textContent="Collection: "+m.n;
   const got=Object.keys(col).length;
-  const bonusLine=`<div class="col-item"><span>Liabilities: +2% Greed for the Stone</span><span class="cnt">Now. +${2*uniqueStones()}%</span></div>`
-    +`<div class="col-item"><span>Seth. hall (8/8): <b>${SET_BONUS[mineKey].label}</b></span><span class="cnt">${setDone(mineKey)?"ACTIVE ✓":got+"/8"}</span></div>`;
+  const bonusLine=`<div class="col-item"><span>Passive: +2% Greed per stone</span><span class="cnt">now +${2*uniqueStones()}%</span></div>`
+    +`<div class="col-item"><span>Hall set (8/8): <b>${SET_BONUS[mineKey].label}</b></span><span class="cnt">${setDone(mineKey)?"ACTIVE ✓":got+"/8"}</span></div>`;
   $("colList").innerHTML=bonusLine+m.stones.map((s,i)=>{
     const c=col[i]||0;
     const ic=c?`<img src="${ORE_ICONS[i]}" class="oreimg">`:`<span style="display:inline-block;width:26px;height:26px;margin-right:6px;text-align:center;opacity:.4">?</span>`;
@@ -3009,14 +3009,14 @@ function openCollection(){
       const need=craftBoxCost(i), have=dupStones(i), ok=have>=need;
       craft=`<button class="btn btn-soft" style="width:auto;padding:6px 10px;font-size:12px;margin-left:8px"
         onclick="craftBoxFromStones(${i})" ${ok?"":"disabled"} ${ok?"":'style="width:auto;padding:6px 10px;font-size:12px;margin-left:8px;opacity:.4"'}
-        title="duplicate: ${have}/${need}">📦 ${need}</button>`;
+        title="duplicates: ${have}/${need}">📦 ${need}</button>`;
     }
     return `<div class="col-item"><span class="${c?"found":"notfound"}">${ic}<b class="r${i}">${RAR_NAMES[i]}</b> · ${c?s:"???"}</span><span class="cnt">${c?"×"+c:"not found"}${craft}</span></div>`;
   }).join("");
   $("colModal").style.display="flex";
 }
 function resetProgress(){
-  if(confirm("Are you sure it’s all over again? Mountain She remembers, but she will.")){
+  if(confirm("Start over for real? The Mountain remembers, but forgives.")){
     wipeSave(); S=ensureAll(freshState()); newRock(); save(); renderGear(); render();
   }
 }
@@ -3242,7 +3242,7 @@ function save(){
   }catch(e){
     if(Date.now()-_saveFailAt>60000){
       _saveFailAt=Date.now();
-      try{ showToast("💾","Unable to save","","Not much room in the browser.","Close other tabs"); }catch(e3){}
+      try{ showToast("💾","Couldn’t save","","Browser storage is low","close other tabs"); }catch(e3){}
     }
     return false;
   }
@@ -3461,7 +3461,7 @@ function toggleToasts(){
   syncToastToggleBtns();
   const t=$("toast");
   if(!toastsOn && t){ t.style.display="none"; clearTimeout(toastHideT); }
-  if(toastsOn) showToast("💬","Pop-up messages","","included","You can turn it off again in settings.");
+  if(toastsOn) showToast("💬","Pop-ups","","on","you can turn them off again in settings");
 }
 let nextBeat=0, beatN=0, musicTimer=null, chordIdx=0, arpStep=0;
 const BPM=60, SPB=60/BPM;
@@ -3631,7 +3631,7 @@ async function buildShareCard(){
   x.fillStyle="#e8b93c"; x.font=F(26); x.textAlign="center";
   x.fillText("MOUNTAIN KING",280,64);
   x.fillStyle="#8a93a3"; x.font=F(11);
-  x.fillText("dig deeper. then deeper.",280,92);
+  x.fillText("dig deeper. and deeper.",280,92);
 
   const layers=["mlPack","mlBase","mlRobe","mlBoots","mlGlove","mlBeard","mlHelm"];
   for(const id of layers){
@@ -3642,7 +3642,7 @@ async function buildShareCard(){
   }
   try{ x.drawImage($("pickHand"),330,90,22*7,22*7); }catch(e){}
 
-  const best=S.best||{r:0,name:"Orphan Corner"};
+  const best=S.best||{r:0,name:"Orphan Ember"};
   const oreImg=new Image();
   await new Promise(res=>{ oreImg.onload=res; oreImg.onerror=res; oreImg.src=ORE_ICONS[best.r]; });
   try{ x.drawImage(oreImg,60,470,112,112); }catch(e){}
@@ -3711,7 +3711,7 @@ function checkOffline(){
   offlineBagsPending=Math.min(BALANCE.bags.cap, Math.floor(sec/bagSec));
   if(offlinePending<1 && offlineBagsPending<1) return;
   const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60);
-  $("offTime").textContent="You were gone. "+(h?h+" h ":"")+m+" min"+(sec>=OFFLINE_CAP_H*3600?" (Cap "+OFFLINE_CAP_H+" (c)":"");
+  $("offTime").textContent="You were away "+(h?h+" h ":"")+m+" min"+(sec>=OFFLINE_CAP_H*3600?" (cap "+OFFLINE_CAP_H+" lv.)":"");
   $("offGold").textContent="+"+fmt(offlinePending)+" 🪙"+(offlineBagsPending?(" · +"+fmt(offlineBagsPending)+" 🎒"):"");
   $("offOverlay").style.display="flex";
   Platform.logEvent("offline_return",{sec:Math.round(sec)});
@@ -3728,13 +3728,13 @@ function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub"
   $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
 
 const SPECIAL_DEFS=[
-  {id:"e", n:"Fortitude", letter:"K", stats:["energy","tough"], tip:"Energy and defense"},
+  {id:"e", n:"Fortitude", letter:"K", stats:["energy","tough"], tip:"Affects Energy and Defense"},
   {id:"i", n:"Reason", letter:"R", stats:[], tip:"More skill points per level"},
-  {id:"a", n:"Agility", letter:"A", stats:["spd"], tip:"Improves attack speed"},
-  {id:"s", n:"Strength", letter:"S", stats:["atk"], tip:"Improves attack damage"},
-  {id:"c", n:"Aura", letter:"A", stats:["stone"], tip:"Improves ore yield"},
-  {id:"l", n:"Vigilance", letter:"V", stats:["luck"], tip:"Improves luck"},
-  {id:"p", n:"Analysis", letter:"A", stats:["mining","crit"], tip:"Improves mining and critical hits"}
+  {id:"a", n:"Athletics", letter:"A", stats:["spd"], tip:"Affects Pace"},
+  {id:"s", n:"Strength", letter:"S", stats:["atk"], tip:"Affects Attack"},
+  {id:"c", n:"Aura", letter:"A", stats:["stone"], tip:"Affects Greed"},
+  {id:"l", n:"Luck", letter:"V", stats:["luck"], tip:"Affects Luck"},
+  {id:"p", n:"Analysis", letter:"A", stats:["mining","crit"], tip:"Affects Sense and Crit"}
 ];
 const KRASAVA_TITLE="K.R.A.S.A.V.A.";
 function ensureSpecial(){
@@ -3786,9 +3786,9 @@ function checkMinerLevelUp(announce){
     if(S.minerLv%every===0){ S.perkPicks=(S.perkPicks||0)+1; perkGain++; }
   }
   if(gained && announce){
-    const sub=perkGain?("+"+pts+" - Okay. · perk ×"+perkGain):("+"+pts+" - Okay. skill · Mind "+specialAttr("i"));
+    const sub=perkGain?("+"+pts+" pts · perk ×"+perkGain):("+"+pts+" skill pts · Reason "+specialAttr("i"));
     showToast("📈","MINER LEVEL","", "Lv."+S.minerLv, sub, true);
-    sayQuip(perkGain?"Level — and Mountain whispers new perkYou choose.":"More. vein Behind your back, your hands remember. — I’m thinking of my head counting my glasses.",4);
+    sayQuip(perkGain?"Level up — and the Mountain whispers a new perk. Choose.":"Another vein behind you. Hands remember — the head counts points.",4);
     Platform.logEvent("miner_level",{lv:S.minerLv,pts:S.skillPts,perk:perkGain});
   }
   return gained;
@@ -3808,72 +3808,72 @@ function specialBonusPct(statId){
 
 const PERK_DEFS=[
   {id:"aware",    n:"Rock Sense",     ico:"🔭", stats:["mining"],
-    desc:"You see weaknesses in veinIt’s a little bit of a bandage. — Less blind blows."},
-  {id:"hth",      n:"A Rough Shot",     ico:"💪", stats:["atk"],
-    desc:"pickaxe It’s harder to get down. Every swing chewing more. rock."},
-  {id:"cautious", n:"Careful dig", ico:"🛡", stats:["tough"],
-    desc:"You’re not getting under the bridge. cave-in The defense keeps it longer. — Less than the fines from fatigue."},
-  {id:"heal",     n:"Quick breathing",  ico:"❤", stats:["regen"],
-    desc:"Light miners are recovering faster. dig."},
-  {id:"sequence", n:"Early strike",      ico:"⚡", stats:["spd"],
-    desc:"You hit first, the rate of impact is higher. — vein It’s getting worse before it can answer."},
-  {id:"night",    n:"The lamp in the eyes",  ico:"🕯", stats:["luck"],
-    desc:"In the middle of darkness mine You find what others miss, lucky find."},
-  {id:"presence", n:"Tendering trader",  ico:"💰", stats:["stone"],
-    desc:"Even the stone listens to you, more gold on each one. vein."},
-  {id:"lifegiver",n:"Living",          ico:"🫀", stats:["energy"],
-    desc:"You’re standing by more than you can. digwhile the others are already in the tavern."},
+    desc:"You see weak spots in the vein. Your seam Sense grows — fewer blind swings."},
+  {id:"hth",      n:"Heavy Blow",     ico:"💪", stats:["atk"],
+    desc:"The pickaxe lands heavier. Every swing bites off more rock."},
+  {id:"cautious", n:"Careful Dig", ico:"🛡", stats:["tough"],
+    desc:"No diving under a cave-in for nothing. Defense holds longer — fewer fatigue penalties."},
+  {id:"heal",     n:"Quick Breath",  ico:"❤", stats:["regen"],
+    desc:"A miner’s lungs recover faster. Energy creeps up even at the dig."},
+  {id:"sequence", n:"First Strike",      ico:"⚡", stats:["spd"],
+    desc:"You hit first. Higher Pace — the vein crumbles before it can “answer.”"},
+  {id:"night",    n:"Lantern Eyes",  ico:"🕯", stats:["luck"],
+    desc:"In the mine’s gloom you spot what others miss. Luck on finds."},
+  {id:"presence", n:"Haggler",  ico:"💰", stats:["stone"],
+    desc:"Even stone listens to you. More gold from every vein."},
+  {id:"lifegiver",n:"Tough",          ico:"🫀", stats:["energy"],
+    desc:"More stamina. You last longer at the dig while the rest are already at the Tavern."},
   {id:"crits",    n:"Crit Mark",    ico:"🎯", stats:["crit"],
-    desc:"You’re in a crack, the chance of a critical blow is growing."},
-  {id:"fortune",  n:"The lucky seeker.",   ico:"🍀", stats:["luck"],
-    desc:"Mountain Sometimes smiles, you run into fatters more often. vein And a rare lute."},
-  {id:"stam",     n:"Inflexible",      ico:"🫁", stats:["stamina"],
-    desc:"The Combo doesn’t break off so easily. dig."},
-  {id:"pockets",  n:"Deep pockets", ico:"🎒", stats:["stone","luck"],
-    desc:"There’s always a handful of more in your pockets, a little more gold and luck on the drape."}
+    desc:"You strike the crack. Crit chance grows."},
+  {id:"fortune",  n:"Fortune Seeker",   ico:"🍀", stats:["luck"],
+    desc:"Sometimes the Mountain smiles. You hit fat veins and rare loot more often."},
+  {id:"stam",     n:"Unbending",      ico:"🫁", stats:["stamina"],
+    desc:"Combo doesn’t break so easily. Your wind keeps the dig’s rhythm."},
+  {id:"pockets",  n:"Deep Pockets", ico:"🎒", stats:["stone","luck"],
+    desc:"There’s always one more handful in your pockets. A bit more gold and drop Luck."}
 ];
 const TRAIT_DEFS=[
-  {id:"gifted", n:"A gifted man.", ico:"✨",
-    desc:"Mind and hands are natural. +1 ♪ to all the devils of CRASAW ♪ ♪ at once, but the miner levels ♪ 20% less than points skill.",
+  {id:"gifted", n:"Gifted", ico:"✨",
+    desc:"Born with brains and hands. +1 to all K.R.A.S.A.V.A. traits at once, but miner levels give 20% fewer skill points.",
     specialAdd:1, ptsMult:0.8},
-  {id:"small", n:"Indigenous", ico:"🪨",
-    desc:"The little, the strong, the vaults love you.+supports) but pickaxe Slowly (−The time is now at which the number of persons in the country is increasing.",
+  {id:"small", n:"Stocky", ico:"🪨",
+    desc:"Short and sturdy. The vaults love you (+props), but the pickaxe swings slower (−Pace).",
     statsPlus:["tough"], statsMinus:["spd"]},
-  {id:"bruiser", n:"Power", ico:"💪",
-    desc:"Force strikes through attack: more attack, less speed — vein I think I’ll be scared in time.",
+  {id:"bruiser", n:"Strongman", ico:"💪",
+    desc:"Strength hits through Attack: more Attack, less Pace — the vein needs time to get scared.",
     statsPlus:["atk"], statsMinus:["spd"]},
   {id:"finesse", n:"Precise", ico:"🎯",
-    desc:"You hit a crack, not a spirit, and it’s more common, but every blow is easier. (−The attack).",
+    desc:"You strike the crack, not at random. Crit more often, but every hit is lighter (−Attack).",
     statsPlus:["crit"], statsMinus:["atk"]},
-  {id:"kamikaze", n:"Crazy.", ico:"💥",
-    desc:"What protection, running into the dig (+The vendetta is a vendetta. (−Protection).",
+  {id:"kamikaze", n:"Reckless", ico:"💥",
+    desc:"Defense? What defense. You rush into the dig (+Pace), but the vaults take revenge (−Defense).",
     statsPlus:["spd"], statsMinus:["tough"]},
-  {id:"greed", n:"Greedy.", ico:"🪙",
-    desc:"trader Crystal of happiness+Greedy. Mountain He’s upset, luck is falling.",
+  {id:"greed", n:"Greedy", ico:"🪙",
+    desc:"The trader weeps with joy (+Greed). The Mountain sulks: Luck on finds drops.",
     statsPlus:["stone"], statsMinus:["luck"]},
-  {id:"jinxed", n:"Mountain Ball", ico:"🍀",
-    desc:"The stone jumps into its pocket.+A little bit of the bandage is going to go blind. (−You find everything but vein.",
+  {id:"jinxed", n:"Mountain’s Darling", ico:"🍀",
+    desc:"Stones jump into your pocket (+Luck). Seam Sense goes blind (−Sense): you find everything but the vein.",
     statsPlus:["luck"], statsMinus:["mining"]},
-  {id:"aleblood", n:"beer Blood", ico:"🍺",
-    desc:"The stock of power is like a barrel.+After the third mug the gut of the seams is floating. (−I’m not sure.",
+  {id:"aleblood", n:"Beer in the Blood", ico:"🍺",
+    desc:"Stamina like a barrel (+Energy). After the third mug your seam Sense drifts (−Sense).",
     statsPlus:["energy"], statsMinus:["mining"]},
-  {id:"sober", n:"Truck, tremor", ico:"🧊",
-    desc:"Water instead of beer, you see every crack.+I’m tired of you, but you’re tired of being mortal. (−Energy).",
+  {id:"sober", n:"Teetotaler", ico:"🧊",
+    desc:"Water instead of beer. You see every crack (+Sense), but tire like a mortal (−Energy).",
     statsPlus:["mining"], statsMinus:["energy"]},
-  {id:"goodnat", n:"Good", ico:"🤝",
-    desc:"Even rock He says hello to you.+Greedy trader) Beating hard — Not friendly. (−The attack).",
+  {id:"goodnat", n:"Good-Natured", ico:"🤝",
+    desc:"Even the rock says hello (+Greed with the trader). Hitting hard isn’t friendly (−Attack).",
     statsPlus:["stone"], statsMinus:["atk"]},
-  {id:"heavy", n:"Heavy arm", ico:"⛏",
-    desc:"The blow is jamming the echo. — I’m not sure if it’s a hole.",
+  {id:"heavy", n:"Heavy Hand", ico:"⛏",
+    desc:"The blow drowns the echo. More Attack, but you barely crit — why aim when it’s already a hole.",
     statsPlus:["atk"], statsMinus:["crit"]},
-  {id:"lantern", n:"Eyes of the lantern", ico:"🕯",
-    desc:"In the dark, you see vein (+A gut, +You’re racing in the sun, the pace is falling.",
+  {id:"lantern", n:"Lantern Eyes", ico:"🕯",
+    desc:"You see the vein in the gloom (+Sense, +Crit). In sunlight you squint: Pace drops.",
     statsPlus:["mining","crit"], statsMinus:["spd"]},
-  {id:"bearded", n:"beardYou’re off the peel.", ico:"🧔",
-    desc:"beard He’s carrying luck.+And the clan’s respect, but it’s confused. pickaxe (−The time is now at which the number of persons in the country is increasing.",
+  {id:"bearded", n:"Bearded from Birth", ico:"🧔",
+    desc:"The beard brings Luck (+Luck) and clan respect. But it tangles in the pickaxe (−Pace).",
     statsPlus:["luck"], statsMinus:["spd"]},
-  {id:"winded", n:"Short Breath", ico:"😮‍💨",
-    desc:"Breath is weaker, but you beat worse.+The attack is still in the air.",
+  {id:"winded", n:"Short Wind", ico:"😮‍💨",
+    desc:"Weaker wind, but you hit angrier (+Attack) while the air lasts.",
     statsPlus:["atk"], statsMinus:["stamina"]}
 ];
 function hasPerk(id){ ensureSpecial(); return (S.perks||[]).indexOf(id)>=0; }
@@ -3908,7 +3908,7 @@ function perkPickOpen(){ const m=$("perkModal"); return !!(m&&m.style.display===
 function openPerkPick(){
   ensureSpecial(); checkMinerLevelUp(false);
   if(!canPickPerk()){
-    showToast("📜","There’s nothing to choose.","",(S.perkPicks||0)<1?"perk every "+((BALANCE.perks&&BALANCE.perks.everyLv)||3)+" Miner":"All perk From the pool already taken");
+    showToast("📜","Nothing to pick","",(S.perkPicks||0)<1?"Perk every "+((BALANCE.perks&&BALANCE.perks.everyLv)||3)+" miner lv.":"All perks in the pool are taken");
     window._charTab="perks"; openCharSheet({tab:"perks"}); return false;
   }
   window._perkSel=(availablePerks()[0]||{}).id||null;
@@ -3931,7 +3931,7 @@ function renderPerkPick(){
     return `<div class="foPerkItem${on}" onclick="selectPerkPreview('${p.id}')">${esc(p.n)}</div>`;
   }).join("")||`<div class="foPerkItem have">Empty</div>`;
   const p=perkDef(sel);
-  if(!p){ det.innerHTML=`<div class="pd">No available perkowl.</div>`; return; }
+  if(!p){ det.innerHTML=`<div class="pd">No perks available.</div>`; return; }
   const eff=(p.stats||[]).map(s=>s.toUpperCase()).join(", ");
   const pct=(BALANCE.perks&&BALANCE.perks.pct)||2;
   det.innerHTML=`<div class="pt">${esc(p.n)}</div>
@@ -3943,13 +3943,13 @@ function renderPerkPick(){
 function confirmPerkPick(){
   ensureSpecial();
   const id=window._perkSel, p=perkDef(id);
-  if(!p||!canPickPerk()||hasPerk(id)){ showToast("📜","You can’t.","","Choose another one. perk"); return false; }
+  if(!p||!canPickPerk()||hasPerk(id)){ showToast("📜","Not allowed","","Pick another perk"); return false; }
   S.perkPicks=(S.perkPicks||0)-1;
   S.perks.push(id);
   if(p.id==="comprehend"){  }
   Platform.logEvent("perk_pick",{id, left:S.perkPicks});
   showToast(p.ico||"📜","PERK!", "", p.n, (p.stats||[]).map(s=>s.toUpperCase()).join(" · "), true);
-  sayQuip("A new habit has grown into bones. Mountain Noodles.",3);
+  sayQuip("A new habit has grown into your bones. The Mountain nods.",3);
   sfxGear(); save(); closePerkPick();
   window._charTab="perks";
   if(_skillsShellTab!=null) openSkills("perks");
@@ -3971,7 +3971,7 @@ function dropPerk(id){
   S.perks=(S.perks||[]).filter(x=>x!==id);
   S.perkPicks=(S.perkPicks||0)+1;
   Platform.logEvent("perk_drop",{id, left:S.perkPicks});
-  showToast(p&&p.ico||"📜","perk withdrawn","",p?p.n:id,"choice +1 · Take another one.");
+  showToast(p&&p.ico||"📜","Perk removed","",p?p.n:id,"pick +1 · take another");
   save();
   window._charTab="perks"; refreshSpecialUi();
   return true;
@@ -4000,38 +4000,38 @@ function traitPickCostGold(){ ensureSpecial(); return _pickBuyCost("trait","gold
 function traitPickCostPts(){ ensureSpecial(); return _pickBuyCost("trait","pts"); }
 function buyPerkPick(pay){
   ensureSpecial();
-  if(!availablePerks().length){ showToast("📜","Poole empty.","","All perk already taken"); return false; }
+  if(!availablePerks().length){ showToast("📜","Pool empty","","All perks taken"); return false; }
   pay=pay==="pts"?"pts":"gold";
   const cost=pay==="pts"?perkPickCostPts():perkPickCostGold();
   if(pay==="pts"){
-    if((S.skillPts||0)<cost){ showToast("📈","Not much experience","","I do. "+cost+" Okay, here we go. "+(S.skillPts||0)); return false; }
+    if((S.skillPts||0)<cost){ showToast("📈","Not enough XP","","Need "+cost+" pts, have "+(S.skillPts||0)); return false; }
     S.skillPts-=cost;
   } else {
-    if((S.gold||0)<cost){ showToast("🪙","Few gold","","I do. "+fmt(cost)+" 🪙"); return false; }
+    if((S.gold||0)<cost){ showToast("🪙","Not enough gold","","Need "+fmt(cost)+" 🪙"); return false; }
     S.gold-=cost;
   }
   S.perkBought=(S.perkBought||0)+1;
   S.perkPicks=(S.perkPicks||0)+1;
   Platform.logEvent("perk_buy",{pay,cost,left:S.perkPicks});
-  showToast("📜","Point perka","","+"+(pay==="pts"?cost+" - Okay.":fmt(cost)+" 🪙"),"Elections: "+S.perkPicks);
+  showToast("📜","Perk point","","+"+(pay==="pts"?cost+" pts":fmt(cost)+" 🪙"),"picks: "+S.perkPicks);
   save(); refreshSpecialUi(); return true;
 }
 function buyTraitPick(pay){
   ensureSpecial();
-  if((S.traits||[]).length>=traitMax()){ showToast("🧬","Damn it.","","Take one off to take another."); return false; }
+  if((S.traits||[]).length>=traitMax()){ showToast("🧬","Trait removed","","Remove one to take another"); return false; }
   pay=pay==="pts"?"pts":"gold";
   const cost=pay==="pts"?traitPickCostPts():traitPickCostGold();
   if(pay==="pts"){
-    if((S.skillPts||0)<cost){ showToast("📈","Not much experience","","I do. "+cost+" Okay, here we go. "+(S.skillPts||0)); return false; }
+    if((S.skillPts||0)<cost){ showToast("📈","Not enough XP","","Need "+cost+" pts, have "+(S.skillPts||0)); return false; }
     S.skillPts-=cost;
   } else {
-    if((S.gold||0)<cost){ showToast("🪙","Few gold","","I do. "+fmt(cost)+" 🪙"); return false; }
+    if((S.gold||0)<cost){ showToast("🪙","Not enough gold","","Need "+fmt(cost)+" 🪙"); return false; }
     S.gold-=cost;
   }
   S.traitBought=(S.traitBought||0)+1;
   S.traitPicks=(S.traitPicks||0)+1;
   Platform.logEvent("trait_buy",{pay,cost,left:S.traitPicks});
-  showToast("🧬","Point of the line","","+"+(pay==="pts"?cost+" - Okay.":fmt(cost)+" 🪙"),"Elections: "+S.traitPicks);
+  showToast("🧬","Trait point","","+"+(pay==="pts"?cost+" pts":fmt(cost)+" 🪙"),"picks: "+S.traitPicks);
   save(); refreshSpecialUi(); return true;
 }
 function canPickTrait(id){
@@ -4050,7 +4050,7 @@ function pickTrait(id){
     SPECIAL_DEFS.forEach(d=>{ S.special[d.id]=Math.min((BALANCE.special.attrMax||10), specialAttr(d.id)+t.specialAdd); });
   }
   Platform.logEvent("trait_pick",{id,left:S.traitPicks}); save();
-  showToast(t.ico||"✨","DAMN IT.","",t.n);
+  showToast(t.ico||"✨","TRAIT","",t.n);
   window._charTab="perks"; refreshSpecialUi();
   return true;
 }
@@ -4068,7 +4068,7 @@ function unpickTrait(id){
     });
   }
   Platform.logEvent("trait_drop",{id,left:S.traitPicks}); save();
-  showToast(t&&t.ico||"✨","Damn it.","",t?t.n:id,"Point returned");
+  showToast(t&&t.ico||"✨","Trait removed","",t?t.n:id,"point returned");
   window._charTab="perks"; refreshSpecialUi();
   return true;
 }
@@ -4094,7 +4094,7 @@ function refreshSpecialUi(tab){
 }
 function tagSkill(id){
   ensureSpecial();
-  if(!canTagSkill(id)){ showToast("🏷","Cannot be noted","","Slots already marked or not","max "+(BALANCE.special.tagSlots||SKILL_DEFS.length)); return false; }
+  if(!canTagSkill(id)){ showToast("🏷","Can’t tag","","Already tagged or no slots","max "+(BALANCE.special.tagSlots||SKILL_DEFS.length)); return false; }
   S.skillTags.push(id);
   Platform.logEvent("skill_tag",{id}); save();
   if(typeof window._charFocus!=="undefined") window._charFocus={kind:"skill",id};
@@ -4113,8 +4113,8 @@ function spendSpecial(id){
   ensureSpecial();
   const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
   const max=BALANCE.special.attrMax||10;
-  if((S.specialPool||0)<1){ showToast("🧬","No glasses","","Grading with rank beard"); return false; }
-  if(specialAttr(id)>=max){ showToast("🧬","Ceiling","","Max. "+max+" · "+d.n); return false; }
+  if((S.specialPool||0)<1){ showToast("🧬","No K.R.A.S.A.V.A. points","","Grow with beard rank"); return false; }
+  if(specialAttr(id)>=max){ showToast("🧬","Ceiling","","Max "+max+" · "+d.n); return false; }
   S.specialPool--; S.special[id]=specialAttr(id)+1;
   Platform.logEvent("special_up",{id,v:S.special[id]});
   showToast("🧬",d.letter+" "+d.n,"","="+S.special[id], d.tip);
@@ -4128,13 +4128,13 @@ function refundSpecial(id){
   const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
   const floor=BALANCE.special.start||5;
   if(specialAttr(id)<=floor){
-    showToast("🧬","Already base","",d.n,"below "+floor+" No, you can’t.");
+    showToast("🧬","Already base","",d.n,"below "+floor+" not allowed");
     return false;
   }
   S.special[id]=specialAttr(id)-1;
   S.specialPool=(S.specialPool||0)+1;
   Platform.logEvent("special_refund",{id,v:S.special[id]});
-  showToast("🧬",d.letter+" "+d.n,"","="+S.special[id],"Point back in the pool.");
+  showToast("🧬",d.letter+" "+d.n,"","="+S.special[id],"point back in the pool");
   window._charFocus={kind:"special",id};
   save(); refreshSpecialUi("special");
   return true;
@@ -4147,10 +4147,10 @@ function resetSpecial(){
     const v=specialAttr(d.id);
     if(v>floor){ back+=v-floor; S.special[d.id]=floor; }
   });
-  if(!back){ showToast("🧬","Nothing to throw away.","","All the features are on the start."); return false; }
+  if(!back){ showToast("🧬","Nothing to reset","","All traits at base"); return false; }
   S.specialPool=(S.specialPool||0)+back;
   Platform.logEvent("special_reset",{back});
-  showToast("🧬","CRASACHA DONE","","+"+back+" Point in pool");
+  showToast("🧬","K.R.A.S.A.V.A. reset","","+"+back+" pts to pool");
   save(); refreshSpecialUi("special");
   return true;
 }
@@ -4168,10 +4168,10 @@ function trainSkill(id){
   const cost=trainCost(id);
   if(!canTrainSkill(id)){
     const tr=((S.trained||{})[id]||0), cap=BALANCE.special.trainCap||15;
-    if(tr>=cap) showToast("🔒","Training ceiling","",sd.n,"Max training. "+cap);
-    else if((S.skillPts||0)<cost) showToast("📈","Few points","","I do. "+cost+", have "+(S.skillPts||0),
-      isSkillTagged(id)?"tag: cheaper":"Mark it with tag. — cheaper");
-    else showToast("🔒","You can’t.","",sd.n);
+    if(tr>=cap) showToast("🔒","Training ceiling","",sd.n,"max train. "+cap);
+    else if((S.skillPts||0)<cost) showToast("📈","Not enough points","","Need "+cost+", have "+(S.skillPts||0),
+      isSkillTagged(id)?"tag: cheaper":"tag it — cheaper");
+    else showToast("🔒","Not allowed","",sd.n);
     return false;
   }
   S.skillPts-=cost;
@@ -4181,14 +4181,14 @@ function trainSkill(id){
   sfxGear();
   const stCap=STAT_CAPS[sd.stat];
   const soft=stCap!=null && stat(sd.stat)>=stCap-1e-9;
-  showToast("📈","Training","r"+sd.r, sd.n+" · I’m a coach."+S.trained[id],
-    "−"+cost+" - Okay."+(isSkillTagged(id)?" · tag":"")+(soft?" · ♪ The statue on the drop ♪":""));
+  showToast("📈","Training","r"+sd.r, sd.n+" · train."+S.trained[id],
+    "−"+cost+" pts"+(isSkillTagged(id)?" · tag":"")+(soft?" · stat capped":""));
   window._charFocus={kind:"skill",id};
   save(); refreshSpecialUi("train");
   return true;
 }
 function foGrade(v){
-  const g=["","Bad","Weak","Not so good.","Medium","Okay.","Great.","Great","Hero","Legend","Myth"];
+  const g=["","Poor","Weak","Meh","Avg","Good","Great","Grand","Hero","Legend","Myth"];
   return g[Math.max(1,Math.min(10,v|0))]||"—";
 }
 function skillSheetPct(id){
@@ -4204,26 +4204,26 @@ function foStatTxt(id){
   return pct?(Math.round(v)+"%"):fmt(v);
 }
 const FO_SPECIAL_INFO={
-  e:{ico:"🛡", txt:"The miner’s fortress, which affects energy and protection, you’re standing by longer. dig, less fatigue fines. supports mine (browns) — Separate: slip on ⚡."},
-  i:{ico:"🧠", txt:"The mind of the miners, every level of the miner gives more points. skill♪ Roll the mind ♪ — learn faster."},
-  a:{ico:"⚡", txt:"Athletics digI’m not sure. — How many times pickaxe He’s knocking in a second."},
-  s:{ico:"💪", txt:"Hand strength and pickaxe. Impact on attack: above force — harder to hit. veinI. Force ≠ attack: attack — The ultimate damage, the power grows."},
-  c:{ico:"💰", txt:"Aura’s at the traderI’m not sure. — more gold for vein."},
-  l:{ico:"🍀", txt:"Luck in dig- It’s a good thing. — A chance to find stones and fatty ones vein."},
-  p:{ico:"👁", txt:"The analysis of the seams, it affects the gut and the chopping. — See where the stone lies before the others."}
+  e:{ico:"🛡", txt:"Miner’s fortitude. Affects Energy and Defense: you last longer at the dig, fewer fatigue penalties. Mine props (logs) are separate: tap ⚡."},
+  i:{ico:"🧠", txt:"A prospector’s Reason. Every miner level gives more skill points. Pump Reason — learn faster."},
+  a:{ico:"⚡", txt:"Dig Athletics. Affects Pace — how many times the pickaxe knocks per second."},
+  s:{ico:"💪", txt:"Strength of arms and pickaxe. Affects Attack: more Strength — harder hits on the vein. Strength ≠ Attack: Attack is final damage, Strength grows it."},
+  c:{ico:"💰", txt:"Aura with the trader. Affects Greed — more gold per vein."},
+  l:{ico:"🍀", txt:"Luck at the dig. Affects Luck — chance to find stones and fat veins."},
+  p:{ico:"👁", txt:"Seam analysis. Affects Sense and Crit — you see where the stone lies before anyone else."}
 };
 const FO_SKILL_ICO={crit_up:"🎯",atk_up:"⛏",luck_up:"💎",stone_up:"🪙",energy_up:"💨",mining_up:"🧭",tough_up:"🪵",regen_up:"❤",stam_up:"🫁"};
 
 const FO_SKILL_INFO={
-  crit_up:"You hit the crack, it’s the crack, it’s the screaming.",
-  atk_up:"Attack dig. pickaxe It’s getting heavier. — vein I’m sure he’s got a hint of the first time.",
-  luck_up:"Smell on the rocks, nose knows before eyes, luck is growing.",
-  stone_up:"Greed. trader She cries, you nod, greed grows. — Gold for vein.",
-  energy_up:"Second breath. When the lungs say “all“, the porch answers “one more blow.“ The energy grows.",
+  crit_up:"Precise strike. You hit the crack, not “wherever.” Crit grows.",
+  atk_up:"Dig attack. The pickaxe grows heavier — the vein takes the hint the first time. Attack grows.",
+  luck_up:"Nose for stones. The nose knows before the eyes. Luck grows.",
+  stone_up:"Greed. The trader weeps, you nod. Greed grows — gold per vein.",
+  energy_up:"Second wind. When the lungs say “done,” a dwarf answers “one more swing.” Energy grows.",
   mining_up:"Seam Sense. You hear where the stone lies — Sense grows, chance of a double hit.",
   tough_up:"Oak Defense. The vaults hold because you’re oak too — Defense grows.",
-  regen_up:"Second heart, first one knocks on veinsecond — It’s a tavern, it’s growing regen.",
-  stam_up:"The Combo doesn’t stop sneeze, the breathing grows."
+  regen_up:"Second heart. One beats for the vein, the other for the Tavern. Regen grows.",
+  stam_up:"Wind. Combo doesn’t break from a sneeze. Wind grows."
 };
 function charFocus(kind,id){
   window._charFocus={kind,id};
@@ -4280,7 +4280,7 @@ function buildCharSheetHtml(inShell){
   if(inShell) window._charTab=_skillsShellTab==="perks"?"perks":(_skillsShellTab==="list"?"list":"stats");
   const tab=window._charTab||"stats";
   const focus=window._charFocus||{kind:"special",id:"s"};
-  const w=(typeof beardWisdom==="function")?beardWisdom():{title:"beard"};
+  const w=(typeof beardWisdom==="function")?beardWisdom():{title:"Beard"};
   const age=1+(S.minerLv|0)+(S.prestigeLv|0);
   const eMax=Math.max(1,stat("energy")|0), eCur=Math.max(0,Math.min(eMax,(S.energy!=null?S.energy:eMax)|0));
 
@@ -4299,17 +4299,17 @@ function buildCharSheetHtml(inShell){
       const on=focus.kind==="perk"&&focus.id===id?" on":"";
       return `<div class="row${on}" onclick="charFocus('perk','${id}')"><span class="ic">${p.ico}</span><span class="nm">${esc(p.n)}</span>
         <button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();dropPerk('${id}')">Delete</button></div>`;
-    }).join("")||`<div class="empty">It’s empty for now. perk every ${((BALANCE.perks&&BALANCE.perks.everyLv)||3)} The miner.</div>`;
+    }).join("")||`<div class="empty">Empty for now. A perk every ${((BALANCE.perks&&BALANCE.perks.everyLv)||3)} miner lv.</div>`;
     const traitRows=TRAIT_DEFS.map(t=>{
       const have=hasTrait(t.id), can=canPickTrait(t.id);
       return `<div class="row${have?" on":""}" onclick="charFocus('trait','${t.id}')">
         <span class="ic">${t.ico}</span><span class="nm">${esc(t.n)}${have?" · ✓":""}</span>
-        ${have?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();unpickTrait('${t.id}')">Delete</button>`:""}
-        ${!have&&can?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();pickTrait('${t.id}')">Take</button>`:""}
-        ${!have&&!can&&(S.traitPicks||0)<1?`<span class="sub" style="font-size:10px">I need a point.</span>`:""}
+        ${have?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();unpickTrait('${t.id}')">remove</button>`:""}
+        ${!have&&can?`<button type="button" class="btn btn-soft btn-tiny" onclick="event.stopPropagation();pickTrait('${t.id}')">take</button>`:""}
+        ${!have&&!can&&(S.traitPicks||0)<1?`<span class="sub" style="font-size:10px">need a point</span>`:""}
       </div>`;
     }).join("");
-    let infoIco="📜", infoTtl="perk", infoTxt="Glasses perkowl — From mine level or buy it for experience./Gold. — Only for the glasses (test or gold).";
+    let infoIco="📜", infoTtl="Perks", infoTxt="Perk points come from miner levels or buy them with XP/gold. Traits cost points only (XP or gold).";
     if(focus.kind==="perk"){
       const p=perkDef(focus.id);
       if(p){ infoIco=p.ico; infoTtl=p.n; infoTxt=p.desc+" Effect: +"+((BALANCE.perks&&BALANCE.perks.pct)||2)+"% to "+(p.stats||[]).map(s=>s.toUpperCase()).join(", ")+"."; }
@@ -4345,7 +4345,7 @@ function buildCharSheetHtml(inShell){
           <h4>Perks · ${(S.perks||[]).length}/${perkMax}</h4>
           <div class="foPerkOwned">${owned}</div>
           ${perkBuy}
-          ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" style="width:100%;margin-top:8px" onclick="openPerkPick()">SELECT PERK · ${S.perkPicks}</button>`:""}
+          ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" style="width:100%;margin-top:8px" onclick="openPerkPick()">PICK PERK · ${S.perkPicks}</button>`:""}
         </div>
         <div class="foPanel" style="margin-bottom:6px">
           <h4>Traits · ${(S.traits||[]).length}/${traitMax()} · points ${S.traitPicks||0}</h4>
@@ -4374,13 +4374,13 @@ function buildCharSheetHtml(inShell){
           onclick="trainSkill('${d.id}')">+${cost}</button>
       </div>`;
     }).join("");
-    let infoIco="📜", infoTtl="Skils", infoTxt="Choose skill — There’s a clue upstairs.";
+    let infoIco="📜", infoTtl="Skills", infoTxt="Pick a skill — a hint appears on top. Tagged skills train cheaper.";
     const d=SKILL_DEFS.find(x=>x.id===skillFocus);
     if(d){
       const tr=(S.trained||{})[d.id]|0, card=(typeof skillLv==="function"?skillLv(d.id):0)|0;
       const fluff=FO_SKILL_INFO[d.id]||d.n;
       infoIco=FO_SKILL_ICO[d.id]||"📜"; infoTtl=d.n+" · "+skillSheetPct(d.id)+"%";
-      infoTxt=fluff+" Card Lv."+card+" · Trained "+tr+"/"+(B.trainCap||15)+" · +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+statLbl(d.stat)+"/workout · Tag "+(B.tagCost||1)+" · Untag "+(B.untagCost||2)+".";
+      infoTxt=fluff+" Card Lv."+card+" · Trained "+tr+"/"+(B.trainCap||15)+" · +"+(d.per*(B.trainMult||0.5)).toFixed(1)+" "+statLbl(d.stat)+"/workout · Tag: −"+(B.tagCost||1)+" pt instead of "+(B.untagCost||2)+".";
     }
     return tabs+
       `<div class="foPin">
@@ -4399,8 +4399,8 @@ function buildCharSheetHtml(inShell){
       </div>
       <div class="foFoot">
         ${inShell
-          ?`<button type="button" class="btn btn-soft" onclick="openSkills('sheet')">← BEAUTY</button>`
-          :`<button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Articles</button>`}
+          ?`<button type="button" class="btn btn-soft" onclick="openSkills('sheet')">← K.R.A.S.A.V.A.</button>`
+          :`<button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Stats</button>`}
         ${doneBtn}
       </div>`;
   }
@@ -4415,7 +4415,7 @@ function buildCharSheetHtml(inShell){
       <span class="foSpecCtrl">
         <button type="button" class="${canDown?"":"dim"}" title="Return point to pool" onclick="refundSpecial('${d.id}')">−</button>
         <span class="num">${String(v).padStart(2,"0")}</span>
-        <button type="button" class="${canUp?"":"dim"}" title="Add Point" onclick="spendSpecial('${d.id}')">+</button>
+        <button type="button" class="${canUp?"":"dim"}" title="Spend point" onclick="spendSpecial('${d.id}')">+</button>
       </span>
     </div>`;
   }).join("");
@@ -4424,22 +4424,22 @@ function buildCharSheetHtml(inShell){
     [statLbl("energy"), eCur+"/"+eMax],
     [statLbl("tough"), foStatTxt("tough")],
     [statLbl("atk"), foStatTxt("atk")],
-    [statLbl("spd"), foStatTxt("spd")+"/c"],
+    [statLbl("spd"), foStatTxt("spd")+"/s"],
     [statLbl("mining"), foStatTxt("mining")],
     [statLbl("crit"), foStatTxt("crit")],
     [statLbl("luck"), foStatTxt("luck")],
     [statLbl("stone"), foStatTxt("stone")],
     [statLbl("regen"), foStatTxt("regen")],
     [statLbl("stamina"), foStatTxt("stamina")],
-    ["Ur miner", String(S.minerLv||0)],
+    ["Miner lv.", String(S.minerLv||0)],
     ["Prestige", String(S.prestigeLv||0)]
   ].map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("");
 
-  let infoIco="🧔", infoTtl="Dwarf", infoTxt="Pick a skill line — tips appear upstairs.";
+  let infoIco="🧔", infoTtl="Dwarf", infoTxt="Pick a skill — a tip appears above. Tagged ones train cheaper.";
   if(focus.kind==="special"){
     const d=SPECIAL_DEFS.find(x=>x.id===focus.id), info=FO_SPECIAL_INFO[focus.id]||{};
     if(d){ infoIco=info.ico||"🧬"; infoTtl=d.letter+". "+d.n+" · "+specialAttr(d.id);
-      infoTxt=(info.txt||d.tip)+(d.stats&&d.stats.length?(" Impact: "+d.stats.map(s=>statLbl(s)).join(", ")+"."):" Impact on glasses skill To level."); }
+      infoTxt=(info.txt||d.tip)+(d.stats&&d.stats.length?(" Affects: "+d.stats.map(s=>statLbl(s)).join(", ")+"."):" Affects skill points per level."); }
   }
 
   return tabs+
@@ -4470,10 +4470,10 @@ function buildCharSheetHtml(inShell){
     </div>
     <div class="foFoot">
       ${inShell
-        ?`<button type="button" class="btn btn-soft" onclick="openSkills('list')">Skils</button>`
-        :`<button type="button" class="btn btn-soft" onclick="setCharTab('list')">Skils</button>`}
+        ?`<button type="button" class="btn btn-soft" onclick="openSkills('list')">Skills</button>`
+        :`<button type="button" class="btn btn-soft" onclick="setCharTab('list')">Skills</button>`}
       ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" onclick="openPerkPick()">PERK · ${S.perkPicks}</button>`:""}
-      <button type="button" class="btn btn-soft" title="Drop CRASAWA in pool" onclick="resetSpecial()">↺ BEAUTY</button>
+      <button type="button" class="btn btn-soft" title="Reset K.R.A.S.A.V.A. to pool" onclick="resetSpecial()">↺ BEAUTY</button>
       ${doneBtn}
     </div>`;
 }
@@ -4487,15 +4487,15 @@ function renderCharSheet(){
 }
 
 const SKILL_DEFS=[
-  {id:"crit_up",  n:"Exact blow",    stat:"crit",  per:1.5, r:1},
-  {id:"atk_up",   n:"Attack dig",    stat:"atk",   per:8,   r:0},
-  {id:"luck_up",  n:"Smell on the rocks.",   stat:"luck",  per:1.2, r:2},
+  {id:"crit_up",  n:"Precise Strike",    stat:"crit",  per:1.5, r:1},
+  {id:"atk_up",   n:"Dig Attack",    stat:"atk",   per:8,   r:0},
+  {id:"luck_up",  n:"Nose for Stones",   stat:"luck",  per:1.2, r:2},
   {id:"stone_up", n:"Greed",       stat:"stone", per:12,  r:0},
-  {id:"energy_up",n:"Second breath", stat:"energy",per:15,  r:1},
+  {id:"energy_up",n:"Second Wind", stat:"energy",per:15,  r:1},
   {id:"mining_up",n:"Seam Sense",   stat:"mining",per:2,   r:2},
-  {id:"tough_up", n:"Dubber protection", stat:"tough", per:6,   r:3},
-  {id:"regen_up", n:"Second heart",  stat:"regen", per:3,   r:2},
-  {id:"stam_up",  n:"Breath",        stat:"stamina",per:6,  r:3}
+  {id:"tough_up", n:"Oaken Defense", stat:"tough", per:6,   r:3},
+  {id:"regen_up", n:"Second Heart",  stat:"regen", per:3,   r:2},
+  {id:"stam_up",  n:"Stamina",        stat:"stamina",per:6,  r:3}
 ];
 const SKILL_RAR=["Common","Rare","Epic","Legendary"];
 function skillBonus(id){
@@ -4531,19 +4531,19 @@ function openSkills(tab){
   closePerkPick();
   _skillsShellTab=tab;
   const tabBar=skillsTabBar(tab);
-  let body="", sub="Beer 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · - Okay. "+(S.skillPts||0);
+  let body="", sub="Beer 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · pts "+(S.skillPts||0);
   if(tab==="sheet"||tab==="perks"||tab==="list"){
     window._charTab=tab==="perks"?"perks":(tab==="list"?"list":"stats");
     body=`<div class="foInPanel">${buildCharSheetHtml(true)}</div>`;
     sub=tab==="perks"
-      ?"perk and features · beer 🍺 "+Math.floor(S.protein||0)
+      ?"Perks and traits · beer 🍺 "+Math.floor(S.protein||0)
       :(tab==="list"
-        ?"Skils · glasses "+(S.skillPts||0)+" · beer 🍺 "+Math.floor(S.protein||0)
-        :"KRASWAH · glasses, damn it. "+(S.specialPool||0)+" · beer 🍺 "+Math.floor(S.protein||0));
+        ?"Skills · points "+(S.skillPts||0)+" · beer 🍺 "+Math.floor(S.protein||0)
+        :"K.R.A.S.A.V.A. · trait points "+(S.specialPool||0)+" · beer 🍺 "+Math.floor(S.protein||0));
   } else if(tab==="train"){
     ensureWorkouts(S);
     body=workoutsPanelHtml();
-    sub="Drink it. beer → glasses → Training Path";
+    sub="Drink beer → points → training path";
   } else {
     tab="cards"; _skillsShellTab="cards";
     const chests=BALANCE.skillChests.map(ch=>{
@@ -4562,18 +4562,18 @@ function openSkills(tab){
       const capTxt=cap!=null?` / max ${cap}${pct?"%":""}`:"";
       const ok=canUpSkill(d.id);
       const subRow=maxed
-        ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} Maximum · ${curTxt}${capTxt}</span>`
-        : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · Now. ${curTxt}${capTxt}<br>Maps ${cards}/${need} · beer ${pro} 🍺${tr?(" · I’m a coach."+tr):""}${isSkillTagged(d.id)?" · 🏷":""}</span>`;
+        ? `<span style="color:var(--gold)">${d.stat.toUpperCase()} maxed · ${curTxt}${capTxt}</span>`
+        : `<span style="color:var(--dim)">+${d.per} ${d.stat.toUpperCase()} · now ${curTxt}${capTxt}<br>cards ${cards}/${need} · beer ${pro} 🍺${tr?(" · train."+tr):""}${isSkillTagged(d.id)?" · 🏷":""}</span>`;
       const btn=maxed
         ? `<button class="btn btn-soft" disabled style="opacity:.4">max</button>`
-        : `<button class="btn btn-soft" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"open":"Lv."+(lv+1)}</button>`;
+        : `<button class="btn btn-soft" onclick="upSkill('${d.id}')" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>${lv===0?"unlock":"Lv."+(lv+1)}</button>`;
       return `<div class="metarow"><span><b class="r${d.r}">${SKILL_RAR[d.r]}</b> ${d.n} · Lv.${lv}<br>${subRow}</span>${btn}</div>`;
     }).join("");
     body=`<div class="sub" style="margin-bottom:6px">Larry with the schill cards:</div>${chests}
       <div class="sub" style="margin:12px 0 6px">skill:</div>${rows}`;
-    sub="A card lab. beer 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · - Okay. "+(S.skillPts||0);
+    sub="Card chest. Beer 🍺 "+Math.floor(S.protein||0)+" · 🗝 "+(S.chestKeys||0)+" · pts "+(S.skillPts||0);
   }
-  metaOpen("Mining Skills", sub, tabBar+body);
+  metaOpen("Mining skills", sub, tabBar+body);
   skillsLockBody(tab==="sheet"||tab==="perks"||tab==="list");
   // Tab switch: start at top. Same-tab refresh (stat buy) keeps scroll via UIS.openPanel.
   if(prevTab!=null && prevTab!==tab){
@@ -4600,10 +4600,10 @@ function canUpSkill(id){
 function upSkill(id){
   const sd=SKILL_DEFS.find(s=>s.id===id); if(!sd) return false;
   const cap=STAT_CAPS[sd.stat];
-  if(cap!=null && stat(sd.stat)>=cap-1e-9){ showToast("🔒",sd.stat.toUpperCase()+" Maximum","","There’s nowhere else.","ceiling "+cap+"%"); return false; }
+  if(cap!=null && stat(sd.stat)>=cap-1e-9){ showToast("🔒",sd.stat.toUpperCase()+" maxed","","Can’t go higher","cap "+cap+"%"); return false; }
   const need=cardsNeeded(id), pro=proteinNeeded(id);
-  if(cardsOf(id)<need){ showToast("🃏","Few maps","",sd.n,"need "+need+", have "+cardsOf(id)); return false; }
-  if((S.protein||0)<pro){ showToast("🍺","Not enough beer.","",sd.n,"need "+pro+" 🍺, have "+Math.floor(S.protein||0)); return false; }
+  if(cardsOf(id)<need){ showToast("🃏","Not enough cards","",sd.n,"need "+need+", have "+cardsOf(id)); return false; }
+  if((S.protein||0)<pro){ showToast("🍺","Not enough beer","",sd.n,"need "+pro+" 🍺, have "+Math.floor(S.protein||0)); return false; }
   S.skillCards[id]=cardsOf(id)-need;
   S.protein-=pro;
   S.skills=S.skills||{}; S.skills[id]=skillLv(id)+1;
@@ -4622,8 +4622,8 @@ function grantSkillCard(minR){
 }
 function openSkillChest(chestId){
   const ch=BALANCE.skillChests.find(c=>c.id===chestId); if(!ch) return false;
-  if(ch.keyCost && (S.chestKeys||0)<ch.keyCost){ showToast("🗝","No keys to the larays.","",ch.n,"They give training and dilicks."); return false; }
-  if(ch.gemCost && (S.gems||0)<ch.gemCost){ showToast("💎","Few crystals","",ch.n,"need "+ch.gemCost+" 💎"); return false; }
+  if(ch.keyCost && (S.chestKeys||0)<ch.keyCost){ showToast("🗝","No chest keys","",ch.n,"earned from training and dailies"); return false; }
+  if(ch.gemCost && (S.gems||0)<ch.gemCost){ showToast("💎","Not enough crystals","",ch.n,"need "+ch.gemCost+" 💎"); return false; }
   if(ch.keyCost) S.chestKeys-=ch.keyCost;
   if(ch.gemCost) S.gems-=ch.gemCost;
   const got=[];
@@ -4631,7 +4631,7 @@ function openSkillChest(chestId){
     const minR = i===0?ch.minR:0;
     got.push(grantSkillCard(minR).n);
   }
-  showToast("🎴","Laurel’s open.","",ch.n,got.join(" · "),true);
+  showToast("🎴","Chest opened","",ch.n,got.join(" · "),true);
   Platform.logEvent("skill_chest",{id:chestId}); sfxGear(); save(); render();
   if(typeof UIS!=="undefined" && UIS.id==="shop") UIS.render("shop");
   else openSkills(_skillsShellTab||"cards");
@@ -4641,9 +4641,9 @@ function openWheel(){
   const spin=S.wheelSpins||0;
   const cost=BALANCE.wheel.cost[Math.min(spin,BALANCE.wheel.cost.length-1)];
   const adBtn=adSlotOk("wheel_free")
-    ? `<button class="btn btn-soft" style="margin-top:8px" onclick="spinWheelAd()">📺 Free turn · East`+adSlotLeft("wheel_free")+`</button>`
+    ? `<button class="btn btn-soft" style="margin-top:8px" onclick="spinWheelAd()">📺 Free spin · left:`+adSlotLeft("wheel_free")+`</button>`
     : "";
-  metaOpen("The wheel of the miners","Roll "+(spin+1)+" · The price goes up with every attempt.",
+  metaOpen("Prospector’s Wheel","Spin "+(spin+1)+" · price rises with every spin",
     `<div style="text-align:center;padding:10px 0">
       <div style="font-size:13px;margin-bottom:10px;line-height:1.8">Awards: gold · crystals · rare stone</div>
       <button class="btn btn-hard" onclick="spinWheel(${cost})" ${(S.gems||0)<cost?"disabled":""}>Roll for ${cost}💎</button>
@@ -4654,10 +4654,10 @@ function wheelSpinReward(){
   const roll=Math.random(); let msg;
   if(roll<0.5){ const g=Math.round(veinReward()*50); S.gold+=g; msg="+"+fmt(g)+" 🪙"; }
   else if(roll<0.8){ const gm=[25,50,100][Math.floor(Math.random()*3)]; S.gems+=gm; msg="+"+gm+" 💎"; }
-  else { onFind(); msg="A rare stone!"; }
+  else { onFind(); msg="rare stone!"; }
   S.wheelSpins=(S.wheelSpins||0)+1;
   Platform.logEvent("wheel_spin",{n:S.wheelSpins});
-  showToast("◎","Wheel!","",msg,"Cool "+S.wheelSpins);
+  showToast("◎","Wheel!","",msg,"spin "+S.wheelSpins);
   save(); render(); openWheel();
 }
 function spinWheel(cost){
@@ -4700,10 +4700,10 @@ function openPvpBoard(){
         <br><span class="sub">${league} · 🏆 ${fmt(e.t)}</span></span></div>`;
   }).join("");
   metaOpen("⚔ PvP Leaderboard",
-    "- I’m going to go to the arena. "+BALANCE.pvp.names[li]+" · 🏆 "+fmt(S.trophies||0)
-      +(myRank>=0?(" · place #"+(myRank+1)):"")
-      +" · win now. +"+fmt(pvpWinGold(li))+" 🪙",
-    rows+'<div class="sub" style="margin-top:10px">Mountain Wall — I’m the one who dug deeper than anyone.</div>'
+    "By arena trophies. You: "+BALANCE.pvp.names[li]+" · 🏆 "+fmt(S.trophies||0)
+      +(myRank>=0?(" · rank #"+(myRank+1)):"")
+      +" · win now +"+fmt(pvpWinGold(li))+" 🪙",
+    rows+'<div class="sub" style="margin-top:10px">Mountain Wall — who dug the deepest.</div>'
       +'<button class="btn btn-wide" style="margin-top:8px" onclick="openWall()">🏔 Mountain Wall</button>');
   Platform.logEvent("pvp_board",{rank:myRank+1,trophies:S.trophies|0});
 }
@@ -4737,7 +4737,7 @@ function pvpRollSlate(withEasy){
   if(withEasy){
     const easyMul=0.6;
     pvpSlate.push({
-      id:"sponsor", name:"Slak-Sponsor", ic:"🍺", tag:"Light", fluff:"After the ads — weak rival for warm-up",
+      id:"sponsor", name:"Slag-Sponsor", ic:"🍺", tag:"easy", fluff:"After an ad — a weak rival to warm up",
       grit:0.12, mul:easyMul, power:Math.max(1, Math.round(me*easyMul)), bot:true, easy:true
     });
   }
@@ -4822,8 +4822,8 @@ function pvpShowBrawlResult(cand, brawl, done){
     res.className="pvpResult "+(brawl.win?"win":"lose");
     setTxt("pvpResTitle", brawl.win?"VICTORY!":"DEFEAT");
     setTxt("pvpResSub", brawl.win
-      ? ("You’re standing. · "+brawl.meLeft+" HP after "+brawl.rounds+" Shots")
-      : ((cand.name||"Opponent")+" I won. · "+brawl.rounds+" Shots"));
+      ? ("You stand · "+brawl.meLeft+" HP after "+brawl.rounds+" hits")
+      : ((cand.name||"Opponent")+" won · "+brawl.rounds+" hits"));
     setTxt("pvpResDetail", (brawl.win?"+30 🏆":"-15 🏆")+" · HP "+brawl.meLeft+" vs "+brawl.oppLeft);
     const btn=$("pvpBrawlOk"); if(btn) btn.onclick=finish;
   }
@@ -4861,12 +4861,12 @@ function pvpFightApply(cand, brawl){
     const li=pvpLeagueIdx(); S.gold+=pvpWinGold(li);
     try{ trackPlayEvent("pvp_fights",1); unlockPlayAchievement("pvp_win"); }catch(e){}
     showToast("⚔","VICTORY!","",
-      (cand.ic||"")+" "+(cand.name||"The competition"),
-      "+30 🏆 · HP "+brawl.meLeft+" vs "+brawl.oppLeft+" · "+brawl.rounds+" Ed.", true); }
+      (cand.ic||"")+" "+(cand.name||"rival"),
+      "+30 🏆 · HP "+brawl.meLeft+" vs "+brawl.oppLeft+" · "+brawl.rounds+" hits", true); }
   else { S.trophies=Math.max(0,(S.trophies||0)-15);
     showToast("⚔","DEFEAT","",
-      (cand.ic||"")+" "+(cand.name||"The competition"),
-      "-15 🏆 · HP "+brawl.meLeft+" vs "+brawl.oppLeft+" · "+brawl.rounds+" Ed."); }
+      (cand.ic||"")+" "+(cand.name||"rival"),
+      "-15 🏆 · HP "+brawl.meLeft+" vs "+brawl.oppLeft+" · "+brawl.rounds+" hits"); }
   Platform.logEvent("pvp_fight",{win, bot:cand.id||null, meHp:brawl.meLeft, oppHp:brawl.oppLeft, rounds:brawl.rounds});
   pvpRollSlate(); save(); render();
   if(typeof UIS!=="undefined" && UIS.id==="pvp") UIS.render("pvp");
@@ -4892,26 +4892,26 @@ function openPvp(){
     const fav=me>=o.power;
     const rec=pvpBotRec(o.id);
     const chance=pvpWinChance(me, o.power);
-    return `<div class="metarow"><span>${o.ic||"🤖"} <b>${o.name}</b> · <span class="sub">${o.tag||"AND"}</span>
+    return `<div class="metarow"><span>${o.ic||"🤖"} <b>${o.name}</b> · <span class="sub">${o.tag||"AI"}</span>
       <br><span class="sub" style="color:${fav?"var(--green)":"#e8a24a"}">Force ${fmt(o.power)} · A chance. ~${chance}% · Account ${rec.w}:${rec.l}</span>
       <br><span class="sub">${o.fluff||""}</span></span>
       <button class="btn btn-soft" onclick="pvpFight(${i})">⚔ Fight.</button></div>`;
-  }).join("") : '<div class="sub" style="color:#e8a24a">Fights are finished for today.</div>';
-  metaOpen("⚔ PvP · A quick fight.",
-    "League "+BALANCE.pvp.names[li]+" · force "+fmt(me)+" · left: "+left+"/"+BALANCE.pvpDayLimit,
+  }).join("") : '<div class="sub" style="color:#e8a24a">No fights left today. Come back tomorrow.</div>';
+  metaOpen("⚔ PvP · quick fight",
+    "League "+BALANCE.pvp.names[li]+" · strength "+fmt(me)+" · left: "+left+"/"+BALANCE.pvpDayLimit,
     `<div class="metarow"><span>Cups: ${fmt(S.trophies||0)} · win: ${S.pvpWins||0}</span></div>
      <div class="sub" style="margin:6px 0">Two gnomes beating. pickaxeMee. — If you stand, you win.</div>
      ${cards}
      ${left>0?('<div style="text-align:center;padding:8px 0;display:flex;flex-direction:column;gap:6px;align-items:center">'
-       +'<button onclick="pvpRerollSlate()">Update Form (free)</button>'
-       +(adSlotOk("pvp_reroll")?('<button class="btn btn-hard" onclick="pvpRerollAd()">📺 New Opponents · '+adSlotLeft("pvp_reroll")+'</button>'):"")
+       +'<button onclick="pvpRerollSlate()">New lineup (free)</button>'
+       +(adSlotOk("pvp_reroll")?('<button class="btn btn-hard" onclick="pvpRerollAd()">📺 New rivals · '+adSlotLeft("pvp_reroll")+'</button>'):"")
        +'</div>'):''}`);
 }
 function pvpRerollSlate(){ pvpRollSlate(); openPvp(); }
 function pvpRerollAd(){
   offerAdReward("pvp_reroll", ()=>{
     pvpRollSlate(true);
-    showToast("📺","New Opponents","","+ Slak-Sponsor light");
+    showToast("📺","New rivals","","+ easy “Slag-Sponsor”");
     if(typeof UIS!=="undefined" && UIS.id==="pvp") UIS.render("pvp");
     else openPvp();
   });
@@ -4926,18 +4926,18 @@ function autoTurboPerTick(){
   return autoTurboActive() ? (B.autoTurboPerTick||2) : ((BALANCE.bags.autoOpenPerTick!=null?BALANCE.bags.autoOpenPerTick:1)|0);
 }
 function startAutoTurboAd(){
-  if(!autoRollUnlocked()){ showToast("🎒","Auto closed","","First, unlock the trunks."); return; }
+  if(!autoRollUnlocked()){ showToast("🎒","Auto locked","","Unlock auto-chests first"); return; }
   offerAdReward("auto_turbo", ()=>{
     const min=(BALANCE.ads&&BALANCE.ads.autoTurboMin)||10;
     S.autoTurboUntil=Date.now()+min*60*1000;
-    showToast("📺","Turbo chests","","×"+autoTurboPerTick()+" / "+autoTurboSec()+"c · "+min+" min");
+    showToast("📺","Turbo chests","","×"+autoTurboPerTick()+" / "+autoTurboSec()+"s · "+min+" min");
     Platform.logEvent("auto_turbo",{min});
     save(); render();
-  }, {limitMsg:"Turbo advertising for today."});
+  }, {limitMsg:"Turbo-sort for ads today"});
 }
 function pvpFight(idx){
   pvpDayReset();
-  if((S.pvpFights||0)>=BALANCE.pvpDayLimit){ showToast("⚔","The Fight Limited","","Come back tomorrow."); return; }
+  if((S.pvpFights||0)>=BALANCE.pvpDayLimit){ showToast("⚔","Fight limit","","Come back tomorrow"); return; }
   if(!pvpSlate) pvpRollSlate();
   const cand=pvpSlate[idx]||pvpSlate[0];
   const me=powerScore(), opp=cand.power;
@@ -4946,9 +4946,9 @@ function pvpFight(idx){
   pvpPlayBrawlAnim(cand, brawl, ()=>pvpFightApply(cand, brawl));
 }
 const EVENT_LIST=[
-  ["rockfall","Rockfall","The wave of boulders"],["lavaVein","Lava Vein","Constant sequence"],
-  ["prospectorFair","Prospector Fair","indicative loot"],
-  ["crystalCave","Crystal Cave","Seif crystals"],["critterDen","Critter Den","Latch cleaning"]
+  ["rockfall","Rockfall","boulder wave"],["lavaVein","Lava Vein","layer after layer"],
+  ["prospectorFair","Prospector Fair","show dig"],
+  ["crystalCave","Crystal Cave","crystal safes"],["critterDen","Critter Den","lair sweep"]
 ];
 
 function refillKeys(){
@@ -4962,10 +4962,10 @@ function refillKeys(){
   }
 }
 function keyTimerStr(){
-  if((S.keys||0)>=BALANCE.keyMax) return "Total stock";
+  if((S.keys||0)>=BALANCE.keyMax) return "full stock";
   const left=Math.max(0, BALANCE.keyRefillSec-(Date.now()-(S.keyAt||Date.now()))/1000);
   const h=Math.floor(left/3600), m=Math.floor(left%3600/60);
-  return "Key "+(h?h+"h ":"")+m+"m";
+  return "next key in "+(h?h+"h ":"")+m+"m";
 }
 function eventLevel(){ return Math.max(1, Math.floor((S.mine||0)/2)+1); }
 function eventNameOf(id){
@@ -4983,7 +4983,7 @@ function failEventRun(reason){
   if(!S.eventRun) return;
   const id=S.eventRun.id;
   S.eventRun=null;
-  showToast("★","The race failed","","Key Not spent", reason||"Try again.");
+  showToast("★","Run failed","","key NOT spent", reason||"try again");
   Platform.logEvent("event_fail",{id, reason:reason||""});
   try{ save(); }catch(e){}
 }
@@ -4992,7 +4992,7 @@ function grantEventWin(snap){
   if(!S.keyAt||S.keys===BALANCE.keyMax-1) S.keyAt=Date.now();
   const rew=Math.max(0, snap.rew|0);
   if(snap.res) S[snap.res]=(S[snap.res]||0)+rew;
-  showToast("★","The race is over!","",(snap.ic||"◎")+" +"+fmt(rew)+" "+(snap.currency||""),"level "+(snap.lvl||1)+" · still 🔑"+S.keys,true);
+  showToast("★","Run cleared!","",(snap.ic||"◎")+" +"+fmt(rew)+" "+(snap.currency||""),"level "+(snap.lvl||1)+" · keys left 🔑"+S.keys,true);
   Platform.logEvent("event_win",{id:snap.id,lvl:snap.lvl,waves:snap.waves});
 }
 function advanceEventWave(snap){
@@ -5003,7 +5003,7 @@ function advanceEventWave(snap){
     S.eventRun=null;
   } else {
     S.eventRun.wave=next;
-    showToast(snap.ic||"◎","Wave "+(next)+"/"+waves,"","More. "+(waves-next),"Key is still intact.");
+    showToast(snap.ic||"◎","Wave "+(next)+"/"+waves,"","more "+(waves-next),"key still safe");
     Platform.logEvent("event_wave",{id:snap.id,wave:next,waves});
   }
 }
@@ -5019,9 +5019,9 @@ function openEvents(){
     const waves=Math.max(1,s.waveSize||1);
     const cap=lvl>=s.maxLvl?" (max)":"";
     const btn=busy
-      ? `<button class="btn btn-soft" disabled>It’s coming...</button>`
+      ? `<button class="btn btn-soft" disabled>Running…</button>`
       : ((S.keys||0)<1
-        ? `<button class="btn btn-soft" disabled>I need it. 🔑</button>`
+        ? `<button class="btn btn-soft" disabled>Need 🔑</button>`
         : `<button class="btn btn-soft" onclick="playEvent('${id}')">Run 🔑</button>`);
     return `<div class="metarow"><span><b>${nm}</b> · <span style="color:var(--dim)">${desc}</span><br>
       <span style="color:var(--gold)">${s.ic} +${fmt(rew)} ${s.currency}</span> · Lv.${lvl}/${s.maxLvl}${cap} · ${waves} Waves</span>
@@ -5041,17 +5041,17 @@ function openEvents(){
     claim=`<div class="metarow"><span>Now: <b>${er.n||er.id}</b> · wave ${(er.wave|0)+1}/${er.waves||1}</span>
       <button class="btn btn-soft" disabled>Key whole before victory</button></div>`+claim;
   }
-  metaOpen("(Signed) Ivan5 (i.e. mode)",
-    "🔑 "+(S.keys||0)+"/"+BALANCE.keyMax+" · "+keyTimerStr()+" · The key is spent only on winning.",
+  metaOpen("Events (5 modes)",
+    "🔑 "+(S.keys||0)+"/"+BALANCE.keyMax+" · "+keyTimerStr()+" · key is spent only on a win",
     claim+rows);
   try{ if(typeof UIS!=="undefined"&&UIS._lastMeta) UIS._lastMeta.kind="events"; }catch(e){}
 }
 function playEvent(id){
   refillKeys();
   ensureEventRun(S);
-  if((S.keys||0)<1){ showToast("🔑","No keys","","Wait for the refill. — "+keyTimerStr(),"Or take the ads."); openEvents(); return false; }
-  if(S.eventRun){ showToast("◎","On it.","","Finish the current race."); return false; }
-  if(S.mineRaid){ showToast("⛏","Special Stone","","First, break it."); return false; }
+  if((S.keys||0)<1){ showToast("🔑","No keys","","wait for refill — "+keyTimerStr(),"or get one for an ad"); openEvents(); return false; }
+  if(S.eventRun){ showToast("◎","Already running","","Finish the current run"); return false; }
+  if(S.mineRaid){ showToast("⛏","Special stone","","Break it first"); return false; }
   const s=BALANCE.events[id];
   if(!s) return false;
   const lvl=eventLevel();
@@ -5063,17 +5063,17 @@ function playEvent(id){
   newRock(); save(); render();
   try{ switchTab("Mine"); }catch(e){}
   showToast(s.ic||"◎","Run: "+eventNameOf(id),"",
-    waves+" Waves · Award "+fmt(rew)+" "+s.currency,
-    "The key only goes down if you finish it.");
+    waves+" waves · reward "+fmt(rew)+" "+s.currency,
+    "key is spent only if you clear it all");
   Platform.logEvent("event_start",{id,lvl,waves});
   return true;
 }
 function claimEventKey(){
   refillKeys();
-  if((S.keys||0)>=BALANCE.keyMax){ showToast("🔑","Full stock","","already. "+BALANCE.keyMax+"/"+BALANCE.keyMax); openEvents(); return; }
+  if((S.keys||0)>=BALANCE.keyMax){ showToast("🔑","Full stock","","already "+BALANCE.keyMax+"/"+BALANCE.keyMax); openEvents(); return; }
   const grant=()=>{
     S.keys=(S.keys||0)+1;
-    showToast("🔑","Key received","","with ad","You can run.");
+    showToast("🔑","Key received","","for an ad","ready to run");
     Platform.logEvent("event_key_ad",{});
     save(); render(); openEvents();
   };
@@ -5088,11 +5088,11 @@ function claimEventKey(){
 function buyEventKey(){
   refillKeys();
   const cost=BALANCE.eventKeyGem||50;
-  if((S.keys||0)>=BALANCE.keyMax){ showToast("🔑","Full stock","","It’s already the maximum."); openEvents(); return; }
-  if((S.gems||0)<cost){ showToast("💎","Few crystals","","need "+cost,"Now. "+(S.gems||0)); return; }
+  if((S.keys||0)>=BALANCE.keyMax){ showToast("🔑","Full stock","","already maxed"); openEvents(); return; }
+  if((S.gems||0)<cost){ showToast("💎","Not enough crystals","","need "+cost,"now "+(S.gems||0)); return; }
   S.gems-=cost;
   S.keys=(S.keys||0)+1;
-  showToast("🔑","The key is bought.","","−"+cost+" 💎","You can run.");
+  showToast("🔑","Key bought","","−"+cost+" 💎","ready to run");
   Platform.logEvent("event_key_gem",{cost});
   save(); render(); openEvents();
 }
@@ -5112,33 +5112,33 @@ function petIconEmoji(t){
   const p=PET_TYPES[t|0];
   return (p&&p.ic)||"🐉";
 }
-const DOT_NAMES={bleed:"Bleeding",shock:"Shock",splash:"Wave"};
+const DOT_NAMES={bleed:"Bleed",shock:"Shock",splash:"Splash"};
 
 const GYM_XP={ perGift:5, perWorkout:20, perPvpWin:8, perDaily:15 };
 const GYM_LEVELS=[0,50,150,350,700,1200,2000,3200,5000,8000,12000];
 const GYM_PERKS=[
-  {lv:1,pct:5, n:"Warming up"}, {lv:3,pct:10,n:"Second breath"},
-  {lv:5,pct:18,n:"Trick"},  {lv:7,pct:28,n:"The Mastery"},
-  {lv:9,pct:42,n:"The Spirit of the Mountain"}, {lv:10,pct:60,n:"Mountain Heritage"}
+  {lv:1,pct:5, n:"Warm-up"}, {lv:3,pct:10,n:"Second Wind"},
+  {lv:5,pct:18,n:"Tempering"},  {lv:7,pct:28,n:"Mastery"},
+  {lv:9,pct:42,n:"Underhill Spirit"}, {lv:10,pct:60,n:"Legacy of the Mountain"}
 ];
 function gymLevel(){ let lv=0; for(let i=0;i<GYM_LEVELS.length;i++) if((S.gymXP||0)>=GYM_LEVELS[i]) lv=i; return lv; }
 function gymPerkPct(){ let p=0; const lv=gymLevel(); for(const pk of GYM_PERKS) if(lv>=pk.lv) p=pk.pct; return p; }
 function addGymXP(n){ if(!(n>0)) return; const before=gymLevel();
   S.gymXP=(S.gymXP||0)+n; const after=gymLevel();
-  if(after>before){ showToast("🏋","THE HALL IS GROWN!","","Level "+after,"+"+gymPerkPct()+"% To all statues",true); try{ jingleSet(); }catch(e){} } }
+  if(after>before){ showToast("🏋","HALL LEVELED UP!","","Level "+after,"+"+gymPerkPct()+"% to all stats",true); try{ jingleSet(); }catch(e){} } }
 
 const STICKERS=[
   {id:"s_atk1",n:"Fire Pickaxe",   ic:"⛏️",stat:"atk",   val:15,r:0,col:"mountain"},
-  {id:"s_atk2",n:"Gold hammer", ic:"🔨",stat:"atk",   val:40,r:2,col:"forge"},
-  {id:"s_crit",n:"The Mark Eye",   ic:"🎯",stat:"crit",  val:3, r:1,col:"forge"},
-  {id:"s_luck",n:"Clever-4",      ic:"🍀",stat:"luck",  val:4, r:1,col:"deep"},
-  {id:"s_min", n:"Ore Nuhach",    ic:"👃",stat:"mining",val:4, r:2,col:"mountain"},
-  {id:"s_sto1",n:"Gold bag",  ic:"💰",stat:"stone", val:20,r:0,col:"tavern"},
-  {id:"s_sto2",n:"A chest of ancestors",ic:"🧰",stat:"stone", val:60,r:3,col:"tavern"},
-  {id:"s_en",  n:"Second breath",ic:"🫁",stat:"energy",val:30,r:1,col:"deep"},
-  {id:"s_tou", n:"Dubular shield",   ic:"🛡️",stat:"tough", val:8, r:2,col:"forge"},
-  {id:"s_rgn", n:"Living water",    ic:"💧",stat:"regen", val:2, r:2,col:"deep"},
-  {id:"s_stm", n:"Light-pistol furs",   ic:"🌬️",stat:"stamina",val:5,r:3,col:"tavern"},
+  {id:"s_atk2",n:"Golden Hammer", ic:"🔨",stat:"atk",   val:40,r:2,col:"forge"},
+  {id:"s_crit",n:"Keen Eye",   ic:"🎯",stat:"crit",  val:3, r:1,col:"forge"},
+  {id:"s_luck",n:"Clover-4",      ic:"🍀",stat:"luck",  val:4, r:1,col:"deep"},
+  {id:"s_min", n:"Ore Sniffer",    ic:"👃",stat:"mining",val:4, r:2,col:"mountain"},
+  {id:"s_sto1",n:"Sack of Gold",  ic:"💰",stat:"stone", val:20,r:0,col:"tavern"},
+  {id:"s_sto2",n:"Ancestors’ Chest",ic:"🧰",stat:"stone", val:60,r:3,col:"tavern"},
+  {id:"s_en",  n:"Second Wind",ic:"🫁",stat:"energy",val:30,r:1,col:"deep"},
+  {id:"s_tou", n:"Oak Shield",   ic:"🛡️",stat:"tough", val:8, r:2,col:"forge"},
+  {id:"s_rgn", n:"Living Water",    ic:"💧",stat:"regen", val:2, r:2,col:"deep"},
+  {id:"s_stm", n:"Bellows Lungs",   ic:"🌬️",stat:"stamina",val:5,r:3,col:"tavern"},
   {id:"s_atk3",n:"Heart of the Mountain",   ic:"💎",stat:"atk",   val:120,r:4,col:"mountain"}
 ];
 function stickersInCol(colId){ return STICKERS.filter(s=>s.col===colId); }
@@ -5163,30 +5163,30 @@ function petDot(){
 function petBonus(id){ if(!S.pet||PET_TYPES[S.pet.t].stat!==id) return 0;
   return PET_TYPES[S.pet.t].pct[S.pet.r]; }
 function openGeoGuild(){
-  if(!S.geo){ metaOpen("Artelle. elder","First, hire someone.",'<div class="sub">It’s empty.</div>'); return; }
+  if(!S.geo){ metaOpen("Elders’ Artel","Hire someone first.",'<div class="sub">Empty.</div>'); return; }
   const g=GEO_TYPES[S.geo.t], mats=geoMaterials();
   const isLeg=S.geo.r===GEO_RAR.length-1;
   const ascOk=canAscendGeo();
   const B=BALANCE.merge;
   const ascWhy = !isLeg ? `need ${GEO_RAR[GEO_RAR.length-1]}`
-    : ((S.geo.lv||1)<B.ascendLv ? `I need a ur.${B.ascendLv} (have ${S.geo.lv||1})`
+    : ((S.geo.lv||1)<B.ascendLv ? `need Lv.${B.ascendLv} (have ${S.geo.lv||1})`
     : ((S.gems||0)<B.ascendGems ? `need ${B.ascendGems} 💎 (have ${fmt(S.gems||0)})` : ""));
   const box=Object.keys(S.geoBox||{}).filter(k=>S.geoBox[k]>0)
     .sort((a,b)=>Number(b.split("_")[1])-Number(a.split("_")[1]))
     .map(k=>{ const [t,r]=k.split("_").map(Number);
       const usable=r<=S.geo.r;
       return `<div class="metarow"><span><b class="r${r}">${GEO_RAR[r]}</b> · ${GEO_TYPES[t].names[0]} ×${S.geoBox[k]}</span>
-        <span class="sub" style="color:${usable?"var(--green)":"var(--dim)"}">${usable?"valid":"too rare"}</span></div>`;
-    }).join("")||'<div class="sub">duplicate None — Turn the gurney around.</div>';
-  metaOpen("Artelle. elder",
-    "Target absorbs material equal to or less than rarity And it’s growing up. — for legendary people.",
+        <span class="sub" style="color:${usable?"var(--green)":"var(--dim)"}">${usable?"fits":"too rare"}</span></div>`;
+    }).join("")||'<div class="sub">No duplicates — spin the gacha.</div>';
+  metaOpen("Elders’ Artel",
+    "The target absorbs material of equal or lower rarity and levels up. Ascension is for Legendary ones.",
     `<div class="metarow"><span>In the case: <b class="r${S.geo.r}">${S.geo.n}</b>${(S.geo.asc||0)?' <span style="color:var(--gold)">✦'+S.geo.asc+'</span>':''}
        <br><span class="sub">Lv.${S.geo.lv||1} · +${Math.round(geoPct(S.geo))}% ${g.stat.toUpperCase()}</span></span></div>
      <div class="metarow"><span>Artifact material</span>
        <button class="btn btn-soft" onclick="mergeGeo()" ${mats>0?"":"disabled"} ${mats>0?"":'style="opacity:.45"'}>Splitting ${mats} → +${mats} Lv.</button></div>
      <div class="metarow"><span>Ascension ✦${(S.geo.asc||0)+1}<br><span class="sub">+${B.ascendPct}% to bonus, level in 1</span></span>
        <button class="btn btn-hard" onclick="ascendGeo()" ${ascOk?"":"disabled"} ${ascOk?"":'style="opacity:.45"'}>${B.ascendGems}💎</button></div>
-     ${ascWhy?`<div class="sub" style="color:#e8a24a;margin-bottom:8px">Ascent: ${ascWhy}</div>`:""}
+     ${ascWhy?`<div class="sub" style="color:#e8a24a;margin-bottom:8px">Ascension: ${ascWhy}</div>`:""}
      <div class="sub" style="margin-top:10px">Collection duplicate:</div>${box}`);
   Platform.logEvent("geo_guild",{});
 }
@@ -5203,16 +5203,16 @@ function openPets(){
     const ok=canMergePet(t,r);
     const btn=maxed
       ? `<button class="btn btn-soft" disabled style="opacity:.4">max</button>`
-      : `<button class="btn btn-soft" onclick="mergePet(${t},${r})" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>Splitting 3 → ${PET_RAR[r+1]}</button>`;
+      : `<button class="btn btn-soft" onclick="mergePet(${t},${r})" ${ok?"":"disabled"} ${ok?"":'style="opacity:.45"'}>Merge 3 → ${PET_RAR[r+1]}</button>`;
     const need=maxed?"":`<div class="sub" style="margin:2px 0 0">copies ${c}/${BALANCE.merge.petCost}</div>`;
     return `<div class="metarow"><span><b class="r${r}">${PET_RAR[r]}</b> · ${PET_TYPES[t].n} ×${c}${need}</span>${btn}</div>`;
-  }).join("")||'<div class="sub">The collection is empty. egg.</div>';
+  }).join("")||'<div class="sub">Collection empty. Roll some eggs.</div>';
   const craftBtn = petCraftUnlocked()
     ? `<div class="metarow"><span>⚗ Craft Exotic<br><span class="sub">Under Legendary of each family + ${BALANCE.petCraft.gems} 💎</span></span>
         <button class="btn btn-hard" onclick="craftPetExotic()" ${petCraftReady()?"":"disabled"} ${petCraftReady()?"":'style="opacity:.45"'}>Craft</button></div>`
-    : `<div class="sub" style="margin-top:8px">Craft Exotic to be opened after ${BALANCE.petCraft.needLegendaries} legendary pet (there are) ${S.petLegSeen||0}).</div>`;
-  metaOpen("Pets","The Pity of the Mountain · roll: "+(S.petRolls||0)+". 3 Same → 1 random next rarity; Exotic — Just the kraft.",
-    cur+rows+craftBtn+`<div style="text-align:center;padding:10px 0"><button class="btn btn-hard" onclick="rollPet()" ${(S.eggs||0)<1?"disabled":""}>Roll · 🥚1 (East ${S.eggs||0})</button></div>`);
+    : `<div class="sub" style="margin-top:8px">Exotic craft unlocks after ${BALANCE.petCraft.needLegendaries} Legendary pets (have ${S.petLegSeen||0}).</div>`;
+  metaOpen("Pets","Mountain’s Pity · rolls: "+(S.petRolls||0)+". 3 identical → 1 random of the next rarity; Exotic — craft only.",
+    cur+rows+craftBtn+`<div style="text-align:center;padding:10px 0"><button class="btn btn-hard" onclick="rollPet()" ${(S.eggs||0)<1?"disabled":""}>Roll · 🥚1 (left ${S.eggs||0})</button></div>`);
 }
 
 const boxKey=(t,r)=>t+"_"+r;
@@ -5223,9 +5223,9 @@ function canMergePet(t,r){
   return r < PET_MERGE_MAX && boxCountAt(S.petBox,t,r) >= BALANCE.merge.petCost;
 }
 function mergePet(t,r){
-  if(r>=PET_MERGE_MAX){ showToast(petIcon(t),"Limit of merger","","Exotic Craft only","3× Legendary + "+BALANCE.petCraft.gems+" 💎"); return false; }
+  if(r>=PET_MERGE_MAX){ showToast(petIcon(t),"Merge limit","","Exotic is craft-only","3× Legendary + "+BALANCE.petCraft.gems+" 💎"); return false; }
   if(boxCountAt(S.petBox,t,r)<BALANCE.merge.petCost){
-    showToast(petIcon(t),"Few copies","","I do. "+BALANCE.merge.petCost+"× "+PET_TYPES[t].n,"have "+boxCountAt(S.petBox,t,r));
+    showToast(petIcon(t),"Not enough copies","","Need "+BALANCE.merge.petCost+"× "+PET_TYPES[t].n,"have "+boxCountAt(S.petBox,t,r));
     return false;
   }
   S.petBox[boxKey(t,r)]-=BALANCE.merge.petCost;
@@ -5233,7 +5233,7 @@ function mergePet(t,r){
   const nt=Math.floor(Math.random()*PET_TYPES.length), nr=r+1;
   boxAdd(S.petBox,nt,nr,1);
   equipBestPet();
-  showToast(petIcon(nt),"Merger!","r"+nr,PET_TYPES[nt].n+" ("+PET_RAR[nr]+")","3× "+PET_TYPES[t].n+" Going to the mountain",true);
+  showToast(petIcon(nt),"Merged!","r"+nr,PET_TYPES[nt].n+" ("+PET_RAR[nr]+")","3× "+PET_TYPES[t].n+" went into the Mountain",true);
   Platform.logEvent("pet_merge",{from:r,to:nr}); sfxGear(); save(); render(); renderGear();
   return true;
 }
@@ -5261,9 +5261,9 @@ function geoMaterials(){
   return n;
 }
 function mergeGeo(){
-  if(!S.geo){ showToast("👷","No one to rock.","","First hire elder"); return false; }
+  if(!S.geo){ showToast("👷","No one to level","","Hire an elder first"); return false; }
   const have=geoMaterials();
-  if(have<1){ showToast("👷","No material","","Needed duplicate rarity ≤ "+GEO_RAR[S.geo.r]); return false; }
+  if(have<1){ showToast("👷","No material","","Need duplicates of rarity ≤ "+GEO_RAR[S.geo.r]); return false; }
   let eaten=0;
   for(const k in S.geoBox){
     const r=Number(k.split("_")[1]);
@@ -5271,7 +5271,7 @@ function mergeGeo(){
     eaten+=S.geoBox[k]; delete S.geoBox[k];
   }
   S.geo.lv=(S.geo.lv||1)+eaten;
-  showToast("👷","Merger!","r"+S.geo.r,S.geo.n+" Lv."+S.geo.lv,"absorbed "+eaten+" · +"+geoPct(S.geo).toFixed(0)+"% "+GEO_TYPES[S.geo.t].stat.toUpperCase(),true);
+  showToast("👷","Merged!","r"+S.geo.r,S.geo.n+" Lv."+S.geo.lv,"absorbed "+eaten+" · +"+geoPct(S.geo).toFixed(0)+"% "+GEO_TYPES[S.geo.t].stat.toUpperCase(),true);
   Platform.logEvent("geo_merge",{lv:S.geo.lv,eaten}); sfxGear(); save(); render();
   return true;
 }
@@ -5281,13 +5281,13 @@ function canAscendGeo(){
     && (S.gems||0)>=BALANCE.merge.ascendGems;
 }
 function ascendGeo(){
-  if(!S.geo || S.geo.r!==GEO_RAR.length-1){ showToast("👷","I need a legendary one.","","Ascension only with "+GEO_RAR[GEO_RAR.length-1]); return false; }
-  if((S.geo.lv||1)<BALANCE.merge.ascendLv){ showToast("👷","Low level","","I need a ur."+BALANCE.merge.ascendLv,"have "+(S.geo.lv||1)); return false; }
-  if((S.gems||0)<BALANCE.merge.ascendGems){ showToast("👷","Few crystals","","I do. "+BALANCE.merge.ascendGems+" 💎","have "+fmt(S.gems||0)); return false; }
+  if(!S.geo || S.geo.r!==GEO_RAR.length-1){ showToast("👷","Need a Legendary","","Ascension only from "+GEO_RAR[GEO_RAR.length-1]); return false; }
+  if((S.geo.lv||1)<BALANCE.merge.ascendLv){ showToast("👷","Level too low","","Need Lv."+BALANCE.merge.ascendLv,"have "+(S.geo.lv||1)); return false; }
+  if((S.gems||0)<BALANCE.merge.ascendGems){ showToast("👷","Not enough crystals","","Need "+BALANCE.merge.ascendGems+" 💎","have "+fmt(S.gems||0)); return false; }
   S.gems-=BALANCE.merge.ascendGems;
   S.geo.asc=(S.geo.asc||0)+1;
   S.geo.lv=1;
-  showToast("👷","AH, CLIMBING!","r5",S.geo.n,"step "+S.geo.asc+" · +"+geoPct(S.geo).toFixed(0)+"%",true);
+  showToast("👷","ASCENSION!","r5",S.geo.n,"tier "+S.geo.asc+" · +"+geoPct(S.geo).toFixed(0)+"%",true);
   Platform.logEvent("geo_ascend",{asc:S.geo.asc}); try{ jingleSet(); }catch(e){}
   save(); render();
   return true;
@@ -5302,22 +5302,22 @@ function petCraftReady(){
 }
 
 function buyStickerPack(){
-  if((S.gems||0)<STICKER_PACK_GEMS){ showToast("🃏","Few crystals","","Stickers pack: "+STICKER_PACK_GEMS+" 💎"); return false; }
+  if((S.gems||0)<STICKER_PACK_GEMS){ showToast("🃏","Not enough crystals","","Sticker pack: "+STICKER_PACK_GEMS+" 💎"); return false; }
   S.gems-=STICKER_PACK_GEMS; S.stickers=S.stickers||{};
   const got=[];
   for(let i=0;i<STICKER_PACK_N;i++){ const s=STICKERS[Math.floor(Math.random()*STICKERS.length)];
     S.stickers[s.id]=(S.stickers[s.id]||0)+1; got.push(s.ic); }
-  showToast("🃏","Pack’s open.","",STICKER_PACK_N+" Stickers",got.join(" "),true);
+  showToast("🃏","Pack opened","",STICKER_PACK_N+" stickers",got.join(" "),true);
   Platform.logEvent("sticker_pack",{}); sfxGear(); save(); render(); openStickers();
   return true;
 }
 
 function giftStickers(){
   const d=stickerDupes();
-  if(d<1){ showToast("🃏","None duplicate","","Nothing to give"); return false; }
+  if(d<1){ showToast("🃏","No duplicates","","Nothing to give"); return false; }
   const o=S.stickers; for(const k in o) if(o[k]>1) o[k]=1;
   addGymXP(d*GYM_XP.perGift);
-  showToast("🎁","Dumped into the hall","",d+"× duplicate","+"+(d*GYM_XP.perGift)+" Gym XP");
+  showToast("🎁","Gifted to the Hall","",d+"× duplicates","+"+(d*GYM_XP.perGift)+" Gym XP");
   Platform.logEvent("sticker_gift",{n:d}); save(); render(); openStickers();
   return true;
 }
@@ -5328,13 +5328,13 @@ function openProfile(){
     '<div style="text-align:center;margin-bottom:10px"><div style="font-size:40px">🧔</div>'+
     '<h3 style="margin:4px 0">'+esc(playerName())+'</h3>'+
     '<div class="sub">'+w.title+((S.prestigeLv||0)?(" · ⛰ Prestige "+S.prestigeLv):"")+'</div></div>'+
-    '<div class="metarow"><span>Deep run</span><span><b>'+Math.min(S.stageIdx,BALANCE.run.len)+'/'+BALANCE.run.len+'</b></span></div>'+
-    '<div class="metarow"><span>Deep record</span><span><b>'+fmt(S.bestDepth||depth)+' m</b></span></div>'+
-    '<div class="metarow"><span>Prestige · descent</span><span>'+(S.prestigeLv||0)+' · '+(S.prestigeRuns||0)+'</span></div>'+
-    '<div class="metarow"><span>Wisdom beard</span><button class="btn btn-soft" onclick="openBeard()">'+w.title+'</button></div>'+
-    '<div class="metarow"><span>BEAUTY</span><button class="btn btn-soft" onclick="openCharSheet()">List · Total '+(S.specialPool||0)+'</button></div>'+
-    '<div class="metarow"><span>Conference</span><span>Lv.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
-    '<div class="metarow"><span>Winning in PvP · Cup</span><span>'+(S.pvpWins||0)+' · '+fmt(S.trophies||0)+'</span></div>'+
+    '<div class="metarow"><span>Run depth</span><span><b>'+Math.min(S.stageIdx,BALANCE.run.len)+'/'+BALANCE.run.len+'</b></span></div>'+
+    '<div class="metarow"><span>Depth record</span><span><b>'+fmt(S.bestDepth||depth)+' m</b></span></div>'+
+    '<div class="metarow"><span>Prestige · descents</span><span>'+(S.prestigeLv||0)+' · '+(S.prestigeRuns||0)+'</span></div>'+
+    '<div class="metarow"><span>Beard Wisdom</span><button class="btn btn-soft" onclick="openBeard()">'+w.title+'</button></div>'+
+    '<div class="metarow"><span>K.R.A.S.A.V.A.</span><button class="btn btn-soft" onclick="openCharSheet()">Sheet · pool '+(S.specialPool||0)+'</button></div>'+
+    '<div class="metarow"><span>Hall</span><span>Lv.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
+    '<div class="metarow"><span>PvP wins · trophies</span><span>'+(S.pvpWins||0)+' · '+fmt(S.trophies||0)+'</span></div>'+
     '<div class="metarow"><span>Name</span><span><input id="profName" value="'+esc(playerName())+'" maxlength="18" style="width:120px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:6px;font-size:14px"><button class="btn btn-soft" style="margin-left:6px" onclick="'+setName+'">✓</button></span></div>';
   $("profModal").style.display="flex"; Platform.logEvent("profile_view",{});
 }
@@ -5376,8 +5376,8 @@ function chestPendingParts(it){
   }
   const better=!old||itemPower(it)>itemPower(old);
   const cmp=old
-    ?('<div class="chCmp '+(better?"up":"dn")+'">'+(better?"▲ More dressed":"▼ weaker than the wearer")+'</div>')
-    :'<div class="chCmp up">The slot was empty.</div>';
+    ?('<div class="chCmp '+(better?"up":"dn")+'">'+(better?"▲ stronger than equipped":"▼ weaker than equipped")+'</div>')
+    :'<div class="chCmp up">slot was empty</div>';
   return {sl,stats,cmp,better,old};
 }
 function chestPendingCardHtml(it){
@@ -5388,7 +5388,7 @@ function chestPendingCardHtml(it){
     +'<div class="chSts">'+p.stats+'</div>'+p.cmp
     +'<div class="btnrow" style="margin-top:10px">'
     +'<button class="btn btn-hard" onclick="sellChestItem()">Sell<small>'+fmt(sellPrice(it))+' 🪙</small></button>'
-    +'<button class="btn btn-soft" onclick="equipChestItem()">Put on<small>Equipment</small></button>'
+    +'<button class="btn btn-soft" onclick="equipChestItem()">Equip<small>gear</small></button>'
     +'</div></div>';
 }
 function renderDropCard(){
@@ -5420,29 +5420,29 @@ function renderChestCard(){
     pend=chestPendingCardHtml(chestPending);
   }
   const openBtn=S.autoRoll
-    ? '<button class="btn btn-soft" disabled>Auto is clearing.</button>'
+    ? '<button class="btn btn-soft" disabled>Auto-sorting</button>'
     : ((S.bags||0)>0
     ? '<button class="btn btn-soft" onclick="chestOpenOne()">Open bag · 🎒'+(S.bags||0)+'</button>'
     : '<button class="btn btn-soft" disabled>No bags · 🎒0</button>');
   const autoUnlocked=autoRollUnlocked();
   const autoRow=autoUnlocked
-    ? ('<button type="button" class="btn '+(S.autoRoll?"btn-hard":"btn-soft")+'" onclick="toggleAutoRoll();renderChestCard()" style="margin-left:6px">'+(S.autoRoll?"Auto ✓":"Auto")+'</button>'
+    ? ('<button type="button" class="btn '+(S.autoRoll?"btn-hard":"btn-soft")+'" onclick="toggleAutoRoll();renderChestCard()" style="margin-left:6px">'+(S.autoRoll?"Auto ✓":"About Auto")+'</button>'
       +'<button type="button" class="btn btn-soft" onclick="openAutoTierModal()" style="margin-left:6px">threshold: <span class="r'+(S.autoRollTier||0)+'">'+RAR_NAMES[S.autoRollTier||0]+'</span>+</button>'
       +(typeof adSlotOk==="function"&&adSlotOk("auto_turbo")&&!autoTurboActive()
         ? ('<button type="button" class="btn btn-soft" onclick="startAutoTurboAd()" style="margin-left:6px">📺 Turbo · '+adSlotLeft("auto_turbo")+'</button>')
-        : (autoTurboActive()?('<span class="sub" style="margin-left:6px;color:var(--gold)">📺 Turbo '+fmtClock((S.autoTurboUntil||0)-Date.now())+'</span>'):"")))
+        : (autoTurboActive()?('<span class="sub" style="margin-left:6px;color:var(--gold)">📺 turbo '+fmtClock((S.autoTurboUntil||0)-Date.now())+'</span>'):"")))
     : ('<button type="button" class="btn btn-soft" disabled style="margin-left:6px;opacity:.55" title="'+autoLockHint()+'">Auto 🔒</button>');
   let upBlock='';
   if(atCap){
-    upBlock='<div class="chUp"><div class="sub" style="text-align:center">The Thread of Greed is achieved — The chest is pumped to the end.</div></div>';
+    upBlock='<div class="chUp"><div class="sub" style="text-align:center">Greed limit reached — chest fully upgraded.</div></div>';
   } else {
     const adLeft=typeof adSlotLeft==="function"?adSlotLeft("bag_skip"):0;
     const adOk=typeof adSlotOk==="function"&&adSlotOk("bag_skip");
     upBlock='<div class="chUp">'
       +'<div class="chUpHead"><span class="chUpTitle">Drop odds</span><span class="chUpLvl">Lv.'+lvl+' → '+(lvl+1)+'</span></div>'
-      +'<div class="chCols"><div class="chCol"><div class="chColT">current</div>'+chestChanceRows(lvl)+'</div>'
+      +'<div class="chCols"><div class="chCol"><div class="chColT">now</div>'+chestChanceRows(lvl)+'</div>'
       +'<div class="chCol"><div class="chColT">next</div>'+chestChanceRows(lvl+1)+'</div></div>'
-      +(nb?('<div class="sub" style="margin-top:6px;text-align:center">up to «'+nb[1]+'»: '+(nb[0]-lvl)+' Lv.</div>'):'')
+      +(nb?('<div class="sub" style="margin-top:6px;text-align:center">to «'+nb[1]+'»: '+(nb[0]-lvl)+' lv.</div>'):'')
       +'<div class="sub" style="margin-top:4px;text-align:center;opacity:.75">Odds by bag level · gold upgrades only · no paid gacha</div>'
       +'<div class="chTimer"><div class="chTimerBar"><div class="chTimerFill" style="width:'+timerPct.toFixed(1)+'%"></div></div>'
       +'<span class="sub" id="chTimerLbl">'+timerLbl+'</span></div>'
@@ -5456,7 +5456,7 @@ function renderChestCard(){
       +'<button type="button" class="btn btn-soft" onclick="bagSkipAdHour()" '+(upNow&&adOk?'':'disabled')+' title="cut 1 hour">📺 −1h'+(adOk?(' · '+adLeft):'')+'</button>'
       +'</div></div>';
   }
-  el.innerHTML='<div class="uiSub" style="margin-bottom:10px">Find Bag · Lv.'+lvl+' · Higher levels improve rarity</div>'
+  el.innerHTML='<div class="uiSub" style="margin-bottom:10px">Loot Bag · Lv.'+lvl+' · drop rarity rises with level</div>'
     +'<div class="chOpen">'+openBtn+autoRow+'</div>'
     +pend+upBlock;
   const tit=$("chestTitle"); if(tit) tit.textContent="🧰 "+bagName(lvl);
@@ -5471,11 +5471,11 @@ function bagItemNeedsDecide(it){
 function openNextBagDecide(opts){
   opts=opts||{};
   if(S.autoRoll){
-    if(!opts.quiet) showToast("🎒","Auto on.","","Turn off the Auto to open manually");
+    if(!opts.quiet) showToast("🎒","Auto is on","","Turn off Auto to open manually");
     return false;
   }
   if(chestPending){
-    if(!opts.quiet){ showToast("🎒","First decide.","","Put on or sell the find."); showDropDecide(); }
+    if(!opts.quiet){ showToast("🎒","Decide first","","Equip or sell the find"); showDropDecide(); }
     return false;
   }
   if((S.bags||0)<1){
@@ -5573,8 +5573,8 @@ function openGym(){
   const perks=GYM_PERKS.map(pk=>{ const on=lv>=pk.lv;
     return `<div class="metarow" style="${on?'':'opacity:.45'}"><span>${on?"✓":"🔒"} <b class="${on?'r5':''}">${pk.n}</b> · Lv.${pk.lv}</span>
       <span class="sub">+${pk.pct}% All statues</span></div>`; }).join("");
-  metaOpen("🏋 Conference",
-    "Level "+lv+" · A bonus to all statues +"+gymPerkPct()+"%. Gym XP: Training, winning PvP, Dilicks, stickers.",
+  metaOpen("🏋 Hall",
+    "Level "+lv+" · bonus to all stats +"+gymPerkPct()+"%. Gym XP: training, PvP wins, dailies, gifting stickers.",
     `<div class="metarow"><span>Gym XP</span><span><b>${fmt(xp)}</b>${nextAt!=null?(" / "+fmt(nextAt)):""}</span></div>
      <div class="setBar"><div style="width:${pct}%;background:var(--gold)"></div></div>
      <div class="sub" style="margin:10px 0 4px">perk Room:</div>${perks}
@@ -5590,22 +5590,22 @@ function openStickers(){
       <br><span class="sub">${c?"+"+s.val+" "+nm:"not found"}</span></span></div>`;
   }).join("");
   metaOpen("🃏 Stickers",
-    "Collected "+have+"/"+STICKERS.length+" · duplicate "+stickerDupes()+". The statues are affected, duplicate They’re all in the room.",
+    "Collected "+have+"/"+STICKERS.length+" · duplicates "+stickerDupes()+". They boost stats; duplicates are gifted to the Hall.",
     `<div class="btnrow"><button class="btn btn-hard" onclick="buyStickerPack()" ${(S.gems||0)<STICKER_PACK_GEMS?"disabled":""}>Park ${STICKER_PACK_N} · ${STICKER_PACK_GEMS} 💎</button>
        <button onclick="giftStickers()" ${stickerDupes()<1?"disabled":""}>Give duplicate</button></div>
      <div style="margin-top:10px">${rows}</div>`);
   Platform.logEvent("stickers_view",{});
 }
 function craftPetExotic(){
-  if(!petCraftUnlocked()){ showToast("⚗","Craft closed","","I do. "+BALANCE.petCraft.needLegendaries+" legendary pet","have "+(S.petLegSeen||0)); return false; }
-  if((S.gems||0)<BALANCE.petCraft.gems){ showToast("⚗","Few crystals","","Kraft: "+BALANCE.petCraft.gems+" 💎"); return false; }
+  if(!petCraftUnlocked()){ showToast("⚗","Craft locked","","Need "+BALANCE.petCraft.needLegendaries+" legendary pets","have "+(S.petLegSeen||0)); return false; }
+  if((S.gems||0)<BALANCE.petCraft.gems){ showToast("⚗","Not enough crystals","","Craft: "+BALANCE.petCraft.gems+" 💎"); return false; }
   for(let t=0;t<PET_TYPES.length;t++) if(boxCountAt(S.petBox,t,3)<1){
-    showToast("⚗","Missing material","","I need it. Legendary "+PET_TYPES[t].n); return false; }
+    showToast("⚗","Not enough material","","Need Legendary "+PET_TYPES[t].n); return false; }
   for(let t=0;t<PET_TYPES.length;t++){ const k=boxKey(t,3); S.petBox[k]-=1; if(S.petBox[k]<=0) delete S.petBox[k]; }
   S.gems-=BALANCE.petCraft.gems;
   const nt=Math.floor(Math.random()*PET_TYPES.length);
   boxAdd(S.petBox,nt,4,1); equipBestPet();
-  showToast("⚗","KRAFT!","r4",PET_TYPES[nt].n+" (Exotic)","−Under Legendary each · −"+BALANCE.petCraft.gems+" 💎",true);
+  showToast("⚗","CRAFT!","r4",PET_TYPES[nt].n+" (Exotic)","−one Legendary each · −"+BALANCE.petCraft.gems+" 💎",true);
   Platform.logEvent("pet_craft",{}); try{ jingleSet(); }catch(e){}
   save(); render(); renderGear(); openPets();
   return true;
@@ -5614,10 +5614,10 @@ function rollPet(){
   if(!requireFeat("pets")) return;
   if((S.eggs||0)<1){
     if(adSlotOk("pet_roll")){
-      offerAdReward("pet_roll", ()=>{ S.eggs=(S.eggs||0)+1; rollPet(); }, {limitMsg:"egg for today’s ads."});
+      offerAdReward("pet_roll", ()=>{ S.eggs=(S.eggs||0)+1; rollPet(); }, {limitMsg:"No more ad eggs today"});
       return;
     }
-    showToast("🥚","No eggs.","","egg — c vein · or 📺 for roll"); return;
+    showToast("🥚","No eggs","","Eggs drop from veins · or 📺 per roll"); return;
   }
   S.eggs--;
   const r=rollRarity(geoWeights(S.petRolls||0)); S.petRolls=(S.petRolls||0)+1;
@@ -5627,8 +5627,8 @@ function rollPet(){
   const wasBetter=!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r]);
   equipBestPet();
   showToast(petIcon(t),PET_RAR[r],"r"+r,PET_TYPES[t].n,
-    wasBetter?("I’m a little bit of a girl, but I’m a little bit of a girl. +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase())
-             :("to collection · Copys: "+boxCountAt(S.petBox,t,r)));
+    wasBetter?("tamed! +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase())
+             :("added to collection · copies: "+boxCountAt(S.petBox,t,r)));
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
   try{ unlockPlayAchievement("first_pet"); }catch(e){}
 }
@@ -5650,13 +5650,13 @@ function mugDrinkPts(){ return (BALANCE.workouts.drinkPts|5)*mugTier().mul; }
 function upgradeMug(){
   ensureWorkouts(S);
   const t=mugTier();
-  if(t.max||!t.next){ showToast("🍺","mug Maximum","","×"+t.mul+" For a sip."); return false; }
+  if(t.max||!t.next){ showToast("🍺","Mug maxed out","","×"+t.mul+" per sip"); return false; }
   const cost=t.next.gems|0;
-  if((S.gems||0)<cost){ showToast("💎","Few crystals","","need "+cost+" 💎, have "+fmt(S.gems||0)); return false; }
+  if((S.gems||0)<cost){ showToast("💎","Not enough crystals","","need "+cost+" 💎, have "+fmt(S.gems||0)); return false; }
   S.gems-=cost;
   S.mugLv=(S.mugLv|0)+1;
   const mul=mugTier().mul;
-  showToast("🍺","mug Yes!","","Now. ×"+mul+" For the slip.","−"+cost+" 💎");
+  showToast("🍺","Mug up!","","now ×"+mul+" per tap","−"+cost+" 💎");
   Platform.logEvent("mug_upgrade",{lv:S.mugLv,mul,cost});
   sfxGear(); save(); render();
   if(typeof UIS!=="undefined" && UIS.id==="tavern") UIS.render();
@@ -5669,8 +5669,8 @@ function drinkBeer(){
   ensureWorkouts(S);
   const W=BALANCE.workouts, mul=mugTier().mul;
   const cost=(W.drinkCost|0)*mul, pts=(W.drinkPts|0)*mul;
-  if(Date.now()<_drinkCdUntil){ showToast("🍺","Swallow","","Wait a moment."); return false; }
-  if((S.protein||0)<cost){ showToast("🍺","Not enough beer.","","need "+cost+" 🍺, have "+Math.floor(S.protein||0)); return false; }
+  if(Date.now()<_drinkCdUntil){ showToast("🍺","Sip","","wait a moment"); return false; }
+  if((S.protein||0)<cost){ showToast("🍺","Not enough beer","","need "+cost+" 🍺, have "+Math.floor(S.protein||0)); return false; }
   S.protein-=cost;
   S.wkPts=(S.wkPts||0)+pts;
   _drinkCdUntil=Date.now()+Math.round((W.drinkCdSec||1.2)*1000);
@@ -5686,7 +5686,7 @@ function drinkBeer(){
   dailyProgress("drink",mul);
   sayQuip(beerLoreQuip(), 4);
   jingleFind();
-  showToast("🍺",mul>1?("Screw you. ×"+mul):"Drink","r1","+"+pts+" Training point","Total "+(S.wkPts|0));
+  showToast("🍺",mul>1?("Bottoms up ×"+mul):"Drink","r1","+"+pts+" training pts","total "+(S.wkPts|0));
   Platform.logEvent("ale_drink",{pts, cost, mul});
   save(); render();
   const onTrain=typeof UIS!=="undefined" && UIS.id==="panel"
@@ -5726,14 +5726,14 @@ function workoutsPanelHtml(){
       const left=Math.max(0,Math.ceil((S.wkActive.end-Date.now())/1000));
       const skip=W.skipGems||5;
       btn=left>0
-        ?`<button class="btn btn-soft" onclick="skipWorkout()">⏱ ${left}c · 💎${skip}</button>`
+        ?`<button class="btn btn-soft" onclick="skipWorkout()">⏱ ${left}s · 💎${skip}</button>`
         :`<button class="btn btn-soft" onclick="claimWorkout()">Claim +${BALANCE.workoutStepPct[i]}%</button>`;
     } else if(maxed){
       btn=`<button class="btn btn-soft" disabled>MAX</button>`;
     } else {
       btn=`<button class="btn btn-soft" onclick="startWorkout('${p}')" ${pts<cost||S.wkActive?"disabled":""}>+${BALANCE.workoutStepPct[i]}% · 💪${cost}</button>`;
     }
-    return `<div class="metarow"><span><b>${nm}</b> · Lv.${lv}<br><span style="color:var(--dim)">Post. · Now. +${workoutBonus(p)}%</span></span>${btn}</div>`;
+    return `<div class="metarow"><span><b>${nm}</b> · Lv.${lv}<br><span style="color:var(--dim)">perm. boost · now +${workoutBonus(p)}%</span></span>${btn}</div>`;
   }).join("");
   return head+rows;
 }
@@ -5768,22 +5768,22 @@ function openWorkouts(){
   _skillsShellTab=null;
   clearInterval(_wkRefreshT);
   metaOpen("Training",
-    "Drink it. beer → Get your glasses. → - I’m sorry, but I’m not sure. +"+BALANCE.workouts.proteinPerHour+" 🍺/p.m.",
+    "Drink beer → get points → start a path. Passive: +"+BALANCE.workouts.proteinPerHour+" 🍺/h.",
     workoutsPanelHtml());
   workoutsBindRefresh();
 }
 function startWorkout(path){
   ensureWorkouts(S);
-  if(S.wkActive){ showToast("💪","You’re already training.","",WK_PATH_NAME[S.wkActive.path]||S.wkActive.path); return false; }
+  if(S.wkActive){ showToast("💪","Already training","",WK_PATH_NAME[S.wkActive.path]||S.wkActive.path); return false; }
   if(BALANCE.workoutPaths.indexOf(path)<0) return false;
   const W=BALANCE.workouts, lv=(S.workouts&&S.workouts[path])||0;
-  if(lv>=(W.maxLv||W.step||50)){ showToast("🔒","Ceiling of the road","",WK_PATH_NAME[path]||path); return false; }
+  if(lv>=(W.maxLv||W.step||50)){ showToast("🔒","Path maxed","",WK_PATH_NAME[path]||path); return false; }
   const cost=workoutCost(path);
-  if((S.wkPts||0)<cost){ showToast("💪","Few points","","need "+cost+", have "+(S.wkPts|0)+" · Have a beer."); return false; }
+  if((S.wkPts||0)<cost){ showToast("💪","Not enough points","","need "+cost+", have "+(S.wkPts|0)+" · drink some beer"); return false; }
   S.wkPts-=cost;
   S.wkActive={path, end:Date.now()+Math.round((W.timerSec||30)*1000)};
   Platform.logEvent("workout_start",{path,cost});
-  showToast("💪","Training", "", WK_PATH_NAME[path]||path, "−"+cost+" - Okay.");
+  showToast("💪","Training", "", WK_PATH_NAME[path]||path, "−"+cost+" pts");
   save(); render(); refreshWorkoutsUi();
   return true;
 }
@@ -5794,7 +5794,7 @@ function claimWorkout(){
   S.chestKeys=(S.chestKeys||0)+1;
   addGymXP(GYM_XP.perWorkout);
   dailyProgress("feast",1);
-  showToast("🗝","The key to the bark","","Training is over. · +"+workoutBonus(p)+"% "+(WK_PATH_NAME[p]||p),"All keys: "+S.chestKeys);
+  showToast("🗝","Chest key","","Training done · +"+workoutBonus(p)+"% "+(WK_PATH_NAME[p]||p),"keys total: "+S.chestKeys);
   sfxGear(); Platform.logEvent("workout_done",{path:p}); save(); render(); renderGear(); refreshWorkoutsUi();
   return true;
 }
@@ -5810,12 +5810,12 @@ function skipWorkout(){
     offerAdReward("workout_skip", ()=>{
       if(!S.wkActive) return;
       S.wkActive.end=Date.now();
-      showToast("📺","Training speeded up","","Take the key.");
+      showToast("📺","Training sped up","","claim the key");
       save(); render(); refreshWorkoutsUi();
     });
     return true;
   }
-  showToast("💎","Few crystals","","need "+cost+" or 📺");
+  showToast("💎","Not enough crystals","","need "+cost+" or 📺");
   return false;
 }
 function workoutBonus(id){ const lv=(S.workouts&&S.workouts[id])||0; if(!lv) return 0;
@@ -5827,18 +5827,18 @@ function dailyReset(){ const t=todayStr(); if(!S.daily) S.daily={day:t,prog:{},t
   if(S.daily.boostUsed==null) S.daily.boostUsed=false; }
 function dailyBoostQuest(qid){
   dailyReset();
-  if(S.daily.boostUsed){ showToast("📺","Already used","","1 Daydale bashing."); return; }
+  if(S.daily.boostUsed){ showToast("📺","Already used","","1 daily boost per day"); return; }
   const q=BALANCE.dailyQuests.find(x=>x.id===qid); if(!q) return;
   const cur=S.daily.prog[qid]||0;
-  if(cur>=q.need){ showToast("📕","Already ready.","","Quest accomplished"); return; }
+  if(cur>=q.need){ showToast("📕","Already done","","Quest complete"); return; }
   offerAdReward("daily_boost", ()=>{
     dailyReset();
     S.daily.boostUsed=true;
     S.daily.prog[qid]=q.need;
-    showToast("📺","Delick is closed.","","«"+q.n+"» implemented");
+    showToast("📺","Daily done","","«"+q.n+"» complete");
     Platform.logEvent("daily_boost",{id:qid});
     save(); render(); openDaily();
-  }, {limitMsg:"The Daily for the Advertisement for Today"});
+  }, {limitMsg:"Ad daily boost used for today"});
 }
 function dailyQuestMaxTok(){
   return BALANCE.dailyQuests.reduce((s,q)=>s+(q.tok|0),0)+(BALANCE.dailyAdTok|0);
@@ -5848,7 +5848,7 @@ function dailyProgress(id,amt){ dailyReset(); const q=BALANCE.dailyQuests.find(x
   p[id]=was+amt;
   if(p[id]>=q.need && was<q.need){
     S.daily.tok+=q.tok;
-    showToast("✓","Mission!","",q.ic?q.ic+" "+q.n:q.n,"+"+q.tok+" Piece of cakes");
+    showToast("✓","Quest!","",q.ic?q.ic+" "+q.n:q.n,"+"+q.tok+" tokens");
   }
 }
 function openDaily(){
@@ -5858,18 +5858,18 @@ function openDaily(){
   const tok=S.daily.tok||0;
   const doneN=BALANCE.dailyQuests.filter(q=>(S.daily.prog[q.id]||0)>=q.need).length;
   const tip=[
-    "Borin: beer Not for beauty. — Save your glasses. — Kick it. feast.",
-    "Borin: vein without impact — How mug No foam. pickaxe.",
-    "Borin She whispers: elder Remembers those who don’t forget comb.",
-    "Borin: Winners drink in the arena. — water."
+    "Borin: beer isn’t for looks. Drink — bank points — level the feast.",
+    "Borin: a vein without a swing is like a mug without foam. Grab your pickaxe.",
+    "Borin whispers: the elders’ Artel remembers those who never forget a comb.",
+    "Borin: in the arena, winners drink. The rest get water."
   ][(Math.floor(Date.now()/60000)+doneN)%4];
   const head='<div style="padding:10px 8px;margin-bottom:8px;background:#120e0a;border:1px solid #5a4830;border-radius:10px">'
     +'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">'
-    +'<span style="font-family:var(--font-display);color:var(--gold);font-size:15px">The Chest Tonight</span>'
+    +'<span style="font-family:var(--font-display);color:var(--gold);font-size:15px">Tokens today</span>'
     +'<b style="color:var(--gold)">'+tok+'</b><span style="color:var(--dim);font-size:12px">/ '+maxTok+'</span></div>'
     +'<div class="uiBar" style="margin-top:6px"><div class="uiBarFill" style="width:'+Math.min(100,tok/150*100)+'%;background:linear-gradient(90deg,#8a5a28,#e0b35a)"></div></div>'
     +'<div style="margin-top:6px;font-size:11px;color:var(--dim)">Done '+doneN+'/'+BALANCE.dailyQuests.length
-    +' · track to 150 · Publicity +'+(BALANCE.dailyAdTok|30)+'</div></div>'
+    +' · track to 150 · ad +'+(BALANCE.dailyAdTok|30)+'</div></div>'
     +'<div style="padding:8px 10px;margin-bottom:10px;border:1px dashed #6a5438;border-radius:8px;font-size:12px;color:#c9a66a;line-height:1.35">'
     +esc(tip)+'</div>';
   let boostQid=null;
@@ -5881,45 +5881,45 @@ function openDaily(){
     const p=Math.min(S.daily.prog[q.id]||0,q.need);
     const ok=p>=q.need, pct=Math.round(p/q.need*100);
     const boostBtn=(q.id===boostQid)
-      ? ('<button class="btn btn-soft" style="margin-top:4px;font-size:11px;padding:4px 8px" onclick="dailyBoostQuest(\''+q.id+'\')">📺 Close for advertising</button>')
+      ? ('<button class="btn btn-soft" style="margin-top:4px;font-size:11px;padding:4px 8px" onclick="dailyBoostQuest(\''+q.id+'\')">📺 Complete via ad</button>')
       : "";
     return '<div class="metarow" style="align-items:flex-start;flex-direction:column;gap:4px">'
       +'<div style="display:flex;width:100%;justify-content:space-between;gap:8px;align-items:flex-start">'
       +'<span><b>'+(q.ic||"·")+' '+esc(q.n)+'</b><br>'
       +'<span style="color:var(--dim);font-size:11px">'+(q.lore?esc(q.lore)+" · ":"")+p+'/'+q.need+'</span></span>'
-      +'<span style="color:'+(ok?"var(--green)":"var(--gold)")+';white-space:nowrap">'+(ok?"✓ +"+q.tok:"+"+q.tok+" (Signed) J. J. W. M. M.")+'</span></div>'
+      +'<span style="color:'+(ok?"var(--green)":"var(--gold)")+';white-space:nowrap">'+(ok?"✓ +"+q.tok:"+"+q.tok+" tok.")+'</span></div>'
       +'<div class="uiBar" style="width:100%"><div class="uiBarFill" style="width:'+pct+'%;background:'+(ok?"#4a9a5a":"#8a6230")+'"></div></div>'
       +boostBtn
       +'</div>';
   }).join("");
-  const trows='<div style="margin:10px 0 4px;font-size:12px;color:var(--dim);letter-spacing:.4px">PIECE OF CAKES</div>'
+  const trows='<div style="margin:10px 0 4px;font-size:12px;color:var(--dim);letter-spacing:.4px">TOKEN REWARDS</div>'
     +BALANCE.dailyTrack.map(([need,rew],i)=>{
       const done=(S.daily.claimed||[]).includes(i), can=tok>=need && !done;
-      return '<div class="metarow"><span>'+need+' (Signed) J. J. W. M. M. → '+esc(rew)+'</span>'
+      return '<div class="metarow"><span>'+need+' tok. → '+esc(rew)+'</span>'
         +(done?'<span style="color:var(--green)">✓</span>'
           :'<button class="btn btn-soft" onclick="claimDaily('+i+','+need+')" '+(can?"":"disabled")+'>Claim</button>')
         +'</div>';
     }).join("");
   const adTok=BALANCE.dailyAdTok|30;
   const adDone=!!S.daily.adTok;
-  const ad='<div class="metarow" style="margin-top:6px"><span>📺 Promotion · +'+adTok+' Piece of cakes'
-    +'<br><span style="color:var(--dim);font-size:11px">1 once a day · The track is still pressing.</span></span>'
+  const ad='<div class="metarow" style="margin-top:6px"><span>📺 Ad · +'+adTok+' tokens'
+    +'<br><span style="color:var(--dim);font-size:11px">1× a day · pushes the track</span></span>'
     +(adDone?'<span style="color:var(--green)">✓</span>'
       :'<button class="btn btn-soft" onclick="claimDailyAd()">Watch</button>');
-  metaOpen("Daileks",
-    "Change with dawn · Burn beer, rock the artel, hit vein",
+  metaOpen("Dailies",
+    "Resets at dawn · burn beer, grow the Artel, hit veins",
     head+qrows+'<div style="height:6px"></div>'+trows+ad);
 }
 function claimDailyAd(){
   dailyReset();
-  if(S.daily.adTok){ showToast("📺","Already taken.","","tomorrow again."); return; }
+  if(S.daily.adTok){ showToast("📺","Already claimed","","back tomorrow"); return; }
   const grant=()=>{
     dailyReset();
     if(S.daily.adTok) return;
     S.daily.adTok=true;
     const n=BALANCE.dailyAdTok|30;
     S.daily.tok=(S.daily.tok||0)+n;
-    showToast("📺","Chestnuts!","","+"+n+" To the dilick track");
+    showToast("📺","Tokens!","","+"+n+" to the dailies track");
     Platform.logEvent("daily_ad",{tok:n});
     save(); render(); openDaily();
   };
@@ -5932,10 +5932,10 @@ function claimDaily(i,need){ dailyReset(); if((S.daily.tok||0)<need||(S.daily.cl
   S.daily.claimed.push(i); addGymXP(GYM_XP.perDaily);
   const G=BALANCE.gacha||{};
   if(i===0){ S.keys=(S.keys||0)+1; S.chestKeys=(S.chestKeys||0)+1; }
-  else if(i===1){ S.eggs=(S.eggs||0)+(G.eggDailyReward||3); showToast("🥚","Award","","+"+(G.eggDailyReward||3)+" egg"); }
+  else if(i===1){ S.eggs=(S.eggs||0)+(G.eggDailyReward||3); showToast("🥚","reward","","+"+(G.eggDailyReward||3)+" eggs"); }
   else if(i===2) S.gems+=50;
   else { S.combs=(S.combs||0)+(G.combDailyReward||2); S.gold+=veinReward()*50;
-    showToast("🪮","Award","","+"+(G.combDailyReward||2)+" comb · +"+fmt(veinReward()*50)+" 🪙"); }
+    showToast("🪮","reward","","+"+(G.combDailyReward||2)+" combs · +"+fmt(veinReward()*50)+" 🪙"); }
   Platform.logEvent("daily_claim",{i}); save(); render(); openDaily(); }
 
 function fpStoreOpened(){
@@ -5973,10 +5973,10 @@ function iapParams(productId, extra){
 }
 function openShop(){
   fpStoreOpened();
-  const gems=BALANCE.shop.gemPacks.map((g,i)=>`<div class="metarow"><span>💎 ${g} crystals</span><button class="btn btn-hard" onclick="buyGems(${i})">$${[19.99,59.99,199.99][i]}</button></div>`).join("");
+  const gems=BALANCE.shop.gemPacks.map((g,i)=>`<div class="metarow"><span>💎 ${g} gems</span><button class="btn btn-hard" onclick="buyGems(${i})">$${[19.99,59.99,199.99][i]}</button></div>`).join("");
   const cb=BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>`<div class="metarow"><span>Pack: 💎${g} + 🪙${fmt(gold)}</span><button class="btn btn-hard" onclick="buyPack(${i})">$${[6.99,16.99,24.99][i]}</button></div>`).join("");
-  const na=S.noAds?"<div class='metarow'><span>✓ The ad’s offline.</span></div>":`<div class="metarow"><span>Disable advertising</span><button class="btn btn-hard" onclick="buyNoAds()">$${BALANCE.noAdsPrice}</button></div>`;
-  metaOpen("Shop","gems, paki and calm without advertising",gems+"<div style='height:8px'></div>"+cb+na);
+  const na=S.noAds?"<div class='metarow'><span>✓ Ads disabled</span></div>":`<div class="metarow"><span>Disable ads</span><button class="btn btn-hard" onclick="buyNoAds()">$${BALANCE.noAdsPrice}</button></div>`;
+  metaOpen("Shop","Gems, packs and ad-free peace",gems+"<div style='height:8px'></div>"+cb+na);
 }
 function shopFreeReset(){
   ensureBags(S);
@@ -6039,20 +6039,20 @@ function shopRewardPreview(rew){
   if(rew.combs) parts.push("+"+rew.combs+" 🪮");
   if(rew.protein) parts.push("+"+rew.protein+" 🍺");
   if(rew.chestKeys) parts.push("+"+rew.chestKeys+" 🗝");
-  if(rew.stickers) parts.push("Artifact ×"+rew.stickers);
+  if(rew.stickers) parts.push("artifact ×"+rew.stickers);
   return parts.join(" · ");
 }
 function claimShopFree(offerId, viaAd){
   shopFreeReset();
   const def=shopDailyDef(offerId);
-  if(!def){ showToast("🎁","No loper.","",String(offerId)); return; }
+  if(!def){ showToast("🎁","No offer","",String(offerId)); return; }
   const key=offerId+(viaAd?"_ad":"_free");
-  if(S.shopFree.taken[key]){ showToast("🎁","Already taken.","","Tomorrow again. · Go to another section."); return; }
+  if(S.shopFree.taken[key]){ showToast("🎁","Already claimed","","Back tomorrow · try another section"); return; }
   const rew=viaAd?def.ad:def.free;
   const grant=()=>{
     S.shopFree.taken[key]=1;
     const line=applyShopReward(rew);
-    showToast(def.ic||"🎁", viaAd?"For advertising":"Free of charge", "", def.title, line||"received", true);
+    showToast(def.ic||"🎁", viaAd?"For an ad":"Free", "", def.title, line||"claimed", true);
     Platform.logEvent("shop_free",{offerId,viaAd:!!viaAd,tab:offerId});
     save(); render();
     if(typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
@@ -6073,12 +6073,12 @@ function shopDailyCardHtml(id){
   return '<div class="uiCard shopDaily">'
     +'<div class="uiCardIc">'+(def.ic||"🎁")+'</div>'
     +'<div class="uiCardBody"><b>'+esc(def.title)+'</b>'
-    +'<div class="uiSub">'+(def.sub?esc(def.sub)+" · ":"")+'Daily discharge</div>'
+    +'<div class="uiSub">'+(def.sub?esc(def.sub)+" · ":"")+'resets daily</div>'
     +'<div class="uiBtnStack" style="margin-top:8px">'
     +'<button type="button" class="btn btn-soft" onclick="claimShopFree(\''+id+'\',false)" '+(freeDone?"disabled":"")+'>'
-    +(freeDone?"✓ free of charge":("Free of charge · "+freePrev))+'</button>'
+    +(freeDone?"✓ free":("Free · "+freePrev))+'</button>'
     +'<button type="button" class="btn btn-hard" onclick="claimShopFree(\''+id+'\',true)" '+(adDone?"disabled":"")+'>'
-    +(adDone?"✓ Publicity":("× Publicity · "+adPrev))+'</button>'
+    +(adDone?"✓ ad":("× ad · "+adPrev))+'</button>'
     +'</div></div></div>';
 }
 function requestPurchase(productId, grant){
@@ -6107,7 +6107,7 @@ function applyShopPurchase(productId, opts){
     const i={gems_1999:0,gems_5999:1,gems_19999:2}[productId];
     growthTrackPurchase([1999,5999,19999][i], productId);
     S.gems+=BALANCE.shop.gemPacks[i];
-    showToast("💎","Purchase","",BALANCE.shop.gemPacks[i]+" crystals","Thank you!");
+    showToast("💎","Purchase","",BALANCE.shop.gemPacks[i]+" gems","thank you!");
     save(); render(); if(!opts.quiet) openShop();
     return;
   }
@@ -6116,7 +6116,7 @@ function applyShopPurchase(productId, opts){
     growthTrackPurchase([699,1699,2499][i], productId);
     const [g,gold]=BALANCE.shop.comeback[i];
     S.gems+=g; S.gold+=gold;
-    showToast("🎁","Pack bought","","+"+g+"💎 +"+fmt(gold)+"🪙","Thank you!");
+    showToast("🎁","Pack bought","","+"+g+"💎 +"+fmt(gold)+"🪙","thank you!");
     save(); render(); if(!opts.quiet) openShop();
     return;
   }
@@ -6124,7 +6124,7 @@ function applyShopPurchase(productId, opts){
     growthTrackPurchase(Math.round(parseFloat(BALANCE.noAdsPrice)*100), productId);
     S.noAds=true;
     try{ Platform.syncAds(); }catch(e){}
-    showToast("🚫","No advertising","","Advertisement disabled","Thank you!");
+    showToast("🚫","No ads","","ads disabled","thank you!");
     save(); render(); if(!opts.quiet) openShop();
     return;
   }
@@ -6135,7 +6135,7 @@ function applyShopPurchase(productId, opts){
     growthTrackPurchase(p.cents, productId);
     S.gems=(S.gems||0)+p.gems; S.gold=(S.gold||0)+p.gold; S.bags=(S.bags||0)+p.bags;
     S.loot2xUntil=Date.now()+p.loot2xMin*60000; S.growth.starterBought=true;
-    showToast("🎁","Start pack","","+"+p.gems+" 💎 · Repayment rate D1");
+    showToast("🎁","Starter pack","","+"+p.gems+" 💎 · pays off D1");
     Platform.logEvent("starter_pack",{}); save(); render();
     if(!opts.quiet && typeof UIS!=="undefined"&&UIS.id==="shop") UIS.render("shop");
   }
@@ -6145,69 +6145,69 @@ function buyPack(i){ const id="pack_"+[699,1699,2499][i]; try{ Platform.logEvent
 function buyNoAds(){ try{ Platform.logEvent("iap_buy_click", iapParams("noads_4999")); }catch(e){} requestPurchase("noads_4999", function(){ applyShopPurchase("noads_4999"); }); }
 function buyStarterPack(){
   ensureGrowth(S);
-  if(S.growth.starterBought){ showToast("🎁","Already bought.","","Start pack — one-time"); return; }
+  if(S.growth.starterBought){ showToast("🎁","Already bought","","starter pack — one-time"); return; }
   try{ Platform.logEvent("iap_buy_click", iapParams("starter_pack_499")); }catch(e){}
   requestPurchase("starter_pack_499", function(){ applyShopPurchase("starter_pack_499"); });
 }
 
 let aleNext=25+Math.random()*20, aleAnim=0;
-const ALE_QUIPS=["To the mountain! *Sip*","beer I’m honest.","Ahh. beerThe barn didn’t fail!","Dust in the throat — No trouble.","One sip for Grandpa."];
+const ALE_QUIPS=["For the Mountain! *sip*","Beer honestly earned.","Ah, the brewer didn’t let me down!","Dust in the throat — no matter.","One sip for Grandpa."];
 
 const EX_QUIPS=[
-  "The ex said, beard It’s coming down. beard Longer than our relationship.",
-  "I hope his ears are cold!",
-  "My ex was like a rare stone: glitter, dig. — I’m just a debt.",
-  "I remember her eyes... and her name. — No, El’s guilty, I guess.",
-  "She said, “Pick a place. — Me or pickaxe». pickaxe At least the brain’s not drinking.",
-  "To the courtfigh of the third hall! pickaxe I’ve been beating more painfully than words.",
-  "The ex left with my gold. beard I’m here, huh!",
-  "She wanted a diamond, I found it, for herself, the right decision.",
-  "They say the courtfichiers love the rich, so I’m almost irresistible!",
-  "They got divorced because of snoring. — How cave-inOf course."
+  "My ex said my beard was scratchy. Now my beard’s longer than our relationship.",
+  "To the one who left me for an elf. Hope his ears freeze!",
+  "My ex was like a rare stone: all sparkle, dig in — nothing but debts.",
+  "I remember her eyes... but not her name. Blame the ale. Probably.",
+  "She said: «choose — me or the pickaxe». At least the pickaxe doesn’t nag.",
+  "To the dwarf lass from the third Hall! She hit harder with a pickaxe than with words.",
+  "My ex left with my gold. But I kept the beard, ha!",
+  "She wanted a diamond. I found one. For myself. Right call.",
+  "They say dwarf lasses love the rich. So I’m almost irresistible!",
+  "Divorced over snoring. My snoring is like a cave-in. Naturally."
 ];
 const BORIN_GOSSIP_QUIPS=[
-  "Crystals hallSomeone switched the Mifrill with a red glass again.",
-  "Tan from the fifth hall He swears he was arguing with Gora personally.",
-  "Yup. trader Nori’s purse is thicker than his conscience, so his scales are crooked.",
-  "In the Besdnas, they found a helmet without a courtman, Casca was more sober than the master.",
-  "The arena has a new champion, but he drinks like an elf, and he won’t last long.",
-  "I was sitting here yesterday, and I told him the stones were talking to him.",
-  "They say, “In mine The zoo of the rat stole egg petRat’s the champion of the arena now.",
-  "Nori swears he’s honest. — Until he sees someone else. bag.",
-  "Someone leaked a legendary geologist into an artifact... and then cried into the same one. mug.",
-  "Third hall They’re arguing again, whose beard Longer. — Ale is over."
+  "In the Crystal Halls someone swapped mithril for painted glass again.",
+  "The thane of the fifth Hall swears he argued with the Mountain in person. Lost, of course.",
+  "Trader Nori’s purse is fatter than his conscience. That’s why his scales are crooked.",
+  "In the Abyss they found a helmet with no dwarf. The helmet was soberer than its owner.",
+  "The arena has a new champion, but he drinks like an elf. Won’t last long.",
+  "A geologist sat here yesterday swearing the stones talk to him. I believe it. He’s made of stone too.",
+  "They say in the «Zoo» mine a rat stole a pet egg. Now the rat is arena champion.",
+  "Nori swears he’s honest. Honest — until he spots someone else’s bag.",
+  "Someone fed a legendary geologist to the Artel… then wept into the same mug.",
+  "In the third Hall they’re arguing again over whose beard is longer. While they judge, the ale runs out."
 ];
 const BORIN_LORE_QUIPS=[
-  "The first pillar in these caves was assembled from a broken wagon and doors of an old mine.",
-  "If you can hear ale dripping in silence, it’s just somewhere close to you. vein.",
-  "The old clans measured wealth not with gold, but with how many cups would survive the victory.",
-  "beard It’s not from years, but from depths you haven’t flickered at.",
-  "Used to be ale so much in Podgorne Fire they could clean pickaxe.",
-  "Mountain has a longer memory than any beardEverything she’s got is fair, she’s returning it to her.",
-  "The deylic jeton. — It’s not a coin. It’s an oath.",
-  "Artelle. elder Remembers names. — Shame on the clan, no combing.",
-  "feast It’s not the muscles that rock. — Respect. Mountain counts as louder than gold.",
-  "They say the first cup was taken out of the pickaxe The fallen champion, drank from it only standing."
+  "The first Bar in these caves was built from a broken mine cart and the doors of an old mine.",
+  "If you can hear ale dripping in the silence, a vein is cracking somewhere close.",
+  "The old clans measured wealth not in gold, but in how many mugs the table could bear after a victory.",
+  "A beard goes grey not from years, but from the depths where you didn’t flinch.",
+  "Back in the Underhill Fire they brewed ale strong enough to clean pickaxes.",
+  "The Mountain’s memory is longer than any beard. Whatever you mine honestly, she repays a hundredfold.",
+  "A daily token isn’t a coin. It’s an oath: today you didn’t lie face-down in the slag.",
+  "The elders’ Artel remembers names. An empty Bar shames the clan — it’s no saving on combs.",
+  "A feast builds not muscle but Respect. And the Mountain counts Respect louder than gold.",
+  "They say the first goblet was forged from a fallen champion’s pickaxe. Folk drank from it only standing."
 ];
 const BORIN_JOKE_QUIPS=[
-  "The ex said, beard It’s coming down. beard Longer than our relationship.",
-  "I hope his ears are cold!",
-  "My ex was like a rare stone: glitter, dig. — I’m just a debt.",
-  "She said, “Pick a place. — Me or pickaxe». pickaxe At least the brain’s not drinking.",
-  "The ex left with my gold. beard I’m here, huh!",
-  "She wanted a diamond, I found it, for herself, the right decision.",
-  "They got divorced because of snoring. — How cave-inOf course.",
-  "Elf ordered a “low down.“ He poured water. He got offended. Me too.",
-  "The client asked, “Is this kraft?“ I said, “It’s mountain.“ He nodded like a smart guy.",
-  "I’ve been drinking to health. digI am — behind him with mug."
+  "My ex said my beard was scratchy. Now my beard’s longer than our relationship.",
+  "To the one who left me for an elf. Hope his ears freeze!",
+  "My ex was like a rare stone: all sparkle, dig in — nothing but debts.",
+  "She said: «choose — me or the pickaxe». At least the pickaxe doesn’t nag.",
+  "My ex left with my gold. But I kept the beard, ha!",
+  "She wanted a diamond. I found one. For myself. Right call.",
+  "Divorced over snoring. My snoring is like a cave-in. Naturally.",
+  "An elf ordered «something light». I poured him water. He took offense. So did I.",
+  "A customer asked: «is it craft?» I said: «it’s mountain». He nodded like he got it.",
+  "Drank to health. Health went off to the dig. I followed it, mug in hand."
 ];
 const BORIN_HINT_QUIPS=[
-  "beer Not for beauty. — Save your glasses. — Kick it. feast.",
-  "The stand remembers everyone. Respect grows from training., PvP And the dilicks.",
-  "Inset skill It’s cheaper on the leaf. — beer glasses, glasses are strong.",
-  "Empty mug is not applicable: +5 🍺/- He’s dripping himself while you’re in dig.",
-  "Auto-sip in dig It happens too. — Mountain He doesn’t like dry sips.",
-  "Deylicks’ rackets — You can get the track, and the ad goes into the cup once a day."
+  "Beer isn’t for looks. Drink — bank points — level the feast.",
+  "The Bar remembers everyone. Respect grows from training, PvP and dailies.",
+  "A tagged skill on the sheet is cheaper. Here it’s beer into points, points into strength.",
+  "A mug is never empty: +5 🍺/h drips in by itself while you’re at the dig.",
+  "Auto-sips at the dig happen too — the Mountain hates a dry throat.",
+  "Daily tokens — finish the track. Once a day an ad tops up the goblet too."
 ];
 function beerLoreQuip(){
   const roll=Math.random();
@@ -6217,17 +6217,17 @@ function beerLoreQuip(){
     : BORIN_LORE_QUIPS;
   const line=pool[Math.floor(Math.random()*pool.length)];
   if(pool===ALE_QUIPS) return line;
-  if(pool===BORIN_JOKE_QUIPS) return "Borin He’s kidding. "+line;
+  if(pool===BORIN_JOKE_QUIPS) return "Borin jokes: "+line;
   if(pool===BORIN_GOSSIP_QUIPS) return "Borin whispers: "+line;
-  return "Borin And the story is, "+line;
+  return "Borin spins a tale: "+line;
 }
 
 function borinBarTalk(){
   const packs=[
-    {tag:"Borin He’s kidding.", pool:BORIN_JOKE_QUIPS},
-    {tag:"Borin Poisoning gossip.", pool:BORIN_GOSSIP_QUIPS},
-    {tag:"Borin He’s pulling the bass.", pool:BORIN_LORE_QUIPS},
-    {tag:"Borin He’s advising.", pool:BORIN_HINT_QUIPS}
+    {tag:"Borin jokes.", pool:BORIN_JOKE_QUIPS},
+    {tag:"Borin spreads gossip.", pool:BORIN_GOSSIP_QUIPS},
+    {tag:"Borin spins a tale.", pool:BORIN_LORE_QUIPS},
+    {tag:"Borin gives advice.", pool:BORIN_HINT_QUIPS}
   ];
   const tick=Math.floor(Date.now()/45000);
   const salt=((S&&S.wkPts)|0)+((S&&S.daily&&S.daily.tok)|0)*3+((S&&S.veinsBroken)|0);
@@ -6252,7 +6252,7 @@ function sipAle(){
 function openBeard(){
   const w=beardWisdom(); const need=beardNextXP(w.lv), have=S.beardXP||0;
   const isMax=w.lv>=BEARD_RANKS.length-1;
-  metaOpen("Wisdom beard","The longer and the gray beard — The higher the rank and the stronger the bonus.",
+  metaOpen("Beard Wisdom","The longer and greyer the beard — the higher the rank and the stronger the bonus.",
     `<div class="metarow"><span>Rang: <b class="r5">${w.title}</b> (${w.lv}/${BEARD_RANKS.length-1})</span></div>
      <div class="metarow"><span>Bonus: <b style="color:var(--gold)">+${w.goldPct}% Income · +${w.luckAdd.toFixed(1)} Good luck.</b></span></div>
      <div class="metarow"><span>Progress</span><span>${isMax?"MAX ✓":fmt(have)+" / "+fmt(need)+" XP"}</span></div>
@@ -6299,8 +6299,8 @@ function openSetCard(id){
       <div class="bv" style="color:${done?art.c:"#4a5261"}">${s.bonus}</div>
     </div>
     <div class="setNote">${done
-      ? "Property works all the time while the bill is assembled."
-      : "The fragments fall from loot boxThe remaining items are: "+(s.frags.length-have)+"."}</div>`;
+      ? "The property works constantly while the build is complete."
+      : "Fragments drop from loot boxes. Still to find: "+(s.frags.length-have)+"."}</div>`;
   $("setModal").style.display="flex";
   Platform.logEvent("set_view",{id});
 }
@@ -6317,24 +6317,24 @@ function spendStones(r,n){
 
 function craftBoxCost(r){ return 25+25*r; }
 function craftBoxFromStones(r){
-  if(r<1||r>7){ showToast("⚒","You can’t.","","Común Doesn’t turn into boxing."); return; }
+  if(r<1||r>7){ showToast("⚒","Not allowed","","Common can’t become a box"); return; }
   const need=craftBoxCost(r), have=dupStones(r);
-  if(have<need){ showToast("⚒","Few stones","",need+"× "+RAR_NAMES[r]+" (duplicate)","have "+have); return; }
+  if(have<need){ showToast("⚒","Not enough stones","",need+"× "+RAR_NAMES[r]+" (duplicates)","have "+have); return; }
   spendStones(r,need);
   S.boxes=S.boxes||[]; S.boxes.push(r);
-  showToast("⚒","loot box You’re all set!","r"+r,"📦 :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+r+" ("+RAR_NAMES[r]+")","−"+need+"× Stones",true);
+  showToast("⚒","Loot box assembled!","r"+r,"📦 :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+r+" ("+RAR_NAMES[r]+")","−"+need+"× stones",true);
   Platform.logEvent("lootbox_craft",{r}); sfxGear(); save(); render();
   if($("colModal")&&$("colModal").style.display==="flex") openCollection();
 }
 function upgradeBoxWithStones(tier){
-  if(tier>=7){ showToast("⚗","Limit","","Cosmic — Nowhere above."); return; }
-  if(boxCount(tier)<1){ showToast("⚗","No boxing.","","I need it. 1× :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+tier); return; }
+  if(tier>=7){ showToast("⚗","Limit","","Cosmic — maxed out"); return; }
+  if(boxCount(tier)<1){ showToast("⚗","No box","","Need 1× tier "+tier); return; }
   const need=stoneFuseCost(tier), have=dupStones(tier);
-  if(have<need){ showToast("⚗","Few stones","",need+"× "+RAR_NAMES[tier]+" (duplicate)","have "+have); return; }
+  if(have<need){ showToast("⚗","Not enough stones","",need+"× "+RAR_NAMES[tier]+" (duplicates)","have "+have); return; }
   let removed=0; S.boxes=S.boxes.filter(x=>{ if(x===tier&&removed<1){removed++;return false;} return true; });
   spendStones(tier,need);
   S.boxes.push(Math.min(7,tier+1));
-  showToast("⚗","Boxing’s been improved!","r"+(tier+1),":: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+tier+" → "+(tier+1),"−"+need+"× "+RAR_NAMES[tier],true);
+  showToast("⚗","Box upgraded!","r"+(tier+1),":: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+tier+" → "+(tier+1),"−"+need+"× "+RAR_NAMES[tier],true);
   Platform.logEvent("lootbox_stone_upgrade",{tier}); sfxGear(); save(); render(); openLoot();
 }
 function grantFragment(){
@@ -6348,7 +6348,7 @@ function grantFragment(){
   S.frags[s.id][idx]=true;
   const complete=s.frags.every((f,i)=>S.frags[s.id][i]);
   if(complete && !(S.sets||{})[s.id]){ S.sets=S.sets||{}; S.sets[s.id]=true;
-    showToast("⚒","SETH IS ASSEMBLED!","",s.n,s.bonus,true); sayQuip("Bild. «"+s.n+"» Power!",5);
+    showToast("⚒","SET COMPLETE!","",s.n,s.bonus,true); sayQuip("Build «"+s.n+"» activated! Power!",5);
     Platform.logEvent("dungeon_set",{id:s.id}); jingleSet(); }
   return {set:s.n, frag:s.frags[idx], complete};
 }
@@ -6360,24 +6360,24 @@ function openBox(tier){
 function openOneBox(){
   if(!(S.boxes||[]).length) return;
   const tier=S.boxes.pop(); const r=openBox(tier);
-  showToast("📦","Open loot box","","freckle: "+r.frag,r.complete?"→ SETH COMPLETE!":"Set: "+r.set);
+  showToast("📦","Loot box opened","","Fragment: "+r.frag,r.complete?"→ SET COMPLETE!":"set: "+r.set);
   save(); render(); openLoot();
 }
 function openAllBoxes(){
   if(!(S.boxes||[]).length) return;
   const n=S.boxes.length; let done=0;
   while(S.boxes.length){ const t=S.boxes.pop(); const r=openBox(t); if(r.complete) done++; }
-  showToast("📦","Open "+n+" loot box","",done?done+" Set is assembled!":"Parts added","Check the bills.");
+  showToast("📦","Opened "+n+" loot boxes","",done?done+" set(s) completed!":"fragments added","check your builds");
   Platform.logEvent("lootbox_open_all",{n}); save(); render(); openLoot();
 }
 function fuseBoxes(tier){
   const cost=BALANCE.fuseCost(tier);
   const have=boxCount(tier), sh=S.shards||0;
-  if(have<3){ showToast("⚗","Not enough boxing.","","I do. 3× :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+tier,"have "+have); return; }
-  if(sh<cost){ showToast("⚗","Not enough. shard","","I do. "+fmt(cost)+" 💠","have "+fmt(sh)); return; }
+  if(have<3){ showToast("⚗","Not enough boxes","","Need 3× tier "+tier,"have "+have); return; }
+  if(sh<cost){ showToast("⚗","Not enough shards","","Need "+fmt(cost)+" 💠","have "+fmt(sh)); return; }
   let removed=0; S.boxes=S.boxes.filter(x=>{ if(x===tier&&removed<3){removed++;return false;} return true; });
   S.boxes.push(Math.min(7,tier+1)); S.shards-=cost;
-  showToast("⚗","Alloy!","","3× :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+tier+" → 1× :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+(tier+1),"−"+cost+" 💠");
+  showToast("⚗","Fused!","","3× :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+tier+" → 1× :: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "+(tier+1),"−"+cost+" 💠");
   Platform.logEvent("lootbox_fuse",{tier}); save(); render(); openLoot();
 }
 
@@ -6504,13 +6504,13 @@ function openGearSlot(id){
     return `<div class="metarow"><span>${nm}</span><span>${it?("+"+(v>=100?fmt(v):v.toFixed(1))):"—"}</span></div>`;
   }).join("");
   const head=it
-    ? `<div class="metarow"><span>Inspired: <b class="r${it.r}">${RAR_NAMES[it.r]}</b>${(id==="pick"&&it.n)?(" «"+it.n+"»"):""}</span><span>Power ${fmt(itemPower(it))}</span></div>`
-    : `<div class="sub">Slot’s empty. bag — I’m sure it’ll be better, the porch will wear it.</div>`;
+    ? `<div class="metarow"><span>Equipped: <b class="r${it.r}">${RAR_NAMES[it.r]}</b>${(id==="pick"&&it.n)?(" «"+it.n+"»"):""}</span><span>power ${fmt(itemPower(it))}</span></div>`
+    : `<div class="sub">Slot’s empty. Open bags — if a drop is better, the dwarf equips it himself.</div>`;
   let tip="";
-  if(bags<1) tip="No bags · they drop from veins and appear above the inventory.";
-  else if(canUp) tip="Green ↑ means a bag may improve this slot.";
+  if(bags<1) tip="No bags. They drop from veins · roll with the 📦 button above the inventory.";
+  else if(canUp) tip="Green ↑ on a slot — a bag may beat what’s equipped.";
   else if(it && it.r>=bagCap) tip="This slot has reached its rarity cap. Bag Lv."+(S.bag||1)+" · Upgrade the bag to raise it.";
-  else tip="Bags available · use the 📦 button above the inventory.";
+  else tip="Bag available · open with the 📦 button above the inventory.";
   const bagBtn=bags>0
     ? '<button type="button" class="btn btn-hard" onclick="openBagFromGearSlot()">📦 Open bag · '+bags+'</button>'
     : '<button type="button" class="btn btn-soft" disabled style="opacity:.45">📦 No bags</button>';
@@ -6519,7 +6519,7 @@ function openGearSlot(id){
   _gearSlotOpen=id;
   _gearSlotSig=id+"|"+bags+"|"+(it?((it.r|0)+"|"+itemPower(it).toFixed(3)):"");
   metaOpen(sl.ic+" "+sl.n,
-    "What’s out is on. — If you’re better than the one you’re doing."+(sl.extra?(" Special: "+sl.extra+"."):""),
+    "What drops gets equipped — if it beats the current one."+(sl.extra?(" Special: "+sl.extra+"."):""),
     gearSlotArtHtml(sl,it)+head+statLines+gearSlotFluffHtml(sl,it)+bagCta);
   try{ if(typeof UIS!=="undefined"&&UIS._lastMeta) UIS._lastMeta.kind="gearSlot"; }catch(e){}
   Platform.logEvent("paperdoll_slot",{id});
@@ -6560,19 +6560,19 @@ function sciAnswer(idx){
     sc.goldTotal=(sc.goldTotal||0)+1;
     const ok = idx===t.gold;
     if(ok) sc.goldOk=(sc.goldOk||0)+1;
-    msg = ok ? "Control passed" : "Control didn’t get together.";
+    msg = ok ? "check passed" : "check didn’t match";
   } else {
     const w=sciWeight();
     const r=Platform.scienceSubmit(t.id, idx, w);
-    msg = (w===0) ? "Voice not accounted for: low reliability"
-        : (r.consensus ? "Consensus achieved!" : "adopted");
+    msg = (w===0) ? "vote not counted: low reliability"
+        : (r.consensus ? "consensus reached!" : "vote accepted");
   }
   sc.done=(sc.done||0)+1;
   const rel=sciReliability();
   const sh=Math.round(BALANCE.science.rewardShards*rel);
   const pr=Math.round(BALANCE.science.rewardProtein*rel);
   S.shards=(S.shards||0)+sh; S.protein=(S.protein||0)+pr;
-  showToast("🔬","Ruddoznather","",msg,"+"+sh+" 💠 · +"+pr+" 🍺");
+  showToast("🔬","Ore-Sage","",msg,"+"+sh+" 💠 · +"+pr+" 🍺");
   Platform.logEvent("science_answer",{gold:t.gold!=null});
   sciTask=null; sciNextTask();
   save(); render(); openGuild();
@@ -6583,20 +6583,20 @@ function sciSkip(){
   if(!sciTask) return false;
   Platform.logEvent("science_skip",{});
   sciTask=null; sciNextTask();
-  showToast("🔬","Model missing","","Honestly, guessing is worse than admitting");
+  showToast("🔬","Sample skipped","","Honestly: guessing is worse than admitting it");
   openGuild();
   return true;
 }
 function sciConsent(){
   S.science.on=true;
-  showToast("🔬","Guild open","","Thank you for helping with science.");
+  showToast("🔬","Guild unlocked","","Thanks for helping science");
   save(); openGuild();
 }
 function openGuild(){
   const sc=S.science;
   if(!sc.on){
     metaOpen("🔬 Ore-Sage Guild",
-      "Not a job for people who only trust eyesight.",
+      "Optional work for those with a sharp eye.",
       `<div class="sub" style="line-height:1.9">
          Dwarves see what no camera can: <b>shape and meaning</b>.
          In the Guild you mark rock samples — simple questions —
@@ -6622,7 +6622,7 @@ function openGuild(){
   const weak=sciWeight()===0;
   if(!t){
     metaOpen("🔬 Ore-Sage Guild","Reliability: "+relPct+"%",
-      '<div class="sub">All samples marked. The Mountain thanks you.</div>');
+      '<div class="sub">All samples marked. The Mountain thanks you. Come back later.</div>');
     return;
   }
   const img=SPECIMENS[t.id];
@@ -6651,16 +6651,16 @@ function openGuild(){
 }
 
 const CODEX=[
-  ["About props","Props go up not for beauty — for not dying. The first dwarf to fall in a mine is never the weakest. It’s the one who said “five more minutes.”"],
-  ["About beards","Underground, a beard is not hair — it is a workbook. Belt-length means elder. Dig-hard means handyman. The Mountain Patriarch greets you first. No beard? They call you “Fly” and keep you off the floor."],
-  ["About ale","A dwarf drinks ale for joy. A dwarf also drinks ale to stand up at the face again. Everything after the third mug — the ex, the elf, “his ears are freezing” — is not in the Charter and not up for debate."],
-  ["About Auto","Once a dwarf weighed every scrap, thought, sorted. Now a tick says “auto-sell below rare.” Thirty years of craft, a dynasty, granddad’s will — reduced to one slider. Progress, citizen. Dig quiet."],
-  ["About prestige","Deep Call is simple. You dug seven thousand floors, wore cosmic gear, knew every stone by name. You press the button — and you are back on floor one, empty bag, starter pick. But with multipliers. The Mountain does not erase what you earned. It converts it to power."],
-  ["About the cart","The cart fills, rolls out, comes back empty. Don’t ask. Some mine questions are asked only once."],
+  ["About props","Upgrade your props, citizen miner. Not for looks — the vault falls silently, without warning. The first to die in a mine is never the weakest. It’s the one who said “eh, five more minutes.”"],
+  ["About beards","Under the Mountain, a beard isn’t hair — it’s your work record. Belt-length makes you a Senior Digger. Knee-length makes you Patriarch of the Mountain, and everyone greets you first. No beard at all? They call you “Fluffy” and keep you out of the briefing."],
+  ["About ale","A dwarf doesn’t drink ale for fun. A dwarf drinks ale to get back to the dig. Everything after the third mug — the ex, the elf, “his ears are freezing” — is not in the Charter and not up for debate."],
+  ["About Auto","Once a dwarf inspected, weighed and pondered every scrap. Now there’s a checkbox: “auto-sell below threshold.” Thirty years of craft, a dynasty, granddad’s will — all reduced to one slider. Progress, citizen. Dig quietly."],
+  ["About prestige","The Deep Call is simple. You went down seven thousand floors, grew a coat of mithril gear, knew every stone by name. You press the button — and you’re back on floor one, with a leaky bag and a starter pick. But with a multiplier. The Mountain doesn’t take what you earned. It converts it into experience."],
+  ["About the cart","The cart fills to the brim, rolls away and comes back empty. Where it goes — don’t ask. Who unloads it — don’t ask either. Some questions in a mine are asked only once."],
   ["About loot boxes","Upgrade boxes with duplicate stones. The first of each stone stays in the collection — it pays a quiet loot bonus. Dig with one hand; with the other, guard the museum fund."],
-  ["About elders","Hiring an elder is luck. You roll Hilda the Healer. You roll again — Bodri the Brewer, weaker. The weak are not fired: they join the artel as material. The target elder takes the material and grows. What really happens — closed question."],
-  ["Offline income","You sleep. You work. You live. The dwarf digs — exactly two hours — then stops and waits in the dark. Not tired. The Charter says: two hours alone, then only together."],
-  ["Meaning","Rock grows harder the deeper you go. Six seconds a vein is called “endless complexity.” In the mine it is just called work."]
+  ["About elders","Hiring an elder is luck. You roll — Hilda the Healer. Roll again — Bodri the Brewer, but weaker. The weak aren’t kicked out: they join the Artel as material. The target elder absorbs the material and grows. What really goes on there is a closed question."],
+  ["About offline income","You sleep. You work. You live your life. And the dwarf digs. Exactly two hours, then he stops and waits for you, staring into the dark. Not because he’s tired — the Mountain’s Charter says: two hours without you, then only together."],
+  ["About the point","The rock grows tougher exactly as fast as you do. You can’t go faster, you can’t fall behind — six seconds per vein, until the end of time. That, citizen, is called “infinite difficulty.” In the mine it’s simply called work."]
 ];
 function showIntro(){
   const list=$("introList");
@@ -6759,8 +6759,8 @@ function openWall(){
         <br><span class="sub">⛰${e.prestige} · ${fmt(e.depth)} m</span></span></div>`;
   }).join("");
   metaOpen("🏔 Mountain Wall",
-    "Who’s got a deeper and higher. "+fmt(S.stageIdx*3)+" m · prestige "+(S.prestigeLv||0)
-      +(myRank>=0?(" · place #"+(myRank+1)):""),
+    "Who dug deepest and rose highest. Your depth: "+fmt(S.stageIdx*3)+" m · prestige "+(S.prestigeLv||0)
+      +(myRank>=0?(" · rank #"+(myRank+1)):""),
     `<div class="btnrow" style="margin-bottom:10px">
        <input id="lbName" value="${esc(me)}" maxlength="18"
          style="flex:1;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:8px;font-size:14px">
@@ -6781,9 +6781,9 @@ function openFairness(){
   const f=S.fair;
   const lastNonce=Math.max(0,f.nonce-1);
   metaOpen("🔐 Gacha fairness",
-    "Each roll is considered according to the Mountain formula: server + Your seat. + Checked. — Nothing’s going to blow.",
+    "Every roll follows the Mountain’s formula: server + your seed + counter. Verifiable — nothing is rigged.",
     `<div class="metarow"><span>Integrity regime</span>
-       <button class="btn ${f.on?"btn-hard":"btn-soft"}" onclick="toggleFair()">${f.on?"INCLUDING ✓":"off"}</button></div>
+       <button class="btn ${f.on?"btn-hard":"btn-soft"}" onclick="toggleFair()">${f.on?"ON ✓":"off"}</button></div>
      <div class="metarow"><span>Mountain seal (hash)</span></div>
      <div class="sub" style="word-break:break-all;color:#7ae8dc">${f.serverHash}</div>
      <div class="metarow" style="margin-top:8px"><span>Your personal seat.</span></div>
@@ -6792,7 +6792,7 @@ function openFairness(){
        <button class="btn btn-soft" onclick="setFairClient()">Set</button></div>
      <div class="metarow" style="margin-top:8px"><span>roll done</span><span><b>${f.nonce}</b></span></div>
      <div class="sub" style="margin-top:10px">Check past roll: count
-       <br><code style="color:#e8b93c">SHA256("seat_servers:${f.client}:${lastNonce}")</code>
+       <br><code style="color:#e8b93c">SHA256("server_seed:${f.client}:${lastNonce}")</code>
        <br>First 8 hex ÷ 2³² = Number roll in [0,1).</div>
      <div style="text-align:center;padding:12px 0">
        <button class="btn btn-hard" onclick="revealFair()" style="max-width:280px">Open the seat and change (check)</button>
@@ -6801,35 +6801,35 @@ function openFairness(){
   Platform.logEvent("fair_view",{on:f.on});
 }
 function toggleFair(){ S.fair.on=!S.fair.on;
-  showToast("🔐",S.fair.on?"IFC honesty":"Honesty’s off.","",S.fair.on?"Gucha is considered for hash":"Regular Random");
+  showToast("🔐",S.fair.on?"Fairness ON":"Fairness off","",S.fair.on?"gacha rolls via hashes":"plain random");
   save(); openFairness(); }
 function setFairClient(){ const el=$("fairClient"); if(!el) return;
   const v=(el.value||"").trim().slice(0,64)||randSeed();
   S.fair.client=v; S.fair.nonce=0;
-  showToast("🔐","Client seat assigned","",v,"The counter is dropped."); save(); openFairness(); }
+  showToast("🔐","Client seed set","",v,"counter reset"); save(); openFairness(); }
 function revealFair(){ const r=rotateFairSeed();
-  showToast("🔐","Sid’s been exposed.","","Old server: "+r.revealed,"hash matches the previous commite.",true);
+  showToast("🔐","Seed revealed","","old server: "+r.revealed,"hash matches the earlier commit",true);
   openFairness(); }
 function openPrestige(){
   const gain=prestigeGain(), lv=S.prestigeLv||0, ok=canPrestige();
   const now=prestigeMult(), next=Math.pow(BALANCE.prestige.powPerLevel, lv+gain);
   const echoAdd=echoFromGear();
   const nextLvStage=Math.pow(lv+1,2)*BALANCE.prestige.div;
-  metaOpen("⛰️ Deep Zow (presence) "+lv+")",
-    "Mountain He’s letting the paddle go upstairs so he can come down again. — Harder.",
+  metaOpen("⛰️ The Deep Call (prestige "+lv+")",
+    "The Mountain lets the dwarf climb up so he can come down again — stronger.",
     `<div class="metarow"><span>Attack multiplier (prestigation)</span><span><b style="color:var(--gold)">×${fmt(now)}</b></span></div>
      <div class="metarow"><span>Echo of the old curls</span><span><b>+${fmt(S.echo||0)} Attacks</b></span></div>
      <div class="metarow"><span>Deduction made</span><span>${S.prestigeRuns||0}</span></div>
      <div class="sub" style="margin-top:12px">${ok
-       ? `Ready to go down: <b style="color:var(--gold)">+${gain} Lv.</b> · force will become <b style="color:var(--gold)">×${fmt(next)}</b> · Echo <b>+${fmt(echoAdd)} ATK</b>`
-       : `Next level — during phase <b>${fmt(nextLvStage)}</b> (Now. ${fmt(S.stageIdx)}).`}</div>
+       ? `Ready to descend: <b style="color:var(--gold)">+${gain} Lv.</b> · power becomes <b style="color:var(--gold)">×${fmt(next)}</b> · echo <b>+${fmt(echoAdd)} ATK</b>`
+       : `Next level — at stage <b>${fmt(nextLvStage)}</b> (now ${fmt(S.stageIdx)}).`}</div>
      <div class="metarow" style="margin-top:12px"><span style="color:#e05555">Dropped</span>
        <span class="sub" style="text-align:right">depth · Gold · Equipment · Upgrades · bag</span></div>
      <div class="metarow"><span style="color:var(--green)">It’s forever.</span>
        <span class="sub" style="text-align:right">skill · elder · pet · Collection · Networks · beard · crystals</span></div>
      <div style="text-align:center;padding:12px 0">
        <button class="btn btn-hard" onclick="confirmPrestige()" ${ok?"":"disabled"} style="max-width:260px">
-         ${ok?("Go down again (+"+gain+" (c)"):"It’s not time yet."}</button>
+         ${ok?("Descend again (+"+gain+" lv.)"):"Not yet"}</button>
      </div>`);
   Platform.logEvent("prestige_view",{lv});
 }
@@ -6846,21 +6846,21 @@ function openLoot(){
     const canFuse=needBox===0&&needSh===0;
     const why=canFuse?"" :
       `<div class="sub" style="margin:2px 0 0;color:#e8a24a">- I’m missing: ${[
-        needBox?needBox+"× Boxes":"",
+        needBox?needBox+"× box":"",
         needSh?fmt(needSh)+" 💠":""].filter(Boolean).join(" · ")}</div>`;
     const sNeed=stoneFuseCost(t), sHave=dupStones(t), canStone=t<7&&sHave>=sNeed;
     const stoneBtn = t<7
-      ? `<button class="btn btn-soft" onclick="upgradeBoxWithStones(${t})" ${canStone?"":"disabled"} ${canStone?"":'style="opacity:.45"'}>Improve · ${sNeed}× <span class="r${t}">${RAR_NAMES[t]}</span></button>`
+      ? `<button class="btn btn-soft" onclick="upgradeBoxWithStones(${t})" ${canStone?"":"disabled"} ${canStone?"":'style="opacity:.45"'}>Upgrade · ${sNeed}× <span class="r${t}">${RAR_NAMES[t]}</span></button>`
       : "";
     const stoneWhy = (t<7&&!canStone)
-      ? `<div class="sub" style="margin:2px 0 0;color:#8a93a3">Rocks (in millions of United States dollars)duplicate): ${sHave}/${sNeed}</div>` : "";
+      ? `<div class="sub" style="margin:2px 0 0;color:#8a93a3">stones (duplicates): ${sHave}/${sNeed}</div>` : "";
     return `<div class="metarow"><span>📦 Tyre ${t} (<b class="r${t}">${RAR_NAMES[t]}</b>) ×${c}${why}${stoneWhy}</span>
       <span style="display:flex;flex-direction:column;gap:6px;flex:none">
         <button onclick="fuseBoxes(${t})" ${canFuse?"":"disabled"} ${canFuse?"":'style="opacity:.45"'}>Alloy 3→${t+1} · ${fc}💠</button>
         ${stoneBtn}
       </span></div>`;
-  }).join("")||'<div class="sub">loot box No, put it on. 8 Part slots one rarity — It’s gonna fall. loot box.</div>';
-  const openBtns=boxes.length?`<div class="btnrow"><button class="btn btn-soft" onclick="openOneBox()">Open 1</button><button class="btn btn-hard" onclick="openAllBoxes()">Open All (${boxes.length})</button></div>`:"";
+  }).join("")||'<div class="sub">No loot boxes. Fill all 8 slots with gear of one rarity — a loot box drops.</div>';
+  const openBtns=boxes.length?`<div class="btnrow"><button class="btn btn-soft" onclick="openOneBox()">Open 1</button><button class="btn btn-hard" onclick="openAllBoxes()">Open all (${boxes.length})</button></div>`:"";
   const setRows=BALANCE.dungeonSets.map(s=>{
     const fr=(S.frags||{})[s.id]||{}; const have=s.frags.filter((f,i)=>fr[i]).length;
     const done=(S.sets||{})[s.id];
@@ -6874,9 +6874,9 @@ function openLoot(){
       </span>
       <span style="flex:none;color:${done?"var(--green)":"var(--dim)"}">${done?"✓":"›"}</span></div>`;
   }).join("");
-  metaOpen("loot box and the Subterranean Sets",
-    "shard 💠 "+fmt(S.shards||0)+" · alloy 3→1 for shardOr improve one boxing for duplicate A collection of stones.",
-    boxRows+openBtns+"<div style='height:10px'></div><div class='sub'>The Bilds (4 Scratch → A unique property:</div>"+setRows);
+  metaOpen("Loot Boxes & Underground Sets",
+    "Shards 💠 "+fmt(S.shards||0)+" · fuse 3→1 for shards, or upgrade one box with duplicate collection stones.",
+    boxRows+openBtns+"<div style='height:10px'></div><div class='sub'>Builds (4 fragments → unique effect):</div>"+setRows);
   Platform.logEvent("loot_view",{});
 }
 
@@ -6931,7 +6931,7 @@ function offerAdReward(slot, grantFn, opts){
   if(typeof grantFn!=="function") return;
   if(S.noAds){ grantFn(); return; }
   if(!adSlotOk(slot)){
-    showToast("📺", opts.limitMsg||"Advertisement Limited","","tomorrow again. · "+adViewsToday()+"/"+adsDailyCap());
+    showToast("📺", opts.limitMsg||"Ad limit","","again tomorrow · "+adViewsToday()+"/"+adsDailyCap());
     return;
   }
   try{
@@ -6947,15 +6947,15 @@ function adViewsToday(){
   return S.growth.ads.count|0;
 }
 const AD_HUB_LABELS={
-  vein_double:"×2 gold after vein", exhaust_refill:"Second breath (smoking)",
-  collapse_recover:"Unload after cave-in", durab_free:"supports for advertising",
+  vein_double:"×2 gold after vein", exhaust_refill:"Second wind (smoke break)",
+  collapse_recover:"Dig out after a cave-in", durab_free:"Props for an ad",
   offline_x2:"Offline ×2", bonus_x2:"Bonus chest ×2", loot2x:"2× loot 30 min",
-  wheel_free:"Free turn", pvp_reroll:"New Opponents PvP",
-  pet_roll:"egg for roll", beard_roll:"comb for roll",
-  workout_skip:"Training grounds", event_key:"The key to the Yventa",
-  daily_tok:"Deylicks’ rackets", daily_boost:"Close the file", bag_skip:"Band Upload Pass",
-  speed:"Acceleration ×2+", shop_free:"Market · Allowances",
-  auto_turbo:"Turbo bag removal", mine_raid_ready:"Level mine Right."
+  wheel_free:"Free spin", pvp_reroll:"New PvP rivals",
+  pet_roll:"Egg for a roll", beard_roll:"Comb for a roll",
+  workout_skip:"Skip training", event_key:"Event key",
+  daily_tok:"Daily tokens", daily_boost:"Finish a daily", bag_skip:"Skip chest upgrade",
+  speed:"Speed-up ×2+", shop_free:"Market · bonuses",
+  auto_turbo:"Turbo bag opening", mine_raid_ready:"Instant mine tier"
 };
 let adHubSeen=false;
 function adPulseWanted(){
@@ -6979,9 +6979,9 @@ function openAdHub(){
     return `<div class="metarow"><span>${lab}</span><span><b>${left}</b> / ${adSlotCap(k)}</span></div>`;
   }).join("");
   metaOpen("📺 Ad bonuses",
-    (S.noAds?"The ad’s offline. (VIP) · Non-roller bonuses":"Today "+used+"/"+cap+" View · Tap the slots in the game."),
-    (S.noAds?'<div class="sub">Thanks for the support. — All 📺-The buttons give the award at once.</div>'
-      :rows+'<div class="sub" style="margin-top:10px">After each vein, under cave-insmoke, lack of resources — Look for the button. 📺.</div>'));
+    (S.noAds?"Ads off (VIP) · bonuses without videos":"Today "+used+"/"+cap+" views · tap the slots in-game"),
+    (S.noAds?'<div class="sub">Thanks for the support — every 📺 button gives its reward instantly.</div>'
+      :rows+'<div class="sub" style="margin-top:10px">After every vein, on a cave-in, smoke break or resource shortage — look for the 📺 button.</div>'));
   try{
     const adCell=$("statAdCell");
     if(adCell&&adCell.classList) adCell.classList.remove("pulse");
@@ -7017,8 +7017,8 @@ function growthBumpInviter(code){
 function growthApplyReferral(code, silent){
   ensureGrowth(S);
   code=(code||"").trim().toUpperCase();
-  if(!code||code.length<4){ if(!silent) showToast("👥","Code","","Enter friend code"); return false; }
-  if(code===growthInviteCode()){ if(!silent) showToast("👥","That's your code","","Invite someone else."); return false; }
+  if(!code||code.length<4){ if(!silent) showToast("👥","Code","","enter a friend’s code"); return false; }
+  if(code===growthInviteCode()){ if(!silent) showToast("👥","That's your code","","invite someone"); return false; }
   if(S.growth.referredBy){
     if(!silent) showToast("👥","Already referred","","From "+S.growth.referredBy);
     return false;
@@ -7153,12 +7153,12 @@ function growthOnBoot(){
     }
     if(!adSlotOk(slot)){
       try{ Platform.logEvent("ad_blocked",{slot:place,reason:"cap"}); }catch(e){}
-      showToast("📺","Advertisement Limited","","Slot or day · "+adViewsToday()+"/"+adsDailyCap());
+      showToast("📺","Ad limit","","slot or day · "+adViewsToday()+"/"+adsDailyCap());
       cb(false); return;
     }
     if(!growthAdCapOk()){
       try{ Platform.logEvent("ad_blocked",{slot:place,reason:"cap"}); }catch(e){}
-      showToast("📺","Advertisement Limited","","tomorrow again. — CPA under control"); cb(false); return;
+      showToast("📺","Ad limit","","again tomorrow — CPA under control"); cb(false); return;
     }
     try{ Platform.logEvent("ad_reward_try_show", adBase); }catch(e){}
     base(function(ok, reason){
@@ -7213,8 +7213,8 @@ const SPEEDS=[1,2,3,10,100];
     Platform.logEvent("speed_toggle",{speed:next});
     S.speed=next;
     flushSales();
-    const q={1:"Calm pace, meditation.",2:"Double speed! beard It’s getting better!",
-      3:"- Hold the helmet!",10:"×10! pickaxe It’s melting!",100:"×100! MOUNTAIN ♪ I’M SHAKING ♪ ♪ I’M SHAKING ♪ ♪ I’M SHAKING ♪"};
+    const q={1:"Easy pace. Meditating.",2:"Double pace! Beard’s flapping!",
+      3:"TRIPLE! Hold your helmet!",10:"×10! The pick is melting!",100:"×100! THE MOUNTAIN SHAKES!!!"};
     sayQuip(q[S.speed]||("×"+S.speed+"!"),3);
     save();
   };

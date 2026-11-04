@@ -14,8 +14,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         /* Синхронизируй с package.json: versionName = semver, versionCode только ↑ */
-        versionCode 24
-        versionName "0.12.7"
+        versionCode 27
+        versionName "0.12.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -54,6 +54,12 @@ android {
         }
     }
     packaging {
+        jniLibs {
+            // AGP 8.2 кладёт .so в APK с выравниванием 4 КБ. Play для targetSdk 36
+            // требует 16 КБ. Распаковка при установке снимает эту проверку:
+            // ELF-сегменты AppLovin уже выровнены на 16 КБ.
+            useLegacyPackaging = true
+        }
         resources {
             excludes += [
                 'META-INF/DEPENDENCIES',

@@ -2,11 +2,11 @@
 "use strict";
 
 const UI_MINES=[
-  {id:0,ic:"🎒",n:"Greenhorn Dig",   sub:"special rock → bags",     theme:"t0", rock:"🪨", raidRes:"bags"},
-  {id:1,ic:"💎",n:"Doom Echo",         sub:"special rock → gems", theme:"t1", rock:"⛰️", raidRes:"gems"},
-  {id:2,ic:"🥚",n:"Undermountain Fire", sub:"special rock → eggs",      theme:"t2", rock:"🌋", raidRes:"eggs"},
-  {id:3,ic:"🪮",n:"Crystal Depths",     sub:"special rock → combs",  theme:"t3", rock:"🧊", raidRes:"combs"},
-  {id:4,ic:"🍺",n:"The Abyss",          sub:"special rock → beer",      theme:"t4", rock:"🗿", raidRes:"protein"}
+  {id:0,ic:"🎒",n:"Greenhorn Dig",   sub:"special stone → bags",     theme:"t0", rock:"🪨", raidRes:"bags"},
+  {id:1,ic:"💎",n:"Echo-Dûm",         sub:"special stone → gems", theme:"t1", rock:"⛰️", raidRes:"gems"},
+  {id:2,ic:"🥚",n:"Underhill Fire", sub:"special stone → eggs",      theme:"t2", rock:"🌋", raidRes:"eggs"},
+  {id:3,ic:"🪮",n:"Crystal Depths",     sub:"special stone → combs",  theme:"t3", rock:"🧊", raidRes:"combs"},
+  {id:4,ic:"🍺",n:"The Abyss",          sub:"special stone → beer",      theme:"t4", rock:"🗿", raidRes:"protein"}
 ];
 
 const UI_ART_COLS=[
@@ -24,11 +24,11 @@ const UI_TAV_RANKS=[
 ];
 
 const UI_PVP_BOARD=[
-  {n:"Durin Deep", ic:"⛰", t:1180},
-  {n:"Mira Rune",     ic:"✦", t:860},
+  {n:"Durin the Deep", ic:"⛰", t:1180},
+  {n:"Mira the Runic",     ic:"✦", t:860},
   {n:"Grom Irontooth",  ic:"🦷", t:640},
   {n:"Borin the Counter",   ic:"📐", t:410},
-  {n:"Slag Beardless", ic:"🪓", t:180},
+  {n:"Slag the Beardless", ic:"🪓", t:180},
   {n:"Granite Granny",      ic:"🪨", t:95},
   {n:"Nori the Trader",    ic:"💰", t:55}
 ];
@@ -160,7 +160,7 @@ const UIS={
       const ms=BALANCE.growth.referral.milestones;
       const msHtml=ms.map((m,i)=>{
         const done=S.growth.milestones.includes(i), ok=(S.growth.invites||0)>=m.n;
-        return this.row(m.n+" Friends",(done?"✓ +"+m.gems+" 💎":(ok?"Ready!":"—")));
+        return this.row(m.n+" friends",(done?"✓ +"+m.gems+" 💎":(ok?"ready!":"—")));
       }).join("");
       const wl=S.growth.waitlist;
       this.$("uiTitle").textContent="Friends";
@@ -178,9 +178,9 @@ const UIS={
         +'<div class="uiSec">Milestones</div>'+msHtml
         +'<div class="uiSec">Waitlist (early access)</div>'
         +(wl.joined
-          ?(wl.claimed?this.row("Status","✓ bonus received"):this.card("📋","Early access","Early signup bonus",
+          ?(wl.claimed?this.row("Status","✓ bonus received"):this.card("📋","Early access","early signup bonus",
             '<button class="btn btn-hard btn-wide" onclick="claimWaitlistBonus()">Claim bonus</button>'))
-          :this.card("📋","Waitlist","A bonus for organic demand",
+          :this.card("📋","Waitlist","organic demand bonus",
             '<button class="btn btn-hard btn-wide" onclick="growthJoinWaitlist(false);UIS.render(\'profile\')">Join</button>'))
         +'<div class="uiSec">Have an invite code?</div>'
         +'<div class="uiRow"><span><input id="uiRefInp" class="uiInp wide" maxlength="8" placeholder="CODE"></span>'
@@ -197,15 +197,15 @@ const UIS={
       '<div class="uiHero"><div class="uiHeroArt">🧔</div>'
       +'<b>'+esc(playerName())+'</b><div class="uiSub">'+w.title+((S.prestigeLv||0)?(" · ⛰ "+S.prestigeLv):"")+'</div></div>'
       +this.row("Run depth",'<b>'+Math.min(S.stageIdx||1,BALANCE.run.len)+'/'+BALANCE.run.len+'</b>')
-      +this.row("Record",'<b>'+fmt(S.bestDepth||depth)+' m</b>')
+      +this.row("Best",'<b>'+fmt(S.bestDepth||depth)+' m</b>')
       +this.row("PvP · cups",(S.pvpWins||0)+' wins · 🏆 '+fmt(S.trophies||0))
       +this.row("Hall",'Lv. '+gymLevel()+' · +'+gymPerkPct()+'%')
       +'<div class="uiRow"><span>Tavern name</span><span><input id="uiProfName" class="uiInp" maxlength="18" value="'+esc(playerName())+'">'
       +'<button class="btn btn-soft btn-tiny" onclick="'+setName+'">✓</button></span></div>'
       +'<div class="uiBtnStack">'
-      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Character Sheet · KRASAVA</button>'
+      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Sheet · K.R.A.S.A.V.A.</button>'
       +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Beards</button>'
-      +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Invite your friends.</button>'
+      +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Invite friends</button>'
       +'<button onclick="openWall()">🏔 Mountain Wall</button></div>';
   },
 
@@ -215,7 +215,7 @@ const UIS={
     this.$("uiTabs").innerHTML="";
     this.$("uiBody").innerHTML=
       this.row("Music",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 on":"🔇 off")+'</button>')
-      +this.row("Pop-up messages",'<button id="uiSetToasts" onclick="toggleToasts();UIS.render(\'settings\')">'+(typeof toastToggleLabel==="function"?toastToggleLabel():(toastsOn?"💬 on":"🚫 off"))+'</button>')
+      +this.row("Pop-ups",'<button id="uiSetToasts" onclick="toggleToasts();UIS.render(\'settings\')">'+(typeof toastToggleLabel==="function"?toastToggleLabel():(toastsOn?"💬 on":"🚫 off"))+'</button>')
       +this.row("Mountain Charter",'<button onclick="showIntro()">📜 read</button>')
       +this.row("Gacha fairness",'<button onclick="openFairness()">🔐 open</button>')
       +this.row("Mountain Wall",'<button onclick="openWall()">🏔 leaderboard</button>')
@@ -231,7 +231,7 @@ const UIS={
     this.$("uiTitle").textContent="Pets";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🥚 '+(S.eggs||0)+'</span>';
     this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","craft","bag"],
-      ["Gacha","Merge","Craft","Stable"],tab);
+      ["Gacha","Merge","Craft","Cage"],tab);
     let body="";
     const cur=S.pet?('<div class="uiBanner r'+S.pet.r+'">In battle: '+petIcon(S.pet.t)+' '+PET_TYPES[S.pet.t].n
       +' · '+petSkinOf(S.pet).n
@@ -253,13 +253,13 @@ const UIS={
     } else if(tab==="craft"){
       const unlocked=petCraftUnlocked();
       body=(unlocked
-        ? this.card("⚗","Craft Exotic","One Legendary from each family + "+BALANCE.petCraft.gems+" 💎",
+        ? this.card("⚗","Craft Exotic","One Legendary per family + "+BALANCE.petCraft.gems+" 💎",
             '<button class="btn btn-hard btn-wide" onclick="craftPetExotic()" '+(petCraftReady()?"":"disabled")+'>Craft</button>')
         : '<div class="uiEmpty">🔒 Crafting unlocks after '+BALANCE.petCraft.needLegendaries+' Legendaries (owned: '+(S.petLegSeen||0)+').</div>');
     } else {
       const slots=PET_TYPES.map((p,i)=>{
         let bestR=-1; for(const k in S.petBox||{}){ const [t,r]=k.split("_").map(Number); if(t===i&&r>bestR) bestR=r; }
-        const ic=bestR>=0?petIcon(i):"❔", sub=bestR>=0?PET_RAR[bestR]:"none";
+        const ic=bestR>=0?petIcon(i):"❔", sub=bestR>=0?PET_RAR[bestR]:"no";
         return this.slot(ic,p.n,sub,bestR>=0?"r"+bestR:"");
       });
       body=cur+this.grid(slots);
@@ -273,7 +273,7 @@ const UIS={
     this.$("uiTitle").textContent="Beards";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🪮 '+(S.combs||0)+'</span>';
     this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","ascend","rank","gallery"],
-      ["Gacha","Merge","Ascension","Rank","Gallery"],tab);
+      ["Gacha","Merge","Ascend","Rank","Gallery"],tab);
 
     const w=(typeof beardWisdom==="function")?beardWisdom():{lv:0,goldPct:0,luckAdd:0,title:"—"};
     const enMax=(typeof stat==="function")?Math.max(1,stat("energy")|0):1;
@@ -295,12 +295,12 @@ const UIS={
 
     let body="";
     const healthLine='<div class="uiSub" style="margin-top:8px;color:var(--dim);line-height:1.35">' +
-      'Energy drains while mining whenever the rock strikes. ' +
-      'Keep energy in the green: drink 🍺 and upgrade Regen/Defense so your beard keeps growing.</div>';
+      'Energy drains in the dig (every rock “shot” burns it). ' +
+      'To keep your beard growing nonstop, keep energy in the green: drink 🍺 and level Regen/Defense.</div>';
 
     if(tab==="gacha"){
       body=cur
-        +this.card("🪮","The Pity of the Mountain","Rarity odds improve with every roll",
+        +this.card("🪮","Mountain’s Pity","Rarity odds grow with the number of rolls",
           '<div class="uiSub" style="margin-bottom:6px">Rolls: '+rolls+' · threshold: '+pityX1+' → Leg ~'+geoOddsPct[3].toFixed(2)+'%</div>' +
           this.bar(pityPct) +
           rarRU.map((nm,i)=>this.row(nm,'~'+geoOddsPct[i].toFixed(2)+'%')).join("")
@@ -311,7 +311,7 @@ const UIS={
         +healthLine;
     } else if(tab==="merge"){
       if(!S.geo){
-        body='<div class="uiEmpty">Hire an elder on the Gacha tab first.</div>';
+        body='<div class="uiEmpty">Hire a beard on the Gacha tab first.</div>';
       } else {
         const total=geoMaterials();
         const counts=[0,0,0,0];
@@ -324,15 +324,15 @@ const UIS={
         body=cur
           +this.card("👷",S.geo.n,"Lv. "+(S.geo.lv||1)+" → after merge Lv. "+newLv+" · material: "+total,
             rarRU.map((nm,r)=>this.row(nm, String(counts[r]||0))).join("")
-            +'<div class="uiSub" style="margin-top:6px">Consumes materials of rarity ≤ '+rarRU[S.geo.r]+'.</div>'
-            +'<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(total<1?"disabled":"")+'>Merge duplicates</button>'
+            +'<div class="uiSub" style="margin-top:6px">Feeds on materials of rarity ≤ '+rarRU[S.geo.r]+'.</div>'
+            +'<button class="btn btn-soft btn-wide" onclick="mergeGeo();UIS.render(\'beards\')" '+(total<1?"disabled":"")+'>Absorb duplicates</button>'
           )
           +healthLine;
       }
     } else if(tab==="ascend"){
       const B=BALANCE.merge;
       if(!S.geo){
-        body='<div class="uiEmpty">Hire an elder on the Gacha tab first.</div>';
+        body='<div class="uiEmpty">Hire a beard on the Gacha tab first.</div>';
       } else {
         const isLeg=S.geo.r===GEO_RAR.length-1;
         const ascOk=canAscendGeo();
@@ -341,21 +341,21 @@ const UIS={
         const gemsHave=S.gems||0;
         const gemsOk=gemsHave>=B.ascendGems;
         const why=!isLeg ? ("need "+GEO_RAR[GEO_RAR.length-1])
-          : (!lvOk ? ("need Lv. "+B.ascendLv+" (have "+lv+")")
+          : (!lvOk ? ("need Lv."+B.ascendLv+" (have "+lv+")")
           : (!gemsOk ? ("need "+B.ascendGems+" 💎 (have "+fmt(gemsHave)+")") : ""));
         const lvPct=isLeg?Math.min(100,Math.round(lv/B.ascendLv*100)):0;
         const gemsPct=isLeg?Math.min(100,Math.round(gemsHave/B.ascendGems*100)):0;
         const afterPct=geoPct({t:S.geo.t,r:S.geo.r,lv:1,asc:(S.geo.asc||0)+1});
         const ascStep=(S.geo.asc||0)+1;
         body=cur+this.card("✦","Ascension ✦"+ascStep,
-          "+"+B.ascendPct+"% to bonus · drop to 1 · "+B.ascendGems+" 💎",
+          "+"+B.ascendPct+"% to bonus · level resets to 1 · "+B.ascendGems+" 💎",
           (isLeg
             ? '<div class="uiSub">Progress: level '+lv+'/'+B.ascendLv+'</div>' + this.bar(lvPct) +
               '<div class="uiSub" style="margin-top:6px">Gems: '+fmt(gemsHave)+' / '+fmt(B.ascendGems)+'</div>' + this.bar(gemsPct) +
               '<div class="uiSub" style="margin-top:8px">After ascension: ~'+afterPct.toFixed(0)+'% '+GEO_TYPES[S.geo.t].stat.toUpperCase()+'</div>' +
               '<button class="btn btn-hard btn-wide" onclick="ascendGeo()" '+(ascOk?"":"disabled")+'>Ascension · '+B.ascendGems+' 💎</button>'
               +(why?'<div class="uiSub" style="margin-top:8px;color:#e8a24a">'+why+'</div>':"")
-            : '<div class="uiEmpty">🔒 Only for '+GEO_RAR[GEO_RAR.length-1]+'. Merge duplicates on the Merge tab until Legendary.</div>'));
+            : '<div class="uiEmpty">🔒 Only for '+GEO_RAR[GEO_RAR.length-1]+'. Merge duplicates on the Merge tab up to Legendary.</div>'));
       }
     } else if(tab==="rank"){
       const need=beardNextXP(w.lv), have=S.beardXP||0;
@@ -369,15 +369,15 @@ const UIS={
       body=cur+this.card("🧔",w.title,
         "+"+w.goldPct+"% income · +"+w.luckAdd.toFixed(1)+" luck",
         this.bar(pct) +
-        '<div class="uiSub" style="margin-top:6px">'+(w.lv>=maxLv?"MAX":fmt(have)+" / "+fmt(need)+" XP · remaining "+fmt(remXp)+" XP")+'</div>' +
+        '<div class="uiSub" style="margin-top:6px">'+(w.lv>=maxLv?"MAXIMUM":fmt(have)+" / "+fmt(need)+" XP · left "+fmt(remXp)+" XP")+'</div>' +
         '<div class="uiSub" style="margin-top:8px">Rank XP: +2 per normal vein, +12 per boss.</div>' +
         '<div class="uiSub" style="margin-top:6px;color:#e8a24a">To next rank: ~'+untilVeins+' veins or ~'+untilBoss+' bosses.</div>'
       )
-      +this.card("⚙️","Progression",
-        "Beards reward steady mining and consume gems",
-        '<div class="uiSub">Your income bonus grows with rank, and your climbing. elder Spends gem: '+BALANCE.merge.ascendGems+'💎 - I’m going to step up.</div>' +
-        '<div class="uiSub" style="margin-top:8px">Main fuel for progress — not gemand frequency dig: If the energy falls to zero, you stop.</div>' +
-        '<div class="uiSub" style="margin-top:8px">Here’s the energy: now. '+enCur+'/'+enMax+' ('+enPct+'%).</div>' +
+      +this.card("⚙️","Difficulty & tokenomics",
+        "beards = gem sink + dig rate (energy)",
+        '<div class="uiSub">Your income bonus grows with rank, and elder ascension spends gems: '+BALANCE.merge.ascendGems+'💎 per tier.</div>' +
+        '<div class="uiSub" style="margin-top:8px">The main fuel of progress isn’t gems but dig rate: if energy drops to zero, you stop.</div>' +
+        '<div class="uiSub" style="margin-top:8px">Keep your Energy up: now '+enCur+'/'+enMax+' ('+enPct+'%).</div>' +
         healthLine
       );
     } else {
@@ -385,20 +385,20 @@ const UIS={
       const curT=S.geo?S.geo.t:null;
       const dealTxt=S.geo
         ? (S.geo.n+" · "+rarRU[S.geo.r]+" · Lv."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):""))
-        : "None yet.";
+        : "nobody yet";
       const FAMILY_LORE={
-        atk:"The fighter dwarf hits cleaner: attack climbs — and veins crack faster.",
-        energy:"Healers don’t cast magic fluff. They keep your energy from falling too fast.",
+        atk:"The dwarf learns to hit truer: attack climbs — and veins crack faster.",
+        energy:"Herbalists don’t “heal” with magic — they keep your energy from dropping too fast.",
         stone:"Stone is counted with respect: more greed — fatter haul."
       };
 
       body=cur
-        +this.card("📚","Elder Gallery","Comb collection · duplicates: "+totalGeoMats,
-          '<div class="uiSub">Equipped: '+dealTxt+'</div>' +
-          '<div class="uiSub" style="margin-top:8px">elder — One in the office, the rest of you are digging up like duplicate.</div>' +
-          '<div class="uiSub" style="margin-top:8px">As the road reads: roll 🪮 give either new elder in case or material rarity ≤ Yours.</div>' +
-          '<div class="uiSub" style="margin-top:8px">Merger turns duplicate To the level and fattens the bonus. — gem- the end for the step ✦».</div>' +
-          '<div class="uiSub" style="margin-top:8px;color:#e8a24a">Laure reminder: energy is losing in dig — Keep her green, or she’ll grow up.</div>'
+        +this.card("📚","Elder Gallery","Comb materials collection · total in stock: "+totalGeoMats,
+          '<div class="uiSub">On duty: '+dealTxt+'</div>' +
+          '<div class="uiSub" style="margin-top:8px">Elders are your Artel. One is on duty, the rest pile up in stock as duplicates.</div>' +
+          '<div class="uiSub" style="margin-top:8px">How to read the road: 🪮 rolls give either a new elder on duty or materials of rarity ≤ yours.</div>' +
+          '<div class="uiSub" style="margin-top:8px">Merging turns duplicates into levels and fattens the bonus. Ascension at Legendary is a gem sink per “tier ✦”.</div>' +
+          '<div class="uiSub" style="margin-top:8px;color:#e8a24a">Lore reminder: energy drains in the dig — keep it in the green zone, or growth stalls.</div>'
         )
         +this.grid(GEO_TYPES.map((g,i)=>{
           let bestR=-1, cnt=0;
@@ -412,11 +412,11 @@ const UIS={
           const inDeal = !!S.geo && S.geo.t===i;
           if(inDeal) bestR=(S.geo.r||bestR);
           const sub=inDeal
-            ? ("in case · "+(bestR>=0?rarRU[bestR]:"")+" · Lv."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):"")+
+            ? ("on duty · "+(bestR>=0?rarRU[bestR]:"")+" · Lv."+(S.geo.lv||1)+(S.geo.asc||0?(" ✦"+S.geo.asc):"")+
               " · +"+Math.round(geoPct(S.geo))+"%")
             : (bestR>=0
-              ? ("In the chest · "+rarRU[bestR]+" · +"+(GEO_TYPES[i].pct[bestR]||0)+"% (lv1) · duplicate "+cnt)
-              : "Empty · hire through Gacha");
+              ? ("in the chest · "+rarRU[bestR]+" · +"+(GEO_TYPES[i].pct[bestR]||0)+"% (lv1) · duplicates "+cnt)
+              : "empty for now · hire on “Gacha”");
           const cls=(bestR>=0||inDeal?"":"lock");
           return this.slot("💇",g.names[0],g.stat.toUpperCase(),
             sub+(bestR>=0?(" · "+FAMILY_LORE[g.stat]):""), cls);
@@ -426,7 +426,7 @@ const UIS={
   },
 
   renderMines(){
-    this.$("uiTitle").textContent="mine";
+    this.$("uiTitle").textContent="Mines";
     if(typeof mineRaidReset==="function") mineRaidReset();
     const curAbs=S.mine||0;
     const cur=curAbs%MINES.length;
@@ -445,13 +445,13 @@ const UIS={
     const setsDone=UI_MINES.filter(m=>typeof setDone==="function"&&setDone(m.id)).length;
     const fibLine=fibArr.map((n,i)=>'<span class="'+(i<slot.step?"done":(i===slot.step?"on":""))+'">'+n+'</span>').join(" → ");
 
-    this.$("uiHeadAct").innerHTML='<span class="uiPill">circle '+cycle+'</span>';
+    this.$("uiHeadAct").innerHTML='<span class="uiPill">round '+cycle+'</span>';
     this.$("uiTabs").innerHTML="";
 
     const how=
       '<div class="uiMineHow">'
       +'<b>How it works</b>'
-      +'<div class="uiSub">Special stone is being released <b>by an increasing increase</b>: The height of the step — The longer the pause and the more reward ('+fibArr.join(", ")+'). Timer Unit — '+(unitSec>=3600?(unitSec/3600)+"h":(unitSec/60)+"m")+' One step in the row. hall I’m going to be in a row of steps for the day.</div>'
+      +'<div class="uiSub">A special stone comes <b>on a rising scale</b>: the higher the tier, the longer the wait and the bigger the reward ('+fibArr.join(", ")+'). Timer unit — '+(unitSec>=3600?(unitSec/3600)+"h":(unitSec/60)+"m")+' per step of the row. Each Hall has its own row of tiers for the day.</div>'
       +'<div class="uiMineFib">'+fibLine+'</div>'
       +'</div>';
 
@@ -459,24 +459,24 @@ const UIS={
     if(raidOn){
       const snap=S.mineRaid;
       raidCta='<div class="uiMineRaid on">'
-        +'<div class="uiMineRaidTop"><span>'+(snap.ic||"🔑")+'</span><div><b>Special rock active</b>'
-        +'<div class="uiSub">'+esc(snap.n||"Award")+' · +'+(snap.amt|0)+' '+(snap.label||snap.ic||"")+' · ×'+(snap.fib||1)
-        +' · Go back to the mine and break it.</div></div></div>'
+        +'<div class="uiMineRaidTop"><span>'+(snap.ic||"🔑")+'</span><div><b>Special stone active</b>'
+        +'<div class="uiSub">'+esc(snap.n||"reward")+' · +'+(snap.amt|0)+' '+(snap.label||snap.ic||"")+' · ×'+(snap.fib||1)
+        +' · go back to the dig and break it</div></div></div>'
         +'<button type="button" class="btn btn-cta" onclick="UIS.close()">To the stone</button></div>';
     } else if(slot.ready){
       raidCta='<div class="uiMineRaid">'
-        +'<div class="uiMineRaidTop"><span>'+(raidDef&&raidDef.ic||"🔑")+'</span><div><b>Level '+(slot.step+1)+'/'+slot.max+' · ×'+slot.fib+'</b>'
-        +'<div class="uiSub">Award: '+raidAmt+' '+(raidDef&&(raidDef.label||raidDef.n)||"")+'</div></div></div>'
-        +'<button type="button" class="btn btn-cta" onclick="startMineRaid('+cur+')">Break a special stone</button></div>';
+        +'<div class="uiMineRaidTop"><span>'+(raidDef&&raidDef.ic||"🔑")+'</span><div><b>Tier '+(slot.step+1)+'/'+slot.max+' · ×'+slot.fib+'</b>'
+        +'<div class="uiSub">reward: '+raidAmt+' '+(raidDef&&(raidDef.label||raidDef.n)||"")+'</div></div></div>'
+        +'<button type="button" class="btn btn-cta" onclick="startMineRaid('+cur+')">Break the special stone</button></div>';
     } else if(slot.done){
       raidCta='<div class="uiMineRaid empty">'
-        +'<div class="uiSub">All '+slot.max+' The steps are over today. ×1.</div></div>';
+        +'<div class="uiSub">All '+slot.max+' tiers cleared today. Tomorrow back to ×1.</div></div>';
     } else {
       raidCta='<div class="uiMineRaid empty">'
-        +'<div class="uiMineRaidTop"><span>⏱</span><div><b>Up to stage '+(slot.step+1)+' · ×'+slot.fib+'</b>'
-        +'<div class="uiSub">remaining '+fmtClock(slot.leftMs)+' · Award ~'+raidAmt+' '+(raidDef&&raidDef.ic||"")+'</div></div></div>'
+        +'<div class="uiMineRaidTop"><span>⏱</span><div><b>Until tier '+(slot.step+1)+' · ×'+slot.fib+'</b>'
+        +'<div class="uiSub">left '+fmtClock(slot.leftMs)+' · reward ~'+raidAmt+' '+(raidDef&&raidDef.ic||"")+'</div></div></div>'
         +(typeof mineRaidAdOk==="function"&&mineRaidAdOk(cur)
-          ? ('<button type="button" class="btn btn-soft" style="margin-top:8px" onclick="mineRaidReadyAd('+cur+');UIS.render(\'mines\')">📺 Step at once · '+adSlotLeft("mine_raid_ready")+'</button>')
+          ? ('<button type="button" class="btn btn-soft" style="margin-top:8px" onclick="mineRaidReadyAd('+cur+');UIS.render(\'mines\')">📺 Tier now · '+adSlotLeft("mine_raid_ready")+'</button>')
           : "")
         +'</div>';
     }
@@ -485,16 +485,16 @@ const UIS={
       '<div class="uiMineHero">'
       +'<div class="uiMineHeroTop">'
       +'<span class="uiMineHeroRock">'+(UI_MINES[cur]&&UI_MINES[cur].rock||"⛏")+'</span>'
-      +'<div><b>'+esc((UI_MINES[cur]&&UI_MINES[cur].n)||here.n||"mine")+'</b>'
-      +'<div class="uiSub">'+(here.n||"")+' · You’re here.</div></div>'
-      +'<span class="uiTag on">Here.</span></div>'
+      +'<div><b>'+esc((UI_MINES[cur]&&UI_MINES[cur].n)||here.n||"Mines")+'</b>'
+      +'<div class="uiSub">'+(here.n||"")+' · you’re here</div></div>'
+      +'<span class="uiTag on">here</span></div>'
       +'<div class="uiMineStats">'
-      +'<div><span class="k">Level</span><b>'+Math.min(slot.step+1,slot.max)+'/'+slot.max+'</b></div>'
+      +'<div><span class="k">Tier</span><b>'+Math.min(slot.step+1,slot.max)+'/'+slot.max+'</b></div>'
       +'<div><span class="k">Multiplier</span><b>×'+slot.fib+'</b></div>'
       +'<div><span class="k">Collection</span><b>'+hereGot+'/8</b></div>'
-      +'<div><span class="k">Circle</span><b>'+cycle+'</b></div>'
+      +'<div><span class="k">Round</span><b>'+cycle+'</b></div>'
       +'</div>'
-      +(hereSet?('<div class="uiSub uiMineSetHint">'+(hereGot>=8?"✓ active: ":"Seth 8/8 → ")+esc(hereSet.label)+'</div>'):"")
+      +(hereSet?('<div class="uiSub uiMineSetHint">'+(hereGot>=8?"✓ active: ":"set 8/8 → ")+esc(hereSet.label)+'</div>'):"")
       +'</div>';
 
     const cards=UI_MINES.map(m=>{
@@ -508,30 +508,30 @@ const UIS={
       const amt=def&&typeof mineRaidRewardAmt==="function"?mineRaidRewardAmt(def, sl.step):0;
       const enterClick=unlocked
         ? ("switchMine("+m.id+");UIS.open(\"mines\");")
-        : ("showToast(\"⛏\",\"Closed\",\"\",\"Go to that. hall\",\"Now. "+(cur+1)+"/5 In a circle\")");
+        : ("showToast(\"⛏\",\"Closed\",\"\",\"Reach this Hall\",\"now "+(cur+1)+"/5 in round\")");
       const raidClick=unlocked
         ? ("startMineRaid("+m.id+")")
-        : ("showToast(\"⛏\",\"Closed\",\"\",\"Go to that. hall\",\"Now. "+(cur+1)+"/5 In a circle\")");
+        : ("showToast(\"⛏\",\"Closed\",\"\",\"Reach this Hall\",\"now "+(cur+1)+"/5 in round\")");
       const badge=hereNow
-        ? '<span class="uiTag on">Here.</span>'
-        : (unlocked?'<span class="uiTag go">Come in.</span>':'<span class="uiTag">🔒</span>');
+        ? '<span class="uiTag on">here</span>'
+        : (unlocked?'<span class="uiTag go">enter</span>':'<span class="uiTag">🔒</span>');
       const statusPill=sl.done
-        ? '<span class="uiPill">Ready.</span>'
+        ? '<span class="uiPill">ready</span>'
         : (sl.ready
-          ? '<span class="uiPill">×'+sl.fib+' Goth.</span>'
+          ? '<span class="uiPill">×'+sl.fib+' rdy</span>'
           : '<span class="uiPill">⏱ '+fmtClock(sl.leftMs)+'</span>');
       let raidBtn="";
       if(unlocked && raidOn && (S.mineRaid.mineId|0)===m.id){
-        raidBtn='<div class="uiSub">There’s a special stone coming. · ×'+(S.mineRaid.fib||1)+'</div>';
+        raidBtn='<div class="uiSub">special stone in progress · ×'+(S.mineRaid.fib||1)+'</div>';
       } else if(unlocked && sl.ready && !raidOn){
-        raidBtn='<button type="button" class="btn uiMineRaidBtn" onclick="event.stopPropagation();'+raidClick+'">Level '+(sl.step+1)+' · ×'+sl.fib+' → +'+amt+' '+(def&&def.ic||"")+'</button>';
+        raidBtn='<button type="button" class="btn uiMineRaidBtn" onclick="event.stopPropagation();'+raidClick+'">Tier '+(sl.step+1)+' · ×'+sl.fib+' → +'+amt+' '+(def&&def.ic||"")+'</button>';
       } else if(unlocked && !sl.done && !sl.ready){
-        raidBtn='<div class="uiSub">Further ×'+sl.fib+' Through '+fmtClock(sl.leftMs)+'</div>'
+        raidBtn='<div class="uiSub">next ×'+sl.fib+' in '+fmtClock(sl.leftMs)+'</div>'
           +(typeof mineRaidAdOk==="function"&&mineRaidAdOk(m.id)
-            ? ('<button type="button" class="btn btn-soft uiMineRaidBtn" onclick="event.stopPropagation();mineRaidReadyAd('+m.id+');UIS.render(\'mines\')">📺 Immediately. · '+adSlotLeft("mine_raid_ready")+'</button>')
+            ? ('<button type="button" class="btn btn-soft uiMineRaidBtn" onclick="event.stopPropagation();mineRaidReadyAd('+m.id+');UIS.render(\'mines\')">📺 Now · '+adSlotLeft("mine_raid_ready")+'</button>')
             : "");
       } else if(unlocked && sl.done){
-        raidBtn='<div class="uiSub">Steps closed for the time being</div>';
+        raidBtn='<div class="uiSub">tiers closed for today</div>';
       }
       return '<div class="uiMineCard '+m.theme+(hereNow?" sel":"")+(unlocked?"":" locked")+'">'
         +'<button type="button" class="btn btn-mine uiMineJoin" onclick="'+enterClick+'">'
@@ -557,12 +557,12 @@ const UIS={
       +'</div>';
 
     const foot=
-      '<div class="uiSec">Level hallm</div>'
+      '<div class="uiSec">Tiers by Hall</div>'
       +setStrip
-      +'<div class="uiSub" style="margin-top:8px">Collection Stones '+totalCol+'/40. Normal loot Separate; Special Stone — The stairs of the steps.</div>';
+      +'<div class="uiSub" style="margin-top:8px">Collection stones '+totalCol+'/40. Regular loot is separate; the special stone is a ladder of tiers.</div>';
 
     this.$("uiBody").innerHTML=how+overview+raidCta
-      +'<div class="uiSec">Five. hall</div>'
+      +'<div class="uiSec">Five Halls</div>'
       +'<div class="uiMineList">'+cards+'</div>'
       +foot;
   },
@@ -580,7 +580,7 @@ const UIS={
     const atMax=li>=BALANCE.pvp.names.length-1;
     const leagueSub=atMax
       ? ("max · win +" + fmt(winGold) + " 🪙")
-      : ("win +" + fmt(winGold) + " 🪙 · in " + BALANCE.pvp.names[nextLi] + " already. +" + fmt(nextGold) + " 🪙");
+      : ("win +" + fmt(winGold) + " 🪙 · in " + BALANCE.pvp.names[nextLi] + " already +" + fmt(nextGold) + " 🪙");
     this.$("uiTitle").textContent="PvP · Arena";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🏆 '+fmt(S.trophies||0)+'</span>';
     this.$("uiTabs").innerHTML="";
@@ -589,23 +589,23 @@ const UIS={
       const rec=typeof pvpBotRec==="function"?pvpBotRec(o.id):{w:0,l:0};
       const chance=typeof pvpWinChance==="function"?pvpWinChance(me,o.power):50;
       return '<div class="uiOpp '+(fav?"fav":"")+'"><div><b>'+(o.ic||"🤖")+' '+o.name+'</b>'
-        +'<div class="uiSub">'+esc(o.tag||"AND")+' · force '+fmt(o.power)+' · A chance. ~'+chance+'%</div>'
-        +'<div class="uiSub">Account '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div></div>'
-        +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⚔ Fight.</button></div>';
+        +'<div class="uiSub">'+esc(o.tag||"AI")+' · strength '+fmt(o.power)+' · chance ~'+chance+'%</div>'
+        +'<div class="uiSub">score '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div></div>'
+        +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⚔ Fight</button></div>';
     }).join("");
     this.$("uiBody").innerHTML=
       '<div class="uiHero compact"><div class="uiHeroArt">⚔</div><b>'+esc(playerName())+'</b>'
-      +'<div class="uiSub">Quick fight. pickaxeMee. · Aimation and result</div></div>'
+      +'<div class="uiSub">Quick pickaxe duel · animation and result</div></div>'
       +this.card("🏆","League: "+BALANCE.pvp.names[li], leagueSub,
         this.bar(pct,"var(--blue)")
         +'<div class="uiSub" style="margin-top:4px">'+(atMax
           ? ("top of the arena · "+fmt(S.trophies||0)+" 🏆")
           : ("up to "+BALANCE.pvp.names[nextLi]+": "+fmt(Math.max(0,nextReq-(S.trophies||0)))+" 🏆"))+'</div>'
         +'<div class="uiSub" style="margin-top:4px">attempts '+left+"/"+BALANCE.pvpDayLimit
-          +" · Your power "+fmt(me)+"</div>")
-      +'<div class="uiSec">Choose your opponent.</div>'
-      +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">Fights are finished for today.</div>')
-      +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Update Form (free)</button>'
+          +" · your power "+fmt(me)+"</div>")
+      +'<div class="uiSec">Choose an opponent</div>'
+      +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">No fights left today. Come back tomorrow.</div>')
+      +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Refresh lineup (free)</button>'
         +(typeof adSlotOk==="function"&&adSlotOk("pvp_reroll")
           ?'<button class="btn btn-hard btn-wide" style="margin-top:6px" onclick="pvpRerollAd();UIS.render(\'pvp\')">📺 New Opponents · '
             +(typeof adSlotLeft==="function"?adSlotLeft("pvp_reroll"):"")+'</button>':"")
@@ -627,7 +627,7 @@ const UIS={
     const names=(typeof WK_PATH_NAME==="object"&&WK_PATH_NAME)||{};
     const talk=(typeof borinBarTalk==="function")
       ? borinBarTalk()
-      : {tag:"Borin At the counter.", text:"beer Not for beauty. — Save your glasses. — Kick it. feast."};
+      : {tag:"Borin at the Bar.", text:"Beer isn’t for looks. Drink — bank points — level the feast."};
     
     const TAV_COLS=["#f0a028","#4a8ce0","#f4cc42","#58c04c","#e0503c","#9a62d8","#46c8c8","#f07830"];
     let tavBtls="";
@@ -709,20 +709,20 @@ const UIS={
       +'</div>';
     const meters='<div class="uiTavMeters">'
       +'<div class="uiTavMeter"><span class="k">BEER</span><span class="v">🍺 '+beer+'</span><span class="s">+'+((W.proteinPerHour)|5)+'/h</span></div>'
-      +'<div class="uiTavMeter"><span class="k">GLASSES</span><span class="v">💪 '+pts+'</span><span class="s">From the throats</span></div>'
-      +'<div class="uiTavMeter"><span class="k">ROOM</span><span class="v">'+lv+'</span><span class="s">+'+gymPerkPct()+'% Statistics</span></div>'
+      +'<div class="uiTavMeter"><span class="k">POINTS</span><span class="v">💪 '+pts+'</span><span class="s">from sips</span></div>'
+      +'<div class="uiTavMeter"><span class="k">HALL</span><span class="v">'+lv+'</span><span class="s">+'+gymPerkPct()+'% stats</span></div>'
       +'</div>';
-    const gymCard=this.card("🏋","Respect · Room"+lv,
+    const gymCard=this.card("🏋","Respect · Hall Lv."+lv,
       fmt(xp)+(nextAt!=null?(" / "+fmt(nextAt)+" XP"):" · max"),
       this.bar(gymPct)
-      +'<div class="uiSub" style="margin-top:4px">Training, PvP, Deylics, Artifact giving</div>',
+      +'<div class="uiSub" style="margin-top:4px">Training, PvP, dailies, artifact gifts</div>',
       "tav");
 
     this.$("uiTitle").textContent="Tavern";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">Hall '+lv+' · +'+gymPerkPct()+'%</span>';
     this.$("uiTabs").innerHTML=this.tabs(
       ["ale","feast","mates","friends","rank"],
-      ["Stop","Пир","Table","Friends","Cups"],
+      ["Bar","Feast","Table","Friends","Cups"],
       tab);
 
     let body="";
@@ -734,13 +734,13 @@ const UIS={
       const up=mug.next
         ? ('<button type="button" class="btn btn-soft btn-wide uiTavMugUp" onclick="upgradeMug()" '
           +((S.gems||0)>=(mug.next.gems|0)?"":"disabled")+'>'
-          +'Ap mug → ×'+mug.next.mul+' · 💎'+(mug.next.gems|0)+'</button>')
-        : '<div class="uiSub" style="margin-top:8px;text-align:center">mug max · ×'+mug.mul+' For the slip.</div>';
+          +'Mug up → ×'+mug.next.mul+' · 💎'+(mug.next.gems|0)+'</button>')
+        : '<div class="uiSub" style="margin-top:8px;text-align:center">Mug max · ×'+mug.mul+' per tap</div>';
       const drinkBody=
         '<div class="uiTavDeal">'
-        +'<span class="uiTavChip cost">−'+drinkCost+' Beer</span>'
-        +'<span class="uiTavChip gain">+'+drinkPts+' glasses</span>'
-        +'<span class="uiTavChip soft">×'+mug.mul+' Sip'+(mug.mul>1?"a":"")+'</span>'
+        +'<span class="uiTavChip cost">−'+drinkCost+' beer</span>'
+        +'<span class="uiTavChip gain">+'+drinkPts+' points</span>'
+        +'<span class="uiTavChip soft">×'+mug.mul+' sip'+(mug.mul>1?"s":"")+'</span>'
         +'</div>'
         +'<button type="button" class="uiTavDrinkBtn" onclick="drinkBeer()" '+(canDrink?"":"disabled")+'>'
         +'<span>Drink '+(mug.mul>1?("×"+mug.mul):"mug")+'</span>'
@@ -750,17 +750,17 @@ const UIS={
         +'<div class="uiTavEnergy">'
         +'<div class="row"><span>Energy</span><b>'+eCur+' / '+eMax+'</b></div>'
         +'<div class="uiBar"><div class="uiBarFill" style="width:'+ePct+'%"></div></div>'
-        +'<div class="uiSub" style="margin-top:6px">Auto-sip in dig · '+UI_MUG_IC_SM+' mug Ur.'+(mug.i+1)+'</div>'
+        +'<div class="uiSub" style="margin-top:6px">Auto-sip in the dig · '+UI_MUG_IC_SM+' mug Lv.'+(mug.i+1)+'</div>'
         +'</div>';
       body=facade+meters
         +'<div class="uiTavTip"><b>'+esc(talk.tag)+'</b> '+esc(talk.text)+'</div>'
-        +'<div class="uiTavDrink">'+this.card(UI_MUG_IC,"mug ×"+mug.mul,
-          canDrink?("Reserved "+beer+" · enough for "+sips+" slip"+(sips===1?"":"a"))
-            :("Not enough beer. · I need to. "+drinkCost+", have "+beer),
+        +'<div class="uiTavDrink">'+this.card(UI_MUG_IC,"Mug ×"+mug.mul,
+          canDrink?("In stock "+beer+" · enough for "+sips+" tap"+(sips===1?"":"s"))
+            :("Not enough beer · need "+drinkCost+", have "+beer),
           drinkBody,"tav")+'</div>'
         +'<div class="uiBtnStack">'
-        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">Пир!</button>'
-        +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">List · skill</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="UIS.setTab(\'feast\')">Feast!</button>'
+        +'<button class="btn btn-soft btn-wide" onclick="openCharSheet()">Sheet · skills</button>'
         +'</div>';
     } else if(tab==="feast"){
       const active=S.wkActive;
@@ -768,10 +768,10 @@ const UIS={
       if(active){
         const left=Math.max(0,Math.ceil((active.end-Date.now())/1000));
         const nm=names[active.path]||active.path;
-        activeHtml=this.card("⏱","Done: "+nm, left>0?("remaining "+left+"c"):"Ready. — Take it!",
+        activeHtml=this.card("⏱","In progress: "+nm, left>0?("remaining "+left+"s"):"ready — claim it!",
           left>0
-            ?('<button class="btn btn-soft btn-wide" onclick="skipWorkout()">Pass 💎'+(W.skipGems||5)+'</button>')
-            :('<button class="btn btn-hard btn-wide" onclick="claimWorkout()">Take the award</button>'),
+            ?('<button class="btn btn-soft btn-wide" onclick="skipWorkout()">Skip 💎'+(W.skipGems||5)+'</button>')
+            :('<button class="btn btn-hard btn-wide" onclick="claimWorkout()">Claim reward</button>'),
           "tav");
       }
       const paths=(BALANCE.workoutPaths||[]).slice(0,4).map((p,i)=>{
@@ -784,51 +784,51 @@ const UIS={
         const btn=maxed
           ?'<button class="btn btn-soft" disabled>MAX</button>'
           :(busy
-            ?'<button class="btn btn-soft" disabled>occupied</button>'
+            ?'<button class="btn btn-soft" disabled>busy</button>'
             :'<button class="btn btn-soft" onclick="startWorkout(\''+p+'\')" '+(pts<cost?"disabled":"")+'>💪'+cost+'</button>');
-        return '<div class="uiTavPath"><div><b>'+esc(nm)+'</b><div class="uiSub">Lv.'+lvP+' · +'+pct+'%/Ur · Now. +'+(typeof workoutBonus==="function"?workoutBonus(p):0)+'%</div></div>'+btn+'</div>';
+        return '<div class="uiTavPath"><div><b>'+esc(nm)+'</b><div class="uiSub">Lv.'+lvP+' · +'+pct+'%/Lv · now +'+(typeof workoutBonus==="function"?workoutBonus(p):0)+'%</div></div>'+btn+'</div>';
       }).join("");
       body=meters
         +activeHtml
-        +this.card("💪","feast",
-          "beer → glasses → The complete list of the "+(BALANCE.workoutPaths||[]).length+" The way.",
-          '<button class="btn btn-soft btn-wide" onclick="drinkBeer()">Drink '+UI_MUG_IC_SM+drinkCost+' → +'+drinkPts+' - Okay.</button>'
-          +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWorkouts()">All training</button>',
+        +this.card("💪","Feast",
+          "Beer → points → path. Full list of "+(BALANCE.workoutPaths||[]).length+" paths.",
+          '<button class="btn btn-soft btn-wide" onclick="drinkBeer()">Drink '+UI_MUG_IC_SM+drinkCost+' → +'+drinkPts+' pts</button>'
+          +'<button class="btn btn-hard btn-wide" style="margin-top:8px" onclick="openWorkouts()">All workouts</button>',
           "tav")
-        +'<div class="uiSec tav">Faster Paths</div>'
+        +'<div class="uiSec tav">Quick paths</div>'
         +'<div class="uiCard tav" style="display:block;padding:4px 8px">'+paths+'</div>'
         +gymCard;
     } else if(tab==="mates"){
       const geoSlot=S.geo
         ? this.slot("💇",S.geo.n,"+"+geoPct(S.geo).toFixed(0)+"%","r"+S.geo.r,"UIS.push('beards','merge')")
-        : this.slot("❔","beard","hire me. elder","","UIS.push('beards','gacha')");
+        : this.slot("❔","Beard","hire an elder","","UIS.push('beards','gacha')");
       const petSlot=S.pet
         ? this.slot(petIcon(S.pet.t),PET_TYPES[S.pet.t].n,PET_RAR[S.pet.r],"r"+S.pet.r,"UIS.push('pets','gacha')")
-        : this.slot("❔","pet","egg Waiting","","UIS.push('pets','gacha')");
+        : this.slot("❔","Pet","eggs waiting","","UIS.push('pets','gacha')");
       body=facade
-        +'<div class="uiTavTip"><b>The company desk.</b> A mentor, beardthe beast and the future clan — Who sits next to you in the dig.</div>'
-        +'<div class="uiSec tav">Who’s at the table?</div>'
+        +'<div class="uiTavTip"><b>The crew’s table.</b> Mentor, beard, beast and future clan — who sits beside you in the dig.</div>'
+        +'<div class="uiSec tav">Who’s at the table</div>'
         +'<div class="uiGrid tav">'
         +this.slot("🧔","Borin","mentor","","openBorinMentor()")
         +geoSlot+petSlot
-        +this.slot("👥","Clan","Soon.","","openClanSoon()")
+        +this.slot("👥","Clan","soon","","openClanSoon()")
         +'</div>';
     } else if(tab==="friends"){
       const code=(typeof growthInviteCode==="function")?growthInviteCode():"ORE-????";
-      const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Code accepted','',c,'A friend will be added to the online version');}";
+      const addFn="var c=document.getElementById('uiFriendCode').value.trim();if(c){showToast('🤝','Code accepted','',c,'friend will be added in the online version');}";
       body=facade
-        +'<div class="uiTavTip"><b>The watermelons.</b> As long as the network boils — The files and the milestones live in a profile.</div>'
-        +this.card("🤝","Friend code","Inject someone else. — Or give me yours.",
+        +'<div class="uiTavTip"><b>Drinking buddies.</b> While the network brews — invite by code. Referrals and milestones live in your profile.</div>'
+        +this.card("🤝","Friend code","enter theirs — or share yours",
           '<div class="uiRow" style="border:0;padding:6px 0"><input id="uiFriendCode" class="uiInp wide" placeholder="ORE-XXXX" maxlength="12" style="max-width:100%">'
           +'<button class="btn btn-soft btn-tiny" onclick="'+addFn+'">+</button></div>'
-          +'<div class="uiSub">Your height code: <b style="color:var(--gold)">'+esc(code)+'</b></div>',
+          +'<div class="uiSub">Your growth code: <b style="color:var(--gold)">'+esc(code)+'</b></div>',
           "tav")
         +'<div class="uiBtnStack">'
-        +'<button class="btn btn-hard btn-wide" onclick="UIS.open(\'profile\',\'growth\')">👥 Reference and milestones</button>'
+        +'<button class="btn btn-hard btn-wide" onclick="UIS.open(\'profile\',\'growth\')">👥 Referrals & milestones</button>'
         +(typeof shareInvite==="function"
           ?'<button class="btn btn-soft btn-wide" onclick="shareInvite()">Share invite link</button>':"")
         +'</div>'
-        +'<div class="uiEmpty" style="padding:16px 8px">List of online drinking agents — online version.</div>';
+        +'<div class="uiEmpty" style="padding:16px 8px">Online drinking buddies list — in the online version.</div>';
     } else {
       
       const mine={n:playerName(), xp:xp, me:true};
@@ -836,16 +836,16 @@ const UIS={
         .sort((a,b)=>b.xp-a.xp);
       const rows=board.map((t,i)=>
         '<div class="uiRankRow'+(t.me?" me":"")+'"><span class="uiRankN">'+(i+1)+'</span><b>'
-        +esc(t.n)+(t.me?" · You.":"")+'</b><span class="uiSub">'+fmt(t.xp)+' XP</span></div>'
+        +esc(t.n)+(t.me?" · you":"")+'</b><span class="uiSub">'+fmt(t.xp)+' XP</span></div>'
       ).join("");
       const nextPerk=GYM_PERKS.find(pk=>lv<pk.lv);
       body=facade+gymCard
-        +'<div class="uiSec tav">Tavern rating</div>'
+        +'<div class="uiSec tav">Tavern ranking</div>'
         +rows
         +'<div class="uiSub" style="margin-top:8px;text-align:center">'
         +(nextPerk
-          ?('Next perk Room: «'+nextPerk.n+'» (+'+nextPerk.pct+'%) cc.'+nextPerk.lv)
-          :'perk maximum room')
+          ?('Next Hall perk: «'+nextPerk.n+'» (+'+nextPerk.pct+'%) at Lv.'+nextPerk.lv)
+          :'Hall perks maxed')
         +'</div>';
     }
     this.$("uiBody").innerHTML=body;
@@ -878,9 +878,9 @@ const UIS={
     this.$("uiBody").innerHTML=
       '<div class="uiColHead" style="--acc:'+col.c+'"><span>'+col.ic+'</span><b>'+col.n+'</b>'
       +'<span class="uiSub" style="margin-left:8px">'+prog.have+'/'+prog.total+'</span></div>'
-      +(slots.length?this.grid(slots):'<div class="uiEmpty">This collection is empty.</div>')
-      +'<div class="uiBtnStack"><button class="btn btn-hard" onclick="buyStickerPack()">Park · '+STICKER_PACK_GEMS+' 💎</button>'
-      +'<button onclick="giftStickers()">Give duplicate</button></div>';
+      +(slots.length?this.grid(slots):'<div class="uiEmpty">Nothing in this collection yet</div>')
+      +'<div class="uiBtnStack"><button class="btn btn-hard" onclick="buyStickerPack()">Pack · '+STICKER_PACK_GEMS+' 💎</button>'
+      +'<button onclick="giftStickers()">Gift duplicates</button></div>';
   },
 
   renderShop(){
@@ -890,8 +890,8 @@ const UIS={
     this.$("uiHeadAct").innerHTML='<span class="uiPill">💎 '+fmt(S.gems||0)+'</span>';
     const mark=(id,label)=> (typeof shopDailyAnyLeft==="function"&&shopDailyAnyLeft(id)?("🎁 "+label):label);
     this.$("uiTabs").innerHTML=this.tabs(["offers","art","barrels","gems","free"],
-      [mark("offers","Divisions"), mark("art","Artef."), mark("barrels","Batteries"),
-       mark("gems","Same-ass."), (typeof shopDailyAnyLeft==="function"&&(shopDailyAnyLeft("a")||shopDailyAnyLeft("b")||shopDailyAnyLeft("offers")||shopDailyAnyLeft("art")||shopDailyAnyLeft("barrels")||shopDailyAnyLeft("gems"))?"🎁 No need.":"No need.")],
+      [mark("offers","Offers"), mark("art","Artif."), mark("barrels","Barrels"),
+       mark("gems","Gems"), (typeof shopDailyAnyLeft==="function"&&(shopDailyAnyLeft("a")||shopDailyAnyLeft("b")||shopDailyAnyLeft("offers")||shopDailyAnyLeft("art")||shopDailyAnyLeft("barrels")||shopDailyAnyLeft("gems"))?"🎁 Free":"Free")],
       tab);
     const daily=(id)=> (typeof shopDailyCardHtml==="function"?shopDailyCardHtml(id):"");
     let body="";
@@ -899,27 +899,27 @@ const UIS={
       const sp=BALANCE.growth.starterPack;
       body=daily("offers")
       +(S.growth&&S.growth.starterBought
-        ? this.card("✓","Start pack","purchased · D1 payback","")
-        : this.card("⚡","Start pack","💎"+sp.gems+" + 🪙"+fmt(sp.gold)+" + 🎒"+sp.bags+" · 2× "+sp.loot2xMin+" min",
-          '<div class="uiSub" style="margin-bottom:6px">One-off start-up kit</div>'
+        ? this.card("✓","Starter pack","purchased · D1 payback","")
+        : this.card("⚡","Starter pack","💎"+sp.gems+" + 🪙"+fmt(sp.gold)+" + 🎒"+sp.bags+" · 2× "+sp.loot2xMin+" min",
+          '<div class="uiSub" style="margin-bottom:6px">one-time starter pack</div>'
           +'<button class="btn btn-hard btn-wide" onclick="buyStarterPack()">$'+sp.price+'</button>'))
-      +BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>this.card("🎁","Park "+(i+1)+" · discount","💎"+g+" + 🪙"+fmt(gold),
+      +BALANCE.shop.comeback.slice(0,3).map(([g,gold],i)=>this.card("🎁","Pack "+(i+1)+" · discount","💎"+g+" + 🪙"+fmt(gold),
         '<button class="btn btn-hard btn-wide" onclick="buyPack('+i+')">$'+[6.99,16.99,24.99][i]+'</button>')).join("")
         +(S.noAds
-          ? this.card("✓","The ad’s offline.","Slowly dig.","")
-          : this.card("🚫","Disable advertising","Forever",
+          ? this.card("✓","Ads disabled","dig in peace","")
+          : this.card("🚫","Remove ads","forever",
             '<button class="btn btn-hard btn-wide" onclick="buyNoAds()">$'+BALANCE.noAdsPrice+'</button>'));
     } else if(tab==="art"){
       body=daily("art")
-        +this.card("💎","Park Artifacts","5 accidental · "+STICKER_PACK_GEMS+" 💎",
-        '<button class="btn btn-hard btn-wide" onclick="buyStickerPack()">Buy a pack. ×5</button>'
-        +'<button class="btn btn-wide" style="margin-top:6px" onclick="UIS.open(\'artifacts\')">Collections</button>');
+        +this.card("💎","Artifact pack","5 random · "+STICKER_PACK_GEMS+" 💎",
+        '<button class="btn btn-hard btn-wide" onclick="buyStickerPack()">Buy pack ×5</button>'
+        +'<button class="btn btn-wide" style="margin-top:6px" onclick="UIS.open(\'artifacts\')">To collections</button>');
     } else if(tab==="barrels"){
       body=daily("barrels")
         +BALANCE.skillChests.map(ch=>{
         const ok=ch.keyCost?(S.chestKeys||0)>=ch.keyCost:(S.gems||0)>=ch.gemCost;
         const price=ch.keyCost?(ch.keyCost+" 🗝"):(ch.gemCost+" 💎");
-        return this.card("🛢",ch.n,ch.cards+" Maps · guarantee "+SKILL_RAR[ch.minR]+"+",
+        return this.card("🛢",ch.n,ch.cards+" cards · guaranteed "+SKILL_RAR[ch.minR]+"+",
           '<button class="btn '+(ch.keyCost?"btn-soft":"btn-hard")+' btn-wide" onclick="openSkillChest(\''+ch.id+'\');UIS.render(\'shop\')" '
           +(ok?"":"disabled")+'>'+price+'</button>');
       }).join("");
@@ -933,17 +933,17 @@ const UIS={
         const bonus=Math.max(0,g-fair);
         const pct=i===0?0:(i===1?15:30);
         const sub=i===0
-          ? ("Basic pack · "+g+" 💎")
-          : ("Benefits +"+pct+"% · +"+fmt(bonus)+" 💎 fair price");
+          ? ("basic pack · "+g+" 💎")
+          : ("bonus +"+pct+"% · +"+fmt(bonus)+" 💎 over fair price");
         return this.card("💎",fmt(g)+" gems",sub,
-          '<div class="uiSub" style="margin-bottom:6px">'+(bonus>0?("Absolute benefit: +"+fmt(bonus)+" 💎"):"No allowance")+'</div>'
+          '<div class="uiSub" style="margin-bottom:6px">'+(bonus>0?("absolute bonus: +"+fmt(bonus)+" 💎"):"no markup")+'</div>'
           +'<button class="btn btn-hard btn-wide" onclick="buyGems('+i+')">$'+prices[i]+'</button>');
       }).join("");
     } else {
       if(typeof shopFreeReset==="function") shopFreeReset();
       const left=typeof shopDailyKeys==="function"?shopDailyKeys().filter(k=>shopDailyAnyLeft(k)).length:0;
-      body='<div class="uiSub" style="margin-bottom:8px">Scattering: each — free and for advertising · remaining '
-        +left+' · Daily discharge</div>'
+      body='<div class="uiSub" style="margin-bottom:8px">Sections: each has a free one and one for an ad · left '
+        +left+' · resets daily</div>'
         +(typeof shopDailyCardHtml==="function"
           ? ["offers","art","barrels","gems","a","b"].map(shopDailyCardHtml).join("")
           : "");
@@ -1072,7 +1072,7 @@ function uiWire(){
     try{ if(typeof syncBottomNav==="function") syncBottomNav(); }catch(e){}
   };
   const ml=$("mineLabel");
-  if(ml){ ml.style.cursor="pointer"; ml.title="mine"; ml.onclick=(e)=>{
+  if(ml){ ml.style.cursor="pointer"; ml.title="Mines"; ml.onclick=(e)=>{
     if(e&&e.stopPropagation) e.stopPropagation();
     if(typeof requireFeat==="function"&&!requireFeat("mines")) return;
     UIS.open("mines");
@@ -1085,7 +1085,7 @@ function uiWire(){
   const rank=$("statMinerCell")||$("statMiner");
   if(rank){
     rank.style.cursor="pointer";
-    rank.title="Beards · rank";
+    rank.title="Beards · title";
     rank.onclick=()=>{
       if(typeof requireFeat==="function"&&!requireFeat("beards")) return;
       UIS.open("beards","rank");
@@ -1125,19 +1125,19 @@ openGeoGuild=function(){ UIS.open("beards", S.geo && S.geo.r===GEO_RAR.length-1 
 function openBorinMentor(){
   const w=typeof beardWisdom==="function"?beardWisdom():{title:"—",goldPct:0,luckAdd:0};
   UIS.openPanel("Borin · mentor",
-    "Old courtman at the bar. beard And make sure you don’t forget why you came down to Mount.",
+    "An old dwarf at the Bar. Teaches beard rank and makes sure you don’t forget why you came down into the Mountain.",
     '<div class="uiCard"><div class="uiCardIc">🧔</div><div class="uiCardBody"><b>'+esc(w.title)+'</b>'
     +'<div class="uiSub">+'+w.goldPct+'% income · +'+Number(w.luckAdd||0).toFixed(1)+' luck</div></div></div>'
     +'<div class="uiBtnStack" style="margin-top:10px">'
-    +'<button class="btn btn-hard btn-wide" onclick="UIS.push(\'beards\',\'rank\')">Wisdom beard</button>'
+    +'<button class="btn btn-hard btn-wide" onclick="UIS.push(\'beards\',\'rank\')">Beard Wisdom</button>'
     +'</div>');
 }
 
 function openClanSoon(){
   UIS.openPanel("Clan",
-    "Garbage Archer: Total dig, chat rooms and clan wars.",
-    '<div class="uiEmpty">👥 Soon. — online version</div>'
-    +'<div class="uiSub" style="margin-top:8px;text-align:center">While you’re at it, call your friends by code in the Tavern Friends tab.</div>');
+    "The dwarf Artel: shared dig, chat and clan wars.",
+    '<div class="uiEmpty">👥 Soon — in the online version</div>'
+    +'<div class="uiSub" style="margin-top:8px;text-align:center">For now, invite friends by code in the Tavern’s “Friends” tab.</div>');
 }
 
 if(typeof metaOpen==="function"){
@@ -1176,7 +1176,7 @@ function handleHardwareBack(){
     }
     if(vis("dropModal")){
       if(typeof chestPending!=="undefined"&&chestPending){
-        if(typeof showToast==="function") showToast("🎒","First decide.","","Put on or sell the find.");
+        if(typeof showToast==="function") showToast("🎒","Decide first","","Equip or sell the find");
         return true;
       }
       if(typeof closeDropDecide==="function") closeDropDecide();

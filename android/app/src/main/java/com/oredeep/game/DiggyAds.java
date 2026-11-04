@@ -55,6 +55,8 @@ public class DiggyAds {
 
     void startConsent() {
         if (adsStarted || consentInFlight || consentSettled) return;
+        DiggyApp app = DiggyApp.get();
+        if (app != null && !app.isOnline()) return;
         consentInFlight = true;
         consentInformation = UserMessagingPlatform.getConsentInformation(activity);
         ConsentRequestParameters params = new ConsentRequestParameters.Builder().build();

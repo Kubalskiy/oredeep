@@ -275,7 +275,7 @@ T("пиво не превышает максимум", S.energy<=stat("energy"))
     && /skillsTabs|openSkills\('cards'\)/.test(sheetHtml)
     && /foGrid|foSpecRow|Combat|K\.R\.A\.S\.A\.V\.A/i.test(sheetHtml)
     && !/foSkillRow/.test(sheetHtml)
-    && /Mining Skills/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+    && /Mining skills/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
   openSkills("list");
   const listHtml=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("openSkills('list') скилы с описанием сверху", UIS.id==="panel"
@@ -286,7 +286,7 @@ T("пиво не превышает максимум", S.energy<=stat("energy"))
   T("openSkills('perks') полный лист перков + табы", UIS.id==="panel"
     && /openSkills\('sheet'\)/.test(perksHtml) && /Perks|Traits|Gifted/i.test(perksHtml)
     && /foPin/.test(perksHtml) && /foScroll/.test(perksHtml)
-    && /Mining Skills/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
+    && /Mining skills/.test(($("uiTitle")&&$("uiTitle").textContent)||""));
   closeSkillsShell(); }
 { UIS.open("tavern","ale");
   const h=($("uiBody")&&$("uiBody").innerHTML)||"";
@@ -351,7 +351,7 @@ T("на старте ранг 0 (Пушок)", beardLevel()===0 && beardWisdom()
 T("нулевая борода — нулевой бонус", beardWisdom().goldPct===0 && beardWisdom().luckAdd===0);
 const luckB=stat("luck");
 S.beardXP=1e9;
-T("макс ранг = ПАТРИАРХ ГОРЫ", beardWisdom().title==="MOUNTAIN PATRIARCH");
+T("макс ранг = ПАТРИАРХ ГОРЫ", beardWisdom().title==="PATRIARCH OF THE MOUNTAIN");
 T("макс борода даёт бонус к доходу", beardWisdom().goldPct>0);
 T("борода добавляет LUCK", stat("luck")>luckB);
 T("длинная борода = самый длинный стиль (Патриаршая=4)", beardWisdom().lenStyle===4);
@@ -815,7 +815,7 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="K.R.A.S.A.V.A.");
   closeCharSheet();
   T("лист персонажа закрывается", $("charModal").style.display!=="flex");
   openSkills("sheet");
-  T("навыки: шапка Навыки добычи", (($("uiTitle")&&$("uiTitle").textContent)||"")==="Mining Skills"
+  T("навыки: шапка Навыки добычи", (($("uiTitle")&&$("uiTitle").textContent)||"")==="Mining skills"
     && /skillsTabs|openSkills\('cards'\)/.test((($("uiBody")&&$("uiBody").innerHTML)||"")));
   closeSkillsShell(); }
 
@@ -972,16 +972,16 @@ renderPaperdoll();
   openGearSlot("boots");
   const h3=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("окно слота: флёр — эффект и история",
-    /WHAT DOES IT AFFECT/.test(h3) && /HISTORY/.test(h3) && /Speed/.test(h3) && /Borin/.test(h3));
+    /WHAT IT AFFECTS/.test(h3) && /HISTORY/.test(h3) && /Speed/.test(h3) && /Borin/.test(h3));
   T("флёр есть у всех слотов шмота", gearSlots().every(s=>{
     const f=SLOT_FLUFF[s.id];
     return !!(f&&f.effect&&Array.isArray(f.lore)&&f.lore.length===8&&f.lore.every(t=>typeof t==="string"&&t.length>8));
   }));
   { const a=gearSlotLoreText({id:"glove"},{r:1}), b=gearSlotLoreText({id:"glove"},{r:5});
-    T("история перчаток разная по тиру", a!==b && /Nori/.test(a) && /Gala Mountain/.test(b)); }
+    T("история перчаток разная по тиру", a!==b && /Nori/.test(a) && /Mountain’s Sting/.test(b)); }
   S.gear.glove={s:"glove",r:5,m:1,i:1}; openGearSlot("glove");
   const hg=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
-  T("миф-перчатки показывают миф-историю", /Gala Mountain/.test(hg) && !/Nori’s Gloves/.test(hg));
+  T("миф-перчатки показывают миф-историю", /Mountain’s Sting/.test(hg) && !/Nori the Counter/.test(hg));
   openGearSlot("helm");
   const h4=(($("uiBody")&&$("uiBody").innerHTML)||"")+(($("metaBody")&&$("metaBody").innerHTML)||"");
   T("окно слота показывает картинку шмотки", /eq_helm|gearSlotImg|gearSlotHero/.test(h4));
@@ -1280,7 +1280,7 @@ T("экран рисует 5 кнопок боя", (__ids.uiBody.innerHTML.match
   T("счёт против бота пишется", (S.pvpBotRec[bid].w+S.pvpBotRec[bid].l)===1); }
 S.pvpFights=BALANCE.pvpDayLimit;
 { const f0=S.pvpFights; pvpFight(0); T("на дневном лимите бой не идёт", S.pvpFights===f0); }
-openPvp(); T("на лимите экран сообщает про конец боёв", __ids.uiBody.innerHTML.includes("finished"));
+openPvp(); T("на лимите экран сообщает про конец боёв", __ids.uiBody.innerHTML.includes("No fights left today"));
 S.pvpDay="вчера"; pvpDayReset(); T("новый день сбрасывает лимит", S.pvpFights===0);
 T("победа в PvP двигает дейлик", (function(){ localStorage.removeItem("oredeep_v3"); load();
   S.lvls.atk=1e6; S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; openPvp();
@@ -1446,13 +1446,13 @@ console.log("\n[48] Окно сундука: открыть/надеть/про�
 localStorage.removeItem("oredeep_v3"); load();
 openChest(true);
 T("окно сундука открывается", __ids.chestModal.style.display==="flex");
-T("карточка сумки отрендерена", __ids.chestCard.innerHTML.indexOf("Find Bag")>=0);
+T("карточка сумки отрендерена", __ids.chestCard.innerHTML.indexOf("Loot Bag")>=0);
 T("сумка: название в шапке", (__ids.chestTitle.textContent||"").indexOf(bagName(S.bag))>=0);
 T("сундук: контент без кнопки Закрыть", !/Close/.test(__ids.chestCard.innerHTML||""));
 T("сундук: шапка и closeChest есть", !!__ids.chestTitle && typeof closeChest==="function");
 T("таблица шансов присутствует", __ids.chestCard.innerHTML.indexOf("Drop odds")>=0);
 T("шансы в две колонки", __ids.chestCard.innerHTML.indexOf("chCols")>=0
-  && __ids.chestCard.innerHTML.indexOf(">current<")>=0
+  && __ids.chestCard.innerHTML.indexOf(">now<")>=0
   && __ids.chestCard.innerHTML.indexOf(">next<")>=0);
 S.bags=3; chestOpenOne();
 T("открытие сундука тратит сумку и готовит предмет", S.bags===2 && !!chestPending);

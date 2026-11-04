@@ -47,6 +47,7 @@ public class MainActivity extends BridgeActivity {
     public void onResume() {
         super.onResume();
         if (ads != null) ads.onHostResume();
+        if (playGames != null) playGames.onHostResume();
     }
 
     @Override

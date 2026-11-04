@@ -24,13 +24,25 @@ public class DiggyPlayGames {
     private final Activity activity;
     private final WebView webView;
     private boolean signedIn;
+    private boolean startAttempted;
 
     DiggyPlayGames(Activity activity, WebView webView) {
         this.activity = activity;
         this.webView = webView;
     }
 
+    void onHostResume() {
+        if (!signedIn) start();
+    }
+
     void start() {
+        if (signedIn || startAttempted) return;
+        DiggyApp app = DiggyApp.get();
+        if (app != null && !app.isOnline()) {
+            notifyJs("pgs_auth", false, "offline");
+            return;
+        }
+        startAttempted = true;
         try {
             PlayGamesSdk.initialize(activity);
             PlayGames.getGamesSignInClient(activity).isAuthenticated()

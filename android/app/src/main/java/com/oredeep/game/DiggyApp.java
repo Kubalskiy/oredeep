@@ -1,6 +1,9 @@
 package com.oredeep.game;
 
 import android.app.Application;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.util.Log;
 
 import com.appsflyer.AppsFlyerLib;
@@ -41,6 +44,20 @@ public class DiggyApp extends Application {
 
     static DiggyApp get() {
         return instance;
+    }
+
+    /** Нет сети — игра всё равно стартует; сеть нужна только рекламе и облаку. */
+    boolean isOnline() {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+            if (cm == null) return false;
+            Network net = cm.getActiveNetwork();
+            if (net == null) return false;
+            NetworkCapabilities caps = cm.getNetworkCapabilities(net);
+            return caps != null && caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        } catch (Throwable t) {
+            return false;
+        }
     }
 
     /** Вызывать после завершения UMP (успех или ошибка формы). */

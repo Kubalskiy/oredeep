@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mountain King</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:"Space Grotesk";src:url("fonts/space-grotesk-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:"Space Grotesk";src:url("fonts/space-grotesk-600.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap;}
+@font-face{font-family:"Space Grotesk";src:url("fonts/space-grotesk-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:"VT323";src:url("fonts/VT323-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap;}
 
 :root{
   --bg:#140f09;
@@ -1308,7 +1309,7 @@ window.addEventListener("unhandledrejection",function(ev){
 
   
   <div id="statusBar">
-    <button type="button" class="cell" id="statMinerCell" title="Beards · rank">
+    <button type="button" class="cell" id="statMinerCell" title="Beards · title">
       <div class="k">RANK</div><div class="v" id="statMiner">—</div>
     </button>
     <div class="cell"><div class="k">MINE</div><div class="v" id="statMine">1-1</div></div>
@@ -1320,7 +1321,7 @@ window.addEventListener("unhandledrejection",function(ev){
 
   <div id="bubble" class="bubble" aria-hidden="true"></div>
   <section id="feedPanel" aria-live="polite" aria-label="Activity feed">
-    <div id="feedEmpty">Borin: keep digging — loot, purchases, and upgrades appear here</div>
+    <div id="feedEmpty">Borin: dig — loot, purchases and upgrades will show up here</div>
     <div id="feedLines"></div>
   </section>
 
@@ -1418,7 +1419,7 @@ window.addEventListener("unhandledrejection",function(ev){
         <div id="paperdoll"></div>
       </div>
       <div id="petBox" class="pet mood-gaze" style="display:none" title="Tap to pet · hold for pets">
-        <span class="petPurrTxt">Prrrr...</span>
+        <span class="petPurrTxt">Grrrr...</span>
         <div class="petHearts" aria-hidden="true">♥ · ♥</div>
         <div class="petPetHand" aria-hidden="true">
           <svg viewBox="0 0 44 30" width="42" height="30">
@@ -1461,7 +1462,7 @@ window.addEventListener("unhandledrejection",function(ev){
       </button>
       <div id="autoGroup">
         <button type="button" id="auto" title="Auto-sort bags · on/off">AUTO<br><span id="autoLbl2">OFF</span></button>
-        <button type="button" id="autoTier" title="Threshold: sell below, keep at or above">THRESHOLD<br><span id="autoTierLbl">Rare+</span></button>
+        <button type="button" id="autoTier" title="Threshold: below — sell, at or above — keep">THRESHOLD<br><span id="autoTierLbl">Rare+</span></button>
       </div>
     </div>
 
@@ -1549,7 +1550,7 @@ window.addEventListener("unhandledrejection",function(ev){
     <div class="box">
       <h3>⚙ Settings</h3>
       <div class="metarow"><span>Music</span><button id="setMusic">🔊 on</button></div>
-      <div class="metarow"><span>Pop-up messages</span><button id="setToasts" type="button" onclick="toggleToasts()">💬 on</button></div>
+      <div class="metarow"><span>Pop-ups</span><button id="setToasts" type="button" onclick="toggleToasts()">💬 on</button></div>
       <div class="metarow"><span>Mountain Charter</span><button onclick="showIntro()">📜 read</button></div>
       <div class="metarow"><span>Gacha fairness</span><button onclick="openFairness()">🔐 open</button></div>
       <div class="metarow"><span>Mountain Wall</span><button onclick="openWall()">🏔 leaderboard</button></div>
@@ -1639,9 +1640,9 @@ window.addEventListener("unhandledrejection",function(ev){
     <button type="button" class="btn ovAle" onclick="overlayAle()"><img class="uiMugArt sm" src="art/ic_mug.png?v=2" alt=""> Drink beer</button>
     <button type="button" class="btn ovShop" onclick="openShop()">🛒 Shop</button>
   </div>
-  <button type="button" id="ovContinue" onclick="resumeFromExhaust()">⛏ Continue this vein</button>
+  <button type="button" id="ovContinue" onclick="resumeFromExhaust()">⛏ Continue from this vein</button>
   <button type="button" id="ovAdBtn" class="btn btn-hard" style="display:none;max-width:300px;width:100%;margin-top:10px">📺</button>
-  <button type="button" id="ovRetry" onclick="closeOverlay()">⛏ One more run, for the Mountain!</button>
+  <button type="button" id="ovRetry" onclick="closeOverlay()">⛏ Once more, for the Mountain!</button>
 </div>
 
 <div id="veinAdOverlay" class="modal" style="display:none;z-index:255">
@@ -1706,7 +1707,7 @@ window.addEventListener("unhandledrejection",function(ev){
 <div class="modal" id="pickModal">
   <div class="box">
     <h3>Pickaxe progression</h3>
-    <div class="sub">Tap the pickaxe slot to return here. Owned pickaxes are highlighted.</div>
+    <div class="sub">Tap the pickaxe slot to come back here. Owned ones are highlighted.</div>
     <div id="pickList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
     <button style="margin-top:12px" onclick="document.getElementById('pickModal').style.display='none'">Close</button>
   </div>
@@ -1721,7 +1722,7 @@ window.addEventListener("unhandledrejection",function(ev){
   </div>
   <div class="introFoot">
     <button class="btn btn-hard" id="introGo">Descend into the Mountain</button>
-    <div class="icurtain">Curtain. Pickaxe on your shoulder.</div>
+    <div class="icurtain">Curtain. Pickaxe on the shoulder.</div>
   </div>
 </div>
 
@@ -1737,7 +1738,7 @@ window.addEventListener("unhandledrejection",function(ev){
 <div class="modal" id="colModal">
   <div class="box">
     <h3 id="colTitle"></h3>
-    <div class="sub">Gather the set. hall — The stones will not gather themselves. duplicate They’re leaving. trader automatically.</div>
+    <div class="sub">Complete the Hall set — the stones won’t collect themselves. Duplicates go to the trader automatically.</div>
     <div id="colList"></div>
     <button style="margin-top:12px" onclick="document.getElementById('colModal').style.display='none'">Close</button>
   </div>
@@ -1790,15 +1791,15 @@ window.addEventListener("unhandledrejection",function(ev){
       b.onclick=fn;
       row.appendChild(b);
     }
-    mk("Reboot",function(){ location.reload(); });
-    mk("Copy Report",function(){
+    mk("Reload",function(){ location.reload(); });
+    mk("Copy report",function(){
       var t=title+"\n"+lines.join("\n");
       if(navigator.clipboard&&navigator.clipboard.writeText){
         navigator.clipboard.writeText(t).then(function(){ alert("Report copied"); },
           function(){ prompt("Copy the text:",t); });
       } else prompt("Copy the text:",t);
     });
-    mk("Disable Save",function(){
+    mk("Reset save",function(){
       if(!confirm("Wipe progress and start over?")) return;
       try{ localStorage.clear(); }catch(e){}
       location.reload();
@@ -1824,15 +1825,15 @@ window.addEventListener("unhandledrejection",function(ev){
   function report(warn){
     var s=state();
     var lines=[
-      "Stats: "+s.stats+"   Equipment: "+s.gear,
-      "Game engine: "+(s.hasS?"loaded":"NOT LOADED"),
-      "screens UIS: "+(s.hasUIS?"loaded":"NOT LOADED"),
+      "stats: "+s.stats+"   gear: "+s.gear,
+      "game engine: "+(s.hasS?"loaded":"NOT LOADED"),
+      "UIS screens: "+(s.hasUIS?"loaded":"NOT LOADED"),
       "address: "+location.href,
       "browser: "+navigator.userAgent,
       "",
-      E.length?E.slice(0,12).join("\n"):"No mistakes intercepted"
+      E.length?E.slice(0,12).join("\n"):"no errors caught"
     ];
-    panel(warn?"The game didn’t start.":"Diagnostics","".length?lines:lines,warn);
+    panel(warn?"The game failed to start":"Diagnostics","".length?lines:lines,warn);
   }
 
   var forced = (typeof location!=="undefined" && location.search.indexOf("diag=1")>=0);

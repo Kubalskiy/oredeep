@@ -70,25 +70,25 @@ const BALANCE = {
   workoutStepPct:[15,12,10,8,6,10,5],
 
   dailyQuests:[
-    {id:"break",ic:"⛏",n:"Take it out. 30 vein",need:30,tok:10,
-      lore:"Mountain Feeds those who knock without fatigue."},
-    {id:"find",ic:"💎",n:"Take it out. 5 stones rock",need:5,tok:10,
-      lore:"gems in vein — Sign that Mountain Hey, hey, hey, hey, hey."},
-    {id:"bag",ic:"🎒",n:"Open it. 15 bag",need:15,tok:10,
-      lore:"trader Nori’s already warming the curved scales."},
-    {id:"drink",ic:"🍺",n:"Swallow beer at the Borina ×5",need:5,tok:10,
-      lore:"Burning his throat, saving his glasses. feastEnergy too."},
-    {id:"feast",ic:"💪",n:"Finish it. 1 feast",need:1,tok:10,
-      lore:"Respect for the hall grows at the table, not at the speech."},
-    {id:"pvp",ic:"⚔",n:"Winning 2 In the arena",need:2,tok:10,
+    {id:"break",ic:"⛏",n:"Smash 30 veins",need:30,tok:10,
+      lore:"The Mountain feeds those who knock without rest."},
+    {id:"find",ic:"💎",n:"Pull 5 stones from the rock",need:5,tok:10,
+      lore:"A gem in the vein — a sign the Mountain is listening."},
+    {id:"bag",ic:"🎒",n:"Open 15 bags",need:15,tok:10,
+      lore:"Nori the trader is already warming up his crooked scales."},
+    {id:"drink",ic:"🍺",n:"Have a beer at Borin’s ×5",need:5,tok:10,
+      lore:"Burns the throat, builds feast points. Energy too."},
+    {id:"feast",ic:"💪",n:"Finish 1 feast",need:1,tok:10,
+      lore:"The Hall’s Respect grows at the table, not with speeches."},
+    {id:"pvp",ic:"⚔",n:"Win 2 in the arena",need:2,tok:10,
       lore:"Only winners drink in the arena."}],
-  dailyTrack:[[25,"🗝 key ×1"],[50,"🥚 egg ×3"],[100,"💎 crystals ×50"],[150,"🪮 comb ×2"]],
+  dailyTrack:[[25,"🗝 chest key ×1"],[50,"🥚 egg ×3"],[100,"💎 gems ×50"],[150,"🪮 comb ×2"]],
   dailyAdTok:30,
   noAdsPrice:"49.99",
   shardYield:[0,0,5,15,40,100,250,600],
   fuseCost:(t)=>Math.round(15*Math.pow(3,t)),
 
-  run:{ len:1000, wallMsg:"The City of Porgon" },
+  run:{ len:1000, wallMsg:"The Vault of the Run" },
   prestige:{ minStage:300, div:300, powPerLevel:2.5, echoFrac:0.05 },
 
   bags:{ starter:20, perVein:1, perBoss:3, autoSec:3, autoOpenPerTick:1,
@@ -140,17 +140,17 @@ const BALANCE = {
   petCraft:{ needLegendaries:3, gems:1000 },
 
   skillChests:[
-    { id:"wood",  n:"Pretty lair.",  cards:1, minR:0, keyCost:1, gemCost:0   },
-    { id:"iron",  n:"Occurator",cards:3, minR:1, keyCost:0, gemCost:150 },
-    { id:"mith",  n:"Mifril lair",cards:5, minR:2, keyCost:0, gemCost:600 }
+    { id:"wood",  n:"Plank Chest",  cards:1, minR:0, keyCost:1, gemCost:0   },
+    { id:"iron",  n:"Iron-Bound Chest",cards:3, minR:1, keyCost:0, gemCost:150 },
+    { id:"mith",  n:"Mithril Chest",cards:5, minR:2, keyCost:0, gemCost:600 }
   ],
   skillCardProtein:[0,20,45,80,130,200,300,440,620,850],
   dungeonSets:[
-    {id:"berserk", n:"Fury dig",  frags:["Titty","The Rock","The Riv","Anger"],       bonus:"+50% ATK, +20% CRIT"},
-    {id:"greed",   n:"Greedy Nedra",  frags:["Slipper","Weights","Stamp","Bag"],   bonus:"×2 Greed (golden for the vein)"},
-    {id:"guardian",n:"Mountain Apple",     frags:["Shield","Armour","The root","Print"],    bonus:"+80% Energy"},
-    {id:"lucky",   n:"The Starlor’s Fart", frags:["Clever.","Stuff","A coin","Comet"],bonus:"+25% Good luck, ×1.5 Find"},
-    {id:"mythic",  n:"The Ancestor’s Indignity",frags:["A hammer","Mech.","Coal","Spark"],   bonus:"+40% Equipment"}
+    {id:"berserk", n:"Fury of the Dig",  frags:["Fang","Snarl","Roar","Wrath"],       bonus:"+50% ATK, +20% CRIT"},
+    {id:"greed",   n:"Greed of the Deep",  frags:["Ingot","Scales","Brand","Bag"],   bonus:"×2 Greed (gold per vein)"},
+    {id:"guardian",n:"Bulwark of the Mountain",     frags:["Shield","Armor","Root","Seal"],    bonus:"+80% Energy"},
+    {id:"lucky",   n:"Prospector’s Luck", frags:["Clover","Horseshoe","Coin","Comet"],bonus:"+25% Luck, ×1.5 finds"},
+    {id:"mythic",  n:"Anvil of the Ancestors",frags:["Hammer","Bellows","Coal","Spark"],   bonus:"+40% gear power"}
   ],
   gearRarityMul:[1,2.2,4.8,10,22,48,110,250],
   gearStat:{
@@ -186,25 +186,25 @@ const BALANCE = {
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },
 
   pvpBots:[
-    {id:"slag",  ic:"🪓", n:"Slag Beardless", tag:"Newcomer",  mul:0.72, grit:0.15, fluff:"He digs fast, he gets tired early."},
-    {id:"borin", ic:"📐", n:"Borin the Counter",   tag:"calculation",   mul:0.95, grit:0.55, fluff:"No surprises, steady pace."},
-    {id:"grom",  ic:"🦷", n:"Grom Irontooth",  tag:"The aggressor", mul:1.08, grit:0.30, fluff:"Going forward, breaking supports"},
-    {id:"mira",  ic:"✦", n:"Mira Rune",     tag:"Technical",  mul:1.22, grit:0.70, fluff:"rarely misses vein"},
-    {id:"durin", ic:"⛰", n:"Durin Deep", tag:"Patriarch", mul:1.48, grit:0.85, fluff:"vein Remembers his name."}
+    {id:"slag",  ic:"🪓", n:"Slag the Beardless", tag:"newcomer",  mul:0.72, grit:0.15, fluff:"digs fast, tires early"},
+    {id:"borin", ic:"📐", n:"Borin the Counter",   tag:"calculating",   mul:0.95, grit:0.55, fluff:"steady pace, no surprises"},
+    {id:"grom",  ic:"🦷", n:"Grom Irontooth",  tag:"aggressor", mul:1.08, grit:0.30, fluff:"charges ahead, breaks the props"},
+    {id:"mira",  ic:"✦", n:"Mira the Runic",     tag:"technician",  mul:1.22, grit:0.70, fluff:"rarely misses the vein"},
+    {id:"durin", ic:"⛰", n:"Durin the Deep", tag:"Patriarch", mul:1.48, grit:0.85, fluff:"the vein remembers his name"}
   ],
 
   shopDaily:{
-    offers:{ ic:"🎁", title:"A gift from the trench", sub:"gold and bag",
+    offers:{ ic:"🎁", title:"Offer gift", sub:"gold and bag",
       free:{ goldMul:8, bags:1 }, ad:{ goldMul:20, bags:2, gems:5 } },
-    art:{ ic:"💎", title:"Collection Shard", sub:"accidental artifacts",
+    art:{ ic:"💎", title:"Collection shard", sub:"random artifacts",
       free:{ stickers:1 }, ad:{ stickers:2, gems:15 } },
-    barrels:{ ic:"🛢", title:"The Generousness of the Lail", sub:"key and beer",
+    barrels:{ ic:"🛢", title:"Chest bounty", sub:"chest key and beer",
       free:{ chestKeys:1 }, ad:{ chestKeys:1, protein:40 } },
-    gems:{ ic:"✨", title:"Small gems", sub:"No purchase",
+    gems:{ ic:"✨", title:"Gem crumbs", sub:"no purchase",
       free:{ gems:5 }, ad:{ gems:20 } },
-    a:{ ic:"🥚", title:"egg + comb", sub:"gacha resources",
+    a:{ ic:"🥚", title:"Egg + comb", sub:"gacha resources",
       free:{ eggs:1, combs:1 }, ad:{ eggs:1, combs:1 } },
-    b:{ ic:"🍺", title:"beer + bag", sub:"Training and lute",
+    b:{ ic:"🍺", title:"Beer + bag", sub:"training and loot",
       free:{ protein:40, bags:1 }, ad:{ protein:40, bags:1 } }
   },
   shopFreeN:6,
@@ -249,10 +249,10 @@ const BALANCE = {
 
   events:{
     hpMul:3,
-    rockfall:{ maxLvl:10, total:50000, first:200, currency:"shard", res:"shards", ic:"💠", waveSize:5 },
+    rockfall:{ maxLvl:10, total:50000, first:200, currency:"Shards", res:"shards", ic:"💠", waveSize:5 },
     lavaVein:{ maxLvl:100, total:1500000, first:200, currency:"beer", res:"protein", ic:"🍺", waveSize:3 },
-    prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"crystals", res:"gems", ic:"💎", waveSize:1 },
-    crystalCave:{ maxLvl:10, total:0, first:0, currency:"crystals", res:"gems", ic:"💎", flat:10, waveSize:5 },
+    prospectorFair:{ maxLvl:5, total:2500, first:200, currency:"gems", res:"gems", ic:"💎", waveSize:1 },
+    crystalCave:{ maxLvl:10, total:0, first:0, currency:"gems", res:"gems", ic:"💎", flat:10, waveSize:5 },
     critterDen:{ maxLvl:10, total:8000, first:100, currency:"gold", res:"gold", ic:"🪙", mult:50, waveSize:4 } },
   keyMax:2, keyRefillSec:Math.round(6*3600),
   eventKeyGem:50,
@@ -262,20 +262,20 @@ const BALANCE = {
     timerUnitSec:1800,
     fib:[1,1,2,3,5,8,13],
     raids:[
-      {id:0, ic:"🎒", n:"bag",     res:"bags",     base:3,  g:1.12, label:"🎒"},
+      {id:0, ic:"🎒", n:"Bags",     res:"bags",     base:3,  g:1.12, label:"🎒"},
       {id:1, ic:"💎", n:"Gems", res:"gems",     base:20, g:1.10, label:"💎"},
-      {id:2, ic:"🥚", n:"egg",      res:"eggs",     base:1,  g:1.08, label:"🥚"},
-      {id:3, ic:"🪮", n:"comb",  res:"combs",    base:1,  g:1.08, label:"🪮"},
+      {id:2, ic:"🥚", n:"Eggs",      res:"eggs",     base:1,  g:1.08, label:"🥚"},
+      {id:3, ic:"🪮", n:"Combs",  res:"combs",    base:1,  g:1.08, label:"🪮"},
       {id:4, ic:"🍺", n:"Beer",      res:"protein",  base:50, g:1.10, label:"🍺"}
     ]
   },
 
   minesExtra:[
     null,
-    { res:"shards",    ic:"💠", name:"shard",     label:"💠", pct:18, vein:3, boss:10 },
+    { res:"shards",    ic:"💠", name:"Shards",     label:"💠", pct:18, vein:3, boss:10 },
     { res:"protein",   ic:"🍺", name:"Beer",        label:"🍺", pct:14, vein:5, boss:15 },
     { res:"wheelSpins",ic:"◎",  name:"Roll",      label:"◎",  pct:10, vein:1, boss:2  },
-    { res:"chestKeys", ic:"🗝", name:"The key to the bark", label:"🗝", pct:8,  vein:1, boss:2  }
+    { res:"chestKeys", ic:"🗝", name:"Chest key", label:"🗝", pct:8,  vein:1, boss:2  }
   ],
   shop:{ gemPacks:[250,900,3500],
     comeback:[[250,10000],[900,50000],[1500,100000],[2500,175000],[4000,300000],[10000,1000000]],

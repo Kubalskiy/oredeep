@@ -16,12 +16,12 @@ function snoozeAdPlaque(min){
   const lab=(typeof AD_HUB_LABELS!=="undefined"&&AD_HUB_LABELS[typeof adSlotKey==="function"?adSlotKey(slot):slot])||slot||"bonus";
   finishAdPlaque(false);
   if(_adSnoozeTimer){ clearTimeout(_adSnoozeTimer); _adSnoozeTimer=null; }
-  showToast("⏰","I’ll remind you again. "+min+" min","","«"+lab+"» · slip 📺 In a hat");
+  showToast("⏰","Reminding you in "+min+" min","","«"+lab+"» · tap 📺 in the header");
   try{ Platform.logEvent("ad_snooze",{slot,min}); }catch(e){}
   if(typeof __vclock!=="undefined") return;
   _adSnoozeTimer=setTimeout(()=>{
     _adSnoozeTimer=null;
-    showToast("📺","The ad’s waiting.","","«"+lab+"» · Open the bonuses.",true);
+    showToast("📺","Ad is waiting","","«"+lab+"» · open bonuses",true);
     try{ if(typeof openAdHub==="function") openAdHub(); }catch(e){}
   }, min*60*1000);
 }
@@ -31,12 +31,12 @@ function snoozeVeinAd(min){
   const st=typeof veinAdBurstState==="function"?veinAdBurstState():null;
   if(st){ st.coolAt=Date.now()+min*60*1000; st.n=0; }
   if(_adSnoozeTimer){ clearTimeout(_adSnoozeTimer); _adSnoozeTimer=null; }
-  showToast("⏰","I’ll remind you again. "+min+" min","","×2 Gold with vein");
+  showToast("⏰","Reminding you in "+min+" min","","×2 gold from vein");
   try{ Platform.logEvent("vein_ad_snooze",{min}); }catch(e){}
   if(typeof __vclock!=="undefined") return;
   _adSnoozeTimer=setTimeout(()=>{
     _adSnoozeTimer=null;
-    showToast("📺","×2 vein Waits.","","Break it. vein — Let’s say double again.",true);
+    showToast("📺","×2 vein awaits","","Break a vein — we’ll offer doubling again",true);
   }, min*60*1000);
 }
 function showAdPlaque(slot, cb){
@@ -46,7 +46,7 @@ function showAdPlaque(slot, cb){
   _adPlaqueSlot=slot||"";
   const ov=$("adPlaque"); if(!ov){ cb(true); return; }
   const lab=(typeof AD_HUB_LABELS!=="undefined"&&AD_HUB_LABELS[typeof adSlotKey==="function"?adSlotKey(slot):slot])||slot||"";
-  setTxt("adPlaqueSlot", lab?("Slot · "+lab):"");
+  setTxt("adPlaqueSlot", lab?("slot · "+lab):"");
   const bar=$("adPlaqueBar"); if(bar) bar.style.width="0%";
   const okBtn=$("adPlaqueOk"); if(okBtn){ okBtn.disabled=true; okBtn.textContent="…"; }
   ov.style.display="flex"; ov.setAttribute("aria-hidden","false");
@@ -186,14 +186,14 @@ const Platform={
   LB_KEY:"oredeep_lb",
   _seedLB(){
     const seed=[
-      {name:"Balin Stonerook",depth:186000,prestige:41},
-      {name:"Dwine Cedobeard",depth:97200,prestige:33},
-      {name:"Thorin Molot",depth:52800,prestige:27},
-      {name:"Gimley from Moria",depth:23400,prestige:19},
-      {name:"Nori Shrek",depth:9600,prestige:12},
-      {name:"Beer Bomber",depth:4200,prestige:7},
-      {name:"Oin Lightlighter",depth:1800,prestige:3},
-      {name:"Puffy-pumper",depth:300,prestige:0}
+      {name:"Balin Stonehand",depth:186000,prestige:41},
+      {name:"Dwalin Greybeard",depth:97200,prestige:33},
+      {name:"Thorin Hammer",depth:52800,prestige:27},
+      {name:"Gimli of Moria",depth:23400,prestige:19},
+      {name:"Nori Drift",depth:9600,prestige:12},
+      {name:"Bombur the Brewer",depth:4200,prestige:7},
+      {name:"Oin the Lamplighter",depth:1800,prestige:3},
+      {name:"Fluff the Apprentice",depth:300,prestige:0}
     ];
     try{ localStorage.setItem(Platform.LB_KEY,JSON.stringify(seed)); }catch(e){}
     return seed;
@@ -202,23 +202,23 @@ const Platform={
   scienceTasks(){
     return [
 
-      {id:"g1", q:"How many separate crystals are there on the breakage?", hint:"Consider the bright, sharp-cut lights.",
-        opts:["0","1","2","3 and above"], gold:2},
-      {id:"g2", q:"rock lighted by its own light?", hint:"Look for a pork around a rock, not a blick on top.",
-        opts:["Yes","none"], gold:1},
-      {id:"g3", q:"Is the break even or stairwell?", hint:"Look at the right edge of the slice.",
-        opts:["level","step"], gold:1},
-      {id:"g4", q:"Do you seeveinWhat’s the other color?", hint:"Thin threads going through the stone.",
-        opts:["Yes","none"], gold:0},
+      {id:"g1", q:"How many separate crystals are on the break?", hint:"Count the bright pointed inclusions.",
+        opts:["0","1","2","3 or more"], gold:2},
+      {id:"g2", q:"Does the rock glow with its own light?", hint:"Look for a halo around the stone, not a glare on top.",
+        opts:["yes","no"], gold:1},
+      {id:"g3", q:"Is the break smooth or stepped?", hint:"Look at the right edge of the chip.",
+        opts:["smooth","stepped"], gold:1},
+      {id:"g4", q:"Are there veins of another color?", hint:"Thin threads running through the stone.",
+        opts:["yes","no"], gold:0},
 
-      {id:"o1", q:"Which type should I say?", hint:"The layers are hinting of sedimentary, glassyness. — Magmatical.",
-        opts:["sediment","Magmatical","Metamorphic","Not defined"]},
-      {id:"o2", q:"Are there any traces of water on the cut?", hint:"Round carpets and sweats — There’s water traces.",
-        opts:["Yes","none","No sign of him."]},
-      {id:"o3", q:"Assess the grains.", hint:"How big the grains are visible to the eye.",
-        opts:["Small","Average","Large"]},
-      {id:"o4", q:"Is the sample suitable for date?", hint:"Interference — cracks; assistance — a large net inclusion.",
-        opts:["Yes","none","doubtful"]}
+      {id:"o1", q:"What type is this sample?", hint:"Layers hint at sedimentary, glassiness at igneous.",
+        opts:["sedimentary","igneous","metamorphic","can’t tell"]},
+      {id:"o2", q:"Any traces of water on the cut?", hint:"Rounded cavities and streaks are traces of water.",
+        opts:["yes","no","none visible"]},
+      {id:"o3", q:"Judge the grain", hint:"How large the grains are to the naked eye.",
+        opts:["fine","medium","coarse"]},
+      {id:"o4", q:"Is the sample fit for dating?", hint:"Hindrance — cracks; help — a large clean inclusion.",
+        opts:["yes","no","doubtful"]}
     ];
   },
   _sci:{ votes:{}, retired:{} },
