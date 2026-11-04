@@ -120,6 +120,19 @@ load();
 T("битый primary → восстановление из bak", S.gold===777 && S.bag===3);
 T("flushSave пишет сейв", (function(){ S.gold=42; flushSave(); return localStorage.getItem("oredeep_v3").includes("42"); })());
 T("bindSaveLifecycle не падает", (function(){ try{ bindSaveLifecycle(); return true; }catch(e){ return false; } })());
+T("SPEEDS объявлен до загрузки на старте (иначе TDZ → сброс сейва)", (function(){
+  const src=require("fs").readFileSync(require("path").join(__dirname,"..","js","game.js"),"utf8");
+  const d=src.indexOf("const SPEEDS="), boot=src.search(/^load\(\);/m);
+  return d>=0 && boot>=0 && d<boot;
+})());
+T("битая экипировка в сейве не валит игру", (function(){
+  const bak=JSON.parse(JSON.stringify(S));
+  try{
+    const d=sanitizeState(Object.assign(JSON.parse(JSON.stringify(S)), {gear:{helm:{r:5,p:1}, robe:null, bogus:{r:2}, boots:{r:"x"}}}));
+    const ok=d.gear.helm&&d.gear.helm.s==="helm"&&d.gear.helm.m===1&&!("robe" in d.gear)&&!("bogus" in d.gear)&&!("boots" in d.gear);
+    Object.assign(S, d); const st=stat("energy"); return ok && Number.isFinite(st);
+  }finally{ Object.assign(S, bak); }
+})());
 
 
 console.log("\n[8] Оплата и применение всех покупок");
@@ -217,7 +230,7 @@ console.log("\n[21] Бороды-стрижки и распитие эля");
 localStorage.removeItem("oredeep_v3"); load();
 T("5 стилей бород загружены", typeof BEARD_STYLES!=="undefined" && BEARD_STYLES.length===5);
 S.stageIdx=featNeedStage("beards"); openBeard();
-T("кнопка бороды открывает ранг", __ids.uiScreen.style.display==="flex" && __ids.uiTitle.textContent.includes("Beards") && /luck/i.test(__ids.uiBody.innerHTML));
+T("кнопка бороды открывает ранг", __ids.uiScreen.style.display==="flex" && UIS.id==="tavern" && UIS.beardTab==="rank" && /luck/i.test(__ids.uiBody.innerHTML));
 // пиво восстанавливает энергию
 S.stageIdx=1; newRock(); S.energy=1; const before=S.energy;
 sipAle();
@@ -238,7 +251,7 @@ T("пиво не превышает максимум", S.energy<=stat("energy"))
   UIS.back();
   T("назад с Клана → Союзники", UIS.id==="tavern" && UIS.tab==="mates");
   UIS.push("beards","gacha");
-  T("борода из союзников", UIS.id==="beards");
+  T("борода из союзников → вкладка таверны", UIS.id==="tavern" && UIS.tab==="beards");
   UIS.back();
   T("назад с бороды → Союзники", UIS.id==="tavern" && UIS.tab==="mates");
   UIS.push("pets","gacha");
@@ -722,9 +735,15 @@ S.geo.lv=BALANCE.merge.ascendLv; { const p0=geoPct(S.geo); const g0=S.gems; asce
 { S.geo={t:0,r:GEO_RAR.length-1,n:"Дед",lv:BALANCE.merge.ascendLv,asc:1}; S.gems=BALANCE.merge.ascendGems+10;
   UIS.open("beards","ascend");
   const body=($("uiBody")&&$("uiBody").innerHTML)||"";
-  T("UIS бород: вкладка Восхождение", UIS.id==="beards" && UIS.tab==="ascend" && /Ascension/.test(body));
+  T("UIS бород: вкладка Восхождение", UIS.id==="tavern" && UIS.tab==="beards" && UIS.beardTab==="ascend" && /Ascension/.test(body));
   T("UIS бород: кнопка восхождения", /ascendGeo\(/.test(body));
+  T("бороды: подвкладки внутри таверны", /setBeardTab\('gacha'\)/.test(body) && /setBeardTab\('gallery'\)/.test(body));
   UIS.close(); }
+{ const st=S.stageIdx; S.stageIdx=featNeedStage("beards"); __TEST_UNLOCK_ALL=false;
+  UIS.open("tavern","ale");
+  const tabs=($("uiTabs")&&$("uiTabs").innerHTML)||"";
+  T("таверна до соц-анлока: открыты только бороды", UIS.id==="tavern" && UIS.tab==="beards" && /🔒 Bar/.test(tabs));
+  UIS.close(); S.stageIdx=st; __TEST_UNLOCK_ALL=true; }
 
 console.log("\n[29] Скиллы как карточки + лари (док §Скиллы)");
 localStorage.removeItem("oredeep_v3"); load();
@@ -757,8 +776,8 @@ localStorage.removeItem("oredeep_v3"); load();
 ensureSpecial();
 T("КРАСАВА стартует с 5 по всем чертам", SPECIAL_DEFS.every(d=>specialAttr(d.id)===5));
 T("есть пул КРАСАВА", (S.specialPool||0)>=5);
-T("порядок КРАСАВА", SPECIAL_DEFS.map(d=>d.letter).join("")==="KRASAVA");
-T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="K.R.A.S.A.V.A.");
+T("порядок КРАСАВА", SPECIAL_DEFS.map(d=>d.letter).join("")==="BEARDED");
+T("заголовок B.E.A.R.D.E.D.", SPECIAL_TITLE==="B.E.A.R.D.E.D.");
 { const a0=stat("atk"); spendSpecial("s");
   T("Сила поднимает ATK", specialAttr("s")===6 && stat("atk")>a0); }
 { S.veinsBroken=BALANCE.special.veinsPerLv; S.minerLv=0; S.skillPts=0;
@@ -811,7 +830,7 @@ T("заголовок К.Р.А.С.А.В.А.", KRASAVA_TITLE==="K.R.A.S.A.V.A.");
     && /refundSpecial\('a'\)/.test(html) && /resetSpecial\(/.test(html));
 }
 { openCharSheet({kind:"special",id:"s"});
-  T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("K.R.A.S.A.V.A")>=0);
+  T("лист персонажа открывается", $("charModal")&&$("charModal").style.display==="flex" && ($("charSheet").innerHTML||"").indexOf("B.E.A.R.D.E.D")>=0);
   closeCharSheet();
   T("лист персонажа закрывается", $("charModal").style.display!=="flex");
   openSkills("sheet");
@@ -1358,7 +1377,12 @@ T("syncPetBoxClass красит скин", (function(){
 console.log("\n[44b] Вид героя = слабейший слот, не среднее");
 { const bak=S.gear; S.gear={helm:{r:6},glove:{r:5},pick:{r:4},lamp:{r:7},pants:{r:7},boots:{r:7},pack:{r:7},robe:{r:7}};
   T("винегрет → dwarfTier по минимуму", dwarfTier()===4);
-  T("подсказка про микс", /Mix/.test(gearLoadoutHint()) && /weakest/.test(gearLoadoutHint()));
+  T("подсказка про микс", /Mix/.test(gearLoadoutHint()) && /every worn item/.test(gearLoadoutHint()));
+  { const p=dwarfParts();
+    T("каждый слот виден на герое", p.helm===6 && p.glove===5 && p.robe===7 && p.lamp===7 && p.pants===7); }
+  S.gear={helm:{r:3}};
+  { const p=dwarfParts();
+    T("пустой слот = базовый вид, фонаря нет", p.helm===3 && p.robe===0 && p.boots===0 && p.lamp===-1); }
   S.gear={helm:{r:5},glove:{r:5},pick:{r:5},lamp:{r:5},pants:{r:5},boots:{r:5},pack:{r:5},robe:{r:5}};
   T("полный сет одной редкости", dwarfTier()===5 && /Set/.test(gearLoadoutHint()));
   S.gear=bak; }

@@ -338,6 +338,37 @@ const PICK_ICONS=[0,1,2,3,4,5,6,7].map(i=>ART+"pick"+i+".png");
 const ORE_SPRITES=[0,1,2,3,4,5].map(p=>[0,1,2,3].map(v=>ART+"ore_p"+p+"_s"+v+".png"));
 
 const MINER_BASES=[0,1,2,3,4,5,6,7].map(i=>ART+"dwarf"+i+".png");
+const HAND_PICKS=[0,1,2,3,4,5,6,7].map(i=>ART+"pickh"+i+".png");
+/** Fist position (% of sprite) per dwarf tier — the pickaxe pivots here. */
+const DWARF_GRIPS=[[55.3,49.1],[58.9,49.1],[55.8,43.6],[52.6,47.3],[54.7,50.9],[58.9,49.1],[52.6,47.3],[54.7,50.9]];
+/** Rig layer → gear slot whose rarity picks that layer's sprite. */
+const DWARF_PART_SLOT={dwHead:"helm", dwTorso:"robe", dwBelt:"pack", dwFist:"glove", dwBoot:"boots", dwLegL:"pants", dwLegR:"pants"};
+function clampTier(t){ return Math.max(0, Math.min(MINER_BASES.length-1, t|0)); }
+/** Per-slot tiers of the player's worn gear; an empty slot shows the base (tier 0) look. */
+function dwarfParts(){
+  const g=(S&&S.gear&&typeof S.gear==="object")?S.gear:{}, out={};
+  for(const k of ["helm","robe","pack","glove","boots","pants","lamp"]){
+    const it=g[k]; out[k]=(it&&Number.isFinite(Number(it.r)))?clampTier(Number(it.r)):(k==="lamp"?-1:0); }
+  return out;
+}
+function setDwarfRig(rigId, tier, parts){
+  const rig=$(rigId); if(!rig) return;
+  const t=clampTier(tier);
+  const P=parts||{helm:t, robe:t, pack:t, glove:t, boots:t, pants:t, lamp:-1};
+  const body=clampTier(P.robe), fist=clampTier(P.glove);
+  try{ rig.setAttribute("data-t", String(body));
+    rig.style.setProperty("--gx", DWARF_GRIPS[body][0]+"%"); rig.style.setProperty("--gy", DWARF_GRIPS[body][1]+"%");
+    rig.style.setProperty("--fx", DWARF_GRIPS[fist][0]+"%"); rig.style.setProperty("--fy", DWARF_GRIPS[fist][1]+"%");
+    const lamp=P.lamp|0;
+    rig.style.setProperty("--lc", lamp>=0?(RAR_HEX[lamp]||RAR_HEX[0]):"transparent");
+    rig.style.setProperty("--la", lamp>=0?String(0.22+lamp*0.07):"0");
+    rig.classList.toggle("lit", lamp>=4); }catch(e){}
+  try{ rig.querySelectorAll("img.dwp").forEach(im=>{
+    let slot="robe";
+    for(const c in DWARF_PART_SLOT){ if(im.classList.contains(c)){ slot=DWARF_PART_SLOT[c]; break; } }
+    const src=MINER_BASES[clampTier(P[slot])];
+    if(im.getAttribute("src")!==src) im.src=src; }); }catch(e){}
+}
 const SLOT_ART={helm:"art/eq_helm.png",glove:"art/eq_glove.png",lamp:"art/eq_lamp.png",pick:"art/eq_pick.png",
   pants:"art/eq_pants.png",boots:"art/eq_boots.png",pack:"art/eq_pack.png",robe:"art/eq_robe.png"};
 function gearArtSrc(slotId, rarity){
@@ -377,7 +408,7 @@ function addBeardXP(n){ const before=beardLevel(); S.beardXP=(S.beardXP||0)+n;
 
     ensureSpecial();
     if((S.specialPool||0)<99){ S.specialPool=(S.specialPool||0)+1;
-      showToast("🧬","Dwarf trait","","+1 K.R.A.S.A.V.A. point","spend it in Skills",true); }
+      showToast("🧬","Dwarf trait","","+1 B.E.A.R.D.E.D. point","spend it in Skills",true); }
   } }
 const MUG_ICON="art/ic_mug.png?v=2";
 const EQ=(()=>{const o={};for(const k of ["helm","robe","boots","glove","pack"])o[k]=[0,1,2,3,4,5,6,7].map(()=>"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");return o;})();
@@ -729,6 +760,7 @@ function onFind(forceR){
   const mineKey=S.mine%MINES.length;
   const name=MINES[mineKey].stones[ri];
   const val=stoneValue(ri);
+  try{ juiceFind(ri); }catch(e){}
   if(!S.best||ri>=S.best.r) S.best={r:ri,name:name};
   dailyProgress("find",1);
   S.col[mineKey]=S.col[mineKey]||{};
@@ -853,7 +885,7 @@ function pushFeed(who, text, kind){
 }
 function feedWhoFromToast(rar, name, extra){
   const blob=[rar,name,extra].filter(Boolean).join(" ");
-  if(/Level|Upgrad|PASS|bag|KRASAVA|perk|Coach|Lv\./i.test(blob)) return {who:"Upgrade", kind:"up"};
+  if(/Level|Upgrad|PASS|bag|BEARDED|KRASAVA|perk|Coach|Lv\./i.test(blob)) return {who:"Upgrade", kind:"up"};
   if(/Cup|store|Pack|Promotional|No-Ads|No advertising|Starter|Waitlist|gems/i.test(blob)) return {who:"Purchased", kind:"buy"};
   if(/On.|sold|chest|Find|duplicate|Collection|pet|COMMON|RARE|EPIC|LEGENDARY|EXOTIC|MYTHIC|ASCENDED|COSMIC/i.test(blob))
     return {who:"Loot", kind:"loot"};
@@ -1167,6 +1199,7 @@ function breakVein(){
     }
   }
 
+  try{ juiceBreak(!!rock.isBoss, veinGold); }catch(e){}
   const pk=$("peek");
   if(rock.buried && pk.dataset.on==="1"){ pk.classList.add("pop"); setTimeout(()=>pk.classList.remove("pop"),560); }
   if(rock.buried && rock.buried.stoneR>=0) onFind(rock.buried.stoneR);
@@ -1370,13 +1403,13 @@ const FEAT_ORDER=["auto","pets","beards","daily","mines","skills","artifacts","p
 const FEAT_INFO={
   auto:{ic:"⚙️",n:"Auto & bonuses",hint:"AUTO bags, bonus chest, offline and 2× loot"},
   pets:{ic:"🐾",n:"Pets",hint:"Eggs from veins · roll the gacha in the pet slot"},
-  beards:{ic:"🧔",n:"Beards",hint:"Combs from veins · rank and elder gacha"},
+  beards:{ic:"🧔",n:"Beards",hint:"Tavern below → Beards · combs from veins, rank and elder gacha"},
   daily:{ic:"📕",n:"Tasks",hint:"Daily quests and offers on the left of the scene"},
   mines:{ic:"⛏",n:"Mines",hint:"Switch Halls in the bottom panel"},
-  skills:{ic:"📜",n:"Skills",hint:"Card chest, K.R.A.S.A.V.A. and training"},
+  skills:{ic:"📜",n:"Skills",hint:"Card chest, B.E.A.R.D.E.D. and training"},
   artifacts:{ic:"💎",n:"Trophies",hint:"Achievements and artifacts on the left of the scene"},
   pvp:{ic:"⚔",n:"Arena",hint:"PvP in the bottom panel"},
-  social:{ic:"🍺",n:"Tavern & friends",hint:"Tavern below · friends on the left"}
+  social:{ic:"🍺",n:"Tavern & friends",hint:"Bar, Feast and Cups open in the Tavern · friends on the left"}
 };
 const FEAT_CHROME={
   auto:["bonusChest","boost2x"],
@@ -1385,9 +1418,10 @@ const FEAT_CHROME={
   skills:["navSkills"],
   artifacts:["achievements","artifacts"],
   pvp:["navPvp"],
-  social:["friendsBtn","navTavBtn"]
+  beards:["navTavBtn"],
+  social:["friendsBtn"]
 };
-const FEAT_SCREEN={pets:"pets",beards:"beards",mines:"mines",pvp:"pvp",tavern:"social",artifacts:"artifacts"};
+const FEAT_SCREEN={pets:"pets",mines:"mines",pvp:"pvp",tavern:"beards",artifacts:"artifacts"};
 function featNeedStage(id){
   const U=BALANCE.unlocks||{};
   return U[id]!=null?U[id]:1;
@@ -1754,6 +1788,7 @@ function loop(now){
   else if(!dead){ aleNext-=rawDt; if(aleNext<=0){ sipAle(); aleNext=35+Math.random()*30; } }
   if(!dead){ quipNext-=rawDt; if(quipNext<=0) sayQuip(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)]); }
   tickPetMood(rawDt);
+  if(!dead) try{ dragonBreathTick(rawDt); }catch(e){}
   render();
   requestAnimationFrame(loop);
 }
@@ -2105,7 +2140,26 @@ function syncPetBoxClass(){
     if(img.getAttribute("src")!==src) img.setAttribute("src", src);
     img.alt=fam.n||"dragon";
   }
+  buildDragonRig(fam);
   if(pet) paintPetCollars(RAR_HEX[Math.min(pet.r|0, RAR_HEX.length-1)]);
+}
+/** Layer pivots (% of the 72×64 canvas) from tools/gen_dragon_rig.py; listed back→front, body drawn before head. */
+const DRAGON_RIG={
+  gold:{wingB:[41.5,49.0],wingA:[32.3,47.8],tail:[61.9,73.1],legA:[25.2,67.3],legB:[41.5,71.9],head:[56.8,58.1]},
+  chaos:{wingA:[57.3,58.8],tail:[41.7,76.5],legA:[45.0,81.5],legB:[66.3,76.5],head:[75.3,48.8]},
+  storm:{wingB:[51.7,40.6],wingA:[48.5,46.6],tail:[33.5,65.8],tail2:[75.2,85.1],legA:[41.0,71.8],legB:[64.5,65.8],head:[70.9,36.9]}
+};
+function buildDragonRig(fam){
+  const rig=$("petRig"), img=$("petArtImg"); if(!rig||!fam||!fam.art) return;
+  const m=/pet_dragon_(\w+)\.png(\?v=\d+)?/.exec(fam.art), key=m&&m[1], P=key&&DRAGON_RIG[key];
+  if(!P){ rig.innerHTML=""; rig.setAttribute("data-k",""); if(img) img.style.display=""; return; }
+  if(rig.getAttribute("data-k")===key) return;
+  const v=m[2]||"", layer=(part,o)=>'<img class="dp dp-'+part+'" alt="" draggable="false" src="'+ART+"pet_dragon_"+key+"_"+part+".png"+v+'"'
+    +(o?' style="transform-origin:'+o[0]+'% '+o[1]+'%"':"")+'>';
+  const parts=Object.keys(P), front=parts.filter(p=>p==="head");
+  rig.innerHTML=parts.filter(p=>p!=="head").map(p=>layer(p,P[p])).join("")+layer("body",null)+front.map(p=>layer(p,P[p])).join("");
+  rig.setAttribute("data-k", key);
+  if(img) img.style.display="none";
 }
 function applyPetMood(id){
   const ix=PET_MOODS.findIndex(x=>x.id===id);
@@ -2177,13 +2231,18 @@ function gearLoadoutHint(){
   if(minR===maxR && filled===total)
     return "Set · "+(RAR_NAMES[minR]||"")+" in all slots";
   if(minR===maxR)
-    return (RAR_NAMES[minR]||"")+" · slots "+filled+"/"+total+" · hero look = this rarity";
+    return (RAR_NAMES[minR]||"")+" · slots "+filled+"/"+total+" · every worn item shows on the hero";
   return "Mix "+(RAR_SHORT[minR]||minR)+"…"+(RAR_SHORT[maxR]||maxR)
-    +" · hero look = weakest ("+(RAR_SHORT[minR]||minR)+") · pickaxe separate";
+    +" · every worn item shows on the hero";
 }
 function updateMiner(){
   const g=S.gear;
-  $("mlBase").src=MINER_BASES[dwarfTier()];
+  { const parts=dwarfParts(), sig=JSON.stringify(parts), rig=$("mlRig");
+    setDwarfRig("mlRig", dwarfTier(), parts);
+    if(rig && updateMiner._sig && updateMiner._sig!==sig){
+      rig.classList.remove("dwNew"); void rig.offsetWidth; rig.classList.add("dwNew");
+      clearTimeout(updateMiner._t); updateMiner._t=setTimeout(()=>rig.classList.remove("dwNew"), 800); }
+    updateMiner._sig=sig; }
   { const w=beardWisdom();
     $("mlBeard").src=BEARD_STYLES[w.lenStyle];
     $("mlBeard").style.filter="grayscale("+w.grey.toFixed(2)+") brightness("+(1+w.grey*0.7).toFixed(2)+")"; }
@@ -2196,7 +2255,7 @@ function updateMiner(){
   const L={pack:"mlPack",robe:"mlRobe",boots:"mlBoots",glove:"mlGlove",helm:"mlHelm"};
   for(const k in L){ const el=$(L[k]); if(el) el.style.display="none"; }
   { const bd=$("mlBeard"); if(bd) bd.style.display="none"; }
-  $("pickHand").src=PICK_ICONS[g.pick?g.pick.r:0];
+  $("pickHand").src=HAND_PICKS[g.pick?g.pick.r:0];
   const miner=$("miner");
   if(miner) miner.title=gearLoadoutHint();
   const hint=$("gearLoadoutHint");
@@ -2688,7 +2747,8 @@ if($("ftueTip")){
 }
 
 function fxSwing(){
-  const m=$("miner"); if(m&&m.classList){ m.classList.remove("swing"); void m.offsetWidth; m.classList.add("swing"); }
+  const m=$("miner"); if(m&&m.classList){ m.classList.remove("swing"); void m.offsetWidth; m.classList.add("swing");
+    m.classList.toggle("nod", Math.random()<0.4); }
   const r=$("rock"); if(r&&r.classList){ r.classList.remove("hitfx"); void r.offsetWidth; r.classList.add("hitfx"); }
   if(Math.random()<0.55){
     const c=document.createElement("div");
@@ -2706,6 +2766,214 @@ function fxDamage(dmg,crit){
   d.textContent=(crit?"CRIT ":"")+fmt(dmg);
   d.style.right=(8+Math.random()*14)+"%"; d.style.bottom=(86+Math.random()*30)+"px";
   $("scene").appendChild(d); setTimeout(()=>d.remove(),800);
+  try{ juiceHit(crit); }catch(e){}
+}
+
+const COMBO_MARKS=[[10,"NICE!"],[25,"ON FIRE!"],[50,"UNSTOPPABLE!"],[100,"MOUNTAIN BREAKER!"],[250,"LEGEND OF THE DEEP!"]];
+let _combo=0, _comboAt=0, _comboHideT=null, _juiceN=0;
+function juiceOn(){
+  if(typeof document==="undefined"||typeof document.createElement!=="function") return false;
+  try{ if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false; }catch(e){}
+  return true;
+}
+function sceneFx(cls, x, y, vars, text, ttl){
+  const sc=$("scene"); if(!sc||!sc.appendChild) return null;
+  const e=document.createElement("div");
+  e.className="jfx "+cls;
+  if(x!=null) e.style.left=Math.round(x)+"px";
+  if(y!=null) e.style.top=Math.round(y)+"px";
+  if(vars) for(const k in vars){ try{ e.style.setProperty(k, vars[k]); }catch(_){} }
+  if(text!=null) e.textContent=text;
+  sc.appendChild(e);
+  setTimeout(()=>{ try{ e.remove(); }catch(_){} }, ttl||900);
+  return e;
+}
+function rockPoint(){
+  const sc=$("scene"), r=$("rock");
+  if(!sc||!r||!sc.getBoundingClientRect||!r.getBoundingClientRect) return null;
+  const a=sc.getBoundingClientRect(), b=r.getBoundingClientRect();
+  return { x:b.left-a.left+b.width*0.45, y:b.top-a.top+b.height*0.5, sx:b.left+b.width*0.5, sy:b.top+b.height*0.5, w:a.width, h:a.height };
+}
+function juiceBurst(p, n, cls, spread, lift){
+  for(let i=0;i<n;i++){
+    const a=Math.PI*(0.55+Math.random()*0.9), d=spread*(0.4+Math.random()*0.8);
+    sceneFx(cls, p.x, p.y, {"--dx":(Math.cos(a)*d).toFixed(1)+"px","--dy":(-Math.sin(a)*d*lift).toFixed(1)+"px",
+      "--rot":Math.round(Math.random()*720-360)+"deg"}, null, 900);
+  }
+}
+function juiceHit(crit){
+  if(!juiceOn()) return;
+  _juiceN++;
+  comboTick();
+  if(FAST() && !crit && _juiceN%3) return;
+  const p=rockPoint(); if(!p) return;
+  juiceBurst(p, crit?7:3, "rchip", crit?70:44, 1);
+  juiceBurst(p, crit?5:2, "rspark", crit?60:36, 0.8);
+  if(crit){
+    const r=$("rock"), sc=$("scene"), m=$("miner");
+    pvpRestartClass(r, "critfx");
+    pvpRestartClass(sc, "jshake");
+    sceneFx("critRing", p.x, p.y, null, null, 420);
+    [r,m].forEach(el=>{ if(el&&el.classList){ el.classList.add("hitstop"); setTimeout(()=>el.classList.remove("hitstop"), 70); } });
+  }
+}
+const COMBO_GAP_PX=19;
+/** Keep the combo counter left of the 2× LOOT button and above the vein name, so it never covers a button. */
+function placeComboMeter(el, sc){
+  const bt=$("boost2x");
+  if(!el||!sc||!bt||!sc.getBoundingClientRect||!bt.getBoundingClientRect) return;
+  const a=sc.getBoundingClientRect(), r=bt.getBoundingClientRect();
+  if(!r.width) return;
+  el.style.right=Math.round(a.right-r.left+COMBO_GAP_PX)+"px";
+  el.style.top=Math.round(r.top-a.top)+"px";
+}
+function comboTick(){
+  const now=Date.now();
+  if(now-_comboAt>1600) _combo=0;
+  _combo++; _comboAt=now;
+  let el=$("comboMeter");
+  const sc=$("scene");
+  if(!el && sc && sc.appendChild){
+    el=document.createElement("div"); el.id="comboMeter";
+    el.innerHTML='<b></b><span>COMBO</span>';
+    sc.appendChild(el);
+  }
+  if(!el) return;
+  if(_combo<5){ el.className=""; return; }
+  const heat=_combo>=100?4:_combo>=50?3:_combo>=25?2:_combo>=10?1:0;
+  const b=el.querySelector&&el.querySelector("b"); if(b) b.textContent="×"+_combo;
+  el.className="on h"+heat;
+  placeComboMeter(el, sc);
+  pvpRestartClass(el, "bump");
+  const mk=COMBO_MARKS.find(m=>m[0]===_combo);
+  if(mk){
+    sceneFx("callout h"+heat, null, null, null, mk[1], 1300);
+    pvpRestartClass(sc, "jshake");
+  }
+  clearTimeout(_comboHideT);
+  _comboHideT=setTimeout(()=>{ if(el) el.classList.add("out"); }, 1500);
+}
+function juiceBreak(isBoss, gold){
+  if(!juiceOn()) return;
+  const p=rockPoint(); if(!p) return;
+  const sc=$("scene");
+  juiceBurst(p, FAST()?6:(isBoss?26:14), "rchunk", isBoss?120:90, 1.1);
+  juiceBurst(p, FAST()?2:(isBoss?12:6), "rspark", 80, 1);
+  sceneFx("breakRing"+(isBoss?" big":""), p.x, p.y, null, null, 600);
+  sceneFx("jflash", null, null, null, null, 260);
+  pvpRestartClass(sc, isBoss?"jshakeBig":"jshake");
+  if(gold>0){
+    sceneFx("goldPop", p.x, p.y-40, null, "+"+fmt(gold)+" 🪙", 1100);
+    juiceCoins(p, FAST()?2:Math.min(9, 3+Math.floor(Math.log10(Math.max(1,gold)))));
+  }
+  if(isBoss) sceneFx("banner boss", null, null, null, "BOSS DOWN!", 1600);
+}
+function juiceCoins(p, n){
+  const g=$("gold"); if(!g||!g.getBoundingClientRect||!document.body) return;
+  const t=g.getBoundingClientRect();
+  for(let i=0;i<n;i++){
+    const c=document.createElement("div"); c.className="jcoin";
+    document.body.appendChild(c);
+    const sx=p.sx+(Math.random()*40-20), sy=p.sy+(Math.random()*30-15);
+    const mx=(sx+t.left)/2+(Math.random()*80-40), my=Math.min(sy,t.top)-40-Math.random()*60;
+    const ex=t.left+t.width*0.4, ey=t.top+t.height*0.5;
+    const dur=520+Math.random()*260, delay=i*55;
+    if(typeof c.animate==="function"){
+      const a=c.animate([
+        {transform:`translate(${sx}px,${sy}px) scale(.6)`,opacity:0},
+        {transform:`translate(${sx}px,${sy-18}px) scale(1.1)`,opacity:1,offset:.15},
+        {transform:`translate(${mx}px,${my}px) scale(1)`,opacity:1,offset:.55},
+        {transform:`translate(${ex}px,${ey}px) scale(.55)`,opacity:.9}
+      ],{duration:dur,delay,easing:"cubic-bezier(.4,0,.7,1)",fill:"forwards"});
+      a.onfinish=()=>{ try{ c.remove(); }catch(_){} pvpRestartClass(g,"jbump"); };
+    } else c.remove();
+  }
+}
+function juiceFind(ri){
+  if(!juiceOn() || ri<2 || (FAST() && ri<4)) return;
+  const p=rockPoint(); if(!p) return;
+  const sc=$("scene"), col=RAR_HEX[ri]||"#fff";
+  const v={"--rc":col};
+  sceneFx("beam"+(ri>=5?" big":""), p.x, null, v, null, 1800);
+  sceneFx("rays", p.x, p.y, v, null, 1800);
+  sceneFx("jflash tint", null, null, v, null, 420);
+  sceneFx("banner find"+(ri>=5?" big":""), null, null, v, RAR_NAMES[ri].toUpperCase()+"!", 2000);
+  for(let i=0;i<(ri>=5?22:12);i++){
+    const a=Math.random()*Math.PI*2, d=40+Math.random()*90;
+    sceneFx("confetti", p.x, p.y, {"--rc":RAR_HEX[(ri+i)%RAR_HEX.length],"--dx":(Math.cos(a)*d).toFixed(1)+"px",
+      "--dy":(Math.sin(a)*d-50).toFixed(1)+"px","--rot":Math.round(Math.random()*720)+"deg"}, null, 1400);
+  }
+  pvpRestartClass(sc, ri>=5?"jshakeBig":"jshake");
+}
+function juiceTap(ev){
+  if(!juiceOn()||!ev||ev.clientX==null) return;
+  const sc=$("scene"); if(!sc||!sc.getBoundingClientRect) return;
+  const a=sc.getBoundingClientRect();
+  sceneFx("tapRing", ev.clientX-a.left, ev.clientY-a.top, null, null, 450);
+}
+/** Dragon breath — visual only; the pet's damage is its DoT (petDot), unchanged. Index = PET_TYPES t. */
+const DRAGON_BREATH=[
+  {kind:"fire",    rock:"brBurn",  n:18, word:"FWOOSH!"},
+  {kind:"acid",    rock:"brAcid",  n:16, word:"HSSS!"},
+  {kind:"thunder", rock:"brShock", n:0,  word:"KRAK!"}
+];
+const BREATH_GAP=[7,16];
+let breathNext=BREATH_GAP[0];
+function dragonMouth(){
+  const sc=$("scene"), pb=$("petBox");
+  if(!sc||!pb||!sc.getBoundingClientRect||!pb.getBoundingClientRect) return null;
+  const a=sc.getBoundingClientRect(), b=pb.getBoundingClientRect();
+  if(!b.width) return null;
+  return { x:b.left-a.left+b.width*0.93, y:b.top-a.top+b.height*0.24 };
+}
+function boltPath(dx, dy, lift){
+  const pts=[[0,0]], N=7;
+  for(let i=1;i<N;i++){ const f=i/N, arc=-4*lift*f*(1-f);
+    pts.push([dx*f+(Math.random()*10-5), dy*f+arc+(Math.random()*16-8)]); }
+  pts.push([dx,dy]);
+  return pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+}
+function dragonBreath(){
+  const pet=activeCatPet(); if(!pet||!juiceOn()) return false;
+  const B=DRAGON_BREATH[(pet.t|0)%DRAGON_BREATH.length];
+  const m=dragonMouth(), p=rockPoint(); if(!m||!p) return false;
+  const dx=p.x-m.x, dy=p.y-m.y, lift=Math.min(46, Math.abs(dx)*0.22);
+  const pb=$("petBox"), rock=$("rock"), sc=$("scene");
+  pvpRestartClass(pb, "breathing");
+  setTimeout(()=>{ try{ pb.classList.remove("breathing"); }catch(e){} }, 1000);
+  const hitAt=B.kind==="thunder"?120:420;
+  if(B.kind==="thunder"){
+    for(let k=0;k<3;k++) setTimeout(()=>{
+      const e=sceneFx("brBolt", m.x, m.y, null, null, 260); if(!e) return;
+      const pts=boltPath(dx, dy, lift);
+      e.innerHTML='<svg width="1" height="1" style="overflow:visible"><polyline points="'+pts+'" class="bA"/><polyline points="'+pts+'" class="bB"/></svg>';
+    }, k*140);
+    sceneFx("brMouth thunder", m.x, m.y, null, null, 600);
+  } else {
+    for(let i=0;i<B.n;i++) setTimeout(()=>{
+      const jx=Math.random()*14-7, jy=Math.random()*14-7;
+      sceneFx("brPuff "+B.kind, m.x, m.y, {"--mx":(dx/2+jx).toFixed(1)+"px","--my":(dy/2-lift+jy).toFixed(1)+"px",
+        "--dx":(dx+jx*2).toFixed(1)+"px","--dy":(dy+jy*2).toFixed(1)+"px","--s":(1.6+Math.random()*1.4).toFixed(2)}, null, 700);
+    }, i*38);
+    sceneFx("brMouth "+B.kind, m.x, m.y, null, null, 800);
+  }
+  setTimeout(()=>{
+    pvpRestartClass(rock, B.rock);
+    setTimeout(()=>{ try{ rock.classList.remove(B.rock); }catch(e){} }, 900);
+    sceneFx("brHit "+B.kind, p.x, p.y, null, null, 600);
+    juiceBurst(p, B.kind==="thunder"?6:5, "brSpk "+B.kind, 48, B.kind==="acid"?-0.6:1);
+    sceneFx("brWord "+B.kind, p.x, p.y-34, null, B.word, 900);
+    if(B.kind==="thunder"){ pvpRestartClass(sc, "jshake"); sceneFx("brFlash", null, null, null, null, 260); }
+  }, hitAt);
+  return true;
+}
+function dragonBreathTick(dt){
+  if(!activeCatPet()||!(S.rockHP>0)){ breathNext=Math.max(breathNext, 2); return; }
+  breathNext-=dt;
+  if(breathNext>0) return;
+  const pb=$("petBox"), asleep=!!(pb&&pb.classList&&pb.classList.contains("mood-sleep"));
+  breathNext=asleep?3:(BREATH_GAP[0]+Math.random()*(BREATH_GAP[1]-BREATH_GAP[0]));
+  if(!asleep && !(typeof document!=="undefined"&&document.hidden)) dragonBreath();
 }
 let toastT=null;
 let lastLogMsg="";
@@ -2977,8 +3245,8 @@ function switchMine(id){
   switchTab("Mine");
   return true;
 }
-function tapVein(){
-  if(!dead&&rock&&S.rockHP>0){ fxSwing(); hitTimer=Math.max(hitTimer, 1/stat("spd")-0.02); }
+function tapVein(ev){
+  if(!dead&&rock&&S.rockHP>0){ fxSwing(); hitTimer=Math.max(hitTimer, 1/stat("spd")-0.02); juiceTap(ev); }
 }
 if($("miner")) $("miner").onclick=tapVein;
 if($("rock")) $("rock").onclick=tapVein;
@@ -3227,6 +3495,7 @@ function bindPlayKeyboard(){
   }, true);
 }
 
+const SPEEDS=[1,2,3,10,100];
 const SAVE_KEY="oredeep_v3";
 const SAVE_BAK="oredeep_v3_bak";
 let _saveFailAt=0;
@@ -3356,6 +3625,13 @@ function sanitizeState(d){
   for(const k of NON_NEGATIVE) if(typeof d[k]==="number" && d[k]<0) d[k]=0;
   if(typeof d.durab==="number") d.durab=Math.max(0,Math.min(MINE_DURAB.max,d.durab));
   if(typeof d.speed!=="number" || !SPEEDS.includes(d.speed)) d.speed=1;
+  for(const k of Object.keys(d.gear)){
+    const it=d.gear[k], r=it&&Number(it.r);
+    if(!it||typeof it!=="object"||!SLOTS.some(s=>s.id===k)||!Number.isFinite(r)){ delete d.gear[k]; continue; }
+    it.s=k; it.r=Math.max(0, Math.min(RAR_POW.length-1, r|0));
+    if(!Number.isFinite(Number(it.m))) it.m=1;
+    if(!Number.isFinite(Number(it.i))) it.i=d.stageIdx||1;
+  }
   return d;
 }
 
@@ -3429,7 +3705,13 @@ function load(){
       try{ Platform.syncAds(); }catch(e){}
       return;
     }
-  }catch(e){}
+  }catch(e){
+    try{
+      const raw=localStorage.getItem(SAVE_KEY)||localStorage.getItem(SAVE_BAK);
+      if(raw) localStorage.setItem(SAVE_KEY+"_broken_"+Date.now(), raw);
+    }catch(e2){}
+    try{ console.error("load failed", e); }catch(e3){}
+  }
   S=ensureAll(freshState());
   resetTimers();
   try{ Platform.syncAds(); }catch(e){}
@@ -3640,7 +3922,7 @@ async function buildShareCard(){
       try{ x.drawImage(el,150,130,26*10,30*10); }catch(e){}
     }
   }
-  try{ x.drawImage($("pickHand"),330,90,22*7,22*7); }catch(e){}
+  try{ x.drawImage($("pickHand"),340,80,70,150); }catch(e){}
 
   const best=S.best||{r:0,name:"Orphan Ember"};
   const oreImg=new Image();
@@ -3728,15 +4010,15 @@ function metaOpen(title,sub,html){ $("metaTitle").textContent=title; $("metaSub"
   $("metaBody").innerHTML=html; $("metaModal").style.display="flex"; }
 
 const SPECIAL_DEFS=[
-  {id:"e", n:"Fortitude", letter:"K", stats:["energy","tough"], tip:"Affects Energy and Defense"},
+  {id:"s", n:"Brawn", letter:"B", stats:["atk"], tip:"Affects Attack"},
+  {id:"e", n:"Endurance", letter:"E", stats:["energy","tough"], tip:"Affects Energy and Defense"},
+  {id:"a", n:"Agility", letter:"A", stats:["spd"], tip:"Affects Pace"},
   {id:"i", n:"Reason", letter:"R", stats:[], tip:"More skill points per level"},
-  {id:"a", n:"Athletics", letter:"A", stats:["spd"], tip:"Affects Pace"},
-  {id:"s", n:"Strength", letter:"S", stats:["atk"], tip:"Affects Attack"},
-  {id:"c", n:"Aura", letter:"A", stats:["stone"], tip:"Affects Greed"},
-  {id:"l", n:"Luck", letter:"V", stats:["luck"], tip:"Affects Luck"},
-  {id:"p", n:"Analysis", letter:"A", stats:["mining","crit"], tip:"Affects Sense and Crit"}
+  {id:"c", n:"Dazzle", letter:"D", stats:["stone"], tip:"Affects Greed"},
+  {id:"p", n:"Eye", letter:"E", stats:["mining","crit"], tip:"Affects Sense and Crit"},
+  {id:"l", n:"Destiny", letter:"D", stats:["luck"], tip:"Affects Luck"}
 ];
-const KRASAVA_TITLE="K.R.A.S.A.V.A.";
+const SPECIAL_TITLE="B.E.A.R.D.E.D.";
 function ensureSpecial(){
   const B=BALANCE.special||{};
   const start=B.start||5;
@@ -3834,7 +4116,7 @@ const PERK_DEFS=[
 ];
 const TRAIT_DEFS=[
   {id:"gifted", n:"Gifted", ico:"✨",
-    desc:"Born with brains and hands. +1 to all K.R.A.S.A.V.A. traits at once, but miner levels give 20% fewer skill points.",
+    desc:"Born with brains and hands. +1 to all B.E.A.R.D.E.D. traits at once, but miner levels give 20% fewer skill points.",
     specialAdd:1, ptsMult:0.8},
   {id:"small", n:"Stocky", ico:"🪨",
     desc:"Short and sturdy. The vaults love you (+props), but the pickaxe swings slower (−Pace).",
@@ -4113,7 +4395,7 @@ function spendSpecial(id){
   ensureSpecial();
   const d=SPECIAL_DEFS.find(x=>x.id===id); if(!d) return false;
   const max=BALANCE.special.attrMax||10;
-  if((S.specialPool||0)<1){ showToast("🧬","No K.R.A.S.A.V.A. points","","Grow with beard rank"); return false; }
+  if((S.specialPool||0)<1){ showToast("🧬","No B.E.A.R.D.E.D. points","","Grow with beard rank"); return false; }
   if(specialAttr(id)>=max){ showToast("🧬","Ceiling","","Max "+max+" · "+d.n); return false; }
   S.specialPool--; S.special[id]=specialAttr(id)+1;
   Platform.logEvent("special_up",{id,v:S.special[id]});
@@ -4150,7 +4432,7 @@ function resetSpecial(){
   if(!back){ showToast("🧬","Nothing to reset","","All traits at base"); return false; }
   S.specialPool=(S.specialPool||0)+back;
   Platform.logEvent("special_reset",{back});
-  showToast("🧬","K.R.A.S.A.V.A. reset","","+"+back+" pts to pool");
+  showToast("🧬","B.E.A.R.D.E.D. reset","","+"+back+" pts to pool");
   save(); refreshSpecialUi("special");
   return true;
 }
@@ -4204,13 +4486,13 @@ function foStatTxt(id){
   return pct?(Math.round(v)+"%"):fmt(v);
 }
 const FO_SPECIAL_INFO={
-  e:{ico:"🛡", txt:"Miner’s fortitude. Affects Energy and Defense: you last longer at the dig, fewer fatigue penalties. Mine props (logs) are separate: tap ⚡."},
+  e:{ico:"🛡", txt:"Miner’s endurance. Affects Energy and Defense: you last longer at the dig, fewer fatigue penalties. Mine props (logs) are separate: tap ⚡."},
   i:{ico:"🧠", txt:"A prospector’s Reason. Every miner level gives more skill points. Pump Reason — learn faster."},
-  a:{ico:"⚡", txt:"Dig Athletics. Affects Pace — how many times the pickaxe knocks per second."},
-  s:{ico:"💪", txt:"Strength of arms and pickaxe. Affects Attack: more Strength — harder hits on the vein. Strength ≠ Attack: Attack is final damage, Strength grows it."},
-  c:{ico:"💰", txt:"Aura with the trader. Affects Greed — more gold per vein."},
-  l:{ico:"🍀", txt:"Luck at the dig. Affects Luck — chance to find stones and fat veins."},
-  p:{ico:"👁", txt:"Seam analysis. Affects Sense and Crit — you see where the stone lies before anyone else."}
+  a:{ico:"⚡", txt:"Dig Agility. Affects Pace — how many times the pickaxe knocks per second."},
+  s:{ico:"💪", txt:"Brawn of arms and pickaxe. Affects Attack: more Brawn — harder hits on the vein. Brawn ≠ Attack: Attack is final damage, Brawn grows it."},
+  c:{ico:"💰", txt:"Dazzle the trader. Affects Greed — more gold per vein."},
+  l:{ico:"🍀", txt:"Destiny at the dig. Affects Luck — chance to find stones and fat veins."},
+  p:{ico:"👁", txt:"An eye for the seam. Affects Sense and Crit — you see where the stone lies before anyone else."}
 };
 const FO_SKILL_ICO={crit_up:"🎯",atk_up:"⛏",luck_up:"💎",stone_up:"🪙",energy_up:"💨",mining_up:"🧭",tough_up:"🪵",regen_up:"❤",stam_up:"🫁"};
 
@@ -4285,8 +4567,8 @@ function buildCharSheetHtml(inShell){
   const eMax=Math.max(1,stat("energy")|0), eCur=Math.max(0,Math.min(eMax,(S.energy!=null?S.energy:eMax)|0));
 
   const tabs=inShell?"":`<div class="foTabs">
-    <button type="button" class="${tab==="stats"?"on":""}" onclick="setCharTab('stats')">Articles</button>
-    <button type="button" class="${tab==="list"?"on":""}" onclick="setCharTab('list')">Skils</button>
+    <button type="button" class="${tab==="stats"?"on":""}" onclick="setCharTab('stats')">Stats</button>
+    <button type="button" class="${tab==="list"?"on":""}" onclick="setCharTab('list')">Skills</button>
     <button type="button" class="${tab==="perks"?"on":""}" onclick="setCharTab('perks')">perk${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
   </div>`;
   const doneBtn=inShell
@@ -4355,7 +4637,7 @@ function buildCharSheetHtml(inShell){
         </div>
       </div>
       <div class="foFoot">
-        <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Articles</button>
+        <button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Stats</button>
         ${doneBtn}
       </div>`;
   }
@@ -4394,12 +4676,12 @@ function buildCharSheetHtml(inShell){
           <h4>Skills · tags and training</h4>
           ${skillRows}
           <div class="foTagBar"><span>Tags ${(S.skillTags||[]).length}/${B.tagSlots||SKILL_DEFS.length}</span>
-            <span>Glasses skill <b>${S.skillPts||0}</b></span></div>
+            <span>Skill points <b>${S.skillPts||0}</b></span></div>
         </div>
       </div>
       <div class="foFoot">
         ${inShell
-          ?`<button type="button" class="btn btn-soft" onclick="openSkills('sheet')">← K.R.A.S.A.V.A.</button>`
+          ?`<button type="button" class="btn btn-soft" onclick="openSkills('sheet')">← B.E.A.R.D.E.D.</button>`
           :`<button type="button" class="btn btn-soft" onclick="setCharTab('stats')">← Stats</button>`}
         ${doneBtn}
       </div>`;
@@ -4447,7 +4729,7 @@ function buildCharSheetHtml(inShell){
       <div class="foHead">
         <div class="foCell"><span class="k">Name</span><span class="v">${esc(playerName())}</span></div>
         <div class="foCell"><span class="k">Lv.</span><span class="v">${S.minerLv||0}</span></div>
-        <div class="foCell"><span class="k">Internship</span><span class="v">${age}</span></div>
+        <div class="foCell"><span class="k">Age</span><span class="v">${age}</span></div>
         <div class="foCell"><span class="k">Rank</span><span class="v">${esc(w.title||"—")}</span></div>
       </div>
       <div class="foInfo" style="margin:6px 0">
@@ -4458,9 +4740,9 @@ function buildCharSheetHtml(inShell){
     <div class="foScroll">
       <div class="foGrid">
         <div class="foPanel">
-          <h4>${KRASAVA_TITLE}</h4>
+          <h4>${SPECIAL_TITLE}</h4>
           ${specRows}
-          <div class="foPoints"><span>The glasses are shit.</span><b>${S.specialPool||0}</b></div>
+          <div class="foPoints"><span>Free points</span><b>${S.specialPool||0}</b></div>
         </div>
         <div class="foPanel">
           <h4>Combat</h4>
@@ -4473,7 +4755,7 @@ function buildCharSheetHtml(inShell){
         ?`<button type="button" class="btn btn-soft" onclick="openSkills('list')">Skills</button>`
         :`<button type="button" class="btn btn-soft" onclick="setCharTab('list')">Skills</button>`}
       ${(S.perkPicks||0)>0?`<button type="button" class="btn btn-hard" onclick="openPerkPick()">PERK · ${S.perkPicks}</button>`:""}
-      <button type="button" class="btn btn-soft" title="Reset K.R.A.S.A.V.A. to pool" onclick="resetSpecial()">↺ BEAUTY</button>
+      <button type="button" class="btn btn-soft" title="Reset B.E.A.R.D.E.D. to pool" onclick="resetSpecial()">↺ RESET</button>
       ${doneBtn}
     </div>`;
 }
@@ -4510,8 +4792,8 @@ let _skillsShellTab=null;
 function skillsTabBar(tab){
   return `<div class="btnrow skillsTabs" style="margin-bottom:10px;flex-wrap:wrap">
     <button class="btn ${tab==="cards"?"btn-hard":"btn-soft"}" onclick="openSkills('cards')">Maps</button>
-    <button class="btn ${tab==="list"?"btn-hard":"btn-soft"}" onclick="openSkills('list')">Skils</button>
-    <button class="btn ${tab==="sheet"?"btn-hard":"btn-soft"}" onclick="openSkills('sheet')">BEAUTY</button>
+    <button class="btn ${tab==="list"?"btn-hard":"btn-soft"}" onclick="openSkills('list')">Skills</button>
+    <button class="btn ${tab==="sheet"?"btn-hard":"btn-soft"}" onclick="openSkills('sheet')">BEARDED</button>
     <button class="btn ${tab==="perks"?"btn-hard":"btn-soft"}" onclick="openSkills('perks')">perk${(S.perkPicks||0)>0?(" · "+S.perkPicks):""}</button>
     <button class="btn ${tab==="train"?"btn-hard":"btn-soft"}" onclick="openSkills('train')">Training${(S.wkPts||0)>0?(" · "+(S.wkPts|0)):""}</button>
   </div>`;
@@ -4539,7 +4821,7 @@ function openSkills(tab){
       ?"Perks and traits · beer 🍺 "+Math.floor(S.protein||0)
       :(tab==="list"
         ?"Skills · points "+(S.skillPts||0)+" · beer 🍺 "+Math.floor(S.protein||0)
-        :"K.R.A.S.A.V.A. · trait points "+(S.specialPool||0)+" · beer 🍺 "+Math.floor(S.protein||0));
+        :"B.E.A.R.D.E.D. · trait points "+(S.specialPool||0)+" · beer 🍺 "+Math.floor(S.protein||0));
   } else if(tab==="train"){
     ensureWorkouts(S);
     body=workoutsPanelHtml();
@@ -4782,16 +5064,72 @@ function pvpSetBrawlHp(id, cur, max){
   const el=$(id); if(!el) return;
   const pct=Math.max(0, Math.min(100, Math.round(cur/Math.max(1,max)*100)));
   el.style.width=pct+"%";
+  const gh=$(id+"Ghost"); if(gh) gh.style.width=pct+"%";
+  const tr=el.parentElement; if(tr&&tr.classList) tr.classList.toggle("low", pct>0 && pct<=25);
+}
+function pvpFxSpawn(cls, x, y, vars, text, ttl){
+  const st=$("pvpBrawlStage"); if(!st||typeof document.createElement!=="function") return null;
+  const e=document.createElement("div");
+  e.className="pvpFx "+cls;
+  e.style.left=Math.round(x)+"px"; e.style.top=Math.round(y)+"px";
+  if(vars) for(const k in vars){ try{ e.style.setProperty(k, vars[k]); }catch(_){} }
+  if(text!=null) e.textContent=text;
+  st.appendChild(e);
+  setTimeout(()=>{ try{ e.remove(); }catch(_){} }, ttl||900);
+  return e;
+}
+function pvpRestartClass(el, cls){
+  if(!el||!el.classList) return;
+  el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+}
+function pvpImpactFx(attSide, dmg, heavy, last){
+  const st=$("pvpBrawlStage"); if(!st||!st.getBoundingClientRect) return;
+  const tgtSide=attSide==="me"?"opp":"me";
+  const tgt=$(tgtSide==="opp"?"pvpOppFighter":"pvpMeFighter");
+  const att=$(attSide==="me"?"pvpMeFighter":"pvpOppFighter");
+  if(!tgt||!att) return;
+  const sr=st.getBoundingClientRect(), r=tgt.getBoundingClientRect(), ar=att.getBoundingClientRect();
+  const dir=attSide==="me"?1:-1;
+  const x=(dir>0 ? r.left+r.width*0.32 : r.right-r.width*0.32)-sr.left;
+  const y=r.top-sr.top+r.height*0.42;
+  const n=heavy?14:8;
+  for(let i=0;i<n;i++){
+    const a=(Math.random()*150-75)*Math.PI/180, d=16+Math.random()*(heavy?44:28);
+    pvpFxSpawn("spark"+(Math.random()<0.3?" hot":""), x, y,
+      {"--dx":(Math.cos(a)*d*dir).toFixed(1)+"px","--dy":(Math.sin(a)*d-8).toFixed(1)+"px"}, null, 600);
+  }
+  pvpFxSpawn("ring"+(heavy?" big":""), x, y, null, null, 500);
+  pvpFxSpawn("slash", x-dir*10, y-6, {"--dir":String(dir)}, null, 400);
+  const fx=(dir>0 ? ar.right-ar.width*0.3 : ar.left+ar.width*0.3)-sr.left, fy=ar.bottom-sr.top-6;
+  for(let i=0;i<3;i++) pvpFxSpawn("dust", fx+(i-1)*8*dir, fy, {"--dx":((i-1)*10*dir)+"px"}, null, 700);
+  pvpRestartClass(tgt, "hurt");
+  pvpRestartClass(st, heavy||last?"shakeBig":"shake");
+  if(heavy||last) pvpFxSpawn("flash", 0, 0, null, null, 260);
+  const num=pvpFxSpawn("num "+tgtSide+(heavy?" crit":""), x+(Math.random()*16-8), y-24, null,
+    (heavy?"CRIT ":"")+"-"+fmt(dmg), 1000);
+  if(num&&heavy) num.setAttribute("data-crit","1");
+}
+function pvpShowBrawlKo(winSide){
+  const win=$(winSide==="me"?"pvpMeFighter":"pvpOppFighter");
+  const lose=$(winSide==="me"?"pvpOppFighter":"pvpMeFighter");
+  if(lose&&lose.classList) lose.classList.add("ko");
+  if(win&&win.classList) win.classList.add("cheer");
+  const st=$("pvpBrawlStage");
+  if(st&&st.getBoundingClientRect&&lose&&lose.getBoundingClientRect){
+    const sr=st.getBoundingClientRect(), r=lose.getBoundingClientRect();
+    pvpFxSpawn("koTxt", r.left-sr.left+r.width/2, r.top-sr.top+8, null, "K.O.!", 1400);
+  }
 }
 function pvpSetupBrawlUi(cand, brawl){
   const meName=playerName();
-  const pickSrc=gearArtSrc("pick", (S.gear.pick&&S.gear.pick.r)|0)||PICK_ICONS[0];
-  const oppPick=PICK_ICONS[Math.min(7, Math.floor(((cand.power||1)/120)%8))];
+  const pickSrc=HAND_PICKS[Math.max(0, Math.min(7, (S.gear.pick&&S.gear.pick.r)|0))];
+  const oppPick=HAND_PICKS[pvpOpponentDwarfIdx(cand.id)];
   setTxt("pvpMeName", meName);
   setTxt("pvpOppName", (cand.ic||"")+" "+(cand.name||"Opponent"));
-  const meImg=$("pvpMeImg"), oppImg=$("pvpOppImg");
-  if(meImg) meImg.src=MINER_BASES[dwarfTier()];
+  const oppImg=$("pvpOppImg");
   if(oppImg) oppImg.src=MINER_BASES[pvpOpponentDwarfIdx(cand.id)];
+  setDwarfRig("pvpMeRig", dwarfTier(), dwarfParts());
+  setDwarfRig("pvpOppRig", pvpOpponentDwarfIdx(cand.id));
   const mp=$("pvpMePick"), op=$("pvpOppPick");
   if(mp) mp.src=pickSrc;
   if(op) op.src=oppPick;
@@ -4800,17 +5138,15 @@ function pvpSetupBrawlUi(cand, brawl){
   const st=$("pvpBrawlStage"), res=$("pvpBrawlResult");
   if(st) st.style.display="";
   if(res) res.style.display="none";
-  const pop=$("pvpDmgPop"); if(pop){ pop.className="pvpDmgPop"; pop.style.display="none"; }
   const meF=$("pvpMeFighter"), oppF=$("pvpOppFighter");
-  if(meF) meF.classList.remove("swing");
-  if(oppF) oppF.classList.remove("swing");
-}
-function pvpShowBrawlDmg(side, dmg){
-  const pop=$("pvpDmgPop"); if(!pop) return;
-  pop.textContent="-"+dmg;
-  pop.className="pvpDmgPop show "+side;
-  pop.style.display="block";
-  setTimeout(()=>{ if(pop) pop.classList.remove("show"); }, 280);
+  ["swing","nod","hurt","ko","cheer","finisher"].forEach(c=>{
+    if(meF) meF.classList.remove(c);
+    if(oppF) oppF.classList.remove(c);
+  });
+  if(st){
+    st.classList.remove("shake","shakeBig");
+    try{ st.querySelectorAll(".pvpFx").forEach(e=>e.remove()); }catch(e){}
+  }
 }
 function pvpShowBrawlResult(cand, brawl, done){
   const st=$("pvpBrawlStage"), res=$("pvpBrawlResult");
@@ -4838,18 +5174,35 @@ function pvpPlayBrawlAnim(cand, brawl, done){
   ov.style.display="flex";
   const hitMs=(BALANCE.pvp.brawl&&BALANCE.pvp.brawl.hitMs)||380;
   const hits=brawl.hits||[];
+  const avg={me:0,opp:0}, cnt={me:0,opp:0};
+  hits.forEach(h=>{ avg[h.who]+=h.dmg; cnt[h.who]++; });
+  for(const k in avg) avg[k]=cnt[k]?avg[k]/cnt[k]:0;
   let i=0;
   const step=()=>{
     if(tok!==_pvpAnimTok) return;
-    if(i>=hits.length){ pvpShowBrawlResult(cand, brawl, done); return; }
+    if(i>=hits.length){
+      pvpShowBrawlKo(brawl.win?"me":"opp");
+      setTimeout(()=>{ if(tok===_pvpAnimTok) pvpShowBrawlResult(cand, brawl, done); }, 1100);
+      return;
+    }
     const h=hits[i++];
     const meAtk=h.who==="me";
+    const last=i>=hits.length;
+    const heavy=h.dmg>=avg[h.who]*1.12;
     const fighter=$(meAtk?"pvpMeFighter":"pvpOppFighter");
-    if(fighter){ fighter.classList.remove("swing"); void fighter.offsetWidth; fighter.classList.add("swing"); }
-    pvpSetBrawlHp("pvpMeHp", h.me, brawl.meMax);
-    pvpSetBrawlHp("pvpOppHp", h.opp, brawl.oppMax);
-    pvpShowBrawlDmg(meAtk?"opp":"me", h.dmg);
-    setTimeout(step, hitMs);
+    const swingMs=last?620:340;
+    if(fighter){
+      fighter.classList.toggle("finisher", last);
+      pvpRestartClass(fighter, "swing");
+      fighter.classList.toggle("nod", heavy || Math.random()<0.4);
+    }
+    setTimeout(()=>{
+      if(tok!==_pvpAnimTok) return;
+      pvpSetBrawlHp("pvpMeHp", h.me, brawl.meMax);
+      pvpSetBrawlHp("pvpOppHp", h.opp, brawl.oppMax);
+      pvpImpactFx(h.who, h.dmg, heavy, last);
+    }, Math.round(swingMs*0.6));
+    setTimeout(step, last?swingMs+200:hitMs);
   };
   setTimeout(step, 420);
 }
@@ -5098,9 +5451,9 @@ function buyEventKey(){
 }
 
 const PET_TYPES=[
-  {stat:"luck",  n:"Golden Dragon",   ic:"🐉", art:"art/pet_dragon_gold.png?v=3",  pct:[8,24,72,216,648], dot:"bleed"},
-  {stat:"mining",n:"Chaos Dragon",     ic:"🐉", art:"art/pet_dragon_chaos.png?v=3", pct:[10,30,90,270,810],dot:"shock"},
-  {stat:"stone", n:"Storm Dragon", ic:"🐉", art:"art/pet_dragon_storm.png?v=3", pct:[12,36,108,324,972],dot:"splash"}
+  {stat:"luck",  n:"Golden Dragon",   ic:"🐉", art:"art/pet_dragon_gold.png?v=4",  pct:[8,24,72,216,648], dot:"bleed"},
+  {stat:"mining",n:"Chaos Dragon",     ic:"🐉", art:"art/pet_dragon_chaos.png?v=4", pct:[10,30,90,270,810],dot:"shock"},
+  {stat:"stone", n:"Storm Dragon", ic:"🐉", art:"art/pet_dragon_storm.png?v=4", pct:[12,36,108,324,972],dot:"splash"}
 ];
 function petIcon(t){
   const p=PET_TYPES[t|0];
@@ -5332,7 +5685,7 @@ function openProfile(){
     '<div class="metarow"><span>Depth record</span><span><b>'+fmt(S.bestDepth||depth)+' m</b></span></div>'+
     '<div class="metarow"><span>Prestige · descents</span><span>'+(S.prestigeLv||0)+' · '+(S.prestigeRuns||0)+'</span></div>'+
     '<div class="metarow"><span>Beard Wisdom</span><button class="btn btn-soft" onclick="openBeard()">'+w.title+'</button></div>'+
-    '<div class="metarow"><span>K.R.A.S.A.V.A.</span><button class="btn btn-soft" onclick="openCharSheet()">Sheet · pool '+(S.specialPool||0)+'</button></div>'+
+    '<div class="metarow"><span>B.E.A.R.D.E.D.</span><button class="btn btn-soft" onclick="openCharSheet()">Sheet · pool '+(S.specialPool||0)+'</button></div>'+
     '<div class="metarow"><span>Hall</span><span>Lv.'+gymLevel()+' · +'+gymPerkPct()+'%</span></div>'+
     '<div class="metarow"><span>PvP wins · trophies</span><span>'+(S.pvpWins||0)+' · '+fmt(S.trophies||0)+'</span></div>'+
     '<div class="metarow"><span>Name</span><span><input id="profName" value="'+esc(playerName())+'" maxlength="18" style="width:120px;background:#12151d;border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:6px;font-size:14px"><button class="btn btn-soft" style="margin-left:6px" onclick="'+setName+'">✓</button></span></div>';
@@ -5705,10 +6058,10 @@ function workoutsPanelHtml(){
     <div style="flex:1;text-align:center;padding:8px;background:#120e0a;border:1px solid #5a4830;border-radius:8px">
       <div style="font-size:11px;color:var(--dim)">Beer</div>
       <div style="font-size:22px;color:var(--gold);font-family:var(--font-display)">🍺 ${beer}</div>
-      <div style="font-size:10px;color:var(--dim)">+${W.proteinPerHour}/a/ · Cap ${W.proteinCapH*W.proteinPerHour}</div>
+      <div style="font-size:10px;color:var(--dim)">+${W.proteinPerHour}/h · Cap ${W.proteinCapH*W.proteinPerHour}</div>
     </div>
     <div style="flex:1;text-align:center;padding:8px;background:#120e0a;border:1px solid #5a4830;border-radius:8px">
-      <div style="font-size:11px;color:var(--dim)">Training glasses</div>
+      <div style="font-size:11px;color:var(--dim)">Training points</div>
       <div style="font-size:22px;color:#8fce6a;font-family:var(--font-display)">💪 ${pts}</div>
       <div style="font-size:10px;color:var(--dim)">mug ×${mul}</div>
     </div>
@@ -7204,7 +7557,6 @@ try{ scheduleBonusNotify(); }catch(e){}
 try{ scheduleBagReadyNotify(); }catch(e){}
 { const sm=$("setMusic"); if(sm) sm.textContent=musicOn?"🔊 on":"🔇 off"; }
 { if(typeof syncToastToggleBtns==="function") syncToastToggleBtns(); }
-const SPEEDS=[1,2,3,10,100];
 { const sb=$("speedBtn");
   if(sb) sb.onclick=()=>{
   const cur=S.speed||1, i=SPEEDS.indexOf(cur);

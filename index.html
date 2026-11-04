@@ -195,6 +195,7 @@ button:disabled{opacity:.45;cursor:default;}
 .hpTrack{height:14px;border-radius:7px;background:linear-gradient(180deg,#05060a,#111420);
   border:1px solid #000;overflow:hidden;position:relative;
   box-shadow:0 1px 0 #ffffff12, inset 0 2px 4px #000c;}
+#hpBar{top:-5px;}
 .hpTrack .ghost{position:absolute;left:0;top:0;height:100%;width:100%;
   background:#ffce7ab8;transition:width .7s cubic-bezier(.2,.7,.3,1) .22s;}
 .hpTrack .fill{position:relative;height:100%;width:100%;
@@ -264,8 +265,9 @@ button:disabled{opacity:.45;cursor:default;}
   --pet-eye:#f0c84a; --pet-nose:#3a2c1c; --pet-patch:#e08a3c;
 }
 #petBox .petArtImg{
-  display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;
+  display:block;width:100%;height:100%;object-fit:contain;object-position:50% 100%;image-rendering:pixelated;
   pointer-events:none;user-select:none;
+  filter:drop-shadow(0 0 1.5px rgba(255,214,150,.45)) drop-shadow(0 2px 0 rgba(0,0,0,.45));
 }
 #petBox .petFur{fill:var(--pet-fur);}
 #petBox .petFurStroke{stroke:var(--pet-fur);}
@@ -690,7 +692,8 @@ button:disabled{opacity:.45;cursor:default;}
 .uiMineChip.done{border-color:var(--income);}
 .uiMineChip b{font-family:var(--font-display);color:var(--textPrimary);}
 .uiMineHow{background:var(--bgPanelAlt);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:8px;}
-.uiMineHow b{display:block;color:var(--gold);font-size:13px;margin-bottom:4px;font-family:var(--font-display);}
+.uiMineHow > b{display:block;color:var(--gold);font-size:13px;margin-bottom:4px;font-family:var(--font-display);}
+.uiMineHow .uiSub b{color:var(--gold);font-weight:600;}
 .uiMineFib{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px;font-family:var(--font-display);font-size:12px;color:var(--textMuted);}
 .uiMineFib span{padding:2px 6px;border:1px solid var(--border);border-radius:4px;}
 .uiMineFib span.on{color:var(--gold);border-color:var(--gold);background:rgba(232,185,60,.12);}
@@ -946,9 +949,6 @@ body > .modal{
 @keyframes pvpBobHit{0%,100%{transform:translateY(0)}45%{transform:translateY(-3px)}}
 @keyframes pvpLungeMe{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
 @keyframes pvpLungeOpp{0%,100%{transform:scaleX(-1) translateX(0)}50%{transform:scaleX(-1) translateX(-10px)}}
-.pvpDmgPop{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.6);font-family:var(--font-display);font-size:28px;color:#ff6a4a;text-shadow:0 2px 0 #000;opacity:0;pointer-events:none;z-index:5;transition:opacity .12s, transform .28s;}
-.pvpDmgPop.show{opacity:1;transform:translate(-50%,-70%) scale(1);}
-.pvpDmgPop.me{color:#7ecf6a;}
 .pvpResult{display:none;flex-direction:column;align-items:center;text-align:center;padding:20px 8px;min-height:168px;justify-content:center;}
 .pvpResult.win .pvpResTitle{color:var(--green);}
 .pvpResult.lose .pvpResTitle{color:var(--danger);}
@@ -1271,9 +1271,331 @@ body > .modal{
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)) saturate(1.05);opacity:.86;transition:opacity .15s,transform .15s;}
 .btn-nav.on .navArt,.btn-nav[aria-current="true"] .navArt{opacity:1;transform:translateY(-1px) scale(1.06);}
 .btn-nav .ni{line-height:0;}
+
+#scene,#scene.t0{background-image:linear-gradient(180deg,rgba(10,7,4,.42),rgba(10,7,4,.74)),url("art/mine0.webp");}
+#scene.t1{background-image:linear-gradient(180deg,rgba(6,10,14,.42),rgba(6,10,14,.74)),url("art/mine1.webp");}
+#scene.t2{background-image:linear-gradient(180deg,rgba(14,6,3,.42),rgba(14,6,3,.74)),url("art/mine2.webp");}
+#scene.t3{background-image:linear-gradient(180deg,rgba(5,12,14,.50),rgba(5,12,14,.78)),url("art/mine3.webp");}
+#scene.t4{background-image:linear-gradient(180deg,rgba(4,6,5,.44),rgba(4,6,5,.76)),url("art/mine4.webp");}
+
+#uiScreen::before{display:block;content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-size:cover;background-position:center;opacity:0;transition:opacity .25s;}
+#uiScreen > *{position:relative;z-index:1;}
+#uiScreen[data-scr="tavern"]::before{background-image:url("art/scr_tavern.webp");opacity:.17;}
+#uiScreen[data-scr="shop"]::before{background-image:url("art/scr_market.webp");opacity:.16;}
+#uiScreen[data-scr="mines"]::before{background-image:url("art/scr_minemap.webp");opacity:.15;}
+#uiScreen[data-scr="pvp"]::before{background-image:url("art/scr_pvp.webp");opacity:.17;}
+#uiScreen[data-scr="skills"]::before{background-image:url("art/scr_skills.webp");opacity:.15;}
+#uiScreen[data-scr="beards"]::before{background-image:url("art/scr_skills.webp");opacity:.08;}
+
+.uiTavExt{background:linear-gradient(180deg,rgba(10,7,4,.08),rgba(10,7,4,.58)),
+  url("art/scr_tavern.webp") center 40%/cover no-repeat;}
+
+.uiMineCard{background-size:cover !important;background-position:center !important;}
+.uiMineCard.t0{background-image:linear-gradient(90deg,rgba(14,10,6,.95) 46%,rgba(14,10,6,.70)),url("art/mine0.webp") !important;}
+.uiMineCard.t1{background-image:linear-gradient(90deg,rgba(8,11,16,.95) 46%,rgba(8,11,16,.70)),url("art/mine1.webp") !important;}
+.uiMineCard.t2{background-image:linear-gradient(90deg,rgba(16,8,4,.95) 46%,rgba(16,8,4,.70)),url("art/mine2.webp") !important;}
+.uiMineCard.t3{background-image:linear-gradient(90deg,rgba(6,14,16,.95) 46%,rgba(6,14,16,.72)),url("art/mine3.webp") !important;}
+.uiMineCard.t4{background-image:linear-gradient(90deg,rgba(5,7,6,.95) 46%,rgba(5,7,6,.70)),url("art/mine4.webp") !important;}
+#uiScreen[data-scr="pvp"] .uiHero{background:linear-gradient(180deg,rgba(10,7,4,.38),rgba(10,7,4,.78)),
+  url("art/scr_pvp.webp") center 62%/cover no-repeat;text-shadow:0 1px 3px #000,0 0 8px #000c;}
+.pvpStage{background:linear-gradient(180deg,rgba(10,7,4,.30),rgba(10,7,4,.62)),
+  url("art/scr_pvp.webp") center 70%/cover no-repeat;}
+.uiMineHero{background-image:linear-gradient(180deg,rgba(10,8,5,.72),rgba(10,8,5,.88)),url("art/scr_minemap.webp") !important;
+  background-size:cover !important;background-position:center 18% !important;}
+
+.dw{position:absolute;inset:0;--gx:55.3%;--gy:49.1%;--fx:var(--gx);--fy:var(--gy);--lc:transparent;--la:0;}
+.dw .dwGlow{position:absolute;left:0;top:-6%;width:100%;height:66%;pointer-events:none;
+  background:radial-gradient(closest-side,var(--lc) 0%,transparent 100%);opacity:var(--la);mix-blend-mode:screen;}
+.dw.lit .dwGlow{animation:dwLampPulse 2.4s ease-in-out infinite;}
+@keyframes dwLampPulse{50%{opacity:calc(var(--la) * 1.45);}}
+.dw.dwNew{animation:dwNewGear .8s ease-out;}
+@keyframes dwNewGear{0%{filter:brightness(1);}25%{filter:brightness(1.8) drop-shadow(0 0 6px #ffe7a0);}100%{filter:brightness(1);}}
+.dw .dwUpper,.dw .dwArms{position:absolute;inset:0;}
+.dw .dwp{position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;display:block;pointer-events:none;}
+.dw .dwLegL{clip-path:polygon(0 62%,50% 62%,50% 100%,0 100%);transform-origin:30% 69%;}
+.dw .dwLegR{clip-path:polygon(50% 62%,100% 62%,100% 100%,50% 100%);transform-origin:70% 69%;}
+.dw .dwTorso{clip-path:polygon(0 39%,100% 39%,100% 70%,0 70%);}
+.dw .dwHead{clip-path:polygon(0 0,100% 0,100% 41%,0 41%);transform-origin:50% 40%;}
+.dw .dwFist{clip-path:ellipse(9% 6.5% at var(--fx) var(--fy));z-index:3;
+  transform:translate(calc(var(--gx) - var(--fx)),calc(var(--gy) - var(--fy)));}
+.dw .dwBoot.dwLegL{clip-path:polygon(0 86%,50% 86%,50% 100%,0 100%);}
+.dw .dwBoot.dwLegR{clip-path:polygon(50% 86%,100% 86%,100% 100%,50% 100%);}
+.dw .dwBelt{clip-path:polygon(27% 60%,73% 60%,73% 67%,27% 67%);}
+.dw .dwUpper{transform-origin:50% 69%;}
+.dw .dwPick,#miner .dw #pickHand{position:absolute;z-index:2;width:30.5%;height:56.4%;
+  left:calc(var(--gx) - 14.2%);top:calc(var(--gy) - 47.9%);
+  transform-origin:46.4% 85%;transform:rotate(-14deg);image-rendering:pixelated;pointer-events:none;
+  filter:drop-shadow(0 0 1px rgba(255,236,196,.8)) drop-shadow(0 1px 0 rgba(0,0,0,.6));}
+
+@keyframes dwPick{
+  0%{transform:rotate(-14deg);animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+  32%{transform:rotate(-44deg);animation-timing-function:linear}
+  42%{transform:rotate(-48deg);animation-timing-function:cubic-bezier(.7,0,1,.5)}
+  58%{transform:rotate(104deg);animation-timing-function:ease-out}
+  66%{transform:rotate(94deg);animation-timing-function:ease-in-out}
+  74%{transform:rotate(100deg);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+  100%{transform:rotate(-14deg)}}
+@keyframes dwUpper{
+  0%{transform:none;animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+  32%,42%{transform:rotate(-4deg);animation-timing-function:cubic-bezier(.7,0,1,.5)}
+  58%{transform:rotate(6deg)}
+  72%{transform:rotate(4deg)}
+  100%{transform:none}}
+@keyframes dwLegBack{
+  0%,100%{transform:none}
+  34%,44%{transform:rotate(2.5deg)}
+  60%{transform:rotate(-2deg)}}
+@keyframes dwLegFront{
+  0%,100%{transform:none}
+  30%{transform:translateY(-2px) rotate(-3deg)}
+  44%{transform:translateY(-1px) rotate(-2deg)}
+  60%{transform:rotate(2deg)}}
+@keyframes dwHeadNod{
+  0%,100%{transform:none}
+  34%,44%{transform:rotate(-2.5deg)}
+  62%{transform:rotate(2.5deg)}
+  78%{transform:rotate(1deg)}}
+@keyframes dwIdle{0%,100%{transform:none}50%{transform:scaleY(.985)}}
+
+.dw .dwUpper{animation:dwIdle 1.9s ease-in-out infinite;}
+.swing .dw .dwPick,#miner.swing .dw #pickHand{animation:dwPick var(--dwT,.34s) both;}
+.swing .dw .dwUpper{animation:dwUpper var(--dwT,.34s) both;}
+.swing .dw .dwLegL{animation:dwLegBack var(--dwT,.34s) ease-in-out both;}
+.swing .dw .dwLegR{animation:dwLegFront var(--dwT,.34s) ease-in-out both;}
+.swing.nod .dw .dwHead{animation:dwHeadNod var(--dwT,.34s) ease-in-out both;}
+#miner{--dwT:.32s;}
+
+#scene .jfx{position:absolute;pointer-events:none;z-index:8;}
+#scene .rchip{width:5px;height:5px;margin:-2px;background:var(--rockc,#8a7a66);box-shadow:inset -1px -1px 0 #0006,inset 1px 1px 0 #fff3;
+  animation:jFly .7s cubic-bezier(.2,.6,.5,1) forwards;}
+#scene .rchunk{width:8px;height:7px;margin:-4px;background:var(--rockc,#8a7a66);border:1px solid #0008;
+  box-shadow:inset 2px 2px 0 #ffffff30;animation:jFly .85s cubic-bezier(.15,.6,.5,1) forwards;}
+#scene .rspark{width:3px;height:3px;margin:-1px;background:#fff3c0;box-shadow:0 0 6px 1px #ffb340;
+  animation:jFly .45s ease-out forwards;}
+@keyframes jFly{0%{transform:translate(0,0) rotate(0) scale(1.2);opacity:1}
+  60%{opacity:1}
+  100%{transform:translate(var(--dx),calc(var(--dy) + 70px)) rotate(var(--rot,0deg)) scale(.6);opacity:0}}
+#rock.critfx #rockImg{animation:jCrit .18s ease-out;}
+@keyframes jCrit{0%{filter:brightness(3) saturate(0)}100%{filter:none}}
+#scene .critRing,#scene .breakRing,#scene .tapRing{width:16px;height:16px;margin:-8px;border-radius:50%;border:2px solid #fff0c8;
+  animation:jRing .4s ease-out forwards;}
+#scene .breakRing{border-width:3px;animation-duration:.55s;}
+#scene .breakRing.big{border-color:#ffd84a;border-width:4px;}
+#scene .tapRing{border-color:#ffffffaa;border-width:1.5px;animation-duration:.35s;}
+@keyframes jRing{0%{transform:scale(.3);opacity:1}100%{transform:scale(5);opacity:0}}
+#scene .breakRing{animation-name:jRingBig;}
+@keyframes jRingBig{0%{transform:scale(.4);opacity:1}100%{transform:scale(9);opacity:0}}
+.hitstop,.hitstop *{animation-play-state:paused !important;}
+#scene.jshake{animation:jShake .22s linear;}
+#scene.jshakeBig{animation:jShakeBig .45s linear;}
+@keyframes jShake{0%,100%{transform:none}25%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,1px)}}
+@keyframes jShakeBig{0%,100%{transform:none}10%{transform:translate(-6px,3px)}25%{transform:translate(6px,-3px)}
+  40%{transform:translate(-5px,2px)}55%{transform:translate(4px,-2px)}75%{transform:translate(-2px,1px)}}
+#scene .jflash{inset:0;background:radial-gradient(circle at 70% 60%,#fff8,#fff0 65%);animation:jFade .25s ease-out forwards;}
+#scene .jflash.tint{background:radial-gradient(circle at 70% 60%,var(--rc),transparent 70%);opacity:.6;animation-duration:.42s;}
+@keyframes jFade{0%{opacity:1}100%{opacity:0}}
+#scene .goldPop{font-family:var(--font-display);font-size:18px;color:#ffd84a;white-space:nowrap;
+  text-shadow:0 2px 0 #000,0 0 8px #ff9a1a99;animation:jGoldPop 1.05s cubic-bezier(.2,.8,.3,1) forwards;}
+@keyframes jGoldPop{0%{transform:translate(-50%,10px) scale(.4);opacity:0}18%{transform:translate(-50%,-6px) scale(1.25);opacity:1}
+  32%{transform:translate(-50%,-10px) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-34px);opacity:0}}
+.jcoin{position:fixed;left:0;top:0;width:12px;height:12px;margin:-6px;border-radius:50%;z-index:9999;pointer-events:none;
+  background:radial-gradient(circle at 35% 35%,#fff6c0,#f2c23a 45%,#a8701a);box-shadow:0 0 6px #ffcf4a99,inset -1px -1px 0 #7a4a10;}
+#gold.jbump{animation:jBump .22s ease-out;}
+@keyframes jBump{0%{transform:scale(1)}40%{transform:scale(1.22);color:#fff3a0;text-shadow:0 0 10px #ffd84a}100%{transform:scale(1)}}
+#comboMeter{position:absolute;right:6%;top:30px;z-index:9;pointer-events:none;text-align:center;opacity:0;
+  font-family:var(--font-display);color:#fff;transition:opacity .25s;text-shadow:0 2px 0 #000,0 0 6px #000;}
+#comboMeter.on{opacity:1;}
+#comboMeter.out{opacity:0;}
+#comboMeter b{display:block;font-size:26px;line-height:1;}
+#comboMeter span{display:block;font-size:10px;letter-spacing:3px;color:#ffe9b0;}
+#comboMeter.h1 b{color:#ffe36a;}
+#comboMeter.h2 b{color:#ffa63a;text-shadow:0 2px 0 #000,0 0 10px #ff6a1a;}
+#comboMeter.h3 b{color:#ff6a3a;text-shadow:0 2px 0 #000,0 0 14px #ff3a1a,0 -4px 14px #ffb340;}
+#comboMeter.h4 b{color:#fff;text-shadow:0 2px 0 #000,0 0 16px #ff3aff,0 0 26px #ffb340;animation:jHue 1s linear infinite;}
+@keyframes jHue{to{filter:hue-rotate(360deg)}}
+#comboMeter.bump b{animation:jComboBump .16s ease-out;}
+#comboMeter.h4.bump b{animation:jComboBump .16s ease-out,jHue 1s linear infinite;}
+@keyframes jComboBump{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+#scene .callout,#scene .banner{left:50%;top:38%;font-family:var(--font-display);white-space:nowrap;letter-spacing:2px;
+  text-shadow:0 3px 0 #000,0 0 12px #000;}
+#scene .callout{font-size:20px;color:#ffe36a;animation:jCallout 1.25s ease-out forwards;}
+#scene .callout.h2,#scene .callout.h3{color:#ff9a3a;text-shadow:0 3px 0 #000,0 0 14px #ff4a1a;}
+#scene .callout.h4{color:#fff;text-shadow:0 3px 0 #000,0 0 16px #ff3aff;}
+@keyframes jCallout{0%{transform:translate(-50%,0) scale(2.2) rotate(-6deg);opacity:0}
+  18%{transform:translate(-50%,0) scale(1) rotate(-3deg);opacity:1}
+  30%{transform:translate(-50%,0) scale(1.1) rotate(-3deg)}80%{opacity:1}
+  100%{transform:translate(-50%,-20px) scale(1) rotate(-3deg);opacity:0}}
+#scene .banner{top:22%;font-size:26px;color:#fff;animation:jBanner 1.9s cubic-bezier(.2,.8,.3,1) forwards;}
+#scene .banner.boss{color:#ffd84a;text-shadow:0 3px 0 #000,0 0 16px #e0503a;}
+#scene .banner.find{color:var(--rc);text-shadow:0 3px 0 #000,0 0 18px var(--rc),0 0 2px #fff;}
+#scene .banner.find.big{font-size:32px;}
+@keyframes jBanner{0%{transform:translate(-50%,0) scale(3);opacity:0;filter:blur(4px)}
+  14%{transform:translate(-50%,0) scale(1);opacity:1;filter:none}
+  22%{transform:translate(-50%,0) scale(1.12)}30%{transform:translate(-50%,0) scale(1)}
+  85%{opacity:1}100%{transform:translate(-50%,-14px);opacity:0}}
+#scene .beam{top:0;bottom:0;width:46px;margin-left:-23px;
+  background:linear-gradient(90deg,transparent,var(--rc) 35%,#fff 50%,var(--rc) 65%,transparent);
+  mix-blend-mode:screen;opacity:0;animation:jBeam 1.7s ease-out forwards;}
+#scene .beam.big{width:80px;margin-left:-40px;}
+@keyframes jBeam{0%{opacity:0;transform:scaleX(.2)}12%{opacity:.85;transform:scaleX(1.2)}
+  30%{opacity:.6;transform:scaleX(1)}100%{opacity:0;transform:scaleX(.6)}}
+#scene .rays{width:260px;height:260px;margin:-130px;border-radius:50%;mix-blend-mode:screen;
+  background:repeating-conic-gradient(from 0deg,var(--rc) 0deg 8deg,transparent 8deg 24deg);
+  -webkit-mask:radial-gradient(circle,#000 10%,transparent 68%);mask:radial-gradient(circle,#000 10%,transparent 68%);
+  animation:jRays 1.7s ease-out forwards;}
+@keyframes jRays{0%{transform:scale(.2) rotate(0);opacity:0}15%{opacity:.75}100%{transform:scale(1.2) rotate(70deg);opacity:0}}
+#scene .confetti{width:5px;height:8px;margin:-4px -2px;background:var(--rc);box-shadow:0 0 4px var(--rc);
+  animation:jFly 1.3s cubic-bezier(.2,.6,.4,1) forwards;}
+#petBox.breathing .petArtImg{animation:petBreath .9s ease-out;transform-origin:30% 100%;}
+#petBox .drg{position:absolute;inset:0;pointer-events:none;
+  filter:drop-shadow(0 0 1.5px rgba(255,214,150,.45)) drop-shadow(0 2px 0 rgba(0,0,0,.45));}
+#petBox .drg .dp{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;
+  image-rendering:pixelated;user-select:none;}
+#petBox .drg .dp-wingA{animation:drgWing 2.6s ease-in-out infinite;}
+#petBox .drg .dp-wingB{animation:drgWingB 2.6s ease-in-out -.18s infinite;}
+#petBox .drg .dp-head{animation:drgHead 3.7s ease-in-out infinite;}
+#petBox .drg .dp-tail{animation:drgTail 2.3s ease-in-out infinite;}
+#petBox .drg .dp-tail2{animation:drgTail 2.3s ease-in-out -.6s infinite;}
+#petBox .drg .dp-legA{animation:drgLeg 2.6s ease-in-out infinite;}
+#petBox .drg .dp-legB{animation:drgLeg 2.6s ease-in-out -1.3s infinite;}
+#petBox .drg .dp-body{transform-origin:50% 100%;animation:drgBody 2.6s ease-in-out infinite;}
+@keyframes drgWing{0%,100%{transform:rotate(0);}38%{transform:rotate(9deg) scaleY(1.05);}62%{transform:rotate(-5deg) scaleY(.95);}}
+@keyframes drgWingB{0%,100%{transform:rotate(0);}38%{transform:rotate(6deg);}62%{transform:rotate(-4deg);}}
+@keyframes drgHead{0%,100%{transform:rotate(0);}22%{transform:rotate(-4deg) translateY(-1px);}48%{transform:rotate(2deg);}
+  70%{transform:rotate(-1.5deg);}84%{transform:rotate(3deg) translateX(1px);}}
+@keyframes drgTail{0%,100%{transform:rotate(0);}35%{transform:rotate(6deg);}70%{transform:rotate(-5deg);}}
+@keyframes drgLeg{0%,100%{transform:rotate(0);}50%{transform:rotate(-3deg) translateY(-.5px);}}
+@keyframes drgBody{0%,100%{transform:scaleY(1);}45%{transform:scaleY(1.018) scaleX(.994);}}
+#petBox.petting .drg .dp-wingA,#petBox.petting .drg .dp-wingB{animation-duration:.42s;}
+#petBox.petting .drg .dp-head{animation:drgNuzzle .7s ease-in-out infinite;}
+#petBox.petting .drg .dp-tail,#petBox.petting .drg .dp-tail2{animation-duration:.6s;}
+@keyframes drgNuzzle{0%,100%{transform:rotate(0);}50%{transform:rotate(7deg) translateY(1px);}}
+#petBox.mood-sleep .drg .dp{animation-duration:6s !important;}
+#petBox.mood-sleep .drg .dp-head{animation:none;transform:rotate(10deg) translateY(2px);}
+#petBox.mood-sleep .drg .dp-wingA,#petBox.mood-sleep .drg .dp-wingB{animation:none;transform:rotate(-6deg);}
+#petBox.breathing .drg .dp-head{animation:drgLunge .9s ease-out;}
+#petBox.breathing .drg .dp-wingA,#petBox.breathing .drg .dp-wingB{animation:drgSpread .9s ease-out;}
+#petBox.breathing .drg .dp-tail{animation:drgTail .45s ease-in-out 2;}
+#petBox.breathing .drg .dp-body{animation:drgRear .9s ease-out;}
+@keyframes drgLunge{0%{transform:rotate(0);}20%{transform:rotate(-10deg) translateX(-2px);}35%,80%{transform:rotate(7deg) translateX(2px);}100%{transform:rotate(0);}}
+@keyframes drgSpread{0%{transform:rotate(0);}20%{transform:rotate(14deg) scaleY(1.08);}45%,80%{transform:rotate(-8deg);}100%{transform:rotate(0);}}
+@keyframes drgRear{0%,100%{transform:none;}20%{transform:scaleY(1.04) translateX(-1px);}40%,80%{transform:scaleY(.98) translateX(1px);}}
+@media (prefers-reduced-motion: reduce){ #petBox .drg .dp{animation:none !important;} }
+@keyframes petBreath{0%{transform:none;}18%{transform:translateX(-3px) rotate(-6deg) scale(1.04,.96);}
+  32%,78%{transform:translateX(3px) rotate(3deg) scale(.97,1.04);}100%{transform:none;}}
+#scene .brPuff{width:12px;height:12px;margin:-6px;border-radius:50%;mix-blend-mode:screen;
+  animation:brFly .6s cubic-bezier(.3,.5,.6,1) forwards;}
+#scene .brPuff.fire{background:radial-gradient(circle,#fffbe0 0%,#ffd04a 30%,#ff7a1a 60%,rgba(200,40,10,0) 75%);}
+#scene .brPuff.acid{background:radial-gradient(circle,#f4ffd0 0%,#b8f04a 30%,#4fc22a 60%,rgba(30,110,20,0) 75%);mix-blend-mode:normal;opacity:.92;}
+@keyframes brFly{0%{transform:translate(0,0) scale(.35);opacity:1;}
+  50%{transform:translate(var(--mx),var(--my)) scale(1.2);opacity:1;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(var(--s,2));opacity:0;}}
+#scene .brMouth{width:22px;height:22px;margin:-11px;border-radius:50%;animation:brMouthGlow .8s ease-out forwards;}
+#scene .brMouth.fire{background:radial-gradient(circle,#fff6c0,#ff9a2a 45%,transparent 70%);}
+#scene .brMouth.acid{background:radial-gradient(circle,#f0ffc0,#7ee03a 45%,transparent 70%);}
+#scene .brMouth.thunder{background:radial-gradient(circle,#ffffff,#8fd8ff 40%,transparent 70%);}
+@keyframes brMouthGlow{0%{transform:scale(.3);opacity:0;}20%{transform:scale(1.2);opacity:1;}100%{transform:scale(.8);opacity:0;}}
+#scene .brBolt{left:0;top:0;width:0;height:0;overflow:visible;animation:brBoltFlick .26s steps(2) forwards;}
+#scene .brBolt polyline{fill:none;stroke-linejoin:round;stroke-linecap:round;}
+#scene .brBolt .bA{stroke:#5fc8ff;stroke-width:6;opacity:.55;filter:blur(2px);}
+#scene .brBolt .bB{stroke:#f4fbff;stroke-width:2.2;}
+@keyframes brBoltFlick{0%{opacity:1;}50%{opacity:.35;}100%{opacity:0;}}
+#scene .brFlash{inset:0;background:rgba(170,220,255,.28);animation:jflashFade .26s ease-out forwards;}
+@keyframes jflashFade{from{opacity:1;}to{opacity:0;}}
+#scene .brHit{width:54px;height:54px;margin:-27px;border-radius:50%;animation:brHitRing .55s ease-out forwards;}
+#scene .brHit.fire{border:3px solid #ffb43a;box-shadow:0 0 18px #ff6a1a,inset 0 0 14px #ffcf6a;}
+#scene .brHit.acid{border:3px solid #9eea3a;box-shadow:0 0 18px #4fc22a,inset 0 0 14px #c8ff7a;}
+#scene .brHit.thunder{border:3px solid #bfe8ff;box-shadow:0 0 22px #5fc8ff,inset 0 0 14px #ffffff;}
+@keyframes brHitRing{0%{transform:scale(.3);opacity:1;}100%{transform:scale(1.6);opacity:0;}}
+#scene .brSpk{width:5px;height:5px;margin:-2px;border-radius:1px;animation:jFly .8s cubic-bezier(.2,.6,.5,1) forwards;}
+#scene .brSpk.fire{background:#ffd04a;box-shadow:0 0 6px #ff7a1a;}
+#scene .brSpk.acid{background:#b8f04a;box-shadow:0 0 6px #4fc22a;border-radius:50% 50% 50% 0;}
+#scene .brSpk.thunder{background:#eaf8ff;box-shadow:0 0 6px #5fc8ff;}
+#scene .brWord{transform:translateX(-50%);font-family:var(--font-display);font-size:15px;letter-spacing:1px;white-space:nowrap;
+  text-shadow:0 2px 0 #000,0 0 8px currentColor;animation:brWordPop .9s ease-out forwards;}
+#scene .brWord.fire{color:#ffb43a;}
+#scene .brWord.acid{color:#a8f04a;}
+#scene .brWord.thunder{color:#bfe8ff;}
+@keyframes brWordPop{0%{transform:translate(-50%,6px) scale(.6);opacity:0;}20%{transform:translate(-50%,0) scale(1.15);opacity:1;}
+  100%{transform:translate(-50%,-22px) scale(1);opacity:0;}}
+#rock.brBurn{animation:rockBurn .9s ease-out;}
+#rock.brAcid{animation:rockAcid .9s ease-out;}
+#rock.brShock{animation:rockShock .5s steps(4);}
+@keyframes rockBurn{30%{filter:brightness(1.35) sepia(.5) saturate(2.2) hue-rotate(-12deg) drop-shadow(0 0 8px #ff7a1a);}}
+@keyframes rockAcid{30%{filter:brightness(1.1) sepia(.4) saturate(2.4) hue-rotate(50deg) drop-shadow(0 0 8px #6fe03a);}}
+@keyframes rockShock{25%,75%{filter:brightness(2.2) saturate(.3) drop-shadow(0 0 10px #8fd8ff);}50%{filter:none;}}
+@media (prefers-reduced-motion: reduce){
+  #scene.jshake,#scene.jshakeBig,.pvpStage.shake,.pvpStage.shakeBig{animation:none;}
+}
+
+.pvpFighter .pvpHpTrack{position:relative;}
+.pvpHpTrack .pvpHpGhost{position:absolute;left:0;top:0;height:100%;width:100%;background:#f3e2bf;opacity:.85;
+  transition:width .45s ease .22s;}
+.pvpHpTrack .pvpHpFill{position:relative;z-index:1;}
+.pvpHpTrack.low{animation:pvpLow .7s ease-in-out infinite;}
+@keyframes pvpLow{0%,100%{box-shadow:0 0 0 #e0503a00}50%{box-shadow:0 0 8px #e0503acc;}}
+.pvpDwarf.finisher{--dwT:.62s;}
+.pvpDwarf.me.swing.finisher,.pvpDwarf.opp.swing.finisher{animation-duration:.62s;}
+.pvpDwarf.hurt .dw{animation:pvpHurt .32s ease-out;}
+@keyframes pvpHurt{
+  0%{transform:none;filter:none}
+  15%{transform:translateX(-7px) rotate(-4deg);filter:brightness(2.6) saturate(0)}
+  40%{transform:translateX(-4px) rotate(-2deg);filter:sepia(1) saturate(4) hue-rotate(-30deg) brightness(1.1)}
+  100%{transform:none;filter:none}}
+.pvpDwarf.ko .dw{animation:pvpKo .7s cubic-bezier(.5,0,.8,.4) forwards;transform-origin:30% 98%;}
+@keyframes pvpKo{
+  0%{transform:none;filter:none}
+  30%{transform:translateX(-6px) rotate(-12deg);filter:brightness(1.8) saturate(0)}
+  100%{transform:translate(-14px,6px) rotate(-78deg);filter:grayscale(.7) brightness(.7);opacity:.85}}
+.pvpDwarf.cheer .dw{animation:pvpCheer .5s ease-out 2 .25s;}
+@keyframes pvpCheer{0%,100%{transform:none}45%{transform:translateY(-10px)}70%{transform:translateY(0) scaleY(.94)}}
+.pvpDwarf.cheer .dwPick{animation:pvpCheerPick .6s ease-out .2s forwards;}
+@keyframes pvpCheerPick{to{transform:rotate(-8deg) translateY(-14px)}}
+
+.pvpStage.shake{animation:pvpShake .2s linear;}
+.pvpStage.shakeBig{animation:pvpShakeBig .38s linear;}
+@keyframes pvpShake{0%,100%{transform:none}25%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,1px)}}
+@keyframes pvpShakeBig{0%,100%{transform:none}15%{transform:translate(-5px,2px)}30%{transform:translate(5px,-2px)}
+  45%{transform:translate(-4px,1px)}60%{transform:translate(3px,-1px)}80%{transform:translate(-1px,0)}}
+
+.pvpFx{position:absolute;pointer-events:none;z-index:6;}
+.pvpFx.spark{width:4px;height:4px;margin:-2px 0 0 -2px;background:#ffe08a;box-shadow:0 0 6px #ffb340;
+  animation:pvpSpark .55s ease-out forwards;}
+.pvpFx.spark.hot{background:#fff;box-shadow:0 0 8px #ff7a2a;}
+@keyframes pvpSpark{0%{transform:translate(0,0) scale(1.5);opacity:1}
+  100%{transform:translate(var(--dx),calc(var(--dy) + 18px)) scale(.3);opacity:0}}
+.pvpFx.ring{width:12px;height:12px;margin:-6px 0 0 -6px;border:2px solid #ffe7a8;border-radius:50%;
+  animation:pvpRing .4s ease-out forwards;}
+.pvpFx.ring.big{border-color:#fff;border-width:3px;animation-duration:.5s;}
+@keyframes pvpRing{0%{transform:scale(.3);opacity:1}100%{transform:scale(4.2);opacity:0}}
+.pvpFx.ring.big{--rs:6;}
+.pvpFx.slash{width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:3px solid transparent;
+  border-top-color:#fff8e0;filter:drop-shadow(0 0 4px #ffcf6a);animation:pvpSlash .3s ease-out forwards;}
+@keyframes pvpSlash{0%{transform:scaleX(var(--dir)) rotate(-80deg);opacity:0}
+  30%{opacity:1}100%{transform:scaleX(var(--dir)) rotate(55deg);opacity:0}}
+.pvpFx.dust{width:12px;height:7px;margin:-4px 0 0 -6px;border-radius:50%;background:#a88a64aa;filter:blur(1px);
+  animation:pvpDust .65s ease-out forwards;}
+@keyframes pvpDust{0%{transform:translate(0,0) scale(.6);opacity:.9}100%{transform:translate(var(--dx),-8px) scale(2.6);opacity:0}}
+.pvpFx.flash{width:100%;height:100%;background:radial-gradient(circle at 50% 45%,#fff7,#fff0 70%);
+  animation:pvpFlash .25s ease-out forwards;}
+@keyframes pvpFlash{0%{opacity:1}100%{opacity:0}}
+.pvpFx.num{font-family:var(--font-display);font-size:19px;line-height:1;white-space:nowrap;color:#ffe9b0;
+  text-shadow:0 2px 0 #000,0 0 6px #000c;animation:pvpNum .95s cubic-bezier(.2,.8,.3,1) forwards;}
+.pvpFx.num.me{color:#ff7a5a;}
+.pvpFx.num.crit{font-size:25px;color:#ffd84a;text-shadow:0 2px 0 #000,0 0 10px #ff6a1acc;}
+@keyframes pvpNum{0%{transform:translate(-50%,0) scale(.5);opacity:0}
+  15%{transform:translate(-50%,-10px) scale(1.3);opacity:1}
+  30%{transform:translate(-50%,-14px) scale(1)}
+  75%{opacity:1}100%{transform:translate(-50%,-36px) scale(.95);opacity:0}}
+.pvpFx.koTxt{font-family:var(--font-display);font-size:30px;color:#ffd84a;letter-spacing:2px;
+  text-shadow:0 3px 0 #000,0 0 14px #e0503a;animation:pvpKoTxt 1.3s ease-out forwards;}
+@keyframes pvpKoTxt{0%{transform:translate(-50%,0) scale(2.4) rotate(-8deg);opacity:0}
+  20%{transform:translate(-50%,0) scale(1) rotate(-4deg);opacity:1}
+  30%{transform:translate(-50%,0) scale(1.12) rotate(-4deg)}
+  85%{opacity:1}100%{transform:translate(-50%,-12px) scale(1) rotate(-4deg);opacity:0}}
 </style>
 <script data-diag-early="1">
-
 window.__OREDIAG=window.__OREDIAG||[];
 window.addEventListener("error",function(ev){
   var t=ev.target, E=window.__OREDIAG;
@@ -1408,13 +1730,27 @@ window.addEventListener("unhandledrejection",function(ev){
 
       <div id="miner" class="miner">
         <img class="ml" id="mlPack" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-        <img class="ml" id="mlBase" alt="" src="art/dwarf0.png">
+        <div class="dw" id="mlRig" data-t="0">
+          <div class="dwGlow"></div>
+          <img class="dwp dwLegL" alt="" src="art/dwarf0.png">
+          <img class="dwp dwLegR" alt="" src="art/dwarf0.png">
+          <img class="dwp dwLegL dwBoot" alt="" src="art/dwarf0.png">
+          <img class="dwp dwLegR dwBoot" alt="" src="art/dwarf0.png">
+          <div class="dwUpper">
+            <img class="dwp dwTorso" id="mlBase" alt="" src="art/dwarf0.png">
+            <img class="dwp dwBelt" alt="" src="art/dwarf0.png">
+            <img class="dwp dwHead" alt="" src="art/dwarf0.png">
+            <div class="dwArms">
+              <img id="pickHand" class="dwPick" alt="">
+              <img class="dwp dwFist" alt="" src="art/dwarf0.png">
+            </div>
+          </div>
+        </div>
         <img class="ml" id="mlRobe" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
         <img class="ml" id="mlBoots" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
         <img class="ml" id="mlGlove" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
         <img class="ml" id="mlBeard" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
         <img class="ml" id="mlHelm" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-        <img id="pickHand" alt="">
         <img id="aleMug" src="art/ic_mug.png?v=2" alt="mug">
         <div id="paperdoll"></div>
       </div>
@@ -1431,7 +1767,8 @@ window.addEventListener("unhandledrejection",function(ev){
             <ellipse cx="22" cy="11" rx="2.4" ry="3.2" fill="#e8c4a8"/>
           </svg>
         </div>
-        <img id="petArtImg" class="petArtImg" src="art/pet_dragon_gold.png?v=3" alt="dragon" draggable="false">
+        <img id="petArtImg" class="petArtImg" src="art/pet_dragon_gold.png?v=4" alt="dragon" draggable="false">
+        <div id="petRig" class="drg" aria-hidden="true"></div>
       </div>
       <div id="rock" class="rock">
         <img id="rockImg" alt="" src="art/ore_p0_s0.png">
@@ -1637,7 +1974,7 @@ window.addEventListener("unhandledrejection",function(ev){
   <h2 id="ovTitle">BREAK IN THE HALLS</h2>
   <p id="ovText">🍺 You earned this beer 🍺</p>
   <div id="ovActions">
-    <button type="button" class="btn ovAle" onclick="overlayAle()"><img class="uiMugArt sm" src="art/ic_mug.png?v=2" alt=""> Drink beer</button>
+    <button type="button" class="btn ovAle" onclick="overlayAle()"><img class="uiMugArt sm" src="art/ic_mug.png?v=2" alt=""> Bring my mug!!!</button>
     <button type="button" class="btn ovShop" onclick="openShop()">🛒 Shop</button>
   </div>
   <button type="button" id="ovContinue" onclick="resumeFromExhaust()">⛏ Continue from this vein</button>
@@ -1680,20 +2017,47 @@ window.addEventListener("unhandledrejection",function(ev){
 <div id="pvpOverlay" aria-hidden="true">
   <div class="pvpArena">
     <div class="pvpHud">
-      <div class="pvpFighter me"><b id="pvpMeName">You</b><div class="pvpHpTrack"><div class="pvpHpFill" id="pvpMeHp"></div></div></div>
+      <div class="pvpFighter me"><b id="pvpMeName">You</b><div class="pvpHpTrack"><div class="pvpHpGhost" id="pvpMeHpGhost"></div><div class="pvpHpFill" id="pvpMeHp"></div></div></div>
       <div class="pvpVs">⚔</div>
-      <div class="pvpFighter opp"><b id="pvpOppName">Opponent</b><div class="pvpHpTrack"><div class="pvpHpFill" id="pvpOppHp"></div></div></div>
+      <div class="pvpFighter opp"><b id="pvpOppName">Opponent</b><div class="pvpHpTrack"><div class="pvpHpGhost" id="pvpOppHpGhost"></div><div class="pvpHpFill" id="pvpOppHp"></div></div></div>
     </div>
     <div class="pvpStage" id="pvpBrawlStage">
       <div class="pvpDwarf me" id="pvpMeFighter">
-        <img class="pvpBody" id="pvpMeImg" alt="" src="art/dwarf0.png">
-        <img class="pvpPick" id="pvpMePick" alt="" src="art/pick0.png">
+        <div class="dw" id="pvpMeRig" data-t="0">
+          <div class="dwGlow"></div>
+          <img class="dwp dwLegL" alt="" src="art/dwarf0.png">
+          <img class="dwp dwLegR" alt="" src="art/dwarf0.png">
+          <img class="dwp dwLegL dwBoot" alt="" src="art/dwarf0.png">
+          <img class="dwp dwLegR dwBoot" alt="" src="art/dwarf0.png">
+          <div class="dwUpper">
+            <img class="dwp dwTorso" id="pvpMeImg" alt="" src="art/dwarf0.png">
+            <img class="dwp dwBelt" alt="" src="art/dwarf0.png">
+            <img class="dwp dwHead" alt="" src="art/dwarf0.png">
+            <div class="dwArms">
+              <img class="dwPick" id="pvpMePick" alt="" src="art/pickh0.png">
+              <img class="dwp dwFist" alt="" src="art/dwarf0.png">
+            </div>
+          </div>
+        </div>
       </div>
       <div class="pvpDwarf opp" id="pvpOppFighter">
-        <img class="pvpBody" id="pvpOppImg" alt="" src="art/dwarf1.png">
-        <img class="pvpPick" id="pvpOppPick" alt="" src="art/pick1.png">
+        <div class="dw" id="pvpOppRig" data-t="1">
+          <div class="dwGlow"></div>
+          <img class="dwp dwLegL" alt="" src="art/dwarf1.png">
+          <img class="dwp dwLegR" alt="" src="art/dwarf1.png">
+          <img class="dwp dwLegL dwBoot" alt="" src="art/dwarf1.png">
+          <img class="dwp dwLegR dwBoot" alt="" src="art/dwarf1.png">
+          <div class="dwUpper">
+            <img class="dwp dwTorso" id="pvpOppImg" alt="" src="art/dwarf1.png">
+            <img class="dwp dwBelt" alt="" src="art/dwarf1.png">
+            <img class="dwp dwHead" alt="" src="art/dwarf1.png">
+            <div class="dwArms">
+              <img class="dwPick" id="pvpOppPick" alt="" src="art/pickh1.png">
+              <img class="dwp dwFist" alt="" src="art/dwarf1.png">
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="pvpDmgPop" id="pvpDmgPop"></div>
     </div>
     <div class="pvpResult" id="pvpBrawlResult">
       <h3 class="pvpResTitle" id="pvpResTitle">VICTORY!</h3>

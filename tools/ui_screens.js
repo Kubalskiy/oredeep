@@ -105,6 +105,7 @@ const UIS={
     this._go(id, tab);
   },
   _go(id, tab){
+    if(id==="beards"){ this.beardTab=tab||this.beardTab||"gacha"; id="tavern"; tab="beards"; }
     if(typeof requireFeat==="function"){
       const feat=typeof FEAT_SCREEN!=="undefined"?FEAT_SCREEN[id]:null;
       if(feat && !requireFeat(feat)) return;
@@ -131,6 +132,14 @@ const UIS={
   bar(pct, col){
     const w=Math.max(0,Math.min(100,pct||0));
     return '<div class="uiBar"><div class="uiBarFill" style="width:'+w+'%;background:'+(col||"var(--gold)")+'"></div></div>';
+  },
+  beardTab:null,
+  setBeardTab(t){ this.beardTab=t; this.tab="beards"; this.render("tavern"); },
+  tavernTabs(active){
+    const on=typeof featUnlocked!=="function"||featUnlocked("social");
+    const lock=n=>on?n:("🔒 "+n);
+    return this.tabs(["ale","feast","mates","friends","rank","beards"],
+      [lock("Bar"),lock("Feast"),lock("Table"),lock("Friends"),lock("Cups"),"Beards"], active);
   },
   tabs(keys, labels, active){
     return '<div class="uiTabs">'+keys.map((k,i)=>
@@ -203,7 +212,7 @@ const UIS={
       +'<div class="uiRow"><span>Tavern name</span><span><input id="uiProfName" class="uiInp" maxlength="18" value="'+esc(playerName())+'">'
       +'<button class="btn btn-soft btn-tiny" onclick="'+setName+'">✓</button></span></div>'
       +'<div class="uiBtnStack">'
-      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Sheet · K.R.A.S.A.V.A.</button>'
+      +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Sheet · B.E.A.R.D.E.D.</button>'
       +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Beards</button>'
       +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Invite friends</button>'
       +'<button onclick="openWall()">🏔 Mountain Wall</button></div>';
@@ -268,12 +277,13 @@ const UIS={
   },
 
   renderBeards(){
-    const tab=this.tab||"gacha";
+    const tab=this.beardTab||"gacha";
     const rarRU=["Common","Rare","Epic","Legendary"];
-    this.$("uiTitle").textContent="Beards";
+    this.$("uiTitle").textContent="Tavern";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🪮 '+(S.combs||0)+'</span>';
-    this.$("uiTabs").innerHTML=this.tabs(["gacha","merge","ascend","rank","gallery"],
-      ["Gacha","Merge","Ascend","Rank","Gallery"],tab);
+    this.$("uiTabs").innerHTML=this.tavernTabs("beards");
+    const subTabs='<div class="uiTabs uiSubTabs">'+[["gacha","Gacha"],["merge","Merge"],["ascend","Ascend"],["rank","Rank"],["gallery","Gallery"]]
+      .map(([k,n])=>'<button type="button" class="btn btn-tab'+(k===tab?" on":"")+'" onclick="UIS.setBeardTab(\''+k+'\')">'+n+'</button>').join("")+'</div>';
 
     const w=(typeof beardWisdom==="function")?beardWisdom():{lv:0,goldPct:0,luckAdd:0,title:"—"};
     const enMax=(typeof stat==="function")?Math.max(1,stat("energy")|0):1;
@@ -422,7 +432,7 @@ const UIS={
             sub+(bestR>=0?(" · "+FAMILY_LORE[g.stat]):""), cls);
         }));
     }
-    this.$("uiBody").innerHTML=body;
+    this.$("uiBody").innerHTML=subTabs+body;
   },
 
   renderMines(){
@@ -615,7 +625,11 @@ const UIS={
   },
 
   renderTavern(){
-    const tab=this.tab||"ale";
+    const socialOn=typeof featUnlocked!=="function"||featUnlocked("social");
+    let tab=this.tab||(socialOn?"ale":"beards");
+    if(tab!=="beards"&&!socialOn){ if(typeof featLockToast==="function") featLockToast("social"); tab="beards"; }
+    this.tab=tab;
+    if(tab==="beards") return this.renderBeards();
     const lv=gymLevel(), xp=S.gymXP||0;
     const nextAt=GYM_LEVELS[lv+1], atCur=GYM_LEVELS[lv]||0;
     const gymPct=nextAt!=null?Math.min(100,Math.round((xp-atCur)/(nextAt-atCur)*100)):100;
@@ -720,10 +734,7 @@ const UIS={
 
     this.$("uiTitle").textContent="Tavern";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">Hall '+lv+' · +'+gymPerkPct()+'%</span>';
-    this.$("uiTabs").innerHTML=this.tabs(
-      ["ale","feast","mates","friends","rank"],
-      ["Bar","Feast","Table","Friends","Cups"],
-      tab);
+    this.$("uiTabs").innerHTML=this.tavernTabs(tab);
 
     let body="";
     if(tab==="ale"){
@@ -1043,8 +1054,8 @@ function uiWire(){
     };
   }
   if($("navTavBtn")) $("navTavBtn").onclick=navGo("tavern", ()=>{
-    if(typeof requireFeat==="function"&&!requireFeat("social")) return;
-    UIS.open("tavern","ale");
+    if(typeof requireFeat==="function"&&!requireFeat("beards")) return;
+    UIS.open("tavern", (typeof featUnlocked!=="function"||featUnlocked("social"))?"ale":"beards");
   });
   if($("navPvp")) $("navPvp").onclick=navGo("pvp", ()=>{
     if(typeof requireFeat==="function"&&!requireFeat("pvp")) return;
@@ -1118,7 +1129,7 @@ openPvp=function(){ UIS.open("pvp"); };
 openShop=function(tab){ UIS.open("shop", tab||(UIS.id==="shop"?UIS.tab:null)||"offers"); };
 openGym=function(){ UIS.open("tavern","feast"); };
 openStickers=function(){ UIS.tab=null; UIS.open("artifacts"); };
-openBeard=function(tab){ UIS.open("beards", tab||(UIS.id==="beards"?UIS.tab:null)||"rank"); };
+openBeard=function(tab){ UIS.open("beards", tab||(UIS.id==="tavern"&&UIS.tab==="beards"?UIS.beardTab:null)||"rank"); };
 openProfile=function(){ UIS.open("profile"); Platform.logEvent("profile_view",{}); };
 openGeoGuild=function(){ UIS.open("beards", S.geo && S.geo.r===GEO_RAR.length-1 ? "ascend" : "merge"); };
 
