@@ -36,7 +36,7 @@ T("fmt сверхбольшие → компактная экспонента", 
 
 console.log("\n[2] Базовые статы (GDD §3, 1:1)");
 T("ATK=10", stat("atk")===10);
-T("Energy=70", stat("energy")===70);
+T("Energy=210", stat("energy")===210);
 T("SPD база=1.0 (boxer)", stat("spd")===BALANCE.combat.baseAPS);
 T("CRIT=5, LUCK=10, STONE=120", stat("crit")===5&&stat("luck")===10&&stat("stone")===120);
 T("шанс находки старт = 8%", findChance()===8);
@@ -76,12 +76,12 @@ T("геолог нанят", !!S.geo, S.geo?("r"+S.geo.r):"");
 const lvl0=S.lvls.atk; __ids.u_atk._q["button"].onclick();
 T("кнопка апгрейда ATK работает", S.lvls.atk===lvl0+1);
 S.lvls.luck=200; S.gear={};   // без кирки: pickBonus=0
-T("LUCK капится на 100% (вероятность)", stat("luck")===100);
+T("LUCK капится на STAT_CAPS.luck", stat("luck")===STAT_CAPS.luck);
 T("находка ≤50% без кирки", findChance()<=50 && findChance()===50);
 S.gear.pick={s:"pick",r:7,m:1,i:1};
 T("кап находки 50% с Cosmic-киркой", findChance()===50);
 S.gear={}; S.lvls.luck=0;
-S.lvls.crit=500; T("кап CRIT 60%", stat("crit")===60); S.lvls.crit=0;
+S.lvls.crit=500; T("кап CRIT = STAT_CAPS.crit", stat("crit")===STAT_CAPS.crit); S.lvls.crit=0;
 
 console.log("\n[5] Истощение и рестарт");
 S.gear={}; S.lvls={atk:0,energy:0,spd:0,tough:0,crit:0,luck:0,mining:0,stone:0}; S.geo=null;
@@ -551,8 +551,8 @@ T("меньше 2 минут — не начисляем", offlinePending===0);
 
 console.log("\n[14] Капы: на потолке кнопка не тратит золото");
 localStorage.removeItem("oredeep_v3"); load(); S.gold=1e12;
-S.lvls.crit=100; S.gear={}; S.geo=null;   // CRIT: 5+100 => кап 60
-T("CRIT на капе 60", stat("crit")===60);
+S.lvls.crit=300; S.gear={}; S.geo=null;
+T("CRIT на капе", stat("crit")===STAT_CAPS.crit);
 render();
 T("кнопка CRIT заблокирована и показывает МАКС",
   __ids.u_crit._q["button"].disabled && __ids.u_crit._q[".c"].textContent==="MAX");
@@ -561,20 +561,20 @@ T("кнопка CRIT заблокирована и показывает МАКС
   T("клик на капе: золото не списано, уровень не растёт", S.gold===g0 && S.lvls.crit===l0); }
 console.log("\n[14b] Шмот: мягкий скейл и перелив с капов");
 T("itemStat cosmic мягче сырого RAR×250", itemStat({s:"glove",r:7,m:1,i:1},"crit")<1.6*250);
-S.lvls.crit=100; S.gear={glove:{s:"glove",r:7,m:1,i:2000}}; S.geo=null; S.sets={};
+S.lvls.crit=300; S.gear={glove:{s:"glove",r:7,m:1,i:2000}}; S.geo=null; S.sets={};
 const critGear=stat("crit");
-T("CRIT с шмотом: ×множитель на капе", critGear>60 && critGear<=60*50, "crit="+critGear);
+T("CRIT с шмотом: ×множитель на капе", critGear>STAT_CAPS.crit && critGear<=STAT_CAPS.crit*50, "crit="+critGear);
 T("statCapped по апгрейдам, не по шмоту", statCapped("crit"));
 const atkR=gearOverflowRoutes().atk||0;
 T("перелив CRIT→ATK", atkR>0, "atk route="+atkR);
-S.gear={lamp:{s:"lamp",r:7,m:1,i:2000}}; S.lvls.luck=200; S.lvls.mining=100;
+S.gear={lamp:{s:"lamp",r:7,m:1,i:2000}}; S.lvls.luck=400; S.lvls.mining=200;
 const stoneR=gearOverflowRoutes().stone||0;
 T("перелив LUCK→STONE", stoneR>0, "stone route="+stoneR);
 S.lvls.spd=200; S.gear={boots:{s:"boots",r:7,m:1,i:2000}};
-T("SPD на капе без ×множителя", stat("spd")===BALANCE.combat.maxAPS);
+T("SPD на капе без ×множителя", stat("spd")===STAT_CAPS.spd);
 T("перелив SPD→ENERGY", (gearOverflowRoutes().energy||0)>0);
 S.gear={}; S.lvls.crit=0; S.lvls.luck=0; S.lvls.mining=0;
-S.lvls.spd=200; T("SPD закапан на 4.5 (boxer max)", stat("spd")===BALANCE.combat.maxAPS);
+S.lvls.spd=200; T("SPD закапан на STAT_CAPS.spd", stat("spd")===STAT_CAPS.spd);
 render();
 T("SPD: MAX и блок", __ids.u_spd._q["button"].disabled);
 S.lvls.atk=5; render();
@@ -1270,7 +1270,7 @@ S.stageIdx=300; S.lvls.atk=50; newRock();
   oneStrike=_os;
   T("без Stamina комбо не тянется (~1 удар)", Math.abs(p0-1)<0.05, p0.toFixed(2));
   T("Stamina тянет комбо (>1 удара)", p1>1.5, p1.toFixed(2)); }
-T("Stamina капится 90%", (function(){ S.skills={stam_up:99}; return stat("stamina")===90; })());
+T("Stamina капится на STAT_CAPS.stamina", (function(){ S.skills={stam_up:99}; return stat("stamina")===STAT_CAPS.stamina; })());
 { S.skills={regen_up:5}; const rg=stat("regen"); T("Regen — стат из карт (>0)", rg>0);
   S.stageIdx=1; newRock(); S.energy=5; const e0=S.energy; dead=false;
   const frame=(ms)=>{ __vclock+=ms; const cb=__rafCb; __rafCb=null; if(cb) cb(__vclock); };
@@ -1491,6 +1491,7 @@ T("таблица шансов присутствует", __ids.chestCard.innerH
 T("шансы в две колонки", __ids.chestCard.innerHTML.indexOf("chCols")>=0
   && __ids.chestCard.innerHTML.indexOf(">now<")>=0
   && __ids.chestCard.innerHTML.indexOf(">next<")>=0);
+chestPending=null; pvpLootFrom=""; closeDropDecide();
 S.bags=3; chestOpenOne();
 T("открытие сундука тратит сумку и готовит предмет", S.bags===2 && !!chestPending);
 { const g0=S.gold; sellChestItem();
@@ -1514,6 +1515,9 @@ closeChest();
   T("1-tap сундук тратит сумку без листа шансов", S.bags===b0-1 && __ids.chestModal.style.display!=="flex");
   T("1-tap сразу даёт решение Equip/Sell", !!chestPending && __ids.dropModal.style.display==="flex");
   T("1-tap показывает пилюли сравнения", /chPill/.test(__ids.dropCard.innerHTML||""));
+  { const g0=JSON.stringify(S.gear), h=chestPendingCardHtml(makeItem("pick"));
+    T("карточка находки: превью не меняет надетое", JSON.stringify(S.gear)===g0);
+    T("карточка находки: было → стало и цена продажи", /→/.test(h) && /Sell<small>\+/.test(h)); }
   sellChestItem();
   T("продажа закрывает dropModal и не тратит следующую сумку", chestPending===null && S.bags===1 && __ids.dropModal.style.display!=="flex"); }
 { S.bags=8; S.gear={};
@@ -1858,6 +1862,67 @@ T("BALANCE.bonus fib", Array.isArray(BALANCE.bonus.fib) && BALANCE.bonus.fib[2]=
   T("сложность: сильный соперник платит больше", strong.gold>even.gold && even.gold>weak.gold && strong.gems>weak.gems);
   T("сложность: множитель награды в рамках", weak.mul===BALANCE.pvp.rivalPay[0] && strong.mul===BALANCE.pvp.rivalPay[1]);
   S.stageIdx=sv.idx; S.trophies=sv.tr; S.pet=sv.pet; }
+
+{ const D=BALANCE.defense;
+  T("защита: срез 0 без защиты", defenseCut(0)===0);
+  T("защита: половина при halfAt", Math.abs(defenseCut(D.halfAt)-0.5)<1e-9);
+  T("защита: не выше cap", defenseCut(1e9)===D.cap);
+  const svR=rock, svE=S.energy, svL=S.lvls.tough;
+  const svRnd=Math.random; rock=Object.assign({},rock,{abr:100000}); S.lvls.tough=0; S.energy=1e9; Math.random=()=>0.99;
+  const e0=S.energy; rockRespond(); const d0=e0-S.energy;
+  S.lvls.tough=80; S.energy=1e9; const e1=S.energy; rockRespond(); const d1=e1-S.energy;
+  T("защита: в лейте заметно режет урон по энергии", d1<d0*0.75);
+  T("защита: в карточке виден процент", /−\d+%/.test(statFmtDisplay(UPGRADES.find(u=>u.id==="tough"))));
+  Math.random=svRnd; rock=svR; S.energy=svE; S.lvls.tough=svL; }
+{ const svC=globalThis.confirm, svS=JSON.stringify(S);
+  globalThis.confirm=()=>true; localStorage.removeItem(SAVE_SLOT);
+  T("слот пуст → Load не грузит", manualLoad()===false);
+  S.gold=12345; T("Save пишет слот", manualSave() && !!slotInfo());
+  S.gold=1; T("Load возвращает сохранённое", manualLoad() && S.gold===12345);
+  resetProgress(); T("New: свежая игра, слот цел", S.gold!==12345 && !!slotInfo());
+  localStorage.removeItem(SAVE_SLOT);
+  S=Object.assign(freshState(), JSON.parse(svS)); ensureAll(S); globalThis.confirm=svC; }
+{ const svG=JSON.stringify(S.gear||{}), svB=breathNext;
+  S.gear=Object.assign({},S.gear,{pet:{s:"pet",r:2,m:1,i:1}}); _feedCdUntil=0; breathNext=99;
+  T("кормёжка: тап кормит дракона", feedDragon()===true);
+  T("кормёжка: сытый дракон дышит скорее", breathNext<=BALANCE.dragonFeed.breathInSec+BALANCE.dragonFeed.flyMs/1000);
+  breathNext=99; T("кормёжка: кулдаун, второй раз не кормит", feedDragon()===false && breathNext===99);
+  S.gear=JSON.parse(svG); breathNext=svB; _feedCdUntil=0; }
+{ const fs=require("fs"), path=require("path"), miss=[];
+  const chk=(kind,defs)=>defs.forEach(d=>{
+    if(!loreOf(kind,d.id)) miss.push(kind+":"+d.id+" lore");
+    if(!fs.existsSync(path.join(__dirname,"..","art",kind+"_"+d.id+".png"))) miss.push(kind+":"+d.id+" art");
+  });
+  chk("perk",PERK_DEFS); chk("skill",SKILL_DEFS); chk("trait",TRAIT_DEFS);
+  T("лор и картинка у каждого перка, навыка и черты", miss.length===0, miss.join(", "));
+  T("эффект перка без мусора, с названием стата", /^Effect: \+\d+% Sense/.test(perkEffectText(PERK_DEFS[0]))); }
+{ const svD=S.difficulty, svE=S.eventRun, svM=S.mineRaid; S.eventRun=null; S.mineRaid=null;
+  T("сложность: 3 уровня, brutal = исходный баланс", BALANCE.difficulty.levels.length===3 && diffLevel("brutal").hp===1 && diffLevel("brutal").drain===1);
+  T("сложность: по умолчанию normal", freshState().difficulty==="normal");
+  S.difficulty="brutal"; newRock(); const hB=rock.hp, aB=rock.abr;
+  S.difficulty="easy"; newRock(); const hE=rock.hp, aE=rock.abr;
+  T("сложность: easy мягче brutal", hE<hB && aE<aB && Math.abs(hE/hB-diffLevel("easy").hp)<1e-9);
+  S.difficulty="brutal"; newRock(); S.rockHP=rock.hp/2;
+  setDifficulty("normal");
+  T("сложность: смена на ходу пересчитывает текущую жилу", Math.abs(S.rockHP/rock.hp-0.5)<1e-6 && S.difficulty==="normal");
+  T("сложность: неизвестный id отклонён", setDifficulty("nope")===false);
+  S.difficulty=svD; S.eventRun=svE; S.mineRaid=svM; newRock(); }
+T("капы статов ×statCapMul", STAT_CAPS.crit===60*BALANCE.statCapMul && STAT_CAPS.spd===BALANCE.combat.maxAPS*BALANCE.statCapMul);
+T("шанс выше 100% усиливает эффект", overPct(130)===1.3 && overPct(80)===1);
+{ const sv=JSON.stringify(S.gear); chestPending=null; pvpLootFrom="";
+  for(const sl of gearSlots()) if(sl.id!=="pet") S.gear[sl.id]={s:sl.id,r:3,m:1,i:1};
+  const it=pvpLootItem({name:"Grom"},1);
+  T("pvp-трофей: редкость не ниже средней надетой", it.r>=3 && SLOTS.some(x=>x.id===it.s) && it.s!=="pet");
+  const g0=S.gold; pvpFightApply({id:"grom",name:"Grom",power:1000}, {win:true,meP:1000,meLeft:1,oppLeft:0,rounds:3});
+  T("pvp-победа даёт трофей на выбор", !!chestPending && pvpLootFrom==="Grom" && __ids.dropModal.style.display==="flex");
+  T("pvp-трофей подписан соперником", /SPOILS · Grom/.test(__ids.dropTitle.textContent||""));
+  const sl=chestPending.s, keep=chestPending; equipChestItem();
+  T("pvp-трофей можно надеть", S.gear[sl]===keep && chestPending===null && pvpLootFrom==="");
+  pvpFightApply({id:"grom",name:"Grom",power:1000}, {win:true,meP:1000,meLeft:1,oppLeft:0,rounds:3});
+  const g1=S.gold; sellChestItem(); T("pvp-трофей можно продать", S.gold>g1 && chestPending===null);
+  const c0=chestPending; pvpFightApply({id:"grom",name:"Grom",power:1000}, {win:false,meP:1000,meLeft:0,oppLeft:5,rounds:3});
+  T("pvp-поражение без трофея", chestPending===c0);
+  closeDropDecide(); S.gear=JSON.parse(sv); }
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);

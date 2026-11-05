@@ -5,6 +5,12 @@ const BALANCE = {
   idle:{ base:100000, growth:2.5, damp:0.65, capSec:7200, minSec:60 },
   combat:{ maxHitsPerFrame:250, baseAPS:1.0, maxAPS:4.5, comboInner:0.1, maxCombo:4,
            bossEvery:20, critMul:2.2, hitChance:1.0 },
+  /* Защита (CALIB): кроме вычитания, срезает долю урона камня по энергии с убывающей отдачей.
+     cut = tough/(tough+halfAt), не больше cap. halfAt — защита, при которой срезается половина. */
+  defense:{ halfAt:150, cap:0.75 },
+  /* Множитель капов статов (крит/удача/чутьё/дыхалка/темп). Шанс выше 100% у крита и чутья
+     срабатывает всегда, а излишек усиливает эффект пропорционально (130% → ×1.3 к множителю). */
+  statCapMul:2,
   venueStride:50, startProtein:200, shardRollCost:10, autoQueueMax:15,
   /* Drop chances by bag level 1..50 (sum ≈100). Source: GDD spreadsheet. */
   bagWeights:[
@@ -181,6 +187,14 @@ const BALANCE = {
   /* Дыхание дракона: пауза между залпами (сек); залп добивает жилу целиком. В PvP дракон бьёт соперника
      раз в pvpEveryMs, урон = доля его максимального HP. */
   dragonBreath:{ gapSec:[7,16], sleepRetrySec:3, instakill:true, pvpEveryMs:2400, pvpHpFrac:0.25 },
+  /* Кормёжка дракона (CALIB): тап кидает куриную ножку; не чаще cdSec, следующий залп — не позже breathInSec. */
+  dragonFeed:{ cdSec:20, breathInSec:2, flyMs:520 },
+  /* Сложность (CALIB): множители HP жилы и её ответа по энергии. brutal — исходный баланс референса. */
+  difficulty:{ def:"normal", levels:[
+    { id:"easy",   n:"EASY",   ico:"🌱", hp:0.4,  drain:0.4,  tip:"For a relaxed dig. Veins are soft, the Mountain is kind." },
+    { id:"normal", n:"NORMAL", ico:"⛏", hp:0.65, drain:0.65, tip:"The honest dwarven shift. Tough, but fair." },
+    { id:"brutal", n:"BRUTAL", ico:"💀", hp:1,    drain:1,    tip:"The original Mountain. Every vein bites back." }
+  ]},
   /* Рост со сложностью (CALIB). depth = доля пройденного прогона 0..1 (stageIdx / run.len).
      petDepthGain: бонус дракона ×(1+gain·depth). mineRaid.depthGain: награда штольни ×(1+gain·depth).
      pvp.leagueStrength: соперник сильнее на +x за каждую лигу; pvp.rivalPay: награда × (сила соперника / твоя), в рамках [lo,hi];
@@ -193,6 +207,8 @@ const BALANCE = {
   pvp:{ raceSec:180,
     brawl:{ hitMs:380, hpBase:100, hpScale:0.32, dmgScale:0.0625, maxRounds:40 },
     leagueStrength:0.06, rivalPay:[0.5,2], winGems:3,
+    /* Трофей с побеждённого: шанс выпадения, шанс +1 редкости × множитель силы соперника, разброс силы предмета. */
+    loot:{ chance:1, upChance:0.25, mLo:0.9, mSpread:0.3 },
     thresholds:[100,150,200,250,300,350,400,450,500,1000],
         rewards:[0,200,500,1000,2000,3500,5000,7500,10000,12500],
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },

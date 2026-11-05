@@ -14,8 +14,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         /* Синхронизируй с package.json: versionName = semver, versionCode только ↑ */
-        versionCode 29
-        versionName "0.12.12"
+        versionCode 30
+        versionName "0.12.13"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {

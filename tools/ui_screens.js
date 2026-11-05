@@ -215,7 +215,12 @@ const UIS={
       +'<button class="btn btn-soft" onclick="openCharSheet()">🧬 Sheet · B.E.A.R.D.E.D.</button>'
       +'<button class="btn btn-soft" onclick="UIS.open(\'beards\')">💇 Beards</button>'
       +'<button onclick="UIS.setTab(\'growth\');UIS.render(\'profile\')">👥 Invite friends</button>'
-      +'<button onclick="openWall()">🏔 Mountain Wall</button></div>';
+      +'<button onclick="openWall()">🏔 Mountain Wall</button></div>'
+      +'<div class="uiSub" style="margin-top:12px">Saved game: '+esc(slotLabel())+'</div>'
+      +'<div class="uiSaveRow">'
+      +'<button class="btn btn-soft" onclick="manualSave()&&UIS.render(\'profile\')">💾 Save</button>'
+      +'<button class="btn btn-soft" onclick="manualLoad()&&UIS.render(\'profile\')"'+(slotInfo()?'':' disabled')+'>📂 Load</button>'
+      +'<button class="btn btn-soft" onclick="resetProgress();UIS.render(\'profile\')">✨ New</button></div>';
   },
 
   renderSettings(){
@@ -223,7 +228,8 @@ const UIS={
     this.$("uiHeadAct").innerHTML="";
     this.$("uiTabs").innerHTML="";
     this.$("uiBody").innerHTML=
-      this.row("Music",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 on":"🔇 off")+'</button>')
+      this.row("Difficulty",'<button onclick="openDifficulty()">'+diffLevel().ico+' '+diffLevel().n+'</button>')
+      +this.row("Music",'<button id="uiSetMusic" onclick="toggleMusic();UIS.render(\'settings\')">'+(musicOn?"🔊 on":"🔇 off")+'</button>')
       +this.row("Pop-ups",'<button id="uiSetToasts" onclick="toggleToasts();UIS.render(\'settings\')">'+(typeof toastToggleLabel==="function"?toastToggleLabel():(toastsOn?"💬 on":"🚫 off"))+'</button>')
       +this.row("Mountain Charter",'<button onclick="showIntro()">📜 read</button>')
       +this.row("Gacha fairness",'<button onclick="openFairness()">🔐 open</button>')
