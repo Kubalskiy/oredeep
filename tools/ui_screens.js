@@ -244,7 +244,7 @@ const UIS={
     let body="";
     const cur=S.pet?('<div class="uiBanner r'+S.pet.r+'">In battle: '+petIcon(S.pet.t)+' '+PET_TYPES[S.pet.t].n
       +' · '+petSkinOf(S.pet).n
-      +' · +'+PET_TYPES[S.pet.t].pct[S.pet.r]+'% '+PET_TYPES[S.pet.t].stat.toUpperCase()+'</div>'):"";
+      +' · +'+petPctOf(S.pet.t,S.pet.r)+'% '+PET_TYPES[S.pet.t].stat.toUpperCase()+'</div>'):"";
     if(tab==="gacha"){
       body=cur+'<div class="uiGachaStage"><div class="uiGachaEgg">🥚</div></div>'
         +'<div class="uiSub" style="text-align:center;margin:8px 0">Rolls: '+(S.petRolls||0)+' · Mountain pity</div>'
@@ -267,11 +267,29 @@ const UIS={
         : '<div class="uiEmpty">🔒 Crafting unlocks after '+BALANCE.petCraft.needLegendaries+' Legendaries (owned: '+(S.petLegSeen||0)+').</div>');
     } else {
       const slots=PET_TYPES.map((p,i)=>{
-        let bestR=-1; for(const k in S.petBox||{}){ const [t,r]=k.split("_").map(Number); if(t===i&&r>bestR) bestR=r; }
+        const bestR=petBestOf(i);
         const ic=bestR>=0?petIcon(i):"❔", sub=bestR>=0?PET_RAR[bestR]:"no";
-        return this.slot(ic,p.n,sub,bestR>=0?"r"+bestR:"");
+        const on=!!(S.pet&&(S.pet.t|0)===i);
+        return this.slot(ic,p.n,(on?"✓ ":"")+sub,(bestR>=0?"r"+bestR:"")+(on?" sel":""),"selectPet("+i+")");
       });
-      body=cur+this.grid(slots);
+      let stats="";
+      if(S.pet&&PET_TYPES[S.pet.t]){
+        const t=S.pet.t|0, r=S.pet.r|0, P=PET_TYPES[t], dot=petDot();
+        const br=DRAGON_BREATH[t%DRAGON_BREATH.length], G=BALANCE.dragonBreath.gapSec;
+        const owned=PET_RAR.map((n,ri)=>{ const c=(S.petBox||{})[t+"_"+ri]|0; return c?(n+" ×"+c):""; }).filter(Boolean).join(" · ");
+        const row=(k,v)=>'<div class="uiPetStat"><span class="k">'+k+'</span><b>'+v+'</b></div>';
+        stats='<div class="uiPetStats">'
+          +'<div class="uiPetStatsArt">'+petIcon(t)+'</div>'
+          +'<div class="uiPetStatsHead"><b>'+esc(P.n)+'</b><span class="uiSub r'+r+'">'+PET_RAR[r]+' · '+esc(petSkinOf(S.pet).n)+'</span></div>'
+          +row("Bonus","+"+petPctOf(t,r)+"% "+statLbl(P.stat)+(petDepthMul()>1.005?(" · depth ×"+petDepthMul().toFixed(2)):""))
+          +(r<P.pct.length-1?row("Next rarity","+"+petPctOf(t,r+1)+"% "+statLbl(P.stat)):"")
+          +(dot?row(dot.name,fmt(dot.dps)+"/s"+(dot.defCut?(" · −"+Math.round(dot.defCut*100)+"% DEF"):"")+(dot.spdCut?(" · −"+Math.round(dot.spdCut*100)+"% pace"):"")):"")
+          +row("Breath",br.word.replace("!","")+" · "+br.kind+" · every "+G[0]+"–"+G[1]+"s"+(BALANCE.dragonBreath.instakill?" · instant kill":""))
+          +row("PvP","fights beside you · −"+Math.round(BALANCE.dragonBreath.pvpHpFrac*100)+"% rival HP per breath")
+          +row("Owned",owned||"—")
+          +'</div>';
+      }
+      body=cur+stats+'<div class="uiSub" style="text-align:center;margin:6px 0">Tap a dragon to send it into battle</div>'+this.grid(slots);
     }
     this.$("uiBody").innerHTML=body;
   },
@@ -517,11 +535,11 @@ const UIS={
       const sl=typeof mineRaidSlot==="function"?mineRaidSlot(m.id):{step:0,ready:false,done:true,fib:1,leftMs:0,max:fibArr.length};
       const amt=def&&typeof mineRaidRewardAmt==="function"?mineRaidRewardAmt(def, sl.step):0;
       const enterClick=unlocked
-        ? ("switchMine("+m.id+");UIS.open(\"mines\");")
-        : ("showToast(\"⛏\",\"Closed\",\"\",\"Reach this Hall\",\"now "+(cur+1)+"/5 in round\")");
+        ? ("if(switchMine("+m.id+"))UIS.close();")
+        : ("showToast('⛏','Closed','','Reach this Hall','now "+(cur+1)+"/5 in round')");
       const raidClick=unlocked
         ? ("startMineRaid("+m.id+")")
-        : ("showToast(\"⛏\",\"Closed\",\"\",\"Reach this Hall\",\"now "+(cur+1)+"/5 in round\")");
+        : ("showToast('⛏','Closed','','Reach this Hall','now "+(cur+1)+"/5 in round')");
       const badge=hereNow
         ? '<span class="uiTag on">here</span>'
         : (unlocked?'<span class="uiTag go">enter</span>':'<span class="uiTag">🔒</span>');
@@ -580,7 +598,7 @@ const UIS={
   renderPvp(){
     pvpDayReset(); if(!pvpSlate) pvpRollSlate();
     const li=pvpLeagueIdx(), me=powerScore();
-    const left=Math.max(0,BALANCE.pvpDayLimit-(S.pvpFights||0));
+    const left=pvpFightsLeft();
     const nextLi=Math.min(BALANCE.pvp.names.length-1,li+1);
     const tr=BALANCE.pvp.thresholds||[0];
     const curReq=tr[li]||0, nextReq=tr[nextLi]||tr[li]||100;
@@ -589,8 +607,8 @@ const UIS={
     const nextGold=typeof pvpWinGold==="function"?pvpWinGold(nextLi):(BALANCE.pvp.rewards[nextLi]||0)*100;
     const atMax=li>=BALANCE.pvp.names.length-1;
     const leagueSub=atMax
-      ? ("max · win +" + fmt(winGold) + " 🪙")
-      : ("win +" + fmt(winGold) + " 🪙 · in " + BALANCE.pvp.names[nextLi] + " already +" + fmt(nextGold) + " 🪙");
+      ? ("max · base win +" + fmt(winGold) + " 🪙 · stronger rival pays more")
+      : ("base win +" + fmt(winGold) + " 🪙 · in " + BALANCE.pvp.names[nextLi] + " +" + fmt(nextGold) + " 🪙 · stronger rival pays more");
     this.$("uiTitle").textContent="PvP · Arena";
     this.$("uiHeadAct").innerHTML='<span class="uiPill">🏆 '+fmt(S.trophies||0)+'</span>';
     this.$("uiTabs").innerHTML="";
@@ -600,7 +618,8 @@ const UIS={
       const chance=typeof pvpWinChance==="function"?pvpWinChance(me,o.power):50;
       return '<div class="uiOpp '+(fav?"fav":"")+'"><div><b>'+(o.ic||"🤖")+' '+o.name+'</b>'
         +'<div class="uiSub">'+esc(o.tag||"AI")+' · strength '+fmt(o.power)+' · chance ~'+chance+'%</div>'
-        +'<div class="uiSub">score '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div></div>'
+        +'<div class="uiSub">score '+rec.w+':'+rec.l+(o.fluff?(" · "+esc(o.fluff)):"")+'</div>'
+        +(()=>{ const p=pvpWinReward(o, me); return '<div class="uiSub" style="color:var(--gold)">win +'+fmt(p.gold)+' 🪙 · +'+fmt(p.gems)+' 💎</div>'; })()+'</div>'
         +'<button class="btn btn-soft" onclick="pvpFight('+i+')" '+(left<1?"disabled":"")+'>⚔ Fight</button></div>';
     }).join("");
     this.$("uiBody").innerHTML=
@@ -611,10 +630,16 @@ const UIS={
         +'<div class="uiSub" style="margin-top:4px">'+(atMax
           ? ("top of the arena · "+fmt(S.trophies||0)+" 🏆")
           : ("up to "+BALANCE.pvp.names[nextLi]+": "+fmt(Math.max(0,nextReq-(S.trophies||0)))+" 🏆"))+'</div>'
-        +'<div class="uiSub" style="margin-top:4px">attempts '+left+"/"+BALANCE.pvpDayLimit
+        +'<div class="uiSub" style="margin-top:4px">attempts '+left+"/"+pvpDayCap()
           +" · your power "+fmt(me)+"</div>")
       +'<div class="uiSec">Choose an opponent</div>'
-      +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">No fights left today. Come back tomorrow.</div>')
+      +(left>0?opps:'<div class="uiEmpty" style="color:#e8a24a">'+(pvpBuyCost("gold")
+        ?"No fights left — buy "+BALANCE.pvpBuy.fights+" more:"
+        :"No fights left today. Come back tomorrow.")+'</div>')
+      +(pvpBuyCost("gold")?('<div class="uiRow" style="display:flex;gap:6px;margin-top:6px">'
+        +'<button class="btn btn-soft" style="flex:1" onclick="pvpBuyFights(\'gold\')"'+((S.gold||0)<pvpBuyCost("gold")?" disabled":"")+'>⚔ +'+BALANCE.pvpBuy.fights+' · '+fmt(pvpBuyCost("gold"))+' 🪙</button>'
+        +'<button class="btn btn-hard" style="flex:1" onclick="pvpBuyFights(\'gems\')"'+((S.gems||0)<pvpBuyCost("gems")?" disabled":"")+'>⚔ +'+BALANCE.pvpBuy.fights+' · '+fmt(pvpBuyCost("gems"))+' 💎</button>'
+        +'</div><div class="uiSub" style="text-align:center">extra packs today '+(S.pvpBought|0)+'/'+BALANCE.pvpBuy.maxPacks+'</div>'):"")
       +(left>0?'<button class="btn btn-wide" onclick="pvpRerollSlate();UIS.render(\'pvp\')">Refresh lineup (free)</button>'
         +(typeof adSlotOk==="function"&&adSlotOk("pvp_reroll")
           ?'<button class="btn btn-hard btn-wide" style="margin-top:6px" onclick="pvpRerollAd();UIS.render(\'pvp\')">📺 New Opponents · '

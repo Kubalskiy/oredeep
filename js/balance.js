@@ -178,9 +178,21 @@ const BALANCE = {
     costBase:30, costPerLv:15, timerSec:240, skipGems:25,
     maxLv:50
   },
+  /* Дыхание дракона: пауза между залпами (сек); залп добивает жилу целиком. В PvP дракон бьёт соперника
+     раз в pvpEveryMs, урон = доля его максимального HP. */
+  dragonBreath:{ gapSec:[7,16], sleepRetrySec:3, instakill:true, pvpEveryMs:2400, pvpHpFrac:0.25 },
+  /* Рост со сложностью (CALIB). depth = доля пройденного прогона 0..1 (stageIdx / run.len).
+     petDepthGain: бонус дракона ×(1+gain·depth). mineRaid.depthGain: награда штольни ×(1+gain·depth).
+     pvp.leagueStrength: соперник сильнее на +x за каждую лигу; pvp.rivalPay: награда × (сила соперника / твоя), в рамках [lo,hi];
+     pvp.winGems: самоцветы за победу = winGems·(лига+1)·множитель соперника. */
+  petDepthGain:1,
   pvpDayLimit:10, pvpCandidates:5,
+  /* Доп. бои сверх дневного лимита: пак = fights боёв; цена растёт с каждым паком за день.
+     Золото — в выигрышах текущей лиги (goldWins + goldStep·n), самоцветы — gems + gemStep·n. */
+  pvpBuy:{ fights:5, maxPacks:3, goldWins:2, goldStep:1, gems:40, gemStep:20 },
   pvp:{ raceSec:180,
     brawl:{ hitMs:380, hpBase:100, hpScale:0.32, dmgScale:0.0625, maxRounds:40 },
+    leagueStrength:0.06, rivalPay:[0.5,2], winGems:3,
     thresholds:[100,150,200,250,300,350,400,450,500,1000],
         rewards:[0,200,500,1000,2000,3500,5000,7500,10000,12500],
         names:["ROOKIE","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","CHAMP I","CHAMP II","CHAMP III","DEEP LORD"] },
@@ -259,6 +271,7 @@ const BALANCE = {
 
   mineRaid:{
     hpMul:5,
+    depthGain:3,
     timerUnitSec:1800,
     fib:[1,1,2,3,5,8,13],
     raids:[

@@ -795,7 +795,7 @@ function setDone(k){ return Object.keys(S.col[k]||{}).length===8; }
 
 let S=null;
 function freshState(){
-  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:(BALANCE.bags&&BALANCE.bags.starter)|0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, eventRun:null, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], traitPicks:0, perkBought:0, traitBought:0, wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
+  return { v:4, gymXP:0, stickers:{}, petLegSeen:0, pvpDay:'', pvpFights:0, pvpBought:0, pvpBotRec:{}, shopFree:{day:'', taken:{}}, runDone:false, _wallShown:false, science:null, introSeen:true, fair:null, playerName:"", bestDepth:0, prestigeLv:0, prestigeRuns:0, echo:0, bags:(BALANCE.bags&&BALANCE.bags.starter)|0, autoRoll:false, autoRollTier:4, petBox:{}, geoBox:{}, skillCards:{}, chestKeys:1, pickLog:{}, beard:0, beardXP:0, cartFill:0, cartRuns:0, shards:0, boxes:[], loadoutTier:0, frags:{}, sets:{}, keyAt:Date.now(), gems:50, trophies:0, keys:2, eventRun:null, skills:{}, special:{s:5,p:5,e:5,c:5,i:5,a:5,l:5}, specialPool:5, skillPts:0, minerLv:0, veinsBroken:0, skillTags:[], trained:{}, perks:[], perkPicks:0, traits:[], traitPicks:0, perkBought:0, traitBought:0, wheelSpins:0, pvpWins:0, protein:200, wkPts:0, eggs:0, combs:0, pet:null, petRolls:0, workouts:{}, wkActive:null, bagActive:null, daily:{day:'',prog:{},tok:0,claimed:[]}, noAds:false, gold:0, stageIdx:1, mine:0, stage:1, bag:1, speed:1, look:Math.floor(Math.random()*6), lastSeen:0, ftue:{u:0,b:0,c:0,t:0,m:0,g:0}, featToast:{}, streak:{n:0,last:""}, best:null,
     growth:{ installId:"", installAt:0, code:"", referredBy:"", invites:0, milestones:[], coopUntil:0,
       waitlist:{joined:false,claimed:false,at:0}, starterBought:false, organic:true,
       ads:{day:"",count:0}, adViewsLifetime:0, revenueCents:0 },
@@ -2314,7 +2314,7 @@ function renderGear(){
       if(pet&&PET_TYPES[pet.t]){
         const t=PET_TYPES[pet.t], r=pet.r|0;
         sv='<div><span class="r'+r+'">'+(PET_RAR[r]||RAR_SHORT[r]||"")+'</span></div>'
-          +'<div class="svv">+'+t.pct[r]+'% '+t.stat.toUpperCase()+'</div>';
+          +'<div class="svv">+'+petPctOf(pet.t,r)+'% '+t.stat.toUpperCase()+'</div>';
       }
       const icon=pet?petIcon(pet.t):(sl.ic||"❔");
       d.innerHTML='<span class="up">↑</span><div class="ic">'+icon+'</div><div class="sn">'
@@ -2917,8 +2917,17 @@ const DRAGON_BREATH=[
   {kind:"acid",    rock:"brAcid",  n:16, word:"HSSS!"},
   {kind:"thunder", rock:"brShock", n:0,  word:"KRAK!"}
 ];
-const BREATH_GAP=[7,16];
+const BREATH_GAP=BALANCE.dragonBreath.gapSec;
 let breathNext=BREATH_GAP[0];
+/** Залп дракона добивает текущую жилу; работает и без визуальных эффектов. */
+function dragonBreathStrike(target){
+  if(!BALANCE.dragonBreath.instakill||dead||!rock||!(S.rockHP>0)) return false;
+  if(target&&target!==rock) return false;
+  S.rockHP=0;
+  updatePeek();
+  breakVein();
+  return true;
+}
 function dragonMouth(){
   const sc=$("scene"), pb=$("petBox");
   if(!sc||!pb||!sc.getBoundingClientRect||!pb.getBoundingClientRect) return null;
@@ -2934,14 +2943,15 @@ function boltPath(dx, dy, lift){
   return pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
 }
 function dragonBreath(){
-  const pet=activeCatPet(); if(!pet||!juiceOn()) return false;
+  const pet=activeCatPet(); if(!pet) return false;
   const B=DRAGON_BREATH[(pet.t|0)%DRAGON_BREATH.length];
-  const m=dragonMouth(), p=rockPoint(); if(!m||!p) return false;
+  const m=juiceOn()?dragonMouth():null, p=m?rockPoint():null;
+  if(!m||!p){ dragonBreathStrike(); return true; }
   const dx=p.x-m.x, dy=p.y-m.y, lift=Math.min(46, Math.abs(dx)*0.22);
-  const pb=$("petBox"), rock=$("rock"), sc=$("scene");
+  const pb=$("petBox"), rockEl=$("rock"), sc=$("scene");
   pvpRestartClass(pb, "breathing");
   setTimeout(()=>{ try{ pb.classList.remove("breathing"); }catch(e){} }, 1000);
-  const hitAt=B.kind==="thunder"?120:420;
+  const hitAt=B.kind==="thunder"?120:420, target=rock;
   if(B.kind==="thunder"){
     for(let k=0;k<3;k++) setTimeout(()=>{
       const e=sceneFx("brBolt", m.x, m.y, null, null, 260); if(!e) return;
@@ -2958,12 +2968,13 @@ function dragonBreath(){
     sceneFx("brMouth "+B.kind, m.x, m.y, null, null, 800);
   }
   setTimeout(()=>{
-    pvpRestartClass(rock, B.rock);
-    setTimeout(()=>{ try{ rock.classList.remove(B.rock); }catch(e){} }, 900);
+    pvpRestartClass(rockEl, B.rock);
+    setTimeout(()=>{ try{ rockEl.classList.remove(B.rock); }catch(e){} }, 900);
     sceneFx("brHit "+B.kind, p.x, p.y, null, null, 600);
     juiceBurst(p, B.kind==="thunder"?6:5, "brSpk "+B.kind, 48, B.kind==="acid"?-0.6:1);
     sceneFx("brWord "+B.kind, p.x, p.y-34, null, B.word, 900);
     if(B.kind==="thunder"){ pvpRestartClass(sc, "jshake"); sceneFx("brFlash", null, null, null, null, 260); }
+    dragonBreathStrike(target);
   }, hitAt);
   return true;
 }
@@ -2972,7 +2983,7 @@ function dragonBreathTick(dt){
   breathNext-=dt;
   if(breathNext>0) return;
   const pb=$("petBox"), asleep=!!(pb&&pb.classList&&pb.classList.contains("mood-sleep"));
-  breathNext=asleep?3:(BREATH_GAP[0]+Math.random()*(BREATH_GAP[1]-BREATH_GAP[0]));
+  breathNext=asleep?BALANCE.dragonBreath.sleepRetrySec:(BREATH_GAP[0]+Math.random()*(BREATH_GAP[1]-BREATH_GAP[0]));
   if(!asleep && !(typeof document!=="undefined"&&document.hidden)) dragonBreath();
 }
 let toastT=null;
@@ -3148,7 +3159,8 @@ function mineRaidRewardAmt(def, step){
   const lv=mineRaidLevel();
   const base=Math.max(1, Math.round((def.base||1)*Math.pow(def.g||1.1, lv-1)));
   const mul=mineRaidFibAt(step==null?mineRaidSlot(def.id|0).step:step);
-  return Math.max(1, Math.round(base*mul));
+  const depth=1+((BALANCE.mineRaid&&BALANCE.mineRaid.depthGain)||0)*runDepthFrac();
+  return Math.max(1, Math.round(base*mul*depth));
 }
 function mineRaidAdvance(mineId){
   mineRaidReset();
@@ -4959,6 +4971,15 @@ function pvpWinGold(li){
   li=li==null?pvpLeagueIdx():li;
   return (BALANCE.pvp.rewards[li]||0)*100;
 }
+/** Награда за победу: золото лиги и самоцветы × (сила соперника / твоя сила), в пределах BALANCE.pvp.rivalPay. */
+function pvpRivalPayMul(oppP, meP){
+  const R=BALANCE.pvp.rivalPay||[1,1];
+  return Math.max(R[0], Math.min(R[1], (oppP||1)/Math.max(1, meP==null?powerScore():meP)));
+}
+function pvpWinReward(cand, meP){
+  const li=pvpLeagueIdx(), k=pvpRivalPayMul(cand&&cand.power, meP);
+  return { gold:Math.round(pvpWinGold(li)*k), gems:Math.max(1, Math.round((BALANCE.pvp.winGems||0)*(li+1)*k)), mul:k };
+}
 function pvpLeaderboard(){
   const meName=playerName();
   const seeds=(typeof UI_PVP_BOARD!=="undefined"?UI_PVP_BOARD:[]).map(e=>({
@@ -4991,7 +5012,31 @@ function openPvpBoard(){
 }
 let pvpSlate=null;
 function pvpDayReset(){ const t=todayStr();
-  if(S.pvpDay!==t){ S.pvpDay=t; S.pvpFights=0; pvpSlate=null; } }
+  if(S.pvpDay!==t){ S.pvpDay=t; S.pvpFights=0; S.pvpBought=0; pvpSlate=null; } }
+function pvpDayCap(){ return BALANCE.pvpDayLimit + (S.pvpBought|0)*BALANCE.pvpBuy.fights; }
+function pvpFightsLeft(){ pvpDayReset(); return Math.max(0, pvpDayCap()-(S.pvpFights||0)); }
+function pvpBuyCost(kind){
+  const B=BALANCE.pvpBuy, n=S.pvpBought|0;
+  if(n>=B.maxPacks) return 0;
+  return kind==="gems" ? B.gems+B.gemStep*n : Math.max(pvpWinGold(), pvpWinGold(1))*(B.goldWins+B.goldStep*n);
+}
+function pvpBuyFights(kind){
+  pvpDayReset();
+  const B=BALANCE.pvpBuy, cost=pvpBuyCost(kind);
+  if(!cost){ showToast("⚔","Arena closed","","All extra fights bought today","Come back tomorrow"); return false; }
+  const key=kind==="gems"?"gems":"gold";
+  if((S[key]||0)<cost){
+    showToast(kind==="gems"?"💎":"🪙","Not enough","","Need "+fmt(cost)+(kind==="gems"?" 💎":" 🪙"));
+    return false;
+  }
+  S[key]-=cost;
+  S.pvpBought=(S.pvpBought|0)+1;
+  showToast("⚔","+"+B.fights+" fights","","Arena reopened","pack "+S.pvpBought+"/"+B.maxPacks);
+  Platform.logEvent("pvp_buy",{kind,cost,pack:S.pvpBought});
+  save(); render();
+  if(typeof UIS!=="undefined" && UIS.id==="pvp") UIS.render("pvp");
+  return true;
+}
 function pvpBotRec(id){
   ensureBags(S);
   if(!S.pvpBotRec[id]) S.pvpBotRec[id]={w:0,l:0};
@@ -5006,7 +5051,8 @@ function pvpDayForm(botId){
 }
 function pvpBotPower(bot, me){
   const form=pvpDayForm(bot.id)*(0.985+Math.random()*0.03);
-  return Math.max(1, Math.round((me||1)*(bot.mul||1)*form));
+  const league=1+(BALANCE.pvp.leagueStrength||0)*pvpLeagueIdx();
+  return Math.max(1, Math.round((me||1)*(bot.mul||1)*form*league));
 }
 function pvpRollSlate(withEasy){
   const me=powerScore();
@@ -5036,7 +5082,7 @@ function pvpOpponentDwarfIdx(botId){
   for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); }
   return (h>>>0)%MINER_BASES.length;
 }
-function pvpBrawlSim(meP, oppP, grit){
+function pvpBrawlSim(meP, oppP, grit, pet){
   const cfg=BALANCE.pvp.brawl||{};
   const hpBase=cfg.hpBase||100, hpScale=cfg.hpScale||0.32, dmgScale=cfg.dmgScale||0.0625;
   const maxR=cfg.maxRounds||40;
@@ -5047,6 +5093,9 @@ function pvpBrawlSim(meP, oppP, grit){
   const oppDmg=Math.max(4, (oppP||1)*dmgScale);
   const g=Math.max(0,Math.min(1, grit==null?0.4:grit));
   const spread=0.22*(1-g*0.55);
+  const DB=BALANCE.dragonBreath;
+  const petEvery=pet?Math.max(2, Math.round(DB.pvpEveryMs/Math.max(1,cfg.hitMs||380))):0;
+  const petDmg=pet?Math.max(1, Math.round(oppMax*DB.pvpHpFrac)):0;
   const hits=[];
   for(let turn=0; me>0 && opp>0 && turn<maxR; turn++){
     const meHit=turn%2===0;
@@ -5054,9 +5103,12 @@ function pvpBrawlSim(meP, oppP, grit){
     const d=Math.max(1, Math.round((meHit?meDmg:oppDmg)*varMul));
     if(meHit){ opp=Math.max(0, opp-d); hits.push({who:"me", dmg:d, me, opp}); }
     else { me=Math.max(0, me-d); hits.push({who:"opp", dmg:d, me, opp}); }
+    if(pet && opp>0 && me>0 && (turn+1)%petEvery===0){
+      opp=Math.max(0, opp-petDmg); hits.push({who:"pet", dmg:petDmg, me, opp, t:pet.t|0});
+    }
   }
   const win=me>0 && (opp<=0 || me>=opp);
-  return { win, meMax, oppMax, meLeft:Math.max(0,me), oppLeft:Math.max(0,opp), hits, rounds:hits.length };
+  return { win, meP, oppP, meMax, oppMax, meLeft:Math.max(0,me), oppLeft:Math.max(0,opp), hits, rounds:hits.length };
 }
 let _pvpAnimTok=0;
 function pvpCloseBrawl(){ _pvpAnimTok++; const ov=$("pvpOverlay"); if(ov) ov.style.display="none"; }
@@ -5109,6 +5161,21 @@ function pvpImpactFx(attSide, dmg, heavy, last){
     (heavy?"CRIT ":"")+"-"+fmt(dmg), 1000);
   if(num&&heavy) num.setAttribute("data-crit","1");
 }
+function pvpPetBreath(h, last){
+  const st=$("pvpBrawlStage"), pet=$("pvpPet"), tgt=$("pvpOppFighter");
+  if(!st||!pet||!tgt||!st.getBoundingClientRect) return;
+  const B=DRAGON_BREATH[(h.t|0)%DRAGON_BREATH.length];
+  const sr=st.getBoundingClientRect(), pr=pet.getBoundingClientRect(), tr=tgt.getBoundingClientRect();
+  const mx=pr.left-sr.left+pr.width*0.92, my=pr.top-sr.top+pr.height*0.3;
+  const tx=tr.left-sr.left+tr.width*0.4, ty=tr.top-sr.top+tr.height*0.45;
+  const dx=tx-mx, dy=ty-my;
+  pvpRestartClass(pet, "breathing");
+  for(let k=0;k<12;k++) setTimeout(()=>{
+    const jx=Math.random()*12-6, jy=Math.random()*12-6;
+    pvpFxSpawn("pbPuff "+B.kind, mx, my, {"--dx":(dx+jx).toFixed(1)+"px","--dy":(dy+jy).toFixed(1)+"px"}, null, 520);
+  }, k*24);
+  setTimeout(()=>pvpFxSpawn("pbWord "+B.kind, tx, ty-40, null, B.word, 900), 300);
+}
 function pvpShowBrawlKo(winSide){
   const win=$(winSide==="me"?"pvpMeFighter":"pvpOppFighter");
   const lose=$(winSide==="me"?"pvpOppFighter":"pvpMeFighter");
@@ -5133,6 +5200,8 @@ function pvpSetupBrawlUi(cand, brawl){
   const mp=$("pvpMePick"), op=$("pvpOppPick");
   if(mp) mp.src=pickSrc;
   if(op) op.src=oppPick;
+  { const pe=$("pvpPet"), pet=activeCatPet(), P=pet&&PET_TYPES[pet.t|0];
+    if(pe){ pe.style.display=P?"":"none"; if(P&&P.art) pe.src=P.art; pe.classList.remove("breathing"); } }
   pvpSetBrawlHp("pvpMeHp", brawl.meMax, brawl.meMax);
   pvpSetBrawlHp("pvpOppHp", brawl.oppMax, brawl.oppMax);
   const st=$("pvpBrawlStage"), res=$("pvpBrawlResult");
@@ -5174,7 +5243,7 @@ function pvpPlayBrawlAnim(cand, brawl, done){
   ov.style.display="flex";
   const hitMs=(BALANCE.pvp.brawl&&BALANCE.pvp.brawl.hitMs)||380;
   const hits=brawl.hits||[];
-  const avg={me:0,opp:0}, cnt={me:0,opp:0};
+  const avg={me:0,opp:0,pet:0}, cnt={me:0,opp:0,pet:0};
   hits.forEach(h=>{ avg[h.who]+=h.dmg; cnt[h.who]++; });
   for(const k in avg) avg[k]=cnt[k]?avg[k]/cnt[k]:0;
   let i=0;
@@ -5186,8 +5255,18 @@ function pvpPlayBrawlAnim(cand, brawl, done){
       return;
     }
     const h=hits[i++];
-    const meAtk=h.who==="me";
     const last=i>=hits.length;
+    if(h.who==="pet"){
+      pvpPetBreath(h, last);
+      setTimeout(()=>{
+        if(tok!==_pvpAnimTok) return;
+        pvpSetBrawlHp("pvpOppHp", h.opp, brawl.oppMax);
+        pvpImpactFx("me", h.dmg, true, last);
+      }, 360);
+      setTimeout(step, last?900:hitMs+380);
+      return;
+    }
+    const meAtk=h.who==="me";
     const heavy=h.dmg>=avg[h.who]*1.12;
     const fighter=$(meAtk?"pvpMeFighter":"pvpOppFighter");
     const swingMs=last?620:340;
@@ -5211,11 +5290,11 @@ function pvpFightApply(cand, brawl){
   if(cand.id){ const r=pvpBotRec(cand.id); if(win) r.w++; else r.l++; }
   if(win){
     S.pvpWins=(S.pvpWins||0)+1; S.trophies=(S.trophies||0)+30; dailyProgress("pvp",1); addGymXP(GYM_XP.perPvpWin);
-    const li=pvpLeagueIdx(); S.gold+=pvpWinGold(li);
+    const pay=pvpWinReward(cand, brawl.meP); S.gold+=pay.gold; S.gems=(S.gems||0)+pay.gems;
     try{ trackPlayEvent("pvp_fights",1); unlockPlayAchievement("pvp_win"); }catch(e){}
     showToast("⚔","VICTORY!","",
       (cand.ic||"")+" "+(cand.name||"rival"),
-      "+30 🏆 · HP "+brawl.meLeft+" vs "+brawl.oppLeft+" · "+brawl.rounds+" hits", true); }
+      "+30 🏆 · +"+fmt(pay.gold)+" 🪙 · +"+fmt(pay.gems)+" 💎 · "+brawl.rounds+" hits", true); }
   else { S.trophies=Math.max(0,(S.trophies||0)-15);
     showToast("⚔","DEFEAT","",
       (cand.ic||"")+" "+(cand.name||"rival"),
@@ -5240,7 +5319,7 @@ function openPvp(){
   pvpDayReset();
   if(!pvpSlate) pvpRollSlate();
   const li=pvpLeagueIdx(), me=powerScore();
-  const left=Math.max(0, BALANCE.pvpDayLimit-(S.pvpFights||0));
+  const left=pvpFightsLeft();
   const cards = left>0 ? pvpSlate.map((o,i)=>{
     const fav=me>=o.power;
     const rec=pvpBotRec(o.id);
@@ -5251,7 +5330,7 @@ function openPvp(){
       <button class="btn btn-soft" onclick="pvpFight(${i})">⚔ Fight.</button></div>`;
   }).join("") : '<div class="sub" style="color:#e8a24a">No fights left today. Come back tomorrow.</div>';
   metaOpen("⚔ PvP · quick fight",
-    "League "+BALANCE.pvp.names[li]+" · strength "+fmt(me)+" · left: "+left+"/"+BALANCE.pvpDayLimit,
+    "League "+BALANCE.pvp.names[li]+" · strength "+fmt(me)+" · left: "+left+"/"+pvpDayCap(),
     `<div class="metarow"><span>Cups: ${fmt(S.trophies||0)} · win: ${S.pvpWins||0}</span></div>
      <div class="sub" style="margin:6px 0">Two gnomes beating. pickaxeMee. — If you stand, you win.</div>
      ${cards}
@@ -5290,12 +5369,12 @@ function startAutoTurboAd(){
 }
 function pvpFight(idx){
   pvpDayReset();
-  if((S.pvpFights||0)>=BALANCE.pvpDayLimit){ showToast("⚔","Fight limit","","Come back tomorrow"); return; }
+  if(pvpFightsLeft()<1){ showToast("⚔","Fight limit","","Buy more fights for 🪙 or 💎","or come back tomorrow"); return; }
   if(!pvpSlate) pvpRollSlate();
   const cand=pvpSlate[idx]||pvpSlate[0];
   const me=powerScore(), opp=cand.power;
   S.pvpFights=(S.pvpFights||0)+1;
-  const brawl=pvpBrawlSim(me, opp, cand.grit);
+  const brawl=pvpBrawlSim(me, opp, cand.grit, activeCatPet());
   pvpPlayBrawlAnim(cand, brawl, ()=>pvpFightApply(cand, brawl));
 }
 const EVENT_LIST=[
@@ -5513,8 +5592,11 @@ function petDot(){
   return { kind:t.dot, name:DOT_NAMES[t.dot],
     dps:stat("atk")*D.dpsFrac[r], defCut:D.defCut[r], spdCut:D.spdCut[r] };
 }
+function runDepthFrac(){ return Math.max(0, Math.min(1, ((S.stageIdx||1)-1)/Math.max(1, BALANCE.run.len-1))); }
+function petDepthMul(){ return 1+BALANCE.petDepthGain*runDepthFrac(); }
+function petPctOf(t, r){ const P=PET_TYPES[t|0]; return P?Math.round(P.pct[r|0]*petDepthMul()):0; }
 function petBonus(id){ if(!S.pet||PET_TYPES[S.pet.t].stat!==id) return 0;
-  return PET_TYPES[S.pet.t].pct[S.pet.r]; }
+  return petPctOf(S.pet.t, S.pet.r); }
 function openGeoGuild(){
   if(!S.geo){ metaOpen("Elders’ Artel","Hire someone first.",'<div class="sub">Empty.</div>'); return; }
   const g=GEO_TYPES[S.geo.t], mats=geoMaterials();
@@ -5546,7 +5628,7 @@ function openGeoGuild(){
 function openPets(){
   const cur=S.pet?(function(){ const d=petDot();
     return `<div class="metarow"><span>In the case: <b class="r${S.pet.r}">${PET_TYPES[S.pet.t].n}</b> (${PET_RAR[S.pet.r]})
-      <br><span class="sub">+${PET_TYPES[S.pet.t].pct[S.pet.r]}% ${PET_TYPES[S.pet.t].stat.toUpperCase()} · ${d.name} Under rock</span></span></div>`;
+      <br><span class="sub">+${petPctOf(S.pet.t,S.pet.r)}% ${PET_TYPES[S.pet.t].stat.toUpperCase()} · ${d.name} Under rock</span></span></div>`;
   })():"";
   const keys=Object.keys(S.petBox||{}).filter(k=>S.petBox[k]>0)
     .sort((a,b)=>Number(b.split("_")[1])-Number(a.split("_")[1]));
@@ -5591,7 +5673,15 @@ function mergePet(t,r){
   return true;
 }
 
+function petBestOf(t){
+  let r=-1;
+  for(const k in S.petBox||{}){ if(S.petBox[k]<=0) continue;
+    const [kt,kr]=k.split("_").map(Number); if(kt===t&&kr>r) r=kr; }
+  return r;
+}
 function equipBestPet(){
+  const pick=S.petPick;
+  if(pick!=null && PET_TYPES[pick] && petBestOf(pick)>=0){ S.pet={t:pick, r:petBestOf(pick)}; return S.pet; }
   let best=null;
   for(const k in S.petBox){ if(S.petBox[k]<=0) continue;
     const [t,r]=k.split("_").map(Number);
@@ -5599,6 +5689,18 @@ function equipBestPet(){
   }
   if(best) S.pet=best;
   return best;
+}
+/** Клетка: выбрать дракона в бой (лучшая редкость этого семейства); выбор переживает новые яйца и мерджи. */
+function selectPet(t){
+  t=t|0;
+  const r=petBestOf(t);
+  if(!PET_TYPES[t]||r<0){ showToast("❔","Not tamed yet","","Hatch eggs to find "+(PET_TYPES[t]?PET_TYPES[t].n:"this dragon")); return false; }
+  S.petPick=t; S.pet={t, r};
+  showToast(petIcon(t),"In battle","",PET_TYPES[t].n+" · "+PET_RAR[r],"+"+petPctOf(t,r)+"% "+statLbl(PET_TYPES[t].stat));
+  Platform.logEvent("pet_select",{t,r});
+  save(); render(); renderGear();
+  if(typeof UIS!=="undefined"&&UIS.id==="pets") UIS.render("pets");
+  return true;
 }
 
 function geoPct(g){
@@ -5835,29 +5937,29 @@ function openNextBagDecide(opts){
     if(!opts.quiet && !opts.chain) showToast("🎒","No bags","","Bags drop from veins");
     return false;
   }
-  let opened=0;
-  while((S.bags||0)>=1){
-    S.bags--; dailyProgress("bag",1); opened++;
-    if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
-    const it=makeItem(rollGearSlot().id);
-    if(bagItemNeedsDecide(it)){
-      chestPending=it;
-      Platform.logEvent("chest_open",{r:it.r,quick:opts.quick?1:0,chain:!!opts.chain});
-      save(); render();
-      if(opts.inChest){ renderChestCard(); }
-      else showDropDecide();
-      if($("chestModal")&&$("chestModal").style.display==="flex") renderChestCard();
-      return true;
-    }
-    dropGearItem(it, true);
-  }
-  if(opened){
-    flushSales();
-    Platform.logEvent("chest_open_batch",{n:opened,auto:1});
+  S.bags--; dailyProgress("bag",1);
+  S.bagsOpened=(S.bagsOpened||0)+1;
+  try{ trackPlayEvent("bags_opened",1); }catch(e){}
+  if(S.ftue&&!S.ftue.c){ S.ftue.c=1; const lc=$("lootChest"); if(lc&&lc.classList) lc.classList.remove("pulse"); }
+  const it=makeItem(rollGearSlot().id);
+  const inChest=opts.inChest || ($("chestModal")&&$("chestModal").style.display==="flex");
+  if(bagItemNeedsDecide(it)){
+    chestPending=it;
+    Platform.logEvent("chest_open",{r:it.r,quick:opts.quick?1:0});
     save(); render();
-    if(opts.inChest || ($("chestModal")&&$("chestModal").style.display==="flex")) renderChestCard();
+    if(inChest) renderChestCard();
+    else showDropDecide();
+    return true;
   }
-  return opened>0;
+  const g0=S.gold||0;
+  dropGearItem(it, true);
+  flushSales();
+  if(!opts.quiet) showToast("🎒","Bag opened","",RAR_NAMES[it.r|0]+" · weaker than worn",
+    "sold +"+fmt((S.gold||0)-g0)+" 🪙 · bags left "+(S.bags||0));
+  Platform.logEvent("chest_open",{r:it.r,quick:opts.quick?1:0,sold:1});
+  save(); render();
+  if(inChest) renderChestCard();
+  return true;
 }
 function quickOpenBag(){
   return openNextBagDecide({quick:true});
@@ -5890,9 +5992,6 @@ function finishChestDecide(){
   save(); render();
   const inChest=$("chestModal")&&$("chestModal").style.display==="flex";
   if(inChest) renderChestCard();
-  if((S.bags||0)>0 && !S.autoRoll){
-    openNextBagDecide({quiet:true, chain:true, quick:!inChest, inChest:!!inChest});
-  }
 }
 function equipChestItem(){
   if(!chestPending) return;
@@ -5980,7 +6079,7 @@ function rollPet(){
   const wasBetter=!S.pet||r>S.pet.r||(r===S.pet.r&&PET_TYPES[t].pct[r]>PET_TYPES[S.pet.t].pct[S.pet.r]);
   equipBestPet();
   showToast(petIcon(t),PET_RAR[r],"r"+r,PET_TYPES[t].n,
-    wasBetter?("tamed! +"+PET_TYPES[t].pct[r]+"% "+PET_TYPES[t].stat.toUpperCase())
+    wasBetter?("tamed! +"+petPctOf(t,r)+"% "+PET_TYPES[t].stat.toUpperCase())
              :("added to collection · copies: "+boxCountAt(S.petBox,t,r)));
   Platform.logEvent("pet_roll",{r}); sfxGear(); save(); render(); renderGear(); openPets();
   try{ unlockPlayAchievement("first_pet"); }catch(e){}

@@ -632,6 +632,15 @@ button:disabled{opacity:.45;cursor:default;}
 .uiSlotIc{font-size:22px;line-height:1;}
 .uiSlotNm{font-size:12px;text-align:center;line-height:1.35;font-family:var(--font-body);font-weight:600;}
 .uiSlotSub{font-size:11px;color:var(--textMuted);text-align:center;line-height:1.3;}
+.uiSlot.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset, 0 0 12px #f0c84a55;}
+.uiPetStats{display:grid;grid-template-columns:64px 1fr;gap:4px 10px;align-items:center;margin:8px 0;padding:10px 12px;
+  background:var(--bgPanel);border:2px solid var(--border);border-radius:var(--r-sm);}
+.uiPetStatsArt{grid-row:span 2;display:flex;align-items:center;justify-content:center;}
+.uiPetStatsArt .uiPetArt{width:60px;height:auto;}
+.uiPetStatsHead{display:flex;flex-direction:column;gap:2px;}
+.uiPetStat{grid-column:1 / -1;display:flex;justify-content:space-between;gap:10px;font-size:12px;border-top:1px solid #ffffff10;padding-top:4px;}
+.uiPetStat .k{color:var(--textMuted);}
+.uiPetStat b{text-align:right;font-weight:600;}
 .uiSlot:active{border-color:var(--gold);transform:scale(.98);}
 .uiSlot.lock{opacity:.45;cursor:default;}
 .uiSlot.lock:active{transform:none;border-color:var(--border);}
@@ -1588,6 +1597,21 @@ body > .modal{
   15%{transform:translate(-50%,-10px) scale(1.3);opacity:1}
   30%{transform:translate(-50%,-14px) scale(1)}
   75%{opacity:1}100%{transform:translate(-50%,-36px) scale(.95);opacity:0}}
+.pvpPet{position:absolute;left:1%;top:4px;width:64px;image-rendering:pixelated;z-index:3;pointer-events:none;
+  filter:drop-shadow(0 3px 4px #000a);animation:pvpPetHover 1.6s ease-in-out infinite;}
+.pvpPet.breathing{animation:pvpPetBreath .5s ease-out, pvpPetHover 1.6s ease-in-out .5s infinite;}
+@keyframes pvpPetHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pvpPetBreath{0%{transform:translate(0,0) scale(1)}35%{transform:translate(-6px,-4px) scale(1.04)}60%{transform:translate(8px,2px) scale(1.08)}100%{transform:translate(0,0) scale(1)}}
+.pvpFx.pbPuff{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;animation:pvpPbFly .5s ease-in forwards;}
+.pvpFx.pbPuff.fire{background:radial-gradient(circle,#fff6c0,#ffb340 45%,#ff5a1a00 72%);}
+.pvpFx.pbPuff.acid{background:radial-gradient(circle,#f4ffc0,#9be22a 45%,#3a9a1a00 72%);}
+.pvpFx.pbPuff.thunder{width:8px;height:8px;margin:-4px 0 0 -4px;background:radial-gradient(circle,#fff,#8ad8ff 50%,#3a7aff00 75%);}
+@keyframes pvpPbFly{0%{transform:translate(0,0) scale(.6);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(2.2);opacity:0}}
+.pvpFx.pbWord{font-family:var(--font-display);font-size:18px;white-space:nowrap;transform:translateX(-50%);text-shadow:0 2px 0 #000;
+  animation:pvpPbWord .9s ease-out forwards;}
+.pvpFx.pbWord.fire{color:#ffb340;} .pvpFx.pbWord.acid{color:#b6f040;} .pvpFx.pbWord.thunder{color:#9ad8ff;}
+@keyframes pvpPbWord{0%{opacity:0;margin-top:6px}20%{opacity:1}100%{opacity:0;margin-top:-18px}}
+@media (prefers-reduced-motion:reduce){.pvpPet,.pvpPet.breathing{animation:none}}
 .pvpFx.koTxt{font-family:var(--font-display);font-size:30px;color:#ffd84a;letter-spacing:2px;
   text-shadow:0 3px 0 #000,0 0 14px #e0503a;animation:pvpKoTxt 1.3s ease-out forwards;}
 @keyframes pvpKoTxt{0%{transform:translate(-50%,0) scale(2.4) rotate(-8deg);opacity:0}
@@ -2022,6 +2046,7 @@ window.addEventListener("unhandledrejection",function(ev){
       <div class="pvpFighter opp"><b id="pvpOppName">Opponent</b><div class="pvpHpTrack"><div class="pvpHpGhost" id="pvpOppHpGhost"></div><div class="pvpHpFill" id="pvpOppHp"></div></div></div>
     </div>
     <div class="pvpStage" id="pvpBrawlStage">
+      <img class="pvpPet" id="pvpPet" alt="" src="art/pet_dragon_gold.png?v=4" style="display:none">
       <div class="pvpDwarf me" id="pvpMeFighter">
         <div class="dw" id="pvpMeRig" data-t="0">
           <div class="dwGlow"></div>

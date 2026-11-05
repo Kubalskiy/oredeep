@@ -425,7 +425,7 @@ T("питомец приручён после роллов", !!S.pet && typeof S
     const ph=petEl?String(petEl.innerHTML||""):"";
     T("слот Питомца на главном показывает приручённого",
       !!petEl && /Golden Dragon/.test(ph) && /pet_dragon_gold\.png/.test(ph)
-      && ph.indexOf(String(PET_TYPES[0].pct[2]))>=0
+      && ph.indexOf(String(petPctOf(0,2)))>=0
       && !/<div class="sv">—<\/div>/.test(ph));
   } finally {
     if(_openPets) openPets=_openPets;
@@ -1299,8 +1299,21 @@ T("экран рисует 5 кнопок боя", (__ids.uiBody.innerHTML.match
   T("счёт против бота пишется", (S.pvpBotRec[bid].w+S.pvpBotRec[bid].l)===1); }
 S.pvpFights=BALANCE.pvpDayLimit;
 { const f0=S.pvpFights; pvpFight(0); T("на дневном лимите бой не идёт", S.pvpFights===f0); }
-openPvp(); T("на лимите экран сообщает про конец боёв", __ids.uiBody.innerHTML.includes("No fights left today"));
-S.pvpDay="вчера"; pvpDayReset(); T("новый день сбрасывает лимит", S.pvpFights===0);
+openPvp(); T("на лимите экран сообщает про конец боёв", __ids.uiBody.innerHTML.includes("No fights left"));
+{ S.pvpBought=0; S.gold=1e12; S.gems=0;
+  const c1=pvpBuyCost("gold"), g0=S.gold;
+  T("pvp: пак за золото даёт бои", pvpBuyFights("gold") && pvpFightsLeft()===BALANCE.pvpBuy.fights && S.gold===g0-c1);
+  T("pvp: цена пака растёт", pvpBuyCost("gold")>c1);
+  T("pvp: без самоцветов пак не покупается", !pvpBuyFights("gems") && S.pvpBought===1);
+  S.gems=1e6; while(pvpBuyCost("gems")) pvpBuyFights("gems");
+  T("pvp: паков не больше maxPacks", S.pvpBought===BALANCE.pvpBuy.maxPacks && !pvpBuyFights("gold"));
+  const f0=S.pvpFights; pvpFight(0); T("pvp: купленный бой тратится", S.pvpFights===f0+1);
+  UIS.open("pvp"); T("pvp: экран показывает лимит с паками", __ids.uiBody.innerHTML.includes("/"+pvpDayCap())); UIS.close(); }
+S.pvpDay="вчера"; pvpDayReset(); T("новый день сбрасывает лимит", S.pvpFights===0 && S.pvpBought===0);
+{ S.pvpFights=BALANCE.pvpDayLimit; S.gold=1e12; UIS.open("pvp");
+  T("pvp: на лимите экран предлагает купить бои", __ids.uiBody.innerHTML.includes("pvpBuyFights('gold')") && __ids.uiBody.innerHTML.includes("pvpBuyFights('gems')")); UIS.close(); S.pvpFights=0; }
+{ UIS.open("mines"); const h=__ids.uiBody.innerHTML;
+  T("mines: onclick карточки без двойных кавычек внутри", !/onclick="[^"]*\\"/.test(h) && !/UIS\.open\("mines"\)/.test(h)); UIS.close(); }
 T("победа в PvP двигает дейлик", (function(){ localStorage.removeItem("oredeep_v3"); load();
   S.lvls.atk=1e6; S.daily={day:todayStr(),prog:{},tok:0,claimed:[]}; openPvp();
   const p0=(S.daily.prog.pvp||0); pvpFight(0); return (S.daily.prog.pvp||0)>=p0; })());
@@ -1481,11 +1494,16 @@ T("шансы в две колонки", __ids.chestCard.innerHTML.indexOf("chCo
 S.bags=3; chestOpenOne();
 T("открытие сундука тратит сумку и готовит предмет", S.bags===2 && !!chestPending);
 { const g0=S.gold; sellChestItem();
-  T("продажа даёт золото и продолжает цепочку", S.gold>g0 && !!chestPending && S.bags===1);
-  sellChestItem();
-  T("вторая продажа продолжает цепочку", !!chestPending && S.bags===0);
-  sellChestItem();
+  T("продажа даёт золото и не открывает следующую сумку сама", S.gold>g0 && chestPending===null && S.bags===2);
+  chestOpenOne(); T("одно нажатие = одна сумка (1==1)", S.bags===1);
+  if(chestPending) sellChestItem();
+  chestOpenOne(); T("последняя сумка открывается отдельно", S.bags===0);
+  if(chestPending) sellChestItem();
   T("после последней продажи pending сброшен", chestPending===null); }
+{ const saved=JSON.stringify(S.gear); S.autoRoll=false; S.bags=5; chestPending=null;
+  for(const sl of gearSlots()) S.gear[sl.id]={s:sl.id,r:RAR_POW.length-1,m:1e9,i:999};
+  quickOpenBag(); T("быстрое открытие слабой находки тратит ровно 1 сумку", S.bags===4 && chestPending===null);
+  S.gear=JSON.parse(saved); S.bags=0; }
 S.bags=1; chestOpenOne(); { const sl=chestPending.s; equipChestItem();
   T("надевание кладёт предмет в слот", !!S.gear[sl] && chestPending===null); }
 { S.bag=1; S.gold=bagCost()*3; const b0=S.bag; chestUpgrade();
@@ -1497,16 +1515,14 @@ closeChest();
   T("1-tap сразу даёт решение Equip/Sell", !!chestPending && __ids.dropModal.style.display==="flex");
   T("1-tap показывает пилюли сравнения", /chPill/.test(__ids.dropCard.innerHTML||""));
   sellChestItem();
-  T("продажа → следующая сумка в цепочке", !!chestPending && S.bags===0 && __ids.dropModal.style.display==="flex");
-  sellChestItem();
-  T("продажа закрывает dropModal", chestPending===null && __ids.dropModal.style.display!=="flex"); }
+  T("продажа закрывает dropModal и не тратит следующую сумку", chestPending===null && S.bags===1 && __ids.dropModal.style.display!=="flex"); }
 { S.bags=8; S.gear={};
   for(const sl of gearSlots()){
     S.gear[sl.id]={ s:sl.id, r:7, m:2, i:999, n:"cap" };
   }
   const b0=S.bags; openChest(false);
-  T("хуже экипированного авто-продаётся без модалки", S.bags===0 && !chestPending && __ids.dropModal.style.display!=="flex");
-  T("пачка сумок тратит все", b0===8 && S.bags===0); }
+  T("хуже экипированного авто-продаётся без модалки", !chestPending && __ids.dropModal.style.display!=="flex");
+  T("одно нажатие тратит ровно одну сумку", b0===8 && S.bags===7); }
 { adHubSeen=false; S.noAds=false; ensureGrowth(S); S.growth.ads.count=0;
   render();
   T("AD pulse пока hub не открыт", !!(__ids.statAdCell&&__ids.statAdCell.classList.contains("pulse")));
@@ -1806,6 +1822,42 @@ T("BALANCE.bonus fib", Array.isArray(BALANCE.bonus.fib) && BALANCE.bonus.fib[2]=
   }
   T("ряд fib закрыт на день", bonusSlot().done && !grantBonusChest(1));
 }
+
+{ const sv={pet:S.pet, box:S.petBox, pick:S.petPick};
+  S.petBox={}; boxAdd(S.petBox,0,3,1); boxAdd(S.petBox,1,1,2); boxAdd(S.petBox,2,0,1); S.petPick=null; equipBestPet();
+  T("клетка: по умолчанию в бою лучший", S.pet.t===0 && S.pet.r===3);
+  T("клетка: выбор дракона ставит его в бой", selectPet(1) && S.pet.t===1 && S.pet.r===1);
+  equipBestPet(); T("клетка: выбор переживает equipBestPet", S.pet.t===1);
+  T("клетка: нельзя выбрать неприрученного", (S.petBox={"1_1":1}, !selectPet(2)) && S.pet.t===1);
+  UIS.open("pets"); UIS.setTab&&UIS.setTab("bag"); UIS.tab="bag"; UIS.render("pets");
+  const h=__ids.uiBody.innerHTML;
+  T("клетка: карточки кликабельны и есть статы", h.includes("selectPet(0)") && h.includes("uiPetStats") && h.includes("instant kill"));
+  UIS.close();
+  S.pet=sv.pet; S.petBox=sv.box; S.petPick=sv.pick; }
+
+{ const sv=S.pet; S.pet={t:2,r:0}; dead=false; S.rockHP=Math.max(1,S.rockHP||1e6); const i0=S.stageIdx;
+  { const before=rock, v0=S.veinsBroken|0;
+    T("дыхание дракона убивает жилу мгновенно", dragonBreathStrike() && ((S.veinsBroken|0)>v0 || rock!==before)); }
+  const r0=rock; S.rockHP=1e9; T("залп по старой жиле не трогает новую", !dragonBreathStrike({}) && S.rockHP===1e9 && rock===r0);
+  const b=pvpBrawlSim(500, 500, 0.4, {t:1});
+  const ph=b.hits.filter(x=>x.who==="pet");
+  T("pvp: дракон бьёт соперника", ph.length>0 && ph.every(x=>x.dmg===Math.round(b.oppMax*BALANCE.dragonBreath.pvpHpFrac)));
+  T("pvp: без дракона нет его ударов", pvpBrawlSim(500,500,0.4,null).hits.every(x=>x.who!=="pet"));
+  S.pet=sv; }
+
+{ const sv={idx:S.stageIdx, tr:S.trophies, pet:S.pet};
+  S.pet={t:1,r:2};
+  S.stageIdx=1; const p0=petPctOf(1,2), m0=mineRaidRewardAmt(mineRaidDef(1),0);
+  S.stageIdx=BALANCE.run.len; const p1=petPctOf(1,2), m1=mineRaidRewardAmt(mineRaidDef(1),0);
+  T("сложность: дракон сильнее на глубине", p0===PET_TYPES[1].pct[2] && p1===Math.round(PET_TYPES[1].pct[2]*(1+BALANCE.petDepthGain)));
+  T("сложность: бонус дракона идёт в статы", petBonus("mining")===p1);
+  T("сложность: штольня платит больше на глубине", m1>m0);
+  const bot={id:"x",mul:1}; S.trophies=0; const b0=pvpBotPower(bot,1000); S.trophies=1000; const b1=pvpBotPower(bot,1000);
+  T("сложность: соперники крепче в высокой лиге", b1>b0*1.3);
+  const weak=pvpWinReward({power:100},1000), even=pvpWinReward({power:1000},1000), strong=pvpWinReward({power:5000},1000);
+  T("сложность: сильный соперник платит больше", strong.gold>even.gold && even.gold>weak.gold && strong.gems>weak.gems);
+  T("сложность: множитель награды в рамках", weak.mul===BALANCE.pvp.rivalPay[0] && strong.mul===BALANCE.pvp.rivalPay[1]);
+  S.stageIdx=sv.idx; S.trophies=sv.tr; S.pet=sv.pet; }
 
 console.log("\n========== ИТОГ: "+pass+" PASS, "+fail+" FAIL ==========");
 process.exit(fail?1:0);
